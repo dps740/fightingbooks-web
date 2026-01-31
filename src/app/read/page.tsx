@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Home, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 
 interface BookPage {
   id: string;
@@ -55,16 +55,15 @@ function BookReader() {
           id: 'error',
           type: 'cover',
           title: 'Error',
-          content: '<p class="text-center">Failed to load book. Please try again.</p>',
+          content: '<p>Failed to load book. Please try again.</p>',
         }]);
       }
     } catch (error) {
-      console.error('Failed to load book:', error);
       setPages([{
         id: 'error',
         type: 'cover',
-        title: 'Error',
-        content: '<p class="text-center">Failed to load book. Please try again.</p>',
+        title: 'Error', 
+        content: '<p>Failed to load book. Please try again.</p>',
       }]);
     }
     setLoading(false);
@@ -73,7 +72,6 @@ function BookReader() {
   const handleChoice = async (choice: Choice) => {
     setGeneratingChoice(true);
     setChoicesMade([...choicesMade, choice.id]);
-    
     try {
       const response = await fetch('/api/book/choice', {
         method: 'POST',
@@ -103,7 +101,6 @@ function BookReader() {
   const nextPage = () => goToPage(currentPage + 1);
   const prevPage = () => goToPage(currentPage - 1);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
@@ -116,203 +113,266 @@ function BookReader() {
 
   const page = pages[currentPage];
 
-  // Page background based on type
-  const getPageStyle = (type: string) => {
-    const styles: Record<string, string> = {
-      cover: 'from-[#8B0000] via-[#5c1010] to-[#2a0a0a]',
-      intro: 'from-[#1a2a1a] via-[#0d1a0d] to-[#0a0a0a]',
-      stats: 'from-[#1a1a2a] via-[#0d0d1a] to-[#0a0a0a]',
-      battle: 'from-[#2a1a0a] via-[#1a0d0a] to-[#0a0a0a]',
-      choice: 'from-[#1a1a3a] via-[#0d0d2a] to-[#0a0a0a]',
-      victory: 'from-[#2a2a0a] via-[#1a1a0d] to-[#0a0a0a]',
-    };
-    return styles[type] || styles.intro;
+  // Colorful backgrounds like the Who Would Win books
+  const backgrounds = [
+    'from-green-200 to-green-300',    // Green
+    'from-amber-100 to-amber-200',    // Gold  
+    'from-blue-200 to-blue-300',      // Blue
+    'from-pink-200 to-pink-300',      // Coral/Pink
+    'from-purple-200 to-purple-300',  // Purple
+  ];
+
+  const getBackground = (index: number, type: string) => {
+    if (type === 'cover') return 'from-orange-400 via-red-500 to-purple-600';
+    if (type === 'victory') return 'from-yellow-300 via-amber-400 to-orange-500';
+    if (type === 'battle') return 'from-red-300 to-orange-300';
+    return backgrounds[index % backgrounds.length];
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
         <div className="text-center">
           <motion.div
             animate={{ rotateY: [0, 360] }}
             transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="text-8xl mb-8"
+            className="text-9xl mb-8"
           >
             📖
           </motion.div>
-          <p className="text-white text-2xl font-bold">Generating your battle book...</p>
-          <p className="text-gray-500 mt-2">This takes about 30 seconds</p>
+          <p className="text-white text-3xl font-bold font-comic">Creating your battle book...</p>
+          <p className="text-white/70 text-xl mt-2">This takes about 30 seconds</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col">
-      {/* Header */}
-      <header className="flex-shrink-0 bg-[#141414] border-b border-[#2a2a2a] px-4 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-4">
+      {/* Navigation Header */}
+      <div className="w-full max-w-4xl flex items-center justify-between mb-4">
         <button
           onClick={() => router.push('/')}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-white/70 hover:text-white bg-white/10 px-4 py-2 rounded-full transition-colors"
         >
           <Home className="w-5 h-5" />
-          <span className="hidden sm:inline">Exit</span>
+          <span>Exit</span>
         </button>
+        <div className="text-white text-lg font-bold">
+          Page {currentPage + 1} of {pages.length}
+        </div>
+      </div>
+
+      {/* Book Container */}
+      <div className="relative w-full max-w-4xl" style={{ perspective: '2000px' }}>
+        {/* Book Shadow */}
+        <div className="absolute inset-x-0 bottom-0 h-8 bg-black/30 blur-xl transform translate-y-4" />
         
-        <div className="text-lg font-black">
-          <span className="text-[#c41e3a]">{animalA}</span>
-          <span className="text-[#d4af37] mx-2">VS</span>
-          <span className="text-[#1e4fc4]">{animalB}</span>
-        </div>
-
-        <div className="text-gray-500 text-sm font-mono">
-          {currentPage + 1} / {pages.length}
-        </div>
-      </header>
-
-      {/* Book Area */}
-      <main className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden">
-        <div className="relative w-full max-w-4xl aspect-[3/4] md:aspect-[4/3]">
-          {/* Book Shadow */}
-          <div className="absolute inset-0 bg-black/50 blur-3xl transform translate-y-8 scale-95" />
-          
-          {/* Book Container */}
-          <div className="relative w-full h-full bg-[#1a1a1a] rounded-lg shadow-2xl overflow-hidden border border-[#3a3a3a]">
-            {/* Page Content with Animation */}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={currentPage}
-                initial={{ 
-                  x: direction > 0 ? '100%' : '-100%',
-                  opacity: 0,
-                  rotateY: direction > 0 ? -15 : 15
-                }}
-                animate={{ 
-                  x: 0, 
-                  opacity: 1,
-                  rotateY: 0
-                }}
-                exit={{ 
-                  x: direction > 0 ? '-100%' : '100%',
-                  opacity: 0,
-                  rotateY: direction > 0 ? 15 : -15
-                }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className={`absolute inset-0 bg-gradient-to-br ${getPageStyle(page?.type || 'intro')}`}
-              >
-                {/* Page Inner Content */}
-                <div className="h-full flex flex-col p-6 md:p-10 overflow-auto">
-                  {/* Image */}
-                  {page?.imageUrl && (
-                    <div className="flex-shrink-0 mb-6 rounded-xl overflow-hidden border-2 border-[#d4af37]/30 shadow-xl">
-                      <img 
-                        src={page.imageUrl} 
-                        alt={page.title}
-                        className="w-full h-48 md:h-64 object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Title */}
-                  <h1 className={`font-black text-center mb-6 ${
-                    page?.type === 'cover' 
-                      ? 'text-4xl md:text-6xl text-[#d4af37] drop-shadow-lg' 
-                      : page?.type === 'victory'
-                      ? 'text-3xl md:text-5xl text-[#d4af37]'
-                      : 'text-2xl md:text-3xl text-white'
-                  }`}>
-                    {page?.title}
-                  </h1>
-
-                  {/* Content */}
-                  <div 
-                    className="flex-grow prose prose-invert prose-lg max-w-none text-white/90"
-                    style={{ fontSize: '1.1rem', lineHeight: '1.8' }}
-                    dangerouslySetInnerHTML={{ __html: page?.content || '' }}
-                  />
-
-                  {/* CYOA Choices */}
-                  {page?.type === 'choice' && page.choices && !generatingChoice && (
-                    <div className="mt-6 space-y-3">
-                      <p className="text-center text-[#d4af37] font-bold text-lg mb-4">
-                        ⚡ CHOOSE YOUR PATH ⚡
-                      </p>
-                      {page.choices.map((choice) => (
-                        <button
-                          key={choice.id}
-                          onClick={() => handleChoice(choice)}
-                          className="w-full p-4 bg-[#1a1a1a]/80 border-2 border-[#d4af37]/50 rounded-xl text-left text-lg font-medium hover:border-[#d4af37] hover:bg-[#2a2a2a] transition-all flex items-center gap-3"
-                        >
-                          <span className="text-2xl">{choice.emoji}</span>
-                          <span>{choice.text}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Generating indicator */}
-                  {generatingChoice && (
-                    <div className="mt-6 text-center">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                        className="text-4xl inline-block"
-                      >
-                        ⏳
-                      </motion.div>
-                      <p className="text-[#d4af37] mt-2">Generating next scene...</p>
-                    </div>
+        {/* The Book */}
+        <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden" style={{ minHeight: '70vh' }}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={currentPage}
+              initial={{ 
+                rotateY: direction > 0 ? 90 : -90,
+                opacity: 0,
+              }}
+              animate={{ 
+                rotateY: 0,
+                opacity: 1,
+              }}
+              exit={{ 
+                rotateY: direction > 0 ? -90 : 90,
+                opacity: 0,
+              }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              style={{ transformOrigin: direction > 0 ? 'left center' : 'right center' }}
+              className={`w-full min-h-[70vh] bg-gradient-to-br ${getBackground(currentPage, page?.type || 'intro')} p-8 md:p-12`}
+            >
+              {/* Cover Page */}
+              {page?.type === 'cover' && (
+                <div className="h-full flex flex-col items-center justify-center text-center text-white">
+                  <div className="bg-red-600 px-8 py-3 rounded-lg shadow-lg mb-6 transform -rotate-2">
+                    <span className="font-bangers text-3xl md:text-5xl tracking-wider">WHO WOULD WIN?</span>
+                  </div>
+                  <h1 className="font-bangers text-4xl md:text-6xl mb-8 drop-shadow-lg">{page.title}</h1>
+                  {page.imageUrl && (
+                    <img 
+                      src={page.imageUrl} 
+                      alt={page.title}
+                      className="max-w-full max-h-64 md:max-h-96 rounded-xl shadow-2xl border-4 border-white"
+                    />
                   )}
                 </div>
+              )}
 
-                {/* Page decoration - corner flourishes */}
-                <div className="absolute top-4 left-4 text-[#d4af37]/20 text-3xl">✦</div>
-                <div className="absolute top-4 right-4 text-[#d4af37]/20 text-3xl">✦</div>
-                <div className="absolute bottom-4 left-4 text-[#d4af37]/20 text-3xl">✦</div>
-                <div className="absolute bottom-4 right-4 text-[#d4af37]/20 text-3xl">✦</div>
-              </motion.div>
-            </AnimatePresence>
+              {/* Victory Page */}
+              {page?.type === 'victory' && (
+                <div className="h-full flex flex-col items-center text-center">
+                  <h1 className="font-bangers text-4xl md:text-6xl text-red-600 mb-4 drop-shadow-lg">🏆 THE WINNER! 🏆</h1>
+                  {page.imageUrl && (
+                    <img 
+                      src={page.imageUrl} 
+                      alt="Winner"
+                      className="max-w-full max-h-48 md:max-h-64 rounded-xl shadow-xl border-4 border-yellow-400 mb-6"
+                    />
+                  )}
+                  <div 
+                    className="prose prose-lg max-w-none font-comic text-gray-800"
+                    dangerouslySetInnerHTML={{ __html: page.content }}
+                  />
+                </div>
+              )}
 
-            {/* Navigation Arrows */}
-            {currentPage > 0 && (
-              <button
-                onClick={prevPage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-all z-10"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-            )}
-            {currentPage < pages.length - 1 && (
-              <button
-                onClick={nextPage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white transition-all z-10"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            )}
-          </div>
-        </div>
-      </main>
+              {/* Regular Pages */}
+              {page?.type !== 'cover' && page?.type !== 'victory' && (
+                <div className="h-full">
+                  {/* Title */}
+                  <h2 className="font-bangers text-3xl md:text-4xl text-orange-600 text-center mb-6 drop-shadow">
+                    {page?.title}
+                  </h2>
 
-      {/* Page Indicators */}
-      <footer className="flex-shrink-0 bg-[#141414] border-t border-[#2a2a2a] px-4 py-3">
-        <div className="flex justify-center gap-2 flex-wrap max-w-4xl mx-auto">
-          {pages.map((_, i) => (
+                  <div className={`flex flex-col ${page?.imageUrl ? 'md:flex-row' : ''} gap-6`}>
+                    {/* Image */}
+                    {page?.imageUrl && (
+                      <div className="md:w-1/2 flex-shrink-0">
+                        <img 
+                          src={page.imageUrl} 
+                          alt={page.title}
+                          className="w-full rounded-xl shadow-xl border-4 border-white"
+                        />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className={`${page?.imageUrl ? 'md:w-1/2' : 'w-full'}`}>
+                      <div 
+                        className="prose prose-lg max-w-none font-comic text-gray-800 book-content"
+                        dangerouslySetInnerHTML={{ __html: page?.content || '' }}
+                      />
+
+                      {/* CYOA Choices */}
+                      {page?.type === 'choice' && page.choices && !generatingChoice && (
+                        <div className="mt-6 space-y-3">
+                          <p className="font-bangers text-2xl text-purple-600 text-center">⚡ YOU DECIDE! ⚡</p>
+                          {page.choices.map((choice) => (
+                            <button
+                              key={choice.id}
+                              onClick={() => handleChoice(choice)}
+                              className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-lg font-bold shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all flex items-center gap-3"
+                            >
+                              <span className="text-2xl">{choice.emoji}</span>
+                              <span>{choice.text}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {generatingChoice && (
+                        <div className="mt-6 text-center">
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ repeat: Infinity, duration: 1 }}
+                            className="text-5xl inline-block"
+                          >
+                            ⏳
+                          </motion.div>
+                          <p className="font-comic text-xl text-purple-600 mt-2">Creating next scene...</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Page Navigation Buttons */}
+          {currentPage > 0 && (
             <button
-              key={i}
-              onClick={() => goToPage(i)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                i === currentPage 
-                  ? 'bg-[#d4af37] scale-125' 
-                  : 'bg-[#3a3a3a] hover:bg-[#5a5a5a]'
-              }`}
-            />
-          ))}
+              onClick={prevPage}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 hover:bg-white rounded-full shadow-xl flex items-center justify-center text-gray-700 hover:text-gray-900 transition-all z-10"
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+          )}
+          {currentPage < pages.length - 1 && (
+            <button
+              onClick={nextPage}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 hover:bg-white rounded-full shadow-xl flex items-center justify-center text-gray-700 hover:text-gray-900 transition-all z-10"
+            >
+              <ChevronRight className="w-8 h-8" />
+            </button>
+          )}
         </div>
-      </footer>
+      </div>
+
+      {/* Page Dots */}
+      <div className="flex gap-2 mt-6 flex-wrap justify-center max-w-4xl">
+        {pages.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goToPage(i)}
+            className={`w-4 h-4 rounded-full transition-all ${
+              i === currentPage 
+                ? 'bg-yellow-400 scale-125 shadow-lg' 
+                : 'bg-white/30 hover:bg-white/50'
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Custom Styles */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
+        
+        .font-bangers {
+          font-family: 'Bangers', cursive;
+          letter-spacing: 2px;
+        }
+        
+        .font-comic {
+          font-family: 'Comic Neue', cursive;
+        }
+        
+        .book-content p {
+          background: rgba(255,255,255,0.7);
+          padding: 8px 12px;
+          border-radius: 8px;
+          border-left: 4px solid #ff5722;
+          margin-bottom: 12px;
+        }
+        
+        .book-content strong {
+          color: #c62828;
+        }
+        
+        .book-content ul {
+          list-style: none;
+          padding: 0;
+        }
+        
+        .book-content li {
+          background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+          color: white;
+          padding: 8px 12px;
+          border-radius: 8px;
+          margin-bottom: 8px;
+          font-weight: bold;
+          box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        .book-content table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        
+        .book-content td, .book-content th {
+          padding: 8px;
+          border: 2px solid #ffd54f;
+          background: rgba(255,255,255,0.8);
+        }
+      `}</style>
     </div>
   );
 }
@@ -320,8 +380,8 @@ function BookReader() {
 export default function ReadPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-white text-2xl">Loading...</div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-white text-3xl font-bold">Loading...</div>
       </div>
     }>
       <BookReader />
