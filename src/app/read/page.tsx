@@ -167,9 +167,26 @@ function BookReader() {
         body: JSON.stringify({ animalA, animalB, mode }),
       });
       const data = await response.json();
-      setPages(data.pages);
+      if (data.pages && Array.isArray(data.pages) && data.pages.length > 0) {
+        setPages(data.pages);
+      } else {
+        console.error('Invalid pages data:', data);
+        // Set fallback error page
+        setPages([{
+          id: 'error',
+          type: 'cover',
+          title: 'Oops!',
+          content: '<p>Something went wrong loading your book. Please try again!</p>',
+        }]);
+      }
     } catch (error) {
       console.error('Failed to load book:', error);
+      setPages([{
+        id: 'error',
+        type: 'cover',
+        title: 'Oops!',
+        content: '<p>Something went wrong loading your book. Please try again!</p>',
+      }]);
     }
     setLoading(false);
   };
@@ -319,44 +336,46 @@ function BookReader() {
           <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/40 blur-xl rounded-full" />
           
           {/* Flip Book */}
-          <HTMLFlipBook
-            ref={bookRef}
-            width={350}
-            height={500}
-            size="stretch"
-            minWidth={280}
-            maxWidth={500}
-            minHeight={400}
-            maxHeight={700}
-            showCover={true}
-            mobileScrollSupport={true}
-            onFlip={onFlip}
-            className="book-shadow"
-            style={{}}
-            startPage={0}
-            drawShadow={true}
-            flippingTime={600}
-            usePortrait={true}
-            startZIndex={0}
-            autoSize={true}
-            maxShadowOpacity={0.5}
-            showPageCorners={true}
-            disableFlipByClick={false}
-            useMouseEvents={true}
-            swipeDistance={30}
-            clickEventForward={true}
-            renderOnlyPageLengthChange={false}
-          >
-            {pages.map((page, index) => (
-              <Page 
-                key={page.id} 
-                page={page} 
-                pageNumber={index + 1}
-                onChoice={handleChoice}
-                generatingChoice={generatingChoice}
-              />
-            ))}
-          </HTMLFlipBook>
+          {pages.length > 0 && (
+            <HTMLFlipBook
+              ref={bookRef}
+              width={350}
+              height={500}
+              size="stretch"
+              minWidth={280}
+              maxWidth={500}
+              minHeight={400}
+              maxHeight={700}
+              showCover={true}
+              mobileScrollSupport={true}
+              onFlip={onFlip}
+              className="book-shadow"
+              style={{}}
+              startPage={0}
+              drawShadow={true}
+              flippingTime={600}
+              usePortrait={true}
+              startZIndex={0}
+              autoSize={true}
+              maxShadowOpacity={0.5}
+              showPageCorners={true}
+              disableFlipByClick={false}
+              useMouseEvents={true}
+              swipeDistance={30}
+              clickEventForward={true}
+              renderOnlyPageLengthChange={false}
+            >
+              {pages.map((page, index) => (
+                <Page 
+                  key={page.id} 
+                  page={page} 
+                  pageNumber={index + 1}
+                  onChoice={handleChoice}
+                  generatingChoice={generatingChoice}
+                />
+              ))}
+            </HTMLFlipBook>
+          )}
         </div>
       </main>
 
