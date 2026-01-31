@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
-import fs from 'fs';
 
 interface BookPage {
   id: string;
@@ -12,88 +9,52 @@ interface BookPage {
   choices?: { id: string; text: string; emoji: string }[];
 }
 
-// Generate initial pages using Python backend
-async function generateWithPython(animalA: string, animalB: string, environment: string): Promise<{ pages: BookPage[], winner: string }> {
-  return new Promise((resolve, reject) => {
-    const generatorDir = path.resolve(process.cwd(), '..', 'fightingbooks-redesign');
-    const venvPython = path.join(generatorDir, 'venv', 'bin', 'python3');
-    const outputDir = path.join(process.cwd(), 'public', 'books');
-    const timestamp = Date.now();
-    const outputName = `${animalA.replace(/\s+/g, '_')}_vs_${animalB.replace(/\s+/g, '_')}_${timestamp}`;
+// Animal facts database for more realistic content
+const animalFacts: Record<string, { habitat: string; diet: string; size: string; speed: string; weapon: string }> = {
+  'lion': { habitat: 'African savannas', diet: 'Large ungulates', size: '420 lbs', speed: '50 mph', weapon: 'Powerful jaws and claws' },
+  'tiger': { habitat: 'Asian forests', diet: 'Deer and wild boar', size: '660 lbs', speed: '40 mph', weapon: 'Strongest bite of big cats' },
+  'grizzly bear': { habitat: 'North American wilderness', diet: 'Omnivore', size: '800 lbs', speed: '35 mph', weapon: 'Massive paws with 4-inch claws' },
+  'gorilla': { habitat: 'African rainforests', diet: 'Herbivore', size: '400 lbs', speed: '25 mph', weapon: 'Incredible arm strength' },
+  'great white shark': { habitat: 'Coastal oceans worldwide', diet: 'Seals and fish', size: '5000 lbs', speed: '35 mph', weapon: '300 serrated teeth' },
+  'saltwater crocodile': { habitat: 'Indo-Pacific coasts', diet: 'Anything it can catch', size: '2200 lbs', speed: '18 mph', weapon: 'Strongest bite on Earth' },
+  'african elephant': { habitat: 'African savannas and forests', diet: 'Herbivore', size: '14000 lbs', speed: '25 mph', weapon: 'Tusks and sheer mass' },
+  'polar bear': { habitat: 'Arctic ice', diet: 'Seals', size: '1200 lbs', speed: '25 mph', weapon: 'Powerful swipe and bite' },
+  'orca': { habitat: 'All oceans', diet: 'Fish, seals, whales', size: '12000 lbs', speed: '35 mph', weapon: 'Intelligence and teamwork' },
+  'hippo': { habitat: 'African rivers', diet: 'Herbivore', size: '4000 lbs', speed: '20 mph', weapon: 'Massive jaws with huge tusks' },
+};
 
-    // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    const args = [
-      'cli.py',
-      animalA,
-      animalB,
-      '-e', environment === 'random' ? 'random' : environment,
-      '-o', path.join(outputDir, outputName),
-      '-f', 'html', // Generate HTML for on-screen viewing
-      '--json-output', // Output page data as JSON
-    ];
-
-    const proc = spawn(venvPython, args, {
-      cwd: generatorDir,
-      env: { ...process.env, PYTHONUNBUFFERED: '1' }
-    });
-
-    let output = '';
-    let errorOutput = '';
-    let winner = animalA; // Default
-
-    proc.stdout.on('data', (data) => {
-      output += data.toString();
-      const winnerMatch = data.toString().match(/Winner:\s*(.+)/);
-      if (winnerMatch) winner = winnerMatch[1].trim();
-    });
-
-    proc.stderr.on('data', (data) => {
-      errorOutput += data.toString();
-    });
-
-    proc.on('close', (code) => {
-      if (code !== 0) {
-        console.error('Python generator failed:', errorOutput);
-        // Return mock data on failure
-        resolve(generateMockPages(animalA, animalB, winner));
-        return;
-      }
-
-      // Try to parse JSON output
-      try {
-        const jsonMatch = output.match(/JSON_OUTPUT_START(.+)JSON_OUTPUT_END/s);
-        if (jsonMatch) {
-          const pageData = JSON.parse(jsonMatch[1]);
-          resolve({ pages: pageData.pages, winner: pageData.winner || winner });
-        } else {
-          // Fallback to mock with real winner
-          resolve(generateMockPages(animalA, animalB, winner));
-        }
-      } catch (e) {
-        resolve(generateMockPages(animalA, animalB, winner));
-      }
-    });
-
-    proc.on('error', (err) => {
-      console.error('Failed to spawn Python:', err);
-      resolve(generateMockPages(animalA, animalB, winner));
-    });
-  });
+function getAnimalFacts(animal: string) {
+  const key = animal.toLowerCase();
+  return animalFacts[key] || {
+    habitat: 'Various regions worldwide',
+    diet: 'Carnivore/Omnivore',
+    size: 'Varies',
+    speed: 'Fast',
+    weapon: 'Natural weapons'
+  };
 }
 
-// Fallback mock pages
-function generateMockPages(animalA: string, animalB: string, winner: string): { pages: BookPage[], winner: string } {
+// Determine winner based on some logic
+function determineWinner(animalA: string, animalB: string): string {
+  // Simple hash-based "random" but consistent result
+  const combined = (animalA + animalB).toLowerCase();
+  const hash = combined.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  return hash % 2 === 0 ? animalA : animalB;
+}
+
+// Generate pages
+function generatePages(animalA: string, animalB: string, environment: string): { pages: BookPage[], winner: string } {
+  const winner = determineWinner(animalA, animalB);
+  const loser = winner === animalA ? animalB : animalA;
+  const factsA = getAnimalFacts(animalA);
+  const factsB = getAnimalFacts(animalB);
+
   const pages: BookPage[] = [
     {
       id: 'cover',
       type: 'cover',
       title: `${animalA} vs ${animalB}`,
-      content: `<p class="text-center text-xl">An epic battle is about to begin!</p>`,
-      imageUrl: '/api/placeholder/800/600',
+      content: `<p class="text-center text-xl">WHO WOULD WIN?</p><p class="text-center text-gray-400 mt-4">An epic battle is about to begin!</p>`,
     },
     {
       id: 'intro-a',
@@ -101,14 +62,14 @@ function generateMockPages(animalA: string, animalB: string, winner: string): { 
       title: `Meet the ${animalA}!`,
       content: `
         <p>The <strong>${animalA}</strong> is one of nature's most formidable creatures.</p>
-        <ul>
-          <li><strong>Habitat:</strong> Various regions worldwide</li>
-          <li><strong>Diet:</strong> Carnivore</li>
-          <li><strong>Special Ability:</strong> Incredible strength and speed</li>
+        <ul class="mt-4 space-y-2">
+          <li><strong>Habitat:</strong> ${factsA.habitat}</li>
+          <li><strong>Diet:</strong> ${factsA.diet}</li>
+          <li><strong>Size:</strong> ${factsA.size}</li>
+          <li><strong>Top Speed:</strong> ${factsA.speed}</li>
+          <li><strong>Weapon:</strong> ${factsA.weapon}</li>
         </ul>
-        <p class="mt-4 italic">This mighty predator has evolved over millions of years to become the ultimate hunter!</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'intro-b',
@@ -116,95 +77,86 @@ function generateMockPages(animalA: string, animalB: string, winner: string): { 
       title: `Meet the ${animalB}!`,
       content: `
         <p>The <strong>${animalB}</strong> is a fearsome predator known across the world.</p>
-        <ul>
-          <li><strong>Habitat:</strong> Diverse environments</li>
-          <li><strong>Diet:</strong> Carnivore</li>
-          <li><strong>Special Ability:</strong> Deadly precision and power</li>
+        <ul class="mt-4 space-y-2">
+          <li><strong>Habitat:</strong> ${factsB.habitat}</li>
+          <li><strong>Diet:</strong> ${factsB.diet}</li>
+          <li><strong>Size:</strong> ${factsB.size}</li>
+          <li><strong>Top Speed:</strong> ${factsB.speed}</li>
+          <li><strong>Weapon:</strong> ${factsB.weapon}</li>
         </ul>
-        <p class="mt-4 italic">Nature has crafted this beast into a perfect fighting machine!</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'stats',
       type: 'stats',
-      title: '📊 Tale of the Tape',
+      title: 'Tale of the Tape',
       content: `
-        <table class="w-full text-center">
-          <tr class="border-b border-white/20">
-            <td class="py-2 text-red-400 font-bold">${animalA}</td>
-            <td class="py-2 text-white/50">STAT</td>
-            <td class="py-2 text-blue-400 font-bold">${animalB}</td>
-          </tr>
-          <tr class="border-b border-white/10">
-            <td class="py-2">★★★★☆</td>
-            <td class="py-2 text-white/50">⚖️ Size</td>
-            <td class="py-2">★★★★★</td>
-          </tr>
-          <tr class="border-b border-white/10">
-            <td class="py-2">★★★★★</td>
-            <td class="py-2 text-white/50">⚡ Speed</td>
-            <td class="py-2">★★★☆☆</td>
-          </tr>
-          <tr class="border-b border-white/10">
-            <td class="py-2">★★★★☆</td>
-            <td class="py-2 text-white/50">💪 Power</td>
-            <td class="py-2">★★★★★</td>
-          </tr>
-          <tr>
-            <td class="py-2">★★★★★</td>
-            <td class="py-2 text-white/50">🛡️ Defense</td>
-            <td class="py-2">★★★★☆</td>
-          </tr>
-        </table>
+        <div class="border border-[#d4af37] p-4">
+          <table class="w-full text-center">
+            <tr class="border-b border-white/20">
+              <td class="py-3 text-[#c41e3a] font-bold text-lg">${animalA.toUpperCase()}</td>
+              <td class="py-3 text-[#d4af37]">VS</td>
+              <td class="py-3 text-[#1e4fc4] font-bold text-lg">${animalB.toUpperCase()}</td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2">${factsA.size}</td>
+              <td class="py-2 text-gray-500">⚖️ SIZE</td>
+              <td class="py-2">${factsB.size}</td>
+            </tr>
+            <tr class="border-b border-white/10">
+              <td class="py-2">${factsA.speed}</td>
+              <td class="py-2 text-gray-500">⚡ SPEED</td>
+              <td class="py-2">${factsB.speed}</td>
+            </tr>
+            <tr>
+              <td class="py-2 text-sm">${factsA.weapon}</td>
+              <td class="py-2 text-gray-500">⚔️ WEAPON</td>
+              <td class="py-2 text-sm">${factsB.weapon}</td>
+            </tr>
+          </table>
+        </div>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'battle-1',
       type: 'battle',
-      title: '⚡ The Battle Begins!',
+      title: 'The Battle Begins!',
       content: `
-        <p>The two mighty creatures face each other across the arena. Tension fills the air as both predators size each other up.</p>
-        <p class="my-4">The ${animalA} lets out a powerful roar that echoes across the battlefield! The ${animalB} stands its ground, muscles tensed, ready for combat.</p>
-        <p>In a flash of movement, both predators spring into action! The ground shakes with the force of their clash!</p>
+        <p>The two mighty creatures face each other in the ${environment === 'neutral' ? 'arena' : environment}. Tension fills the air.</p>
+        <p class="my-4">The ${animalA} lets out a powerful call that echoes across the battlefield! The ${animalB} stands its ground, muscles tensed, ready for combat.</p>
+        <p>In a flash of movement, both predators spring into action!</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'battle-2',
       type: 'battle',
-      title: '💥 The Clash Intensifies!',
+      title: 'The Clash Intensifies!',
       content: `
-        <p>Claws slash through the air! Teeth flash in the sunlight! Neither warrior is willing to back down.</p>
-        <p class="my-4">The ${animalA} lands a powerful blow, but the ${animalB} counters with incredible ferocity!</p>
+        <p>Neither warrior is willing to back down!</p>
+        <p class="my-4">The ${animalA} uses its ${factsA.weapon.toLowerCase()} with devastating effect, but the ${animalB} counters with its own ${factsB.weapon.toLowerCase()}!</p>
         <p>Back and forth they battle, each looking for the decisive advantage...</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'battle-3',
       type: 'battle',
-      title: '🔥 The Final Showdown!',
+      title: 'The Final Showdown!',
       content: `
-        <p>Both fighters are giving everything they have! The battle reaches its crescendo!</p>
-        <p class="my-4">With one final, mighty effort, ${winner} seizes the moment and delivers the decisive blow!</p>
-        <p>The outcome is decided!</p>
+        <p>Both fighters are giving everything they have!</p>
+        <p class="my-4">The ${loser} is tiring... and ${winner} sees the opportunity!</p>
+        <p>With one final, mighty effort, <strong>${winner}</strong> seizes the moment!</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
     {
       id: 'victory',
       type: 'victory',
-      title: '🏆 The Winner!',
+      title: 'THE WINNER!',
       content: `
-        <p class="text-3xl font-bold text-center mb-4">${winner.toUpperCase()} WINS!</p>
+        <p class="text-4xl font-black text-center mb-6 text-[#d4af37]">${winner.toUpperCase()}</p>
         <p>After an incredible battle, the <strong>${winner}</strong> emerges victorious!</p>
-        <p class="my-4">It was a close fight, but in the end, ${winner}'s combination of strength, speed, and skill proved to be the deciding factor.</p>
-        <p class="text-white/70">But remember - in nature, the outcome depends on many factors like environment, health, and luck. In a different situation, the result might be different!</p>
-        <p class="mt-4 text-center text-yellow-300">Every animal is amazing in its own way! 🌟</p>
+        <p class="my-4">It was a close fight, but ${winner}'s combination of ${winner === animalA ? factsA.weapon.toLowerCase() : factsB.weapon.toLowerCase()} proved decisive.</p>
+        <p class="text-gray-400 text-sm mt-6">Remember: in nature, outcomes depend on many factors. Every animal is amazing in its own way!</p>
       `,
-      imageUrl: '/api/placeholder/800/600',
     },
   ];
 
@@ -213,25 +165,21 @@ function generateMockPages(animalA: string, animalB: string, winner: string): { 
 
 // Add CYOA choices to pages
 function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string): BookPage[] {
-  // Find the first battle page and convert it to a choice
   const battleIndex = pages.findIndex(p => p.type === 'battle');
   if (battleIndex === -1) return pages;
 
   const modifiedPages = [...pages];
-  
-  // Keep only pages up to first battle, then add choice
   const introPages = modifiedPages.slice(0, battleIndex + 1);
   
-  // Modify the battle page to be a choice page
   introPages[introPages.length - 1] = {
     ...introPages[introPages.length - 1],
     type: 'choice',
-    title: '🤔 What Happens Next?',
-    content: `<p>The battle has begun! Both fighters circle each other warily...</p><p class="mt-4">The ${animalA} prepares to make a move. What happens next?</p>`,
+    title: 'What Happens Next?',
+    content: `<p>The battle has begun! Both fighters circle each other...</p><p class="mt-4">The ${animalA} prepares to make a move. What happens next?</p>`,
     choices: [
       { id: 'attack', text: `${animalA} charges with full force!`, emoji: '💥' },
       { id: 'defend', text: `${animalA} waits for the perfect moment`, emoji: '👁️' },
-      { id: 'flank', text: `${animalA} circles around for advantage`, emoji: '🔄' },
+      { id: 'flank', text: `${animalA} circles for advantage`, emoji: '🔄' },
     ],
   };
 
@@ -240,12 +188,15 @@ function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string): Bo
 
 export async function POST(request: NextRequest) {
   try {
-    const { animalA, animalB, mode = 'standard', environment = 'random' } = await request.json();
+    const body = await request.json();
+    const { animalA, animalB, mode = 'standard', environment = 'neutral' } = body;
 
-    // Try real generation, fall back to mock
-    let result = await generateWithPython(animalA, animalB, environment);
+    if (!animalA || !animalB) {
+      return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
+    }
+
+    let result = generatePages(animalA, animalB, environment);
     
-    // If CYOA mode, modify pages to include choices
     if (mode === 'cyoa') {
       result.pages = addCyoaChoices(result.pages, animalA, animalB);
     }
