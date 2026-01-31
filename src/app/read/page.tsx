@@ -5,7 +5,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-const HTMLFlipBook = dynamic(() => import('react-pageflip'), { ssr: false });
+const HTMLFlipBook = dynamic(
+  () => import('react-pageflip').then((mod) => mod.default || mod),
+  { 
+    ssr: false,
+    loading: () => <div className="text-white text-center p-8">Loading book...</div>
+  }
+);
 import { ChevronLeft, ChevronRight, Download, Home, Volume2, VolumeX, Sparkles, Swords, RotateCcw } from 'lucide-react';
 
 interface BookPage {
