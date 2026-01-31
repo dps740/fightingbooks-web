@@ -10,8 +10,8 @@ const POPULAR_ANIMALS = [
   { name: 'Grizzly Bear', emoji: '🐻' },
   { name: 'Gorilla', emoji: '🦍' },
   { name: 'Great White Shark', emoji: '🦈' },
-  { name: 'Saltwater Crocodile', emoji: '🐊' },
-  { name: 'African Elephant', emoji: '🐘' },
+  { name: 'Crocodile', emoji: '🐊' },
+  { name: 'Elephant', emoji: '🐘' },
   { name: 'Polar Bear', emoji: '🐻‍❄️' },
   { name: 'Orca', emoji: '🐋' },
   { name: 'Hippo', emoji: '🦛' },
@@ -38,235 +38,239 @@ export default function Home() {
   const handleGenerate = () => {
     if (!canGenerate) return;
     setLoading(true);
-    const params = new URLSearchParams({ a: effectiveA, b: effectiveB, env: 'neutral', mode: 'standard' });
-    router.push(`/read?${params.toString()}`);
+    router.push(`/read?a=${encodeURIComponent(effectiveA)}&b=${encodeURIComponent(effectiveB)}&env=neutral&mode=standard`);
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-400 via-sky-500 to-sky-600 font-comic">
-      {/* Hero Section - Book Cover Style */}
-      <section className="relative py-8 px-4">
+    <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
+      {/* Hero - Book Cover Style */}
+      <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          {/* WHO WOULD WIN Banner */}
+          {/* WHO WOULD WIN? Banner - Yellow with red text, like the books */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="inline-block"
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            <div className="bg-yellow-400 border-4 border-red-600 rounded-lg px-8 py-4 shadow-xl transform -rotate-1">
-              <h1 className="font-bangers text-4xl md:text-6xl text-red-600 tracking-wider" style={{ textShadow: '3px 3px 0 #000' }}>
+            <div className="inline-block bg-[#FFD700] px-10 py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]" style={{ transform: 'perspective(500px) rotateX(5deg)' }}>
+              <h1 className="font-bangers text-4xl md:text-6xl lg:text-7xl text-[#CC0000]" style={{ 
+                textShadow: '3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
+                letterSpacing: '3px'
+              }}>
                 WHO WOULD WIN?
               </h1>
             </div>
           </motion.div>
 
-          <p className="mt-6 text-xl md:text-2xl text-white font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
-            Create Your Own Animal Battle Book!
-          </p>
-          <p className="mt-2 text-white/90">
-            Inspired by Jerry Pallotta's bestselling book series
-          </p>
+          {/* Subheading */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6"
+          >
+            <p className="text-2xl md:text-3xl font-bold text-[#FFD700]" style={{ textShadow: '2px 2px 4px #000' }}>
+              Create Your Own Battle Book!
+            </p>
+            <p className="text-white/80 mt-2 text-lg">
+              Inspired by Jerry Pallotta's bestselling series
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* VS Selection Area */}
-      <section className="py-8 px-4">
+      {/* Fighter Selection - Main Card */}
+      <section className="px-4 pb-8">
         <div className="max-w-5xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-red-500 via-red-600 to-red-500 py-4 px-6">
-              <h2 className="font-bangers text-2xl md:text-3xl text-yellow-300 text-center tracking-wide">
-                ⚔️ PICK YOUR FIGHTERS! ⚔️
+          <div className="bg-[#f5f5dc] rounded-xl shadow-2xl overflow-hidden border-4 border-[#8B4513]">
+            
+            {/* Header Bar */}
+            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-4 px-6">
+              <h2 className="font-bangers text-3xl text-[#FFD700] text-center" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '2px' }}>
+                ⚔️ CHOOSE YOUR FIGHTERS ⚔️
               </h2>
             </div>
 
             <div className="p-6 md:p-8">
-              {/* VS Layout */}
-              <div className="grid md:grid-cols-[1fr,auto,1fr] gap-6 items-start">
-                {/* Fighter 1 */}
-                <div className="bg-gradient-to-br from-red-100 to-red-200 rounded-xl p-5 border-4 border-red-500">
-                  <h3 className="font-bangers text-xl text-red-600 text-center mb-4">🔴 FIGHTER #1</h3>
+              {/* Two Fighter Columns */}
+              <div className="grid md:grid-cols-[1fr,80px,1fr] gap-4 md:gap-6">
+                
+                {/* RED CORNER - Fighter 1 */}
+                <div className="bg-gradient-to-b from-[#ffcccc] to-[#ff9999] rounded-xl p-5 border-4 border-[#CC0000] shadow-lg">
+                  <div className="bg-[#CC0000] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
+                    🔴 RED CORNER
+                  </div>
                   <input
                     type="text"
                     placeholder="Type any animal..."
                     value={customA}
                     onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
-                    className="w-full p-3 rounded-lg border-2 border-red-300 focus:border-red-500 focus:outline-none text-center font-bold"
+                    className="w-full p-3 rounded-lg border-3 border-[#CC0000] focus:ring-2 focus:ring-[#CC0000] focus:outline-none text-center font-bold text-lg bg-white"
                   />
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                  <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
                     {POPULAR_ANIMALS.slice(0, 8).map((animal) => (
                       <button
                         key={animal.name}
                         onClick={() => { setAnimalA(animal.name); setCustomA(''); }}
                         className={`px-3 py-2 rounded-full text-sm font-bold transition-all ${
                           animalA === animal.name
-                            ? 'bg-red-500 text-white shadow-lg scale-105'
-                            : 'bg-white text-gray-700 hover:bg-red-100 border-2 border-red-200'
+                            ? 'bg-[#CC0000] text-white shadow-lg transform scale-110'
+                            : 'bg-white hover:bg-[#ffeeee] border-2 border-[#CC0000]/30'
                         }`}
                       >
                         {animal.emoji} {animal.name}
                       </button>
                     ))}
                   </div>
-                  <AnimatePresence>
-                    {effectiveA && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="mt-4 text-center"
-                      >
-                        <span className="font-bangers text-2xl text-red-600">{effectiveA}</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {effectiveA && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-4 bg-[#CC0000] text-white font-bangers text-2xl text-center py-3 rounded-lg">
+                      {effectiveA.toUpperCase()}
+                    </motion.div>
+                  )}
                 </div>
 
-                {/* VS */}
+                {/* VS Circle */}
                 <div className="flex items-center justify-center">
-                  <div className="bg-yellow-400 w-20 h-20 rounded-full flex items-center justify-center border-4 border-red-600 shadow-xl">
-                    <span className="font-bangers text-3xl text-red-600">VS</span>
-                  </div>
+                  <motion.div 
+                    animate={{ rotate: [0, 5, -5, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="w-20 h-20 bg-[#FFD700] rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
+                  >
+                    <span className="font-bangers text-3xl text-[#8B0000]">VS</span>
+                  </motion.div>
                 </div>
 
-                {/* Fighter 2 */}
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-5 border-4 border-blue-500">
-                  <h3 className="font-bangers text-xl text-blue-600 text-center mb-4">🔵 FIGHTER #2</h3>
+                {/* BLUE CORNER - Fighter 2 */}
+                <div className="bg-gradient-to-b from-[#cce5ff] to-[#99ccff] rounded-xl p-5 border-4 border-[#0066CC] shadow-lg">
+                  <div className="bg-[#0066CC] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
+                    🔵 BLUE CORNER
+                  </div>
                   <input
                     type="text"
                     placeholder="Type any animal..."
                     value={customB}
                     onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
-                    className="w-full p-3 rounded-lg border-2 border-blue-300 focus:border-blue-500 focus:outline-none text-center font-bold"
+                    className="w-full p-3 rounded-lg border-3 border-[#0066CC] focus:ring-2 focus:ring-[#0066CC] focus:outline-none text-center font-bold text-lg bg-white"
                   />
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center">
+                  <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
                     {POPULAR_ANIMALS.slice(8, 16).map((animal) => (
                       <button
                         key={animal.name}
                         onClick={() => { setAnimalB(animal.name); setCustomB(''); }}
                         className={`px-3 py-2 rounded-full text-sm font-bold transition-all ${
                           animalB === animal.name
-                            ? 'bg-blue-500 text-white shadow-lg scale-105'
-                            : 'bg-white text-gray-700 hover:bg-blue-100 border-2 border-blue-200'
+                            ? 'bg-[#0066CC] text-white shadow-lg transform scale-110'
+                            : 'bg-white hover:bg-[#eef5ff] border-2 border-[#0066CC]/30'
                         }`}
                       >
                         {animal.emoji} {animal.name}
                       </button>
                     ))}
                   </div>
-                  <AnimatePresence>
-                    {effectiveB && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="mt-4 text-center"
-                      >
-                        <span className="font-bangers text-2xl text-blue-600">{effectiveB}</span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  {effectiveB && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-4 bg-[#0066CC] text-white font-bangers text-2xl text-center py-3 rounded-lg">
+                      {effectiveB.toUpperCase()}
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
-              {/* Matchup Preview */}
-              <AnimatePresence>
-                {effectiveA && effectiveB && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-8 text-center"
-                  >
-                    <div className="inline-block bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500 p-1 rounded-xl">
-                      <div className="bg-white px-8 py-4 rounded-lg">
-                        <span className="font-bangers text-2xl">
-                          <span className="text-red-600">{effectiveA}</span>
-                          <span className="text-yellow-600 mx-3">VS</span>
-                          <span className="text-blue-600">{effectiveB}</span>
-                        </span>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {/* Matchup Display */}
+              {effectiveA && effectiveB && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
+                  <div className="inline-block bg-[#2d5a3d] px-8 py-4 rounded-xl border-4 border-[#FFD700]">
+                    <span className="font-bangers text-2xl md:text-3xl">
+                      <span className="text-[#ff6b6b]">{effectiveA.toUpperCase()}</span>
+                      <span className="text-[#FFD700] mx-4">VS</span>
+                      <span className="text-[#6bb3ff]">{effectiveB.toUpperCase()}</span>
+                    </span>
+                  </div>
+                </motion.div>
+              )}
 
               {/* Generate Button */}
               <div className="mt-8 text-center">
                 <motion.button
                   onClick={handleGenerate}
                   disabled={!canGenerate || loading}
-                  whileHover={canGenerate ? { scale: 1.05 } : {}}
+                  whileHover={canGenerate ? { scale: 1.05, boxShadow: '0 0 30px rgba(255,215,0,0.5)' } : {}}
                   whileTap={canGenerate ? { scale: 0.95 } : {}}
-                  className={`px-10 py-5 rounded-full font-bangers text-2xl tracking-wider shadow-xl transition-all ${
+                  className={`px-12 py-5 rounded-xl font-bangers text-2xl md:text-3xl tracking-wide transition-all ${
                     canGenerate && !loading
-                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 cursor-pointer'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      ? 'bg-gradient-to-b from-[#32CD32] to-[#228B22] text-white border-4 border-[#FFD700] shadow-xl cursor-pointer'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed border-4 border-gray-500'
                   }`}
+                  style={canGenerate ? { textShadow: '2px 2px 0 #000' } : {}}
                 >
-                  {loading ? '⏳ Creating Book...' : '📖 CREATE MY BATTLE BOOK!'}
+                  {loading ? '⏳ CREATING...' : '📖 CREATE MY BOOK!'}
                 </motion.button>
+                
                 {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
-                  <p className="mt-3 text-red-500 font-bold">Pick two different animals!</p>
+                  <p className="mt-3 text-[#CC0000] font-bold bg-white inline-block px-4 py-1 rounded">⚠️ Pick two DIFFERENT animals!</p>
                 )}
-                <p className="mt-3 text-gray-500 text-sm">FREE to create • No signup required</p>
+                <p className="mt-4 text-white/70">Free to create • No signup needed</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-12 px-4">
+      {/* What's Inside Section */}
+      <section className="py-12 px-4" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)' }}>
         <div className="max-w-5xl mx-auto">
-          <h2 className="font-bangers text-3xl text-white text-center mb-8" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
-            WHAT'S INSIDE YOUR BOOK?
+          <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-8" style={{ textShadow: '3px 3px 0 #000', letterSpacing: '2px' }}>
+            📚 WHAT'S INSIDE YOUR BOOK?
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: '📚', title: 'REAL FACTS', desc: 'Learn about each animal\'s size, speed, weapons, and special abilities!' },
-              { icon: '📊', title: 'TALE OF THE TAPE', desc: 'Compare stats side-by-side like a real championship matchup!' },
-              { icon: '⚔️', title: 'EPIC BATTLE', desc: 'Watch the animals face off in an exciting battle narrative!' },
-            ].map((feature) => (
-              <div key={feature.title} className="bg-white rounded-xl p-6 text-center shadow-xl border-4 border-yellow-400">
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="font-bangers text-xl text-red-600 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.desc}</p>
-              </div>
+              { icon: '🔬', title: 'REAL FACTS', desc: 'Learn each animal\'s size, speed, weapons, and special abilities!', color: '#4CAF50' },
+              { icon: '📊', title: 'TALE OF THE TAPE', desc: 'Compare stats side-by-side like a championship matchup!', color: '#FF9800' },
+              { icon: '⚔️', title: 'EPIC BATTLE', desc: 'Watch them face off in an exciting illustrated showdown!', color: '#f44336' },
+            ].map((f) => (
+              <motion.div 
+                key={f.title}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="bg-[#f5f5dc] rounded-xl p-6 text-center border-4 shadow-xl"
+                style={{ borderColor: f.color }}
+              >
+                <div className="text-6xl mb-4">{f.icon}</div>
+                <h3 className="font-bangers text-2xl mb-2" style={{ color: f.color }}>{f.title}</h3>
+                <p className="text-gray-700 font-medium">{f.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Original Books Section */}
-      <section className="py-12 px-4 bg-gradient-to-b from-transparent to-sky-700">
+      {/* Original Books */}
+      <section className="py-12 px-4 bg-[#1a3d1a]">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-white/10 backdrop-blur rounded-2xl p-8 border-2 border-white/30">
-            <h2 className="font-bangers text-2xl text-yellow-300 mb-4">❤️ LOVE ANIMAL BATTLES?</h2>
-            <p className="text-white mb-6">
-              Check out Jerry Pallotta's original <strong>"Who Would Win?"</strong> book series!
-              Over 26 books with amazing illustrations by Rob Bolster.
-            </p>
-            <a
-              href="https://jerrypallotta.com/book-store"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-yellow-400 text-red-600 font-bangers text-xl px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors shadow-lg"
-            >
-              📚 Visit Jerry's Book Store
-            </a>
-            <p className="mt-4 text-white/70 text-sm">
-              FightingBooks is an independent fan project, not affiliated with Jerry Pallotta or Scholastic.
-            </p>
-          </div>
+          <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
+            ❤️ LOVE THE SERIES?
+          </h2>
+          <p className="text-white text-lg mb-6">
+            Check out Jerry Pallotta's original <strong className="text-[#FFD700]">Who Would Win?</strong> books — over 26 titles with amazing illustrations by Rob Bolster!
+          </p>
+          <a
+            href="https://jerrypallotta.com/book-store"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-2xl px-10 py-4 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-4 border-[#8B0000]"
+          >
+            📚 VISIT JERRY'S BOOKSTORE
+          </a>
+          <p className="mt-6 text-white/60 text-sm">
+            FightingBooks is a fan project — not affiliated with Jerry Pallotta or Scholastic.
+          </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-6 px-4 bg-sky-800 text-center">
-        <p className="text-white/70 text-sm">
-          Made with ❤️ for animal fans everywhere • AI-generated educational content
-        </p>
+      <footer className="py-6 bg-[#0d1f0d] text-center">
+        <p className="text-white/50 text-sm">Made with ❤️ for animal fans • AI-powered educational content</p>
       </footer>
 
-      {/* Global Styles */}
+      {/* Fonts */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
         .font-bangers { font-family: 'Bangers', cursive; }
