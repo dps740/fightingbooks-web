@@ -35,9 +35,7 @@ function BookReader() {
   const mode = searchParams.get('mode') || 'standard';
   const environment = searchParams.get('env') || 'neutral';
 
-  useEffect(() => {
-    loadBook();
-  }, []);
+  useEffect(() => { loadBook(); }, []);
 
   const loadBook = async () => {
     setLoading(true);
@@ -51,96 +49,54 @@ function BookReader() {
       if (data.pages?.length > 0) {
         setPages(data.pages);
       } else {
-        setPages([{
-          id: 'error',
-          type: 'cover',
-          title: 'Error',
-          content: '<p>Failed to load book. Please try again.</p>',
-        }]);
+        setPages([{ id: 'error', type: 'cover', title: 'Error', content: '<p>Failed to load book.</p>' }]);
       }
     } catch (error) {
-      setPages([{
-        id: 'error',
-        type: 'cover',
-        title: 'Error', 
-        content: '<p>Failed to load book. Please try again.</p>',
-      }]);
+      setPages([{ id: 'error', type: 'cover', title: 'Error', content: '<p>Failed to load book.</p>' }]);
     }
     setLoading(false);
   };
 
   const handleChoice = async (choice: Choice) => {
     setGeneratingChoice(true);
-    setChoicesMade([...choicesMade, choice.id]);
     try {
       const response = await fetch('/api/book/choice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          animalA, animalB, choiceId: choice.id, choiceText: choice.text,
-          previousChoices: choicesMade, currentPage: pages[currentPage],
-        }),
+        body: JSON.stringify({ animalA, animalB, choiceId: choice.id, choiceText: choice.text, previousChoices: choicesMade, currentPage: pages[currentPage] }),
       });
       const data = await response.json();
-      if (data.pages) {
-        setPages([...pages, ...data.pages]);
-        goToPage(currentPage + 1);
-      }
-    } catch (error) {
-      console.error('Failed to generate choice:', error);
-    }
+      if (data.pages) { setPages([...pages, ...data.pages]); goToPage(currentPage + 1); }
+    } catch (error) { console.error(error); }
     setGeneratingChoice(false);
   };
 
-  const goToPage = (index: number) => {
-    if (index < 0 || index >= pages.length) return;
-    setDirection(index > currentPage ? 1 : -1);
-    setCurrentPage(index);
-  };
-
+  const goToPage = (i: number) => { if (i >= 0 && i < pages.length) { setDirection(i > currentPage ? 1 : -1); setCurrentPage(i); } };
   const nextPage = () => goToPage(currentPage + 1);
   const prevPage = () => goToPage(currentPage - 1);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
-      if (e.key === 'ArrowLeft') prevPage();
-      if (e.key === 'Escape') router.push('/');
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    const h = (e: KeyboardEvent) => { if (e.key === 'ArrowRight' || e.key === ' ') nextPage(); if (e.key === 'ArrowLeft') prevPage(); if (e.key === 'Escape') router.push('/'); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
   }, [currentPage, pages.length]);
 
   const page = pages[currentPage];
-
-  // Colorful backgrounds like the Who Would Win books
-  const backgrounds = [
-    'from-green-200 to-green-300',    // Green
-    'from-amber-100 to-amber-200',    // Gold  
-    'from-blue-200 to-blue-300',      // Blue
-    'from-pink-200 to-pink-300',      // Coral/Pink
-    'from-purple-200 to-purple-300',  // Purple
-  ];
-
-  const getBackground = (index: number, type: string) => {
-    if (type === 'cover') return 'from-orange-400 via-red-500 to-purple-600';
-    if (type === 'victory') return 'from-yellow-300 via-amber-400 to-orange-500';
-    if (type === 'battle') return 'from-red-300 to-orange-300';
-    return backgrounds[index % backgrounds.length];
+  const backgrounds = ['bg-green', 'bg-gold', 'bg-blue', 'bg-coral', 'bg-purple'];
+  const getBg = (i: number, type: string) => {
+    if (type === 'cover') return 'cover-page';
+    if (type === 'victory') return 'victory-page';
+    if (type === 'battle') return 'battle-page';
+    if (type === 'stats') return 'bg-gold';
+    return backgrounds[i % backgrounds.length];
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center font-comic">
         <div className="text-center">
-          <motion.div
-            animate={{ rotateY: [0, 360] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="text-9xl mb-8"
-          >
-            📖
-          </motion.div>
-          <p className="text-white text-3xl font-bold font-comic">Creating your battle book...</p>
+          <motion.div animate={{ rotateY: [0, 360] }} transition={{ repeat: Infinity, duration: 2 }} className="text-9xl mb-8">📖</motion.div>
+          <p className="text-white text-3xl font-bold">Creating your battle book...</p>
           <p className="text-white/70 text-xl mt-2">This takes about 30 seconds</p>
         </div>
       </div>
@@ -148,230 +104,334 @@ function BookReader() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-800 to-slate-900 flex flex-col items-center justify-center p-4">
-      {/* Navigation Header */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-4">
-        <button
-          onClick={() => router.push('/')}
-          className="flex items-center gap-2 text-white/70 hover:text-white bg-white/10 px-4 py-2 rounded-full transition-colors"
-        >
-          <Home className="w-5 h-5" />
-          <span>Exit</span>
-        </button>
-        <div className="text-white text-lg font-bold">
-          Page {currentPage + 1} of {pages.length}
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex flex-col items-center justify-center p-4 font-comic">
+      {/* Navigation */}
+      <div className="nav-buttons mb-4">
+        <button onClick={prevPage} disabled={currentPage === 0} className="nav-btn">◀ Previous</button>
+        <span className="page-indicator">Page {currentPage + 1} of {pages.length}</span>
+        <button onClick={nextPage} disabled={currentPage >= pages.length - 1} className="nav-btn">Next ▶</button>
       </div>
 
-      {/* Book Container */}
-      <div className="relative w-full max-w-4xl" style={{ perspective: '2000px' }}>
-        {/* Book Shadow */}
-        <div className="absolute inset-x-0 bottom-0 h-8 bg-black/30 blur-xl transform translate-y-4" />
-        
-        {/* The Book */}
-        <div className="relative bg-white rounded-xl shadow-2xl overflow-hidden" style={{ minHeight: '70vh' }}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={currentPage}
-              initial={{ 
-                rotateY: direction > 0 ? 90 : -90,
-                opacity: 0,
-              }}
-              animate={{ 
-                rotateY: 0,
-                opacity: 1,
-              }}
-              exit={{ 
-                rotateY: direction > 0 ? -90 : 90,
-                opacity: 0,
-              }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              style={{ transformOrigin: direction > 0 ? 'left center' : 'right center' }}
-              className={`w-full min-h-[70vh] bg-gradient-to-br ${getBackground(currentPage, page?.type || 'intro')} p-8 md:p-12`}
-            >
-              {/* Cover Page */}
-              {page?.type === 'cover' && (
-                <div className="h-full flex flex-col items-center justify-center text-center text-white">
-                  <div className="bg-red-600 px-8 py-3 rounded-lg shadow-lg mb-6 transform -rotate-2">
-                    <span className="font-bangers text-3xl md:text-5xl tracking-wider">WHO WOULD WIN?</span>
+      {/* Book */}
+      <div className="book-container">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={currentPage}
+            initial={{ rotateY: direction > 0 ? 90 : -90, opacity: 0 }}
+            animate={{ rotateY: 0, opacity: 1 }}
+            exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ transformOrigin: direction > 0 ? 'left center' : 'right center' }}
+            className={`page ${getBg(currentPage, page?.type || 'intro')}`}
+          >
+            {/* COVER PAGE */}
+            {page?.type === 'cover' && (
+              <>
+                <div className="cover-banner">WHO WOULD WIN?</div>
+                <h1 className="cover-title">{page.title}</h1>
+                <div className="cover-image-container">
+                  {page.imageUrl && <img src={page.imageUrl} alt={page.title} className="cover-image" />}
+                </div>
+              </>
+            )}
+
+            {/* VICTORY PAGE */}
+            {page?.type === 'victory' && (
+              <>
+                <h2 className="page-title victory-title">🏆 THE WINNER! 🏆</h2>
+                {page.imageUrl && <img src={page.imageUrl} alt="Winner" className="victory-image" />}
+                <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+              </>
+            )}
+
+            {/* STATS PAGE */}
+            {page?.type === 'stats' && (
+              <>
+                <h2 className="page-title">📊 {page.title}</h2>
+                {page.imageUrl && <img src={page.imageUrl} alt={page.title} className="stats-hero-image" />}
+                <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+              </>
+            )}
+
+            {/* INTRO / FACTS PAGES */}
+            {(page?.type === 'intro') && (
+              <>
+                <h2 className="page-title">{page.title}</h2>
+                <div className={`page-content-wrapper ${page.imageUrl ? 'side-by-side' : ''}`}>
+                  <div className="page-content-text">
+                    <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
                   </div>
-                  <h1 className="font-bangers text-4xl md:text-6xl mb-8 drop-shadow-lg">{page.title}</h1>
                   {page.imageUrl && (
-                    <img 
-                      src={page.imageUrl} 
-                      alt={page.title}
-                      className="max-w-full max-h-64 md:max-h-96 rounded-xl shadow-2xl border-4 border-white"
-                    />
-                  )}
-                </div>
-              )}
-
-              {/* Victory Page */}
-              {page?.type === 'victory' && (
-                <div className="h-full flex flex-col items-center text-center">
-                  <h1 className="font-bangers text-4xl md:text-6xl text-red-600 mb-4 drop-shadow-lg">🏆 THE WINNER! 🏆</h1>
-                  {page.imageUrl && (
-                    <img 
-                      src={page.imageUrl} 
-                      alt="Winner"
-                      className="max-w-full max-h-48 md:max-h-64 rounded-xl shadow-xl border-4 border-yellow-400 mb-6"
-                    />
-                  )}
-                  <div 
-                    className="prose prose-lg max-w-none font-comic text-gray-800"
-                    dangerouslySetInnerHTML={{ __html: page.content }}
-                  />
-                </div>
-              )}
-
-              {/* Regular Pages */}
-              {page?.type !== 'cover' && page?.type !== 'victory' && (
-                <div className="h-full">
-                  {/* Title */}
-                  <h2 className="font-bangers text-3xl md:text-4xl text-orange-600 text-center mb-6 drop-shadow">
-                    {page?.title}
-                  </h2>
-
-                  <div className={`flex flex-col ${page?.imageUrl ? 'md:flex-row' : ''} gap-6`}>
-                    {/* Image */}
-                    {page?.imageUrl && (
-                      <div className="md:w-1/2 flex-shrink-0">
-                        <img 
-                          src={page.imageUrl} 
-                          alt={page.title}
-                          className="w-full rounded-xl shadow-xl border-4 border-white"
-                        />
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div className={`${page?.imageUrl ? 'md:w-1/2' : 'w-full'}`}>
-                      <div 
-                        className="prose prose-lg max-w-none font-comic text-gray-800 book-content"
-                        dangerouslySetInnerHTML={{ __html: page?.content || '' }}
-                      />
-
-                      {/* CYOA Choices */}
-                      {page?.type === 'choice' && page.choices && !generatingChoice && (
-                        <div className="mt-6 space-y-3">
-                          <p className="font-bangers text-2xl text-purple-600 text-center">⚡ YOU DECIDE! ⚡</p>
-                          {page.choices.map((choice) => (
-                            <button
-                              key={choice.id}
-                              onClick={() => handleChoice(choice)}
-                              className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-lg font-bold shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all flex items-center gap-3"
-                            >
-                              <span className="text-2xl">{choice.emoji}</span>
-                              <span>{choice.text}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {generatingChoice && (
-                        <div className="mt-6 text-center">
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ repeat: Infinity, duration: 1 }}
-                            className="text-5xl inline-block"
-                          >
-                            ⏳
-                          </motion.div>
-                          <p className="font-comic text-xl text-purple-600 mt-2">Creating next scene...</p>
-                        </div>
-                      )}
+                    <div className="page-image-side">
+                      <img src={page.imageUrl} alt={page.title} className="page-image-integrated" />
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+              </>
+            )}
 
-          {/* Page Navigation Buttons */}
-          {currentPage > 0 && (
-            <button
-              onClick={prevPage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 hover:bg-white rounded-full shadow-xl flex items-center justify-center text-gray-700 hover:text-gray-900 transition-all z-10"
-            >
-              <ChevronLeft className="w-8 h-8" />
-            </button>
-          )}
-          {currentPage < pages.length - 1 && (
-            <button
-              onClick={nextPage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 hover:bg-white rounded-full shadow-xl flex items-center justify-center text-gray-700 hover:text-gray-900 transition-all z-10"
-            >
-              <ChevronRight className="w-8 h-8" />
-            </button>
-          )}
-        </div>
+            {/* BATTLE PAGES */}
+            {page?.type === 'battle' && (
+              <>
+                {page.imageUrl && <div className="battle-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />}
+                <h2 className="page-title">{page.title}</h2>
+                <div className="page-content battle-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+              </>
+            )}
+
+            {/* CHOICE PAGE */}
+            {page?.type === 'choice' && (
+              <>
+                <h2 className="page-title">{page.title}</h2>
+                <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+                {!generatingChoice && page.choices && (
+                  <div className="choices-container">
+                    <p className="choices-header">⚡ YOU DECIDE! ⚡</p>
+                    {page.choices.map((c) => (
+                      <button key={c.id} onClick={() => handleChoice(c)} className="choice-btn">
+                        <span className="choice-emoji">{c.emoji}</span> {c.text}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {generatingChoice && (
+                  <div className="generating">
+                    <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>⏳</motion.span>
+                    <p>Creating next scene...</p>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {/* Page Dots */}
-      <div className="flex gap-2 mt-6 flex-wrap justify-center max-w-4xl">
+      <div className="page-dots">
         {pages.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goToPage(i)}
-            className={`w-4 h-4 rounded-full transition-all ${
-              i === currentPage 
-                ? 'bg-yellow-400 scale-125 shadow-lg' 
-                : 'bg-white/30 hover:bg-white/50'
-            }`}
-          />
+          <button key={i} onClick={() => goToPage(i)} className={`dot ${i === currentPage ? 'active' : ''}`} />
         ))}
       </div>
 
-      {/* Custom Styles */}
+      {/* Exit */}
+      <button onClick={() => router.push('/')} className="exit-btn">
+        <Home className="w-5 h-5" /> Exit Book
+      </button>
+
+      {/* STYLES - Matching the PDF exactly */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
         
-        .font-bangers {
+        .font-comic { font-family: 'Comic Neue', cursive; }
+        
+        .book-container {
+          position: relative;
+          width: 100%;
+          max-width: 800px;
+          height: 600px;
+          perspective: 2000px;
+        }
+        
+        .page {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: #fff;
+          border-radius: 10px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          padding: 30px;
+          overflow: auto;
+          backface-visibility: hidden;
+        }
+        
+        /* Backgrounds */
+        .bg-green { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); }
+        .bg-gold { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); }
+        .bg-blue { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); }
+        .bg-coral { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); }
+        .bg-purple { background: linear-gradient(135deg, #ede7f6 0%, #d1c4e9 100%); }
+        
+        /* Cover Page */
+        .cover-page {
+          background: linear-gradient(135deg, #0077be 0%, #005a8c 100%) !important;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 40px 30px !important;
+        }
+        
+        .cover-banner {
           font-family: 'Bangers', cursive;
+          font-size: 2.5em;
+          color: #ff0000;
+          background: #ffeb3b;
+          padding: 12px 30px;
+          border: 4px solid #ff0000;
+          border-radius: 8px;
+          text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+          letter-spacing: 2px;
+          margin-bottom: 20px;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+        
+        .cover-title {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: white;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+          text-align: center;
+          letter-spacing: 2px;
+          margin-bottom: 15px;
+        }
+        
+        .cover-image-container { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .cover-image { max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        
+        /* Victory Page */
+        .victory-page {
+          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
+          text-align: center;
+        }
+        .victory-title { color: #c62828 !important; font-size: 2.5em !important; }
+        .victory-image { max-width: 80%; max-height: 250px; border-radius: 12px; margin: 20px auto; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        
+        /* Page Title */
+        .page-title {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: #ff5722;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+          margin-bottom: 20px;
+          text-align: center;
           letter-spacing: 2px;
         }
         
-        .font-comic {
-          font-family: 'Comic Neue', cursive;
+        /* Side-by-side layout */
+        .page-content-wrapper.side-by-side {
+          display: flex;
+          gap: 20px;
+          align-items: flex-start;
+        }
+        .page-content-text { flex: 1; }
+        .page-image-side { flex: 0 0 45%; }
+        .page-image-integrated { width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        /* Stats page */
+        .stats-hero-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
+        
+        /* Battle pages */
+        .battle-page { position: relative; }
+        .battle-bg-image {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background-size: cover;
+          background-position: center;
+          z-index: 0;
+          border-radius: 10px;
+        }
+        .battle-page .page-title, .battle-page .page-content {
+          position: relative;
+          z-index: 1;
+          color: white;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        .battle-content {
+          background: rgba(0,0,0,0.6);
+          padding: 15px;
+          border-radius: 10px;
         }
         
-        .book-content p {
+        /* Content styling */
+        .page-content {
+          font-size: 1.05em;
+          line-height: 1.6;
+          color: #222;
+        }
+        .page-content p {
+          margin-bottom: 10px;
           background: rgba(255,255,255,0.7);
           padding: 8px 12px;
-          border-radius: 8px;
+          border-radius: 6px;
           border-left: 4px solid #ff5722;
-          margin-bottom: 12px;
         }
-        
-        .book-content strong {
-          color: #c62828;
-        }
-        
-        .book-content ul {
-          list-style: none;
-          padding: 0;
-        }
-        
-        .book-content li {
+        .page-content strong { color: #c62828; }
+        .page-content ul { list-style: none; padding: 0; margin: 10px 0; }
+        .page-content li {
           background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
           color: white;
           padding: 8px 12px;
           border-radius: 8px;
           margin-bottom: 8px;
           font-weight: bold;
-          box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+          box-shadow: 0 3px 8px rgba(0,0,0,0.2);
         }
+        .page-content table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        .page-content th, .page-content td { padding: 10px; border: 1px solid #ddd; }
         
-        .book-content table {
+        /* Navigation */
+        .nav-buttons { display: flex; gap: 20px; align-items: center; }
+        .nav-btn {
+          background: #ff5722;
+          color: white;
+          border: none;
+          padding: 12px 25px;
+          font-size: 1.1em;
+          font-family: 'Bangers', cursive;
+          border-radius: 50px;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) { background: #e64a19; transform: scale(1.05); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-indicator { color: white; font-size: 1.2em; font-family: 'Bangers', cursive; letter-spacing: 1px; }
+        
+        .page-dots { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.3); border: none; cursor: pointer; transition: all 0.2s; }
+        .dot.active { background: #ffeb3b; transform: scale(1.3); }
+        .dot:hover { background: rgba(255,255,255,0.6); }
+        
+        .exit-btn {
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(255,255,255,0.1);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 50px;
+          cursor: pointer;
+          font-family: 'Comic Neue', cursive;
+          transition: all 0.2s;
+        }
+        .exit-btn:hover { background: rgba(255,255,255,0.2); }
+        
+        /* Choices */
+        .choices-container { margin-top: 20px; }
+        .choices-header { font-family: 'Bangers', cursive; font-size: 1.5em; color: #9c27b0; text-align: center; margin-bottom: 15px; }
+        .choice-btn {
+          display: block;
           width: 100%;
-          border-collapse: collapse;
+          padding: 15px;
+          margin-bottom: 10px;
+          background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          font-size: 1.1em;
+          font-family: 'Comic Neue', cursive;
+          font-weight: bold;
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.2s;
         }
+        .choice-btn:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .choice-emoji { font-size: 1.3em; margin-right: 10px; }
         
-        .book-content td, .book-content th {
-          padding: 8px;
-          border: 2px solid #ffd54f;
-          background: rgba(255,255,255,0.8);
-        }
+        .generating { text-align: center; margin-top: 20px; color: #9c27b0; font-size: 1.2em; }
+        .generating span { display: inline-block; font-size: 3em; }
       `}</style>
     </div>
   );
@@ -379,11 +439,7 @@ function BookReader() {
 
 export default function ReadPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 flex items-center justify-center">
-        <div className="text-white text-3xl font-bold">Loading...</div>
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center"><p className="text-white text-3xl">Loading...</p></div>}>
       <BookReader />
     </Suspense>
   );
