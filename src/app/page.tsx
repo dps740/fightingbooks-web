@@ -96,10 +96,10 @@ export default function Home() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="inline-block bg-[#FFD700] px-10 py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]" style={{ transform: 'perspective(500px) rotateX(5deg)' }}>
-              <h1 className="font-bangers text-4xl md:text-6xl lg:text-7xl text-[#CC0000]" style={{ 
-                textShadow: '3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
-                letterSpacing: '3px'
+            <div className="inline-block bg-[#FFD700] px-4 sm:px-10 py-3 sm:py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]" style={{ transform: 'perspective(500px) rotateX(5deg)' }}>
+              <h1 className="font-bangers text-2xl sm:text-4xl md:text-6xl lg:text-7xl text-[#CC0000]" style={{ 
+                textShadow: '2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000',
+                letterSpacing: '2px'
               }}>
                 WHO WOULD WIN?
               </h1>
@@ -113,7 +113,7 @@ export default function Home() {
             transition={{ delay: 0.3 }}
             className="mt-6"
           >
-            <p className="text-2xl md:text-3xl font-bold text-[#FFD700]" style={{ textShadow: '2px 2px 4px #000' }}>
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-[#FFD700]" style={{ textShadow: '2px 2px 4px #000' }}>
               Create Your Own Battle Book!
             </p>
             <p className="text-white/80 mt-2 text-lg">
@@ -129,8 +129,8 @@ export default function Home() {
           <div className="bg-[#f5f5dc] rounded-xl shadow-2xl overflow-hidden border-4 border-[#8B4513]">
             
             {/* Header Bar */}
-            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-4 px-6">
-              <h2 className="font-bangers text-3xl text-[#FFD700] text-center" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '2px' }}>
+            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-3 sm:py-4 px-4 sm:px-6">
+              <h2 className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#FFD700] text-center" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '1px' }}>
                 ⚔️ CHOOSE YOUR FIGHTERS ⚔️
               </h2>
             </div>
@@ -290,7 +290,7 @@ export default function Home() {
                   disabled={!canGenerate || loading}
                   whileHover={canGenerate ? { scale: 1.05, boxShadow: '0 0 30px rgba(255,215,0,0.5)' } : {}}
                   whileTap={canGenerate ? { scale: 0.95 } : {}}
-                  className={`px-12 py-5 rounded-xl font-bangers text-2xl md:text-3xl tracking-wide transition-all ${
+                  className={`px-6 sm:px-12 py-4 sm:py-5 rounded-xl font-bangers text-lg sm:text-2xl md:text-3xl tracking-wide transition-all ${
                     canGenerate && !loading
                       ? 'bg-gradient-to-b from-[#32CD32] to-[#228B22] text-white border-4 border-[#FFD700] shadow-xl cursor-pointer'
                       : 'bg-gray-400 text-gray-600 cursor-not-allowed border-4 border-gray-500'

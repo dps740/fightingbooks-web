@@ -303,20 +303,35 @@ function BookReader() {
           position: relative;
           width: 100%;
           max-width: 800px;
-          height: 600px;
+          min-height: 500px;
+          height: auto;
           perspective: 2000px;
         }
         
+        @media (max-width: 768px) {
+          .book-container {
+            min-height: 400px;
+          }
+        }
+        
         .page {
-          position: absolute;
+          position: relative;
           width: 100%;
-          height: 100%;
+          min-height: 500px;
           background: #fff;
           border-radius: 10px;
           box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-          padding: 30px;
+          padding: 20px;
           overflow: auto;
           backface-visibility: hidden;
+        }
+        
+        @media (max-width: 768px) {
+          .page {
+            padding: 15px;
+            min-height: auto;
+            border-radius: 8px;
+          }
         }
         
         /* Backgrounds */
