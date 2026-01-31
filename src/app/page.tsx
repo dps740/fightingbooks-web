@@ -30,6 +30,7 @@ export default function Home() {
   const [customA, setCustomA] = useState('');
   const [customB, setCustomB] = useState('');
   const [loading, setLoading] = useState(false);
+  const [cyoaMode, setCyoaMode] = useState(false);
 
   const effectiveA = customA || animalA;
   const effectiveB = customB || animalB;
@@ -38,7 +39,8 @@ export default function Home() {
   const handleGenerate = () => {
     if (!canGenerate) return;
     setLoading(true);
-    router.push(`/read?a=${encodeURIComponent(effectiveA)}&b=${encodeURIComponent(effectiveB)}&env=neutral&mode=standard`);
+    const mode = cyoaMode ? 'cyoa' : 'standard';
+    router.push(`/read?a=${encodeURIComponent(effectiveA)}&b=${encodeURIComponent(effectiveB)}&env=neutral&mode=${mode}`);
   };
 
   return (
@@ -200,6 +202,43 @@ export default function Home() {
                   </div>
                 </motion.div>
               )}
+
+              {/* Choose Your Own Adventure Mode Toggle */}
+              <div className="mt-6">
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className={`max-w-md mx-auto p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    cyoaMode 
+                      ? 'bg-gradient-to-r from-purple-900/50 to-purple-700/50 border-purple-400 shadow-lg shadow-purple-500/20' 
+                      : 'bg-gray-100 border-gray-300 hover:border-purple-300'
+                  }`}
+                  onClick={() => setCyoaMode(!cyoaMode)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-6 rounded-full p-1 transition-all ${cyoaMode ? 'bg-purple-500' : 'bg-gray-300'}`}>
+                      <motion.div 
+                        className="w-4 h-4 bg-white rounded-full shadow"
+                        animate={{ x: cyoaMode ? 24 : 0 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-bangers text-lg ${cyoaMode ? 'text-white' : 'text-gray-800'}`}>
+                          🎮 CHOOSE YOUR ADVENTURE
+                        </span>
+                        <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          PREMIUM
+                        </span>
+                      </div>
+                      <p className={`text-sm mt-1 ${cyoaMode ? 'text-purple-200' : 'text-gray-600'}`}>
+                        You control the battle! Make choices that change how the fight unfolds.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
 
               {/* Generate Button */}
               <div className="mt-8 text-center">
