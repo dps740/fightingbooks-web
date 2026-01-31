@@ -1,0 +1,9 @@
+# FightingBooks robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://fightingbooks.vercel.app/sitemap.xml
+
+# Block API routes from indexing
+Disallow: /api/
