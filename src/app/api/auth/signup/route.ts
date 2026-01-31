@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
 
     // Create user profile with 1 free credit
     const { error: profileError } = await supabase
-      .from('users')
+      .from('profiles')
       .insert({
         id: authData.user.id,
         email: authData.user.email,
-        credits: 1, // 1 free credit for new users
+        free_books_remaining: 1, books_created: 0, // 1 free credit for new users
       });
 
     if (profileError) {
