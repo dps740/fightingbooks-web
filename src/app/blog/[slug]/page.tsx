@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import fs from 'fs';
 import path from 'path';
+import BookAffiliateSection from '@/components/BookAffiliateSection';
 
 interface ArticleMetadata {
   title: string;
   description: string;
-  animals?: string[];
+  animals?: [string, string];
 }
 
 interface ArticleData {
@@ -16,15 +17,27 @@ interface ArticleData {
   metadata: ArticleMetadata;
 }
 
-// Define all valid article slugs
-const VALID_SLUGS = [
-  'lion-vs-tiger',
-  'gorilla-vs-bear',
-  'who-would-win-complete-guide',
-  'hippo-vs-rhino',
-  'polar-bear-vs-grizzly-bear',
-  'tiger-vs-bear',
-];
+// Article metadata mapping (slug -> animals)
+const ARTICLE_ANIMALS: Record<string, [string, string] | undefined> = {
+  'lion-vs-tiger': ['Lion', 'Tiger'],
+  'gorilla-vs-bear': ['Gorilla', 'Grizzly Bear'],
+  'hippo-vs-rhino': ['Hippo', 'Rhino'],
+  'polar-bear-vs-grizzly-bear': ['Polar Bear', 'Grizzly Bear'],
+  'tiger-vs-bear': ['Tiger', 'Grizzly Bear'],
+  'crocodile-vs-shark': ['Crocodile', 'Great White Shark'],
+  'hippo-vs-crocodile': ['Hippo', 'Crocodile'],
+  'gorilla-vs-lion': ['Gorilla', 'Lion'],
+  'elephant-vs-rhino': ['Elephant', 'Rhino'],
+  'orca-vs-great-white-shark': ['Killer Whale', 'Great White Shark'],
+  'wolf-vs-lion': ['Wolf', 'Lion'],
+  'komodo-dragon-vs-king-cobra': ['Komodo Dragon', 'King Cobra'],
+  'honey-badger-vs-lion': ['Honey Badger', 'Lion'],
+  'jaguar-vs-leopard': ['Jaguar', 'Leopard'],
+  'anaconda-vs-crocodile': ['Anaconda', 'Crocodile'],
+  'who-would-win-complete-guide': undefined, // No specific animals
+};
+
+const VALID_SLUGS = Object.keys(ARTICLE_ANIMALS);
 
 function getArticleData(slug: string): ArticleData | null {
   if (!VALID_SLUGS.includes(slug)) {
@@ -51,7 +64,11 @@ function getArticleData(slug: string): ArticleData | null {
   return {
     slug,
     content,
-    metadata: { title, description },
+    metadata: { 
+      title, 
+      description,
+      animals: ARTICLE_ANIMALS[slug],
+    },
   };
 }
 
@@ -194,6 +211,9 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </article>
+
+      {/* Book Affiliate Section */}
+      <BookAffiliateSection animals={article.metadata.animals} />
 
       {/* Footer */}
       <footer className="py-8 bg-[var(--bg-secondary)] border-t border-[var(--border-accent)]">

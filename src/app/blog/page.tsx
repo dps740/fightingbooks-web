@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
+import BookAffiliateSection from '@/components/BookAffiliateSection';
 
 export const metadata: Metadata = {
   title: 'Battle Guides & Animal Comparisons | FightingBooks Blog',
@@ -21,6 +22,14 @@ interface Article {
 
 const articles: Article[] = [
   {
+    slug: 'who-would-win-complete-guide',
+    title: 'Who Would Win? The Complete Guide to Animal Battles',
+    description: 'How to compare animals scientifically. What factors matter most, common mistakes, and the truth about hypothetical matchups.',
+    animals: ['📚 Guide'],
+    readTime: '12 min',
+    searchVolume: '90k/mo searches'
+  },
+  {
     slug: 'lion-vs-tiger',
     title: 'Lion vs Tiger: Who Would Win in a Fight?',
     description: 'The ultimate breakdown of nature\'s most debated big cat battle. Size, strength, and fighting experience analyzed.',
@@ -37,12 +46,52 @@ const articles: Article[] = [
     searchVolume: '40k/mo searches'
   },
   {
-    slug: 'who-would-win-complete-guide',
-    title: 'Who Would Win? The Complete Guide to Animal Battles',
-    description: 'How to compare animals scientifically. What factors matter most, common mistakes, and the truth about hypothetical matchups.',
-    animals: ['📚 Guide'],
-    readTime: '12 min',
-    searchVolume: '90k/mo searches'
+    slug: 'crocodile-vs-shark',
+    title: 'Crocodile vs Shark: Who Would Win?',
+    description: 'Saltwater crocodile meets bull shark. Two apex predators clash in the ultimate battle of bite force and aggression.',
+    animals: ['🐊 Crocodile', '🦈 Shark'],
+    readTime: '9 min',
+    searchVolume: '35k/mo searches'
+  },
+  {
+    slug: 'hippo-vs-crocodile',
+    title: 'Hippo vs Crocodile: Who Would Win?',
+    description: 'Africa\'s most aggressive mammal versus its most patient predator. The outcome might shock you.',
+    animals: ['🦛 Hippo', '🐊 Crocodile'],
+    readTime: '9 min',
+    searchVolume: '28k/mo searches'
+  },
+  {
+    slug: 'gorilla-vs-lion',
+    title: 'Gorilla vs Lion: Who Would Win?',
+    description: 'Primate power meets feline ferocity. When brute strength faces off against predatory precision.',
+    animals: ['🦍 Gorilla', '🦁 Lion'],
+    readTime: '9 min',
+    searchVolume: '25k/mo searches'
+  },
+  {
+    slug: 'elephant-vs-rhino',
+    title: 'Elephant vs Rhino: Who Would Win?',
+    description: 'The two largest land mammals collide. Size, intelligence, and weaponry analyzed in this heavyweight showdown.',
+    animals: ['🐘 Elephant', '🦏 Rhino'],
+    readTime: '8 min',
+    searchVolume: '18k/mo searches'
+  },
+  {
+    slug: 'orca-vs-great-white-shark',
+    title: 'Orca vs Great White Shark: Who Would Win?',
+    description: 'The ocean\'s apex predator meets an even scarier apex predator. This matchup isn\'t even close.',
+    animals: ['🐋 Orca', '🦈 Great White'],
+    readTime: '8 min',
+    searchVolume: '15k/mo searches'
+  },
+  {
+    slug: 'wolf-vs-lion',
+    title: 'Wolf vs Lion: Who Would Win?',
+    description: 'Pack tactics meet solo supremacy. One-on-one is a mismatch, but what if the wolf brings friends?',
+    animals: ['🐺 Wolf', '🦁 Lion'],
+    readTime: '8 min',
+    searchVolume: '12k/mo searches'
   },
   {
     slug: 'hippo-vs-rhino',
@@ -53,6 +102,14 @@ const articles: Article[] = [
     searchVolume: '10k/mo searches'
   },
   {
+    slug: 'komodo-dragon-vs-king-cobra',
+    title: 'Komodo Dragon vs King Cobra: Who Would Win?',
+    description: 'The world\'s largest lizard meets the world\'s deadliest snake. Venom versus venom in an epic reptilian showdown.',
+    animals: ['🦎 Komodo', '🐍 King Cobra'],
+    readTime: '9 min',
+    searchVolume: '9k/mo searches'
+  },
+  {
     slug: 'polar-bear-vs-grizzly-bear',
     title: 'Polar Bear vs Grizzly Bear: Who Would Win?',
     description: 'The ultimate bear showdown. Arctic giant versus inland powerhouse - size, strength, and fighting experience compared.',
@@ -61,12 +118,36 @@ const articles: Article[] = [
     searchVolume: '8k/mo searches'
   },
   {
+    slug: 'honey-badger-vs-lion',
+    title: 'Honey Badger vs Lion: Who Would Win?',
+    description: 'When the internet\'s favorite fearless animal meets the King of Beasts. Does attitude beat overwhelming force?',
+    animals: ['🦡 Honey Badger', '🦁 Lion'],
+    readTime: '9 min',
+    searchVolume: '7k/mo searches'
+  },
+  {
+    slug: 'jaguar-vs-leopard',
+    title: 'Jaguar vs Leopard: Who Would Win?',
+    description: 'Two spotted big cats - one\'s built like a tank, the other\'s a master assassin. The bite force gap is insane.',
+    animals: ['🐆 Jaguar', '🐆 Leopard'],
+    readTime: '9 min',
+    searchVolume: '6k/mo searches'
+  },
+  {
     slug: 'tiger-vs-bear',
     title: 'Tiger vs Bear: Who Would Win?',
     description: 'Siberian tiger faces off against grizzly bear. Speed and agility versus raw power and durability.',
     animals: ['🐅 Tiger', '🐻 Bear'],
     readTime: '8 min',
     searchVolume: '6k/mo searches'
+  },
+  {
+    slug: 'anaconda-vs-crocodile',
+    title: 'Anaconda vs Crocodile: Who Would Win?',
+    description: 'South America\'s apex constrictor meets its armored ambush predator. This fight actually happens in the wild.',
+    animals: ['🐍 Anaconda', '🐊 Crocodile'],
+    readTime: '9 min',
+    searchVolume: '5k/mo searches'
   },
 ];
 
@@ -148,8 +229,11 @@ export default function BlogPage() {
         </div>
       </section>
 
+      {/* Book Affiliate Section */}
+      <BookAffiliateSection showAll={true} />
+
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-[var(--bg-secondary)] border-t-4 border-[var(--accent-gold)]">
+      <section className="py-16 px-4 bg-[var(--bg-secondary)]">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-4 text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
             CREATE YOUR OWN BATTLE BOOK
