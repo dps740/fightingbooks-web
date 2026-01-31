@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { appendFile } from 'fs/promises';
+import { join } from 'path';
 
 function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!url || !key || url.includes('your-project')) {
+    return null; // Not configured yet
+  }
+  
+  return createClient(url, key);
 }
 
 export async function POST(request: NextRequest) {
@@ -16,23 +22,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     
+    const report = {
+      animal_a: animalA,
+      animal_b: animalB,
+      reason: reason || 'unspecified',
+      details: details || null,
+      reported_at: new Date().toISOString(),
+      ip_hash: request.headers.get('x-forwarded-for')?.split(',')[0]?.slice(-8) || 'unknown',
+    };
+    
     const supabase = getSupabase();
     
-    // Store the report
-    const { error } = await supabase
-      .from('content_reports')
-      .insert({
-        animal_a: animalA,
-        animal_b: animalB,
-        reason: reason || 'unspecified',
-        details: details || null,
-        reported_at: new Date().toISOString(),
-        ip_hash: request.headers.get('x-forwarded-for')?.split(',')[0]?.slice(-8) || 'unknown', // Last 8 chars only for privacy
-      });
-    
-    if (error) {
-      console.error('Report error:', error);
-      // Don't fail - reports are not critical
+    if (supabase) {
+      // Store in Supabase if configured
+      const { error } = await supabase
+        .from('content_reports')
+        .insert(report);
+      
+      if (error) {
+        console.error('Supabase report error:', error);
+      }
+    } else {
+      // Fallback: log to console (visible in Vercel logs)
+      console.log('📋 CONTENT REPORT:', JSON.stringify(report));
     }
     
     return NextResponse.json({ success: true, message: 'Thank you for your report!' });
