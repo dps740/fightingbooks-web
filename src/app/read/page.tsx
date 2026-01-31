@@ -31,6 +31,8 @@ function BookReader() {
   const [direction, setDirection] = useState(0);
   const [generatingChoice, setGeneratingChoice] = useState(false);
   const [choicesMade, setChoicesMade] = useState<string[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
 
   const animalA = searchParams.get('a') || 'Lion';
   const animalB = searchParams.get('b') || 'Tiger';
@@ -235,10 +237,61 @@ function BookReader() {
         ))}
       </div>
 
-      {/* Exit */}
+      {/* Exit & Report buttons */}
       <button onClick={() => router.push('/')} className="exit-btn">
         <Home className="w-5 h-5" /> Exit Book
       </button>
+      
+      <button 
+        onClick={() => setShowReportModal(true)} 
+        className="report-btn"
+        title="Report inappropriate content"
+      >
+        🚩 Report
+      </button>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="report-modal-overlay" onClick={() => setShowReportModal(false)}>
+          <div className="report-modal" onClick={(e) => e.stopPropagation()}>
+            {reportSubmitted ? (
+              <>
+                <h3>✅ Thank you!</h3>
+                <p>Your report has been submitted. We'll review it soon.</p>
+                <button onClick={() => { setShowReportModal(false); setReportSubmitted(false); }} className="report-close-btn">
+                  Close
+                </button>
+              </>
+            ) : (
+              <>
+                <h3>🚩 Report Content</h3>
+                <p>Is there something wrong with this book?</p>
+                <div className="report-options">
+                  {['Inappropriate content', 'Offensive images', 'Factual errors', 'Other issue'].map((reason) => (
+                    <button
+                      key={reason}
+                      onClick={async () => {
+                        await fetch('/api/report', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ animalA, animalB, reason }),
+                        });
+                        setReportSubmitted(true);
+                      }}
+                      className="report-option-btn"
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => setShowReportModal(false)} className="report-cancel-btn">
+                  Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* STYLES - Matching the PDF exactly */}
       <style jsx global>{`
@@ -454,6 +507,98 @@ function BookReader() {
         
         .generating { text-align: center; margin-top: 20px; color: #9c27b0; font-size: 1.2em; }
         .generating span { display: inline-block; font-size: 3em; }
+        
+        /* Report button and modal */
+        .report-btn {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: rgba(255,255,255,0.1);
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 50px;
+          cursor: pointer;
+          font-family: 'Comic Neue', cursive;
+          font-size: 0.9em;
+          transition: all 0.2s;
+        }
+        .report-btn:hover { background: rgba(255,100,100,0.3); }
+        
+        .report-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.7);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .report-modal {
+          background: white;
+          border-radius: 16px;
+          padding: 24px;
+          max-width: 400px;
+          width: 90%;
+          text-align: center;
+        }
+        
+        .report-modal h3 {
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #333;
+          margin-bottom: 10px;
+        }
+        
+        .report-modal p {
+          color: #666;
+          margin-bottom: 20px;
+        }
+        
+        .report-options {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+        
+        .report-option-btn {
+          padding: 12px;
+          background: #f0f0f0;
+          border: 2px solid #ddd;
+          border-radius: 8px;
+          cursor: pointer;
+          font-family: 'Comic Neue', cursive;
+          font-weight: bold;
+          transition: all 0.2s;
+        }
+        
+        .report-option-btn:hover {
+          background: #ff6b6b;
+          color: white;
+          border-color: #ff6b6b;
+        }
+        
+        .report-cancel-btn {
+          padding: 10px 20px;
+          background: none;
+          border: none;
+          color: #666;
+          cursor: pointer;
+          font-family: 'Comic Neue', cursive;
+        }
+        
+        .report-close-btn {
+          padding: 12px 24px;
+          background: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-family: 'Comic Neue', cursive;
+          font-weight: bold;
+        }
       `}</style>
     </div>
   );

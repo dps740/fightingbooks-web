@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 
 const POPULAR_ANIMALS = [
   { name: 'Lion', emoji: '🦁' },
@@ -31,13 +32,41 @@ export default function Home() {
   const [customB, setCustomB] = useState('');
   const [loading, setLoading] = useState(false);
   const [cyoaMode, setCyoaMode] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   const effectiveA = customA || animalA;
   const effectiveB = customB || animalB;
   const canGenerate = effectiveA && effectiveB && effectiveA.toLowerCase() !== effectiveB.toLowerCase();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!canGenerate) return;
+    setValidationError('');
+    
+    // Validate custom inputs
+    const customInputs = [
+      { value: customA, name: 'Red corner' },
+      { value: customB, name: 'Blue corner' },
+    ].filter(i => i.value);
+    
+    for (const input of customInputs) {
+      const check = quickContentCheck(input.value);
+      if (!check.allowed) {
+        setValidationError(`${input.name}: ${check.reason}`);
+        return;
+      }
+    }
+    
+    // Rate limit for non-standard animals
+    const hasCustomAnimal = (customA && !isKnownAnimal(customA)) || (customB && !isKnownAnimal(customB));
+    if (hasCustomAnimal) {
+      const rateLimit = checkRateLimit();
+      if (!rateLimit.allowed) {
+        setValidationError(`You've used all ${5} custom animal slots for today. Try a common animal or come back tomorrow!`);
+        return;
+      }
+      incrementRateLimit();
+    }
+    
     setLoading(true);
     const mode = cyoaMode ? 'cyoa' : 'standard';
     router.push(`/read?a=${encodeURIComponent(effectiveA)}&b=${encodeURIComponent(effectiveB)}&env=neutral&mode=${mode}`);
@@ -115,13 +144,20 @@ export default function Home() {
                   <div className="bg-[#CC0000] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
                     🔴 RED CORNER
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Type any animal..."
-                    value={customA}
-                    onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
-                    className="w-full p-3 rounded-lg border-3 border-[#CC0000] focus:ring-2 focus:ring-[#CC0000] focus:outline-none text-center font-bold text-lg bg-white"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Type any creature..."
+                      value={customA}
+                      onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
+                      className="w-full p-3 rounded-lg border-3 border-[#CC0000] focus:ring-2 focus:ring-[#CC0000] focus:outline-none text-center font-bold text-lg bg-white"
+                    />
+                    {customA && (
+                      <span className="absolute -top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        🧪 EXPERIMENTAL
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
                     {POPULAR_ANIMALS.slice(0, 8).map((animal) => (
                       <button
@@ -160,13 +196,20 @@ export default function Home() {
                   <div className="bg-[#0066CC] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
                     🔵 BLUE CORNER
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Type any animal..."
-                    value={customB}
-                    onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
-                    className="w-full p-3 rounded-lg border-3 border-[#0066CC] focus:ring-2 focus:ring-[#0066CC] focus:outline-none text-center font-bold text-lg bg-white"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Type any creature..."
+                      value={customB}
+                      onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
+                      className="w-full p-3 rounded-lg border-3 border-[#0066CC] focus:ring-2 focus:ring-[#0066CC] focus:outline-none text-center font-bold text-lg bg-white"
+                    />
+                    {customB && (
+                      <span className="absolute -top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        🧪 EXPERIMENTAL
+                      </span>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
                     {POPULAR_ANIMALS.slice(8, 16).map((animal) => (
                       <button
@@ -260,7 +303,21 @@ export default function Home() {
                 {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
                   <p className="mt-3 text-[#CC0000] font-bold bg-white inline-block px-4 py-1 rounded">⚠️ Pick two DIFFERENT animals!</p>
                 )}
+                {validationError && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-3 text-[#CC0000] font-bold bg-white inline-block px-4 py-2 rounded"
+                  >
+                    ⚠️ {validationError}
+                  </motion.p>
+                )}
                 <p className="mt-4 text-white/70">Free to create • No signup needed</p>
+                {(customA || customB) && (
+                  <p className="mt-2 text-orange-300/80 text-sm">
+                    🧪 Custom creatures are experimental — results may vary!
+                  </p>
+                )}
               </div>
             </div>
           </div>
