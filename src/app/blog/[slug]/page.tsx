@@ -80,8 +80,9 @@ export function generateStaticParams() {
 }
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const article = getArticleData(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const article = getArticleData(slug);
 
   if (!article) {
     return {
@@ -144,8 +145,9 @@ function markdownToHtml(markdown: string): string {
   return html;
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const article = getArticleData(params.slug);
+export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const article = getArticleData(slug);
 
   if (!article) {
     notFound();
@@ -194,16 +196,16 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
             <h3 className="text-2xl font-bold mb-6 text-[var(--accent-gold)]">Related Battles</h3>
             <div className="grid md:grid-cols-2 gap-4">
               {VALID_SLUGS
-                .filter(s => s !== params.slug)
+                .filter(s => s !== slug)
                 .slice(0, 4)
-                .map((slug) => (
+                .map((relatedSlug) => (
                   <Link
-                    key={slug}
-                    href={`/blog/${slug}`}
+                    key={relatedSlug}
+                    href={`/blog/${relatedSlug}`}
                     className="p-4 bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg hover:border-[var(--accent-gold)] transition-colors"
                   >
                     <span className="text-[var(--text-primary)] hover:text-[var(--accent-gold)]">
-                      {slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                      {relatedSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                     </span>
                   </Link>
                 ))}
