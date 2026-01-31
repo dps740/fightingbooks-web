@@ -3,82 +3,60 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Swords, Sparkles, Zap, BookOpen, Heart, ExternalLink, Star, Users, Clock, ChevronDown } from 'lucide-react';
+import { Swords, ChevronRight, ExternalLink, Trophy, Target, Zap, BookOpen } from 'lucide-react';
 
 const POPULAR_ANIMALS = [
   { name: 'Lion', emoji: '🦁' },
   { name: 'Tiger', emoji: '🐅' },
-  { name: 'Bear', emoji: '🐻' },
-  { name: 'Wolf', emoji: '🐺' },
-  { name: 'Eagle', emoji: '🦅' },
-  { name: 'Shark', emoji: '🦈' },
-  { name: 'Gorilla', emoji: '🦍' },
-  { name: 'Crocodile', emoji: '🐊' },
-  { name: 'Elephant', emoji: '🐘' },
-  { name: 'Rhino', emoji: '🦏' },
-  { name: 'Hippo', emoji: '🦛' },
-  { name: 'Cobra', emoji: '🐍' },
-  { name: 'Komodo Dragon', emoji: '🦎' },
-  { name: 'Polar Bear', emoji: '🐻‍❄️' },
   { name: 'Grizzly Bear', emoji: '🐻' },
+  { name: 'Gorilla', emoji: '🦍' },
   { name: 'Great White Shark', emoji: '🦈' },
+  { name: 'Saltwater Crocodile', emoji: '🐊' },
+  { name: 'African Elephant', emoji: '🐘' },
+  { name: 'Polar Bear', emoji: '🐻‍❄️' },
   { name: 'Orca', emoji: '🐋' },
+  { name: 'Hippo', emoji: '🦛' },
+  { name: 'Rhino', emoji: '🦏' },
+  { name: 'Wolf', emoji: '🐺' },
+  { name: 'Komodo Dragon', emoji: '🦎' },
   { name: 'Anaconda', emoji: '🐍' },
+  { name: 'Eagle', emoji: '🦅' },
   { name: 'Jaguar', emoji: '🐆' },
-  { name: 'Leopard', emoji: '🐆' },
-  { name: 'Cheetah', emoji: '🐆' },
-  { name: 'Hyena', emoji: '🦴' },
-  { name: 'Wolverine', emoji: '🦡' },
   { name: 'Honey Badger', emoji: '🦡' },
+  { name: 'Wolverine', emoji: '🦡' },
+  { name: 'Cape Buffalo', emoji: '🐃' },
+  { name: 'King Cobra', emoji: '🐍' },
 ];
 
 const ENVIRONMENTS = [
-  { id: 'random', name: 'Random', emoji: '🎲' },
-  { id: 'savanna', name: 'Savanna', emoji: '🌍' },
-  { id: 'jungle', name: 'Jungle', emoji: '🌴' },
-  { id: 'arctic', name: 'Arctic', emoji: '❄️' },
-  { id: 'ocean', name: 'Ocean', emoji: '🌊' },
-  { id: 'desert', name: 'Desert', emoji: '🏜️' },
-  { id: 'mountain', name: 'Mountain', emoji: '⛰️' },
-  { id: 'swamp', name: 'Swamp', emoji: '🐊' },
+  { id: 'neutral', name: 'Neutral Ground', emoji: '⚔️' },
+  { id: 'savanna', name: 'African Savanna', emoji: '🌍' },
+  { id: 'jungle', name: 'Amazon Jungle', emoji: '🌴' },
+  { id: 'arctic', name: 'Arctic Tundra', emoji: '❄️' },
+  { id: 'ocean', name: 'Open Ocean', emoji: '🌊' },
+  { id: 'swamp', name: 'Swampland', emoji: '🐊' },
 ];
 
 const PALLOTTA_BOOKS = [
+  { title: 'Lion vs. Tiger', asin: 'B00BT2FHN2' },
   { title: 'Killer Whale vs. Great White Shark', asin: 'B00BT2FHNW' },
   { title: 'Tyrannosaurus Rex vs. Velociraptor', asin: 'B00BT2FHOO' },
-  { title: 'Lion vs. Tiger', asin: 'B00BT2FHN2' },
-  { title: 'Wolverine vs. Tasmanian Devil', asin: 'B00F8F8WY0' },
-];
-
-const SAMPLE_BATTLES = [
-  { a: 'Lion', b: 'Tiger', winner: 'Tiger' },
-  { a: 'Gorilla', b: 'Grizzly Bear', winner: 'Grizzly Bear' },
-  { a: 'Orca', b: 'Great White Shark', winner: 'Orca' },
+  { title: 'Polar Bear vs. Grizzly Bear', asin: 'B00BT2FHO4' },
 ];
 
 export default function Home() {
   const router = useRouter();
   const [animalA, setAnimalA] = useState('');
   const [animalB, setAnimalB] = useState('');
-  const [environment, setEnvironment] = useState('random');
   const [customA, setCustomA] = useState('');
   const [customB, setCustomB] = useState('');
+  const [environment, setEnvironment] = useState('neutral');
   const [loading, setLoading] = useState(false);
-  const [booksCreated, setBooksCreated] = useState(1247);
-
-  // Animate book counter
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBooksCreated(prev => prev + Math.floor(Math.random() * 3));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const [mode, setMode] = useState<'standard' | 'cyoa'>('standard');
 
   const effectiveA = customA || animalA;
   const effectiveB = customB || animalB;
   const canGenerate = effectiveA && effectiveB && effectiveA.toLowerCase() !== effectiveB.toLowerCase();
-
-  const [mode, setMode] = useState<'standard' | 'cyoa'>('standard');
 
   const handleGenerate = async () => {
     if (!canGenerate) return;
@@ -88,465 +66,392 @@ export default function Home() {
   };
 
   const scrollToCreate = () => {
-    document.getElementById('create-section')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('arena')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white overflow-x-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-red-600 to-purple-700" />
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 text-8xl animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}>🦁</div>
-          <div className="absolute top-40 right-20 text-7xl animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '2.5s' }}>🐅</div>
-          <div className="absolute bottom-40 left-1/4 text-6xl animate-bounce" style={{ animationDelay: '1s', animationDuration: '3.5s' }}>🦈</div>
-          <div className="absolute bottom-20 right-1/3 text-8xl animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '2.8s' }}>🐻</div>
-          <div className="absolute top-1/3 left-1/3 text-5xl animate-bounce" style={{ animationDelay: '2s', animationDuration: '3.2s' }}>🦅</div>
-        </div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 text-center max-w-4xl mx-auto"
-        >
-          {/* Logo */}
-          <motion.div 
-            className="flex items-center justify-center gap-4 mb-6"
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Swords className="w-12 h-12 md:w-16 md:h-16 text-yellow-300" />
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 via-yellow-300 to-orange-300">
-                FightingBooks
-              </span>
-            </h1>
-            <Swords className="w-12 h-12 md:w-16 md:h-16 text-yellow-300 scale-x-[-1]" />
-          </motion.div>
+    <main className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Hero Section - Dark & Dramatic */}
+      <section className="relative min-h-screen flex flex-col">
+        {/* Top Bar */}
+        <nav className="relative z-20 flex items-center justify-between px-6 py-4 border-b border-[#2a2a2a]">
+          <div className="flex items-center gap-3">
+            <Swords className="w-8 h-8 text-[#d4af37]" />
+            <span className="text-2xl font-black tracking-tight">FIGHTINGBOOKS</span>
+          </div>
+          <div className="flex items-center gap-6 text-sm text-gray-400">
+            <a href="#arena" className="hover:text-white transition-colors">CREATE</a>
+            <a href="#how-it-works" className="hover:text-white transition-colors">HOW IT WORKS</a>
+            <a href="#originals" className="hover:text-white transition-colors">ORIGINALS</a>
+          </div>
+        </nav>
 
-          <motion.p 
-            className="text-xl md:text-3xl text-white/90 mb-4 font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            Create Epic Animal Battle Books in Seconds!
-          </motion.p>
+        {/* Hero Content */}
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="max-w-6xl w-full">
+            {/* Split VS Display */}
+            <div className="grid md:grid-cols-[1fr,auto,1fr] gap-4 md:gap-8 items-center mb-12">
+              {/* Red Corner */}
+              <motion.div 
+                className="bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border-l-4 border-[#c41e3a] p-8 text-center"
+                initial={{ x: -50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="text-xs font-bold text-[#c41e3a] tracking-[0.3em] mb-2">RED CORNER</div>
+                <div className="text-6xl mb-4">🦁</div>
+                <div className="text-3xl font-black">LION</div>
+                <div className="text-sm text-gray-500 mt-2">420 lbs • 10ft length</div>
+              </motion.div>
 
-          {/* Fan Tribute */}
-          <motion.div 
-            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Heart className="w-5 h-5 text-red-400" fill="currentColor" />
-              <span className="font-semibold text-yellow-200">A Fan Tribute</span>
-              <Heart className="w-5 h-5 text-red-400" fill="currentColor" />
+              {/* VS */}
+              <motion.div 
+                className="text-center py-8"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <div className="text-6xl md:text-8xl font-black text-[#d4af37] tracking-wider" style={{
+                  textShadow: '0 0 30px rgba(212,175,55,0.5), 0 0 60px rgba(196,30,58,0.3)'
+                }}>
+                  VS
+                </div>
+              </motion.div>
+
+              {/* Blue Corner */}
+              <motion.div 
+                className="bg-gradient-to-bl from-[#1a1a1a] to-[#0d0d0d] border-r-4 border-[#1e4fc4] p-8 text-center"
+                initial={{ x: 50, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="text-xs font-bold text-[#1e4fc4] tracking-[0.3em] mb-2">BLUE CORNER</div>
+                <div className="text-6xl mb-4">🐅</div>
+                <div className="text-3xl font-black">TIGER</div>
+                <div className="text-sm text-gray-500 mt-2">660 lbs • 12ft length</div>
+              </motion.div>
             </div>
-            <p className="text-white/80 max-w-xl mx-auto">
-              Inspired by Jerry Pallotta&apos;s beloved <strong className="text-white">&quot;Who Would Win?&quot;</strong> book series 
-              — creating custom battles for the next generation of animal fans!
+
+            {/* Headline */}
+            <motion.div 
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight">
+                WHO WOULD WIN?
+              </h1>
+              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                Create your own epic animal battle books inspired by Jerry Pallotta&apos;s legendary series.
+                Real facts. Real science. AI-generated artwork.
+              </p>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <button
+                onClick={scrollToCreate}
+                className="px-8 py-4 bg-gradient-to-b from-[#c41e3a] to-[#9a1830] border-2 border-[#d4af37] text-white font-bold text-lg uppercase tracking-wider hover:from-[#d42848] hover:to-[#c41e3a] transition-all shadow-lg shadow-red-900/30"
+              >
+                <span className="flex items-center justify-center gap-3">
+                  Create Your Battle
+                  <ChevronRight className="w-5 h-5" />
+                </span>
+              </button>
+              <button
+                onClick={() => router.push('/tournament')}
+                className="px-8 py-4 bg-transparent border-2 border-[#d4af37] text-[#d4af37] font-bold text-lg uppercase tracking-wider hover:bg-[#d4af37] hover:text-black transition-all"
+              >
+                <span className="flex items-center justify-center gap-3">
+                  <Trophy className="w-5 h-5" />
+                  Tournament Mode
+                </span>
+              </button>
+            </motion.div>
+
+            <p className="text-center text-gray-600 text-sm mt-6">
+              Free for popular matchups • No signup required
             </p>
-          </motion.div>
+          </div>
+        </div>
 
-          {/* Stats */}
-          <motion.div 
-            className="flex flex-wrap justify-center gap-6 mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <BookOpen className="w-5 h-5 text-yellow-300" />
-              <span className="font-bold">{booksCreated.toLocaleString()}</span>
-              <span className="text-white/70">books created</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <Star className="w-5 h-5 text-yellow-300" fill="currentColor" />
-              <span className="font-bold">4.9</span>
-              <span className="text-white/70">rating</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <Clock className="w-5 h-5 text-yellow-300" />
-              <span className="font-bold">60s</span>
-              <span className="text-white/70">to create</span>
-            </div>
-          </motion.div>
-
-          {/* CTA Buttons */}
-          <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-          >
-            <motion.button
-              onClick={scrollToCreate}
-              className="group px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 rounded-2xl font-bold text-xl shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="flex items-center justify-center gap-2">
-                <Sparkles className="w-6 h-6" />
-                Create Your Battle — FREE!
-                <Sparkles className="w-6 h-6" />
-              </span>
-            </motion.button>
-            <motion.button
-              onClick={() => router.push('/tournament')}
-              className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold text-xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all border border-white/20"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="flex items-center justify-center gap-2">
-                🏆 Tournament Mode — $5
-              </span>
-            </motion.button>
-          </motion.div>
-
-          <motion.p 
-            className="mt-4 text-white/60 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-          >
-            No signup required for your first book!
-          </motion.p>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
-          <ChevronDown className="w-8 h-8 text-white/50" />
-        </motion.div>
+        {/* Divider */}
+        <div className="h-1 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent" />
       </section>
 
       {/* Create Section */}
-      <section id="create-section" className="py-16 px-4 bg-gradient-to-b from-gray-900 to-gray-800">
+      <section id="arena" className="py-20 px-4 bg-[#0d0d0d]">
         <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 flex items-center justify-center gap-3">
-              <Zap className="w-8 h-8 text-yellow-400" />
-              Choose Your Fighters
-              <Zap className="w-8 h-8 text-yellow-400" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight mb-4">
+              SELECT YOUR FIGHTERS
             </h2>
+            <p className="text-gray-500">Choose two animals and watch them battle</p>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              {/* Fighter 1 */}
-              <motion.div 
-                className="bg-gradient-to-br from-red-900/50 to-red-800/30 rounded-3xl p-6 border border-red-500/30"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <h3 className="text-xl font-bold text-red-400 mb-4 text-center">🔴 Fighter #1</h3>
-                <input
-                  type="text"
-                  placeholder="Type any animal..."
-                  value={customA}
-                  onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
-                  className="w-full p-4 bg-gray-900/50 border-2 border-red-500/30 rounded-xl mb-4 focus:border-red-400 focus:outline-none text-white placeholder-gray-500"
-                />
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {POPULAR_ANIMALS.slice(0, 12).map((animal) => (
-                    <motion.button
-                      key={animal.name}
-                      onClick={() => { setAnimalA(animal.name); setCustomA(''); }}
-                      className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${
-                        animalA === animal.name
-                          ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span>{animal.emoji}</span> {animal.name}
-                    </motion.button>
-                  ))}
-                </div>
-                <AnimatePresence>
-                  {effectiveA && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="mt-4 text-center text-3xl font-black text-red-400 bg-gray-900/50 rounded-xl py-3"
-                    >
-                      {effectiveA}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-
-              {/* Fighter 2 */}
-              <motion.div 
-                className="bg-gradient-to-br from-blue-900/50 to-blue-800/30 rounded-3xl p-6 border border-blue-500/30"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <h3 className="text-xl font-bold text-blue-400 mb-4 text-center">🔵 Fighter #2</h3>
-                <input
-                  type="text"
-                  placeholder="Type any animal..."
-                  value={customB}
-                  onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
-                  className="w-full p-4 bg-gray-900/50 border-2 border-blue-500/30 rounded-xl mb-4 focus:border-blue-400 focus:outline-none text-white placeholder-gray-500"
-                />
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {POPULAR_ANIMALS.slice(12, 24).map((animal) => (
-                    <motion.button
-                      key={animal.name}
-                      onClick={() => { setAnimalB(animal.name); setCustomB(''); }}
-                      className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${
-                        animalB === animal.name
-                          ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-                      }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <span>{animal.emoji}</span> {animal.name}
-                    </motion.button>
-                  ))}
-                </div>
-                <AnimatePresence>
-                  {effectiveB && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="mt-4 text-center text-3xl font-black text-blue-400 bg-gray-900/50 rounded-xl py-3"
-                    >
-                      {effectiveB}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-
-            {/* VS Display */}
-            <AnimatePresence>
-              {effectiveA && effectiveB && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.5 }}
-                  className="text-center mb-8"
-                >
-                  <div className="inline-flex items-center gap-4 bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 p-1 rounded-2xl">
-                    <div className="bg-gray-900 px-6 py-4 rounded-xl">
-                      <span className="text-2xl md:text-3xl font-black text-red-400">{effectiveA}</span>
-                    </div>
-                    <motion.div 
-                      className="text-4xl font-black text-white"
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                    >
-                      ⚡VS⚡
-                    </motion.div>
-                    <div className="bg-gray-900 px-6 py-4 rounded-xl">
-                      <span className="text-2xl md:text-3xl font-black text-blue-400">{effectiveB}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Mode Selection */}
-            <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-2xl p-6 mb-6 border border-purple-500/30">
-              <h3 className="text-lg font-semibold text-center mb-4 text-purple-300">📖 Book Type</h3>
-              <div className="flex justify-center gap-4 flex-wrap">
-                <motion.button
-                  onClick={() => setMode('standard')}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                    mode === 'standard'
-                      ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  📚 Standard Book
-                  <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">FREE</span>
-                </motion.button>
-                <motion.button
-                  onClick={() => setMode('cyoa')}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${
-                    mode === 'cyoa'
-                      ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-600/30'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  🎮 Choose Your Adventure
-                  <span className="text-xs bg-yellow-500 text-black px-2 py-0.5 rounded-full">$1</span>
-                </motion.button>
-              </div>
-              <p className="text-center text-gray-400 text-xs mt-3">
-                Pick from our animal list = FREE unlimited! Custom animals = $1
-              </p>
-              {mode === 'cyoa' && (
-                <motion.p 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="text-center text-purple-300 text-sm mt-3"
-                >
-                  ⚡ YOU control the battle! Make choices that change the story.
-                </motion.p>
-              )}
-            </div>
-
-            {/* Environment */}
-            <div className="bg-gray-800/50 rounded-2xl p-6 mb-8 border border-gray-700">
-              <h3 className="text-lg font-semibold text-center mb-4 text-gray-300">🌍 Battle Arena</h3>
-              <div className="flex flex-wrap justify-center gap-2">
-                {ENVIRONMENTS.map((env) => (
-                  <motion.button
-                    key={env.id}
-                    onClick={() => setEnvironment(env.id)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                      environment === env.id
-                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-600/30'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Red Corner Selection */}
+            <div className="bg-[#1a1a1a] border-l-4 border-[#c41e3a] p-6">
+              <div className="text-sm font-bold text-[#c41e3a] tracking-[0.2em] mb-4">RED CORNER</div>
+              <input
+                type="text"
+                placeholder="Type any animal..."
+                value={customA}
+                onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
+                className="w-full p-4 bg-[#0a0a0a] border border-[#2a2a2a] text-white placeholder-gray-600 focus:border-[#c41e3a] focus:outline-none mb-4"
+              />
+              <div className="flex flex-wrap gap-2">
+                {POPULAR_ANIMALS.slice(0, 10).map((animal) => (
+                  <button
+                    key={animal.name}
+                    onClick={() => { setAnimalA(animal.name); setCustomA(''); }}
+                    className={`px-3 py-2 text-sm font-medium transition-all ${
+                      animalA === animal.name
+                        ? 'bg-[#c41e3a] text-white'
+                        : 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a] hover:text-white'
                     }`}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                   >
-                    {env.emoji} {env.name}
-                  </motion.button>
+                    {animal.emoji} {animal.name}
+                  </button>
                 ))}
               </div>
+              <AnimatePresence>
+                {effectiveA && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-6 text-center"
+                  >
+                    <div className="text-4xl font-black text-[#c41e3a]">{effectiveA.toUpperCase()}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Generate Button */}
-            <div className="text-center">
-              <motion.button
-                onClick={handleGenerate}
-                disabled={!canGenerate || loading}
-                className={`px-12 py-5 rounded-2xl text-xl font-bold transition-all ${
-                  canGenerate && !loading
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-2xl shadow-green-500/30 cursor-pointer'
-                    : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                }`}
-                whileHover={canGenerate ? { scale: 1.05 } : {}}
-                whileTap={canGenerate ? { scale: 0.95 } : {}}
-              >
-                {loading ? (
-                  <span className="flex items-center gap-3">
-                    <motion.span 
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                    >⏳</motion.span>
-                    Creating Epic Battle...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-3">
-                    <Sparkles className="w-6 h-6" />
-                    Generate My Battle Book!
-                    <Sparkles className="w-6 h-6" />
-                  </span>
+            {/* Blue Corner Selection */}
+            <div className="bg-[#1a1a1a] border-r-4 border-[#1e4fc4] p-6">
+              <div className="text-sm font-bold text-[#1e4fc4] tracking-[0.2em] mb-4 text-right">BLUE CORNER</div>
+              <input
+                type="text"
+                placeholder="Type any animal..."
+                value={customB}
+                onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
+                className="w-full p-4 bg-[#0a0a0a] border border-[#2a2a2a] text-white placeholder-gray-600 focus:border-[#1e4fc4] focus:outline-none mb-4"
+              />
+              <div className="flex flex-wrap gap-2 justify-end">
+                {POPULAR_ANIMALS.slice(10, 20).map((animal) => (
+                  <button
+                    key={animal.name}
+                    onClick={() => { setAnimalB(animal.name); setCustomB(''); }}
+                    className={`px-3 py-2 text-sm font-medium transition-all ${
+                      animalB === animal.name
+                        ? 'bg-[#1e4fc4] text-white'
+                        : 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a] hover:text-white'
+                    }`}
+                  >
+                    {animal.emoji} {animal.name}
+                  </button>
+                ))}
+              </div>
+              <AnimatePresence>
+                {effectiveB && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mt-6 text-center"
+                  >
+                    <div className="text-4xl font-black text-[#1e4fc4]">{effectiveB.toUpperCase()}</div>
+                  </motion.div>
                 )}
-              </motion.button>
-              {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
-                <p className="mt-3 text-red-400 font-medium">Pick two different animals!</p>
-              )}
+              </AnimatePresence>
             </div>
-          </motion.div>
+          </div>
+
+          {/* VS Display when both selected */}
+          <AnimatePresence>
+            {effectiveA && effectiveB && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center mb-12"
+              >
+                <div className="inline-flex items-center gap-6 bg-[#1a1a1a] border border-[#d4af37] px-8 py-4">
+                  <span className="text-2xl font-black text-[#c41e3a]">{effectiveA.toUpperCase()}</span>
+                  <span className="text-3xl font-black text-[#d4af37]">VS</span>
+                  <span className="text-2xl font-black text-[#1e4fc4]">{effectiveB.toUpperCase()}</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Environment Selection */}
+          <div className="bg-[#141414] border border-[#2a2a2a] p-6 mb-8">
+            <div className="text-sm font-bold text-gray-500 tracking-[0.2em] mb-4">BATTLE ARENA</div>
+            <div className="flex flex-wrap gap-3">
+              {ENVIRONMENTS.map((env) => (
+                <button
+                  key={env.id}
+                  onClick={() => setEnvironment(env.id)}
+                  className={`px-4 py-2 text-sm font-medium transition-all ${
+                    environment === env.id
+                      ? 'bg-[#d4af37] text-black'
+                      : 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
+                  }`}
+                >
+                  {env.emoji} {env.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mode Selection */}
+          <div className="bg-[#141414] border border-[#2a2a2a] p-6 mb-8">
+            <div className="text-sm font-bold text-gray-500 tracking-[0.2em] mb-4">BOOK TYPE</div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setMode('standard')}
+                className={`flex-1 p-4 text-center transition-all border ${
+                  mode === 'standard'
+                    ? 'bg-[#c41e3a] border-[#d4af37] text-white'
+                    : 'bg-[#1a1a1a] border-[#2a2a2a] text-gray-400 hover:border-[#3a3a3a]'
+                }`}
+              >
+                <div className="font-bold mb-1">STANDARD BOOK</div>
+                <div className="text-sm opacity-70">15-page battle narrative</div>
+                <div className="text-xs mt-2 text-green-400">FREE</div>
+              </button>
+              <button
+                onClick={() => setMode('cyoa')}
+                className={`flex-1 p-4 text-center transition-all border ${
+                  mode === 'cyoa'
+                    ? 'bg-[#1e4fc4] border-[#d4af37] text-white'
+                    : 'bg-[#1a1a1a] border-[#2a2a2a] text-gray-400 hover:border-[#3a3a3a]'
+                }`}
+              >
+                <div className="font-bold mb-1">CHOOSE YOUR PATH</div>
+                <div className="text-sm opacity-70">Interactive battle choices</div>
+                <div className="text-xs mt-2 text-[#d4af37]">$1</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Generate Button */}
+          <div className="text-center">
+            <motion.button
+              onClick={handleGenerate}
+              disabled={!canGenerate || loading}
+              className={`px-12 py-5 text-xl font-bold uppercase tracking-wider transition-all ${
+                canGenerate && !loading
+                  ? 'bg-gradient-to-b from-[#c41e3a] to-[#9a1830] border-2 border-[#d4af37] text-white hover:from-[#d42848] hover:to-[#c41e3a] shadow-lg shadow-red-900/50 cursor-pointer'
+                  : 'bg-[#2a2a2a] border-2 border-[#3a3a3a] text-gray-600 cursor-not-allowed'
+              }`}
+              whileHover={canGenerate ? { scale: 1.02 } : {}}
+              whileTap={canGenerate ? { scale: 0.98 } : {}}
+            >
+              {loading ? (
+                <span className="flex items-center gap-3">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                  >⏳</motion.div>
+                  Generating Battle...
+                </span>
+              ) : (
+                <span className="flex items-center gap-3">
+                  <Zap className="w-6 h-6" />
+                  Generate Battle Book
+                  <Zap className="w-6 h-6" />
+                </span>
+              )}
+            </motion.button>
+            {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
+              <p className="mt-4 text-[#c41e3a] font-medium">Select two different animals</p>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-16 px-4 bg-gray-800">
+      {/* How It Works */}
+      <section id="how-it-works" className="py-20 px-4 bg-[#0a0a0a]">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">What You Get</h2>
+          <h2 className="text-3xl font-black text-center mb-12 tracking-tight">HOW IT WORKS</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: '🎨', title: 'AI Illustrations', desc: 'Unique artwork generated for every single page' },
-              { icon: '📖', title: '15-Page Book', desc: 'Facts, stats, battle narrative & epic conclusion' },
-              { icon: '⚡', title: 'Instant Download', desc: 'PDF ready in about 60 seconds' },
-            ].map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className="bg-gray-700/50 rounded-2xl p-6 text-center border border-gray-600"
-              >
-                <div className="text-5xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                <p className="text-gray-400">{feature.desc}</p>
-              </motion.div>
+              { num: '01', title: 'PICK YOUR FIGHTERS', desc: 'Choose any two animals from our list or type your own' },
+              { num: '02', title: 'WE RESEARCH THE FACTS', desc: 'AI analyzes real stats: size, speed, weapons, tactics' },
+              { num: '03', title: 'GET YOUR BATTLE BOOK', desc: '15-page illustrated book with facts and narrative' },
+            ].map((step) => (
+              <div key={step.num} className="bg-[#141414] border border-[#2a2a2a] p-8">
+                <div className="text-5xl font-black text-[#d4af37] mb-4">{step.num}</div>
+                <div className="text-xl font-bold mb-3">{step.title}</div>
+                <div className="text-gray-500">{step.desc}</div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Jerry Pallotta Books */}
-      <section className="py-16 px-4 bg-gradient-to-b from-gray-800 to-amber-900/30">
+      {/* Original Books */}
+      <section id="originals" className="py-20 px-4 bg-[#0d0d0d] border-t border-[#2a2a2a]">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
+          <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <BookOpen className="w-8 h-8 text-amber-400" />
-              <h2 className="text-3xl font-bold">Love Animal Battles?</h2>
-              <BookOpen className="w-8 h-8 text-amber-400" />
+              <BookOpen className="w-8 h-8 text-[#d4af37]" />
+              <h2 className="text-3xl font-black tracking-tight">THE ORIGINAL SERIES</h2>
+              <BookOpen className="w-8 h-8 text-[#d4af37]" />
             </div>
-            <p className="text-gray-400 max-w-xl mx-auto">
-              Get the original <strong className="text-white">&quot;Who Would Win?&quot;</strong> books by Jerry Pallotta — 
-              the series that inspired us all!
+            <p className="text-gray-500 max-w-xl mx-auto">
+              Inspired by Jerry Pallotta&apos;s &quot;Who Would Win?&quot; — the book series that started it all.
+              Support the original!
             </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {PALLOTTA_BOOKS.map((book, i) => (
-              <motion.a
+            {PALLOTTA_BOOKS.map((book) => (
+              <a
                 key={book.asin}
-                href={`https://www.amazon.com/dp/${book.asin}`}
+                href={`https://www.amazon.com/dp/${book.asin}?tag=fightingbooks-20`}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-amber-900/30 rounded-xl p-4 text-center hover:bg-amber-800/40 transition-colors border border-amber-700/30 group"
-                whileHover={{ scale: 1.05 }}
+                className="bg-[#1a1a1a] border border-[#2a2a2a] p-6 text-center hover:border-[#d4af37] transition-all group"
               >
-                <div className="text-4xl mb-3">📚</div>
-                <p className="text-sm font-medium text-amber-100 group-hover:text-white mb-2">
+                <div className="text-4xl mb-4">📚</div>
+                <div className="font-bold text-sm mb-2 group-hover:text-[#d4af37] transition-colors">
                   {book.title}
-                </p>
-                <span className="inline-flex items-center gap-1 text-xs text-amber-400">
-                  View on Amazon <ExternalLink className="w-3 h-3" />
-                </span>
-              </motion.a>
+                </div>
+                <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
+                  Amazon <ExternalLink className="w-3 h-3" />
+                </div>
+              </a>
             ))}
           </div>
           
-          <p className="text-center text-xs text-gray-500 mt-6">
-            * FightingBooks is an independent fan project, not affiliated with Jerry Pallotta or Scholastic.
+          <p className="text-center text-xs text-gray-600 mt-8">
+            FightingBooks is an independent fan project. Not affiliated with Jerry Pallotta or Scholastic.
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-8 px-4 text-center text-gray-500 text-sm border-t border-gray-800">
-        <p className="mb-2">
-          <span className="text-white font-bold">FightingBooks</span> — A fan tribute to animal battle books everywhere
-        </p>
-        <p>🎨 AI-generated • 📖 Educational & fun • 💡 Made with ❤️</p>
+      <footer className="py-8 px-4 bg-[#0a0a0a] border-t border-[#2a2a2a]">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Swords className="w-5 h-5 text-[#d4af37]" />
+            <span className="font-bold">FIGHTINGBOOKS</span>
+          </div>
+          <div className="text-sm text-gray-600">
+            Educational fan project • AI-generated content
+          </div>
+        </div>
       </footer>
     </main>
   );
