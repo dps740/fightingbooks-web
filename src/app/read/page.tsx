@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, Suspense, forwardRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import HTMLFlipBook from 'react-pageflip';
+import dynamic from 'next/dynamic';
+
+const HTMLFlipBook = dynamic(() => import('react-pageflip'), { ssr: false });
 import { ChevronLeft, ChevronRight, Download, Home, Volume2, VolumeX, Sparkles, Swords, RotateCcw } from 'lucide-react';
 
 interface BookPage {
