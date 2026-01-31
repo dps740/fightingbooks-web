@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import VersusScreen from './VersusScreen';
 
 interface BookPage {
   id: string;
@@ -23,6 +24,7 @@ interface Choice {
 function BookReader() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [showVersusScreen, setShowVersusScreen] = useState(true);
   const [pages, setPages] = useState<BookPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -35,7 +37,16 @@ function BookReader() {
   const mode = searchParams.get('mode') || 'standard';
   const environment = searchParams.get('env') || 'neutral';
 
-  useEffect(() => { loadBook(); }, []);
+  const handleVersusComplete = useCallback(() => {
+    setShowVersusScreen(false);
+  }, []);
+
+  useEffect(() => { 
+    // Only start loading after VS screen completes
+    if (!showVersusScreen) {
+      loadBook(); 
+    }
+  }, [showVersusScreen]);
 
   const loadBook = async () => {
     setLoading(true);
@@ -90,6 +101,17 @@ function BookReader() {
     if (type === 'stats') return 'bg-gold';
     return backgrounds[i % backgrounds.length];
   };
+
+  // Show VS screen first
+  if (showVersusScreen) {
+    return (
+      <VersusScreen 
+        fighterA={animalA} 
+        fighterB={animalB} 
+        onComplete={handleVersusComplete} 
+      />
+    );
+  }
 
   if (loading) {
     return (
