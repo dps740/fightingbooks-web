@@ -12,7 +12,7 @@ const HTMLFlipBook = dynamic(
     loading: () => <div className="text-white text-center p-8">Loading book...</div>
   }
 );
-import { ChevronLeft, ChevronRight, Download, Home, Volume2, VolumeX, Sparkles, Swords, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Home, Volume2, VolumeX, Swords, RotateCcw } from 'lucide-react';
 
 interface BookPage {
   id: string;
@@ -29,50 +29,53 @@ interface Choice {
   emoji: string;
 }
 
-// Page component for the flip book - must use forwardRef
+// Page component for the flip book
 const Page = forwardRef<HTMLDivElement, { page: BookPage; pageNumber: number; onChoice?: (choice: Choice) => void; generatingChoice?: boolean }>(
   ({ page, pageNumber, onChoice, generatingChoice }, ref) => {
     const isChoicePage = page?.type === 'choice' && page.choices && page.choices.length > 0;
     
-    // Different backgrounds for different page types
+    // Dark theme backgrounds
     const bgClass = {
-      cover: 'bg-gradient-to-br from-orange-600 via-red-600 to-purple-700',
-      intro: 'bg-gradient-to-br from-emerald-800 to-teal-900',
-      stats: 'bg-gradient-to-br from-slate-800 to-zinc-900',
-      battle: 'bg-gradient-to-br from-red-900 to-orange-900',
-      choice: 'bg-gradient-to-br from-purple-900 to-pink-900',
-      victory: 'bg-gradient-to-br from-yellow-600 to-amber-700',
-    }[page?.type] || 'bg-gray-800';
+      cover: 'bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]',
+      intro: 'bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]',
+      stats: 'bg-[#0a0a0a]',
+      battle: 'bg-gradient-to-br from-[#1a0a0a] to-[#0a0a0a]',
+      choice: 'bg-gradient-to-br from-[#1a1a2a] to-[#0a0a0a]',
+      victory: 'bg-gradient-to-br from-[#1a1a0a] to-[#0a0a0a]',
+    }[page?.type] || 'bg-[#0a0a0a]';
+
+    // Border accents
+    const borderClass = {
+      cover: 'border-[#d4af37]',
+      intro: 'border-[#3a3a3a]',
+      stats: 'border-[#d4af37]',
+      battle: 'border-[#c41e3a]',
+      choice: 'border-[#1e4fc4]',
+      victory: 'border-[#d4af37]',
+    }[page?.type] || 'border-[#2a2a2a]';
 
     return (
-      <div ref={ref} className={`page ${bgClass} relative overflow-hidden`} data-density="hard">
-        {/* Page texture overlay */}
-        <div className="absolute inset-0 opacity-10 bg-[url('/paper-texture.png')] pointer-events-none" />
-        
-        {/* Decorative corner flourishes */}
-        <div className="absolute top-3 left-3 text-2xl opacity-30">✦</div>
-        <div className="absolute top-3 right-3 text-2xl opacity-30">✦</div>
-        <div className="absolute bottom-3 left-3 text-2xl opacity-30">✦</div>
-        <div className="absolute bottom-3 right-3 text-2xl opacity-30">✦</div>
-        
+      <div ref={ref} className={`page ${bgClass} relative overflow-hidden border-2 ${borderClass}`} data-density="hard">
         {/* Page content */}
         <div className="relative z-10 h-full flex flex-col p-6 text-white">
-          {/* Image area */}
-          {page?.imageUrl && (
-            <div className="flex-shrink-0 h-48 mb-4 rounded-xl overflow-hidden border-4 border-white/20 shadow-xl">
-              <div className="w-full h-full bg-gray-700 flex items-center justify-center text-6xl">
-                {page.type === 'cover' && '⚔️'}
-                {page.type === 'intro' && '🦁'}
-                {page.type === 'stats' && '📊'}
-                {page.type === 'battle' && '💥'}
-                {page.type === 'choice' && '🤔'}
-                {page.type === 'victory' && '🏆'}
-              </div>
-            </div>
-          )}
+          {/* Icon for page type */}
+          <div className="text-center mb-4">
+            <span className="text-5xl">
+              {page?.type === 'cover' && '⚔️'}
+              {page?.type === 'intro' && '📋'}
+              {page?.type === 'stats' && '📊'}
+              {page?.type === 'battle' && '💥'}
+              {page?.type === 'choice' && '🤔'}
+              {page?.type === 'victory' && '🏆'}
+            </span>
+          </div>
           
           {/* Title */}
-          <h2 className={`font-bold mb-3 text-center ${page?.type === 'cover' ? 'text-3xl' : 'text-xl'}`}>
+          <h2 className={`font-black mb-4 text-center uppercase tracking-wide ${
+            page?.type === 'cover' ? 'text-3xl text-[#d4af37]' : 
+            page?.type === 'victory' ? 'text-2xl text-[#d4af37]' : 
+            'text-xl text-white'
+          }`}>
             {page?.title}
           </h2>
           
@@ -85,8 +88,8 @@ const Page = forwardRef<HTMLDivElement, { page: BookPage; pageNumber: number; on
           {/* CYOA Choices */}
           {isChoicePage && !generatingChoice && onChoice && (
             <div className="mt-4 space-y-2">
-              <p className="text-center text-yellow-300 text-sm font-semibold mb-2">
-                ⚡ You decide! ⚡
+              <p className="text-center text-[#d4af37] text-sm font-bold uppercase tracking-wider mb-3">
+                You Decide
               </p>
               {page.choices?.map((choice) => (
                 <button
@@ -95,7 +98,7 @@ const Page = forwardRef<HTMLDivElement, { page: BookPage; pageNumber: number; on
                     e.stopPropagation();
                     onChoice(choice);
                   }}
-                  className="w-full p-3 bg-white/10 backdrop-blur rounded-lg text-left text-sm font-medium hover:bg-white/20 transition-all flex items-center gap-2 border border-white/20"
+                  className="w-full p-3 bg-[#1a1a1a] border border-[#3a3a3a] text-left text-sm font-medium hover:border-[#d4af37] hover:bg-[#2a2a2a] transition-all flex items-center gap-2"
                 >
                   <span className="text-xl">{choice.emoji}</span>
                   <span className="flex-grow">{choice.text}</span>
@@ -114,13 +117,13 @@ const Page = forwardRef<HTMLDivElement, { page: BookPage; pageNumber: number; on
               >
                 ⏳
               </motion.div>
-              <p className="text-yellow-300 text-sm mt-2">Creating next scene...</p>
+              <p className="text-[#d4af37] text-sm mt-2">Creating next scene...</p>
             </div>
           )}
 
           {/* Page number */}
-          <div className="mt-4 text-center text-white/40 text-sm">
-            — {pageNumber} —
+          <div className="mt-4 text-center text-gray-600 text-sm font-mono">
+            {pageNumber}
           </div>
         </div>
       </div>
@@ -145,12 +148,11 @@ function BookReader() {
   const animalB = searchParams.get('b') || 'Tiger';
   const mode = searchParams.get('mode') || 'standard';
 
-  // Page flip sound
   const playFlipSound = () => {
     if (soundEnabled && typeof window !== 'undefined') {
       const audio = new Audio('/sounds/page-flip.mp3');
       audio.volume = 0.3;
-      audio.play().catch(() => {}); // Ignore errors if sound doesn't exist
+      audio.play().catch(() => {});
     }
   };
 
@@ -171,11 +173,10 @@ function BookReader() {
         setPages(data.pages);
       } else {
         console.error('Invalid pages data:', data);
-        // Set fallback error page
         setPages([{
           id: 'error',
           type: 'cover',
-          title: 'Oops!',
+          title: 'Error',
           content: '<p>Something went wrong loading your book. Please try again!</p>',
         }]);
       }
@@ -184,7 +185,7 @@ function BookReader() {
       setPages([{
         id: 'error',
         type: 'cover',
-        title: 'Oops!',
+        title: 'Error',
         content: '<p>Something went wrong loading your book. Please try again!</p>',
       }]);
     }
@@ -210,16 +211,13 @@ function BookReader() {
       });
       const data = await response.json();
       
-      // Add new pages
       setPages([...pages, ...data.pages]);
       
-      // Check if we hit victory
       if (data.pages.some((p: BookPage) => p.type === 'victory')) {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 5000);
       }
       
-      // Flip to next page
       setTimeout(() => {
         bookRef.current?.pageFlip().flipNext();
       }, 500);
@@ -238,15 +236,14 @@ function BookReader() {
   const flipPrev = () => bookRef.current?.pageFlip().flipPrev();
 
   const downloadPDF = async () => {
-    // TODO: Implement PDF compilation
-    alert('PDF download coming soon! Your book will be compiled and downloaded.');
+    alert('PDF download coming soon!');
   };
 
   const isVictoryPage = pages[currentPage]?.type === 'victory';
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -259,14 +256,14 @@ function BookReader() {
           >
             📖
           </motion.div>
-          <p className="text-white text-xl font-medium">Opening your book...</p>
+          <p className="text-white text-xl font-bold uppercase tracking-wider">Loading Battle...</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
       {/* Confetti effect on victory */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
@@ -274,13 +271,13 @@ function BookReader() {
             <motion.div
               key={i}
               initial={{ 
-                x: Math.random() * window.innerWidth, 
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000), 
                 y: -20,
                 rotate: 0,
                 opacity: 1
               }}
               animate={{ 
-                y: window.innerHeight + 20,
+                y: (typeof window !== 'undefined' ? window.innerHeight : 800) + 20,
                 rotate: Math.random() * 720,
                 opacity: 0
               }}
@@ -299,30 +296,30 @@ function BookReader() {
       )}
 
       {/* Header */}
-      <header className="bg-black/30 backdrop-blur-sm border-b border-white/10 px-4 py-3 relative z-20">
+      <header className="bg-[#141414] border-b border-[#2a2a2a] px-4 py-3 relative z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <Home className="w-5 h-5" />
-            <span className="hidden sm:inline">Home</span>
+            <span className="hidden sm:inline text-sm uppercase tracking-wider">Back</span>
           </button>
           
-          <div className="flex items-center gap-2 text-lg font-bold">
-            <span className="text-red-300">{animalA}</span>
-            <Swords className="w-5 h-5 text-yellow-400" />
-            <span className="text-blue-300">{animalB}</span>
+          <div className="flex items-center gap-3 text-lg font-black">
+            <span className="text-[#c41e3a]">{animalA.toUpperCase()}</span>
+            <span className="text-[#d4af37]">VS</span>
+            <span className="text-[#1e4fc4]">{animalB.toUpperCase()}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="text-white/70 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
             >
               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
-            <span className="text-white/50 text-sm">
+            <span className="text-gray-600 text-sm font-mono">
               {currentPage + 1}/{pages.length}
             </span>
           </div>
@@ -333,7 +330,7 @@ function BookReader() {
       <main className="flex items-center justify-center py-8 px-4 min-h-[calc(100vh-120px)]">
         <div className="relative">
           {/* Book shadow */}
-          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/40 blur-xl rounded-full" />
+          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-8 bg-black/60 blur-xl rounded-full" />
           
           {/* Flip Book */}
           {pages.length > 0 && (
@@ -380,12 +377,12 @@ function BookReader() {
       </main>
 
       {/* Navigation Controls */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/50 backdrop-blur-md rounded-full px-6 py-3 z-20">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-[#141414] border border-[#2a2a2a] px-6 py-3 z-20">
         <motion.button
           onClick={flipPrev}
           disabled={currentPage === 0}
-          className={`p-2 rounded-full transition-all ${
-            currentPage === 0 ? 'text-white/30' : 'text-white hover:bg-white/20'
+          className={`p-2 transition-all ${
+            currentPage === 0 ? 'text-gray-700' : 'text-gray-400 hover:text-white'
           }`}
           whileHover={currentPage > 0 ? { scale: 1.1 } : {}}
           whileTap={currentPage > 0 ? { scale: 0.9 } : {}}
@@ -397,19 +394,19 @@ function BookReader() {
           {pages.slice(0, 10).map((_, i) => (
             <div
               key={i}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i === currentPage ? 'bg-yellow-400 scale-125' : 'bg-white/30'
+              className={`w-2 h-2 transition-all ${
+                i === currentPage ? 'bg-[#d4af37] scale-125' : 'bg-[#3a3a3a]'
               }`}
             />
           ))}
-          {pages.length > 10 && <span className="text-white/50 text-xs">...</span>}
+          {pages.length > 10 && <span className="text-gray-600 text-xs">...</span>}
         </div>
 
         <motion.button
           onClick={flipNext}
           disabled={currentPage >= pages.length - 1}
-          className={`p-2 rounded-full transition-all ${
-            currentPage >= pages.length - 1 ? 'text-white/30' : 'text-white hover:bg-white/20'
+          className={`p-2 transition-all ${
+            currentPage >= pages.length - 1 ? 'text-gray-700' : 'text-gray-400 hover:text-white'
           }`}
           whileHover={currentPage < pages.length - 1 ? { scale: 1.1 } : {}}
           whileTap={currentPage < pages.length - 1 ? { scale: 0.9 } : {}}
@@ -419,10 +416,10 @@ function BookReader() {
 
         {isVictoryPage && (
           <>
-            <div className="w-px h-6 bg-white/30" />
+            <div className="w-px h-6 bg-[#3a3a3a]" />
             <motion.button
               onClick={downloadPDF}
-              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-medium"
+              className="flex items-center gap-2 bg-gradient-to-b from-[#c41e3a] to-[#9a1830] border border-[#d4af37] text-white px-4 py-2 font-bold uppercase text-sm tracking-wider"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -436,10 +433,10 @@ function BookReader() {
       <style jsx global>{`
         .page {
           background-size: cover;
-          box-shadow: inset 0 0 30px rgba(0,0,0,0.3);
+          box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
         }
         .book-shadow {
-          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
         }
         .stf__parent {
           margin: 0 auto;
@@ -452,8 +449,8 @@ function BookReader() {
 export default function ReadPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-900 to-red-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading book...</div>
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="text-white text-xl font-bold uppercase tracking-wider">Loading...</div>
       </div>
     }>
       <BookReader />
