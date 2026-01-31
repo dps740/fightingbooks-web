@@ -43,6 +43,19 @@ export default function Home() {
 
   return (
     <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
+      {/* Navigation */}
+      <nav className="py-4 px-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
+        <div className="max-w-4xl mx-auto flex justify-between items-center">
+          <span className="text-[#FFD700] font-bangers text-xl">🥊 FightingBooks</span>
+          <a 
+            href="/blog" 
+            className="text-white/80 hover:text-[#FFD700] font-bold transition-colors px-4 py-2 rounded-lg hover:bg-white/10"
+          >
+            📚 Battle Guides
+          </a>
+        </div>
+      </nav>
+
       {/* Hero - Book Cover Style */}
       <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -211,6 +224,26 @@ export default function Home() {
                 <p className="mt-4 text-white/70">Free to create • No signup needed</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog CTA */}
+      <section className="py-8 px-4 bg-black/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
+            <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ letterSpacing: '2px' }}>
+              📚 WANT TO LEARN MORE?
+            </h2>
+            <p className="text-white/90 text-lg mb-6">
+              Read in-depth battle guides with real facts, scientific analysis, and expert verdicts!
+            </p>
+            <a
+              href="/blog"
+              className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-xl px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-4 border-[#8B0000]"
+            >
+              🔥 READ BATTLE GUIDES
+            </a>
           </div>
         </div>
       </section>
