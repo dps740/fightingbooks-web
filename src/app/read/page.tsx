@@ -409,26 +409,44 @@ function BookReader() {
         /* Stats page */
         .stats-hero-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
         
-        /* Battle pages */
-        .battle-page { position: relative; }
+        /* Battle pages - text at bottom, image prominent */
+        .battle-page { 
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          min-height: 500px;
+        }
         .battle-bg-image {
           position: absolute;
           top: 0; left: 0; right: 0; bottom: 0;
           background-size: cover;
-          background-position: center;
+          background-position: center top;
           z-index: 0;
           border-radius: 10px;
         }
-        .battle-page .page-title, .battle-page .page-content {
+        .battle-page .page-title {
           position: relative;
           z-index: 1;
           color: white;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+          text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+          font-size: 1.5em;
+          margin-bottom: 10px;
         }
         .battle-content {
-          background: rgba(0,0,0,0.6);
-          padding: 15px;
-          border-radius: 10px;
+          position: relative;
+          z-index: 1;
+          background: linear-gradient(transparent, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.95));
+          padding: 60px 20px 20px 20px;
+          border-radius: 0 0 10px 10px;
+          margin: 0 -20px -20px -20px;
+          color: white;
+        }
+        .battle-content p {
+          background: rgba(255,255,255,0.1) !important;
+          color: white !important;
+          border-left-color: #ffd700 !important;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
         /* Content styling */

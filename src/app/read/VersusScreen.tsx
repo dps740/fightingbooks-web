@@ -13,19 +13,19 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
   const [phase, setPhase] = useState<'enter' | 'clash' | 'vs' | 'exit'>('enter');
 
   useEffect(() => {
-    // Animation timeline
+    // Animation timeline - extended to show while AI processes
     const timeline = [
       { phase: 'clash' as const, delay: 800 },   // Fighters slide in, then clash
       { phase: 'vs' as const, delay: 1400 },     // VS explodes
-      { phase: 'exit' as const, delay: 3200 },   // Hold, then exit
+      { phase: 'exit' as const, delay: 6000 },   // Hold longer (6 sec) while AI starts
     ];
 
     const timeouts = timeline.map(({ phase, delay }) =>
       setTimeout(() => setPhase(phase), delay)
     );
 
-    // Complete callback after exit animation
-    const completeTimeout = setTimeout(onComplete, 4000);
+    // Complete callback after exit animation - gives AI time to start
+    const completeTimeout = setTimeout(onComplete, 7000);
 
     return () => {
       timeouts.forEach(clearTimeout);
