@@ -207,19 +207,33 @@ export default function Home() {
                 )}
               </div>
 
-              {/* CENTER BINDING / VS */}
+              {/* CENTER BINDING / VS - Animated! */}
               <div className="hidden md:flex items-center justify-center px-2" style={{ 
                 background: 'linear-gradient(to right, #d4c4a8, #c4b498, #d4c4a8)',
-                width: '40px'
+                width: '50px'
               }}>
-                <div className="bg-[#FFD700] w-12 h-12 rounded-full flex items-center justify-center border-3 border-[#8B5A2B] shadow-lg">
-                  <span className="font-bangers text-lg text-[#8B0000]">VS</span>
-                </div>
+                <motion.div 
+                  animate={{ 
+                    scale: [1, 1.15, 1],
+                    rotate: [0, 5, -5, 0] 
+                  }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="bg-[#FFD700] w-14 h-14 rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
+                  style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
+                >
+                  <span className="font-bangers text-xl text-[#8B0000]" style={{ textShadow: '1px 1px 0 #FFD700' }}>VS</span>
+                </motion.div>
               </div>
               
-              {/* Mobile VS divider */}
+              {/* Mobile VS divider - Animated! */}
               <div className="md:hidden py-4 text-center bg-[#d4c4a8]">
-                <span className="font-bangers text-2xl text-[#8B0000] bg-[#FFD700] px-4 py-2 rounded-full">VS</span>
+                <motion.span 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  className="inline-block font-bangers text-2xl text-[#8B0000] bg-[#FFD700] px-5 py-2 rounded-full border-4 border-[#8B0000] shadow-lg"
+                >
+                  VS
+                </motion.span>
               </div>
 
               {/* RIGHT PAGE - Second Animal */}
