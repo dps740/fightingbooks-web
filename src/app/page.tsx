@@ -5,26 +5,27 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 
+// High-quality Wikipedia Commons images (reliable, no broken links)
 const FIGHTERS = [
-  { name: 'Lion', img: 'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400&h=400&fit=crop' },
-  { name: 'Tiger', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=400&h=400&fit=crop' },
-  { name: 'Grizzly Bear', img: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=400&h=400&fit=crop' },
-  { name: 'Gorilla', img: 'https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=400&h=400&fit=crop' },
-  { name: 'Great White Shark', img: 'https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=400&h=400&fit=crop' },
-  { name: 'Crocodile', img: 'https://images.unsplash.com/photo-1596689814136-5d1e9c1d0f91?w=400&h=400&fit=crop' },
-  { name: 'Elephant', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=400&h=400&fit=crop' },
-  { name: 'Polar Bear', img: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?w=400&h=400&fit=crop' },
-  { name: 'Orca', img: 'https://images.unsplash.com/photo-1566072579613-e25fc6ab2cd8?w=400&h=400&fit=crop' },
-  { name: 'Hippo', img: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&h=400&fit=crop' },
-  { name: 'Komodo Dragon', img: 'https://images.unsplash.com/photo-1577168501846-26a14e0f18b7?w=400&h=400&fit=crop' },
-  { name: 'Wolf', img: 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=400&h=400&fit=crop' },
-  { name: 'Anaconda', img: 'https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=400&h=400&fit=crop' },
-  { name: 'Eagle', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?w=400&h=400&fit=crop' },
-  { name: 'Jaguar', img: 'https://images.unsplash.com/photo-1551972873-b7e8754e8e26?w=400&h=400&fit=crop' },
-  { name: 'Rhino', img: 'https://images.unsplash.com/photo-1598894000329-cc8d1f7dbb7c?w=400&h=400&fit=crop' },
-  { name: 'King Cobra', img: 'https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=400&h=400&fit=crop' },
-  { name: 'Wolverine', img: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop' },
-  { name: 'Honey Badger', img: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop' },
+  { name: 'Lion', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/400px-Lion_waiting_in_Namibia.jpg' },
+  { name: 'Tiger', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Walking_tiger_female.jpg/400px-Walking_tiger_female.jpg' },
+  { name: 'Grizzly Bear', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/GrizzlyBearJeanBeauworking.jpg/400px-GrizzlyBearJeanBeauworking.jpg' },
+  { name: 'Gorilla', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg/400px-Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg' },
+  { name: 'Great White Shark', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/400px-White_shark.jpg' },
+  { name: 'Crocodile', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Nile_crocodile_head.jpg/400px-Nile_crocodile_head.jpg' },
+  { name: 'Elephant', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/400px-African_Bush_Elephant.jpg' },
+  { name: 'Polar Bear', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/400px-Polar_Bear_-_Alaska_%28cropped%29.jpg' },
+  { name: 'Orca', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/400px-Killerwhales_jumping.jpg' },
+  { name: 'Hippo', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Portrait_Hippopotamus_in_the_water.jpg/400px-Portrait_Hippopotamus_in_the_water.jpg' },
+  { name: 'Komodo Dragon', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Komodo_dragon_with_tongue.jpg/400px-Komodo_dragon_with_tongue.jpg' },
+  { name: 'Wolf', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Eurasian_wolf_2.jpg/400px-Eurasian_wolf_2.jpg' },
+  { name: 'Anaconda', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Green_anaconda_%28Eunectes_murinus%29.JPG/400px-Green_anaconda_%28Eunectes_murinus%29.JPG' },
+  { name: 'Eagle', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/About_to_Launch_%2826075320352%29.jpg/400px-About_to_Launch_%2826075320352%29.jpg' },
+  { name: 'Jaguar', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standing_jaguar.jpg/400px-Standing_jaguar.jpg' },
+  { name: 'Rhino', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Diceros_bicornis.jpg/400px-Diceros_bicornis.jpg' },
+  { name: 'King Cobra', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/12_-_The_Mystical_King_Cobra_and_Coffee_Forests.jpg/400px-12_-_The_Mystical_King_Cobra_and_Coffee_Forests.jpg' },
+  { name: 'Wolverine', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Gulo_gulo_2.jpg/400px-Gulo_gulo_2.jpg' },
+  { name: 'Honey Badger', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Honey_badger.jpg/400px-Honey_badger.jpg' },
 ];
 
 // Keep old array for compatibility
@@ -132,10 +133,10 @@ export default function Home() {
       {/* Fighter Selection - Arcade Style */}
       <section className="px-4 pb-8">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#16213e] rounded-2xl shadow-2xl overflow-hidden border-4 border-[#FFD700]">
+          <div className="bg-[#2d5a3d] rounded-2xl shadow-2xl overflow-hidden border-4 border-[#FFD700]">
             
-            {/* Header Bar */}
-            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-4 px-6">
+            {/* Header Bar - Bold red like the books */}
+            <div className="bg-[#CC0000] py-4 px-6 border-b-4 border-[#FFD700]">
               <h2 className="font-bangers text-2xl sm:text-3xl md:text-4xl text-[#FFD700] text-center" style={{ textShadow: '3px 3px 0 #000', letterSpacing: '2px' }}>
                 ⚔️ SELECT YOUR FIGHTERS ⚔️
               </h2>
@@ -307,40 +308,40 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {/* Choose Your Own Adventure Mode - PROMINENT */}
+              {/* Choose Your Own Adventure Mode - Bold Book Style */}
               <div className="mt-8">
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`max-w-lg mx-auto p-6 rounded-2xl border-4 transition-all cursor-pointer ${
                     cyoaMode 
-                      ? 'bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 border-purple-400 shadow-2xl shadow-purple-500/40' 
-                      : 'bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300 hover:border-purple-500 hover:shadow-xl'
+                      ? 'bg-[#CC0000] border-[#FFD700] shadow-2xl shadow-red-500/40' 
+                      : 'bg-[#1a472a] border-[#FFD700]/50 hover:border-[#FFD700] hover:shadow-xl'
                   }`}
                   onClick={() => setCyoaMode(!cyoaMode)}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className="text-center">
-                    <div className="text-4xl mb-2">🎮</div>
-                    <h3 className={`font-bangers text-2xl sm:text-3xl ${cyoaMode ? 'text-white' : 'text-purple-900'}`}>
+                    <div className="text-4xl mb-2">⚔️</div>
+                    <h3 className="font-bangers text-2xl sm:text-3xl text-[#FFD700]" style={{ textShadow: '2px 2px 0 #000' }}>
                       CHOOSE YOUR ADVENTURE
                     </h3>
                     <div className="flex justify-center gap-2 mt-2 mb-3">
-                      <span className={`text-sm font-bold px-3 py-1 rounded-full ${cyoaMode ? 'bg-green-500 text-white' : 'bg-purple-200 text-purple-700'}`}>
+                      <span className={`text-sm font-bold px-3 py-1 rounded-full ${cyoaMode ? 'bg-[#FFD700] text-[#8B0000]' : 'bg-[#FFD700]/20 text-[#FFD700]'}`}>
                         {cyoaMode ? '✓ ACTIVE' : 'TAP TO ENABLE'}
                       </span>
                     </div>
-                    <p className={`text-sm ${cyoaMode ? 'text-purple-200' : 'text-purple-700'}`}>
+                    <p className="text-sm text-white/90">
                       YOU control the battle! Make choices that change how the fight unfolds.
                     </p>
                     {cyoaMode && (
                       <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="mt-3 bg-white/10 rounded-lg p-2"
+                        className="mt-3 bg-black/20 rounded-lg p-2"
                       >
-                        <p className="text-purple-200 text-xs">⚡ Interactive mode enabled - you'll make 3 battle decisions!</p>
+                        <p className="text-[#FFD700] text-xs">⚡ Interactive mode enabled - you'll make 3 battle decisions!</p>
                       </motion.div>
                     )}
                   </div>
