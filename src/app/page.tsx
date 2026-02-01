@@ -6,26 +6,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 
 const FIGHTERS = [
-  { name: 'Lion', emoji: '🦁', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/220px-Lion_waiting_in_Namibia.jpg' },
-  { name: 'Tiger', emoji: '🐅', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Walking_tiger_female.jpg/220px-Walking_tiger_female.jpg' },
-  { name: 'Grizzly Bear', emoji: '🐻', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/GrizzlyBearJeanBeauworking.jpg/220px-GrizzlyBearJeanBeauworking.jpg' },
-  { name: 'Gorilla', emoji: '🦍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg/220px-Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg' },
-  { name: 'Great White Shark', emoji: '🦈', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/220px-White_shark.jpg' },
-  { name: 'Crocodile', emoji: '🐊', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Nile_crocodile_head.jpg/220px-Nile_crocodile_head.jpg' },
-  { name: 'Elephant', emoji: '🐘', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/220px-African_Bush_Elephant.jpg' },
-  { name: 'Polar Bear', emoji: '🐻‍❄️', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/220px-Polar_Bear_-_Alaska_%28cropped%29.jpg' },
-  { name: 'Orca', emoji: '🐋', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/220px-Killerwhales_jumping.jpg' },
-  { name: 'Hippo', emoji: '🦛', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Portrait_Hippopotamus_in_the_water.jpg/220px-Portrait_Hippopotamus_in_the_water.jpg' },
-  { name: 'Komodo Dragon', emoji: '🦎', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/z/z5/Komodo_dragon_with_tongue.jpg/220px-Komodo_dragon_with_tongue.jpg' },
-  { name: 'Wolf', emoji: '🐺', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Eurasian_wolf_2.jpg/220px-Eurasian_wolf_2.jpg' },
-  { name: 'Anaconda', emoji: '🐍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Anaconda_jaune_34.JPG/220px-Anaconda_jaune_34.JPG' },
-  { name: 'Eagle', emoji: '🦅', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Bald_Eagle_Portrait.jpg/220px-Bald_Eagle_Portrait.jpg' },
-  { name: 'Jaguar', emoji: '🐆', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standing_jaguar.jpg/220px-Standing_jaguar.jpg' },
-  { name: 'Rhino', emoji: '🦏', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Rhinoceros_male_2003.jpg/220px-Rhinoceros_male_2003.jpg' },
-  { name: 'Hippo', emoji: '🦛', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Portrait_Hippopotamus_in_the_water.jpg/220px-Portrait_Hippopotamus_in_the_water.jpg' },
-  { name: 'King Cobra', emoji: '🐍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/12_-_The_Myst., Ophiophagus_hannah.jpg/220px-12_-_Ophiophagus_hannah.jpg' },
-  { name: 'Wolverine', emoji: '🦡', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Wolverine_on_rock.jpg/220px-Wolverine_on_rock.jpg' },
-  { name: 'Honey Badger', emoji: '🦡', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Honey_badger.jpg/220px-Honey_badger.jpg' },
+  { name: 'Lion', img: 'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400&h=400&fit=crop' },
+  { name: 'Tiger', img: 'https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=400&h=400&fit=crop' },
+  { name: 'Grizzly Bear', img: 'https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=400&h=400&fit=crop' },
+  { name: 'Gorilla', img: 'https://images.unsplash.com/photo-1548802673-380ab8ebc7b7?w=400&h=400&fit=crop' },
+  { name: 'Great White Shark', img: 'https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=400&h=400&fit=crop' },
+  { name: 'Crocodile', img: 'https://images.unsplash.com/photo-1596689814136-5d1e9c1d0f91?w=400&h=400&fit=crop' },
+  { name: 'Elephant', img: 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=400&h=400&fit=crop' },
+  { name: 'Polar Bear', img: 'https://images.unsplash.com/photo-1589656966895-2f33e7653819?w=400&h=400&fit=crop' },
+  { name: 'Orca', img: 'https://images.unsplash.com/photo-1566072579613-e25fc6ab2cd8?w=400&h=400&fit=crop' },
+  { name: 'Hippo', img: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&h=400&fit=crop' },
+  { name: 'Komodo Dragon', img: 'https://images.unsplash.com/photo-1577168501846-26a14e0f18b7?w=400&h=400&fit=crop' },
+  { name: 'Wolf', img: 'https://images.unsplash.com/photo-1564466809058-bf4114d55352?w=400&h=400&fit=crop' },
+  { name: 'Anaconda', img: 'https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=400&h=400&fit=crop' },
+  { name: 'Eagle', img: 'https://images.unsplash.com/photo-1611689342806-0863700ce1e4?w=400&h=400&fit=crop' },
+  { name: 'Jaguar', img: 'https://images.unsplash.com/photo-1551972873-b7e8754e8e26?w=400&h=400&fit=crop' },
+  { name: 'Rhino', img: 'https://images.unsplash.com/photo-1598894000329-cc8d1f7dbb7c?w=400&h=400&fit=crop' },
+  { name: 'King Cobra', img: 'https://images.unsplash.com/photo-1531386151447-fd76ad50012f?w=400&h=400&fit=crop' },
+  { name: 'Wolverine', img: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop' },
+  { name: 'Honey Badger', img: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop' },
 ];
 
 // Keep old array for compatibility
@@ -160,25 +159,43 @@ export default function Home() {
                       onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
                       className="w-full p-2 rounded-lg border-2 border-[#CC0000] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
                     />
-                    {/* Scrolling Fighter Cards */}
-                    <div className="h-64 sm:h-80 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-[#CC0000] scrollbar-track-black/20 pr-1">
+                    {/* Scrolling Fighter Cards - BIG PHOTOS */}
+                    <div className="h-[400px] sm:h-[500px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-[#CC0000] scrollbar-track-black/20 pr-1">
                       {FIGHTERS.map((fighter, i) => (
                         <motion.button
                           key={`red-${fighter.name}-${i}`}
                           onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
-                          className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all ${
+                          className={`w-full rounded-xl overflow-hidden transition-all relative ${
                             animalA === fighter.name
-                              ? 'bg-[#CC0000] ring-4 ring-[#FFD700] shadow-lg shadow-red-500/50'
-                              : 'bg-black/40 hover:bg-[#CC0000]/50 border border-[#CC0000]/30'
+                              ? 'ring-4 ring-[#FFD700] shadow-lg shadow-red-500/50'
+                              : 'border-2 border-[#CC0000]/30 hover:border-[#FFD700]'
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-red-900 to-red-700 flex items-center justify-center text-2xl sm:text-3xl overflow-hidden">
-                            {fighter.emoji}
+                          {/* Big Animal Photo */}
+                          <div className="aspect-[4/3] relative">
+                            <img 
+                              src={fighter.img} 
+                              alt={fighter.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                            {/* Gradient overlay for text */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            {/* Animal name on image */}
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                              <span className="font-bangers text-xl sm:text-2xl text-white" style={{ textShadow: '2px 2px 4px #000' }}>
+                                {fighter.name.toUpperCase()}
+                              </span>
+                            </div>
+                            {/* Selected checkmark */}
+                            {animalA === fighter.name && (
+                              <div className="absolute top-2 right-2 w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center">
+                                <span className="text-[#8B0000] font-bold text-xl">✓</span>
+                              </div>
+                            )}
                           </div>
-                          <span className="text-white font-bold text-sm sm:text-base flex-1 text-left">{fighter.name}</span>
-                          {animalA === fighter.name && <span className="text-[#FFD700]">✓</span>}
                         </motion.button>
                       ))}
                     </div>
@@ -223,25 +240,43 @@ export default function Home() {
                       onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
                       className="w-full p-2 rounded-lg border-2 border-[#0066CC] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
                     />
-                    {/* Scrolling Fighter Cards */}
-                    <div className="h-64 sm:h-80 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-[#0066CC] scrollbar-track-black/20 pr-1">
+                    {/* Scrolling Fighter Cards - BIG PHOTOS */}
+                    <div className="h-[400px] sm:h-[500px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-[#0066CC] scrollbar-track-black/20 pr-1">
                       {FIGHTERS.map((fighter, i) => (
                         <motion.button
                           key={`blue-${fighter.name}-${i}`}
                           onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
-                          className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all ${
+                          className={`w-full rounded-xl overflow-hidden transition-all relative ${
                             animalB === fighter.name
-                              ? 'bg-[#0066CC] ring-4 ring-[#FFD700] shadow-lg shadow-blue-500/50'
-                              : 'bg-black/40 hover:bg-[#0066CC]/50 border border-[#0066CC]/30'
+                              ? 'ring-4 ring-[#FFD700] shadow-lg shadow-blue-500/50'
+                              : 'border-2 border-[#0066CC]/30 hover:border-[#FFD700]'
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                         >
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center text-2xl sm:text-3xl overflow-hidden">
-                            {fighter.emoji}
+                          {/* Big Animal Photo */}
+                          <div className="aspect-[4/3] relative">
+                            <img 
+                              src={fighter.img} 
+                              alt={fighter.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                            {/* Gradient overlay for text */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                            {/* Animal name on image */}
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                              <span className="font-bangers text-xl sm:text-2xl text-white" style={{ textShadow: '2px 2px 4px #000' }}>
+                                {fighter.name.toUpperCase()}
+                              </span>
+                            </div>
+                            {/* Selected checkmark */}
+                            {animalB === fighter.name && (
+                              <div className="absolute top-2 right-2 w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center">
+                                <span className="text-[#0044AA] font-bold text-xl">✓</span>
+                              </div>
+                            )}
                           </div>
-                          <span className="text-white font-bold text-sm sm:text-base flex-1 text-left">{fighter.name}</span>
-                          {animalB === fighter.name && <span className="text-[#FFD700]">✓</span>}
                         </motion.button>
                       ))}
                     </div>
