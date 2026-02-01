@@ -5,24 +5,31 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 
-const POPULAR_ANIMALS = [
-  { name: 'Lion', emoji: '🦁' },
-  { name: 'Tiger', emoji: '🐅' },
-  { name: 'Grizzly Bear', emoji: '🐻' },
-  { name: 'Gorilla', emoji: '🦍' },
-  { name: 'Great White Shark', emoji: '🦈' },
-  { name: 'Crocodile', emoji: '🐊' },
-  { name: 'Elephant', emoji: '🐘' },
-  { name: 'Polar Bear', emoji: '🐻‍❄️' },
-  { name: 'Orca', emoji: '🐋' },
-  { name: 'Hippo', emoji: '🦛' },
-  { name: 'Komodo Dragon', emoji: '🦎' },
-  { name: 'Wolf', emoji: '🐺' },
-  { name: 'Anaconda', emoji: '🐍' },
-  { name: 'Eagle', emoji: '🦅' },
-  { name: 'Jaguar', emoji: '🐆' },
-  { name: 'Rhino', emoji: '🦏' },
+const FIGHTERS = [
+  { name: 'Lion', emoji: '🦁', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/220px-Lion_waiting_in_Namibia.jpg' },
+  { name: 'Tiger', emoji: '🐅', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Walking_tiger_female.jpg/220px-Walking_tiger_female.jpg' },
+  { name: 'Grizzly Bear', emoji: '🐻', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/GrizzlyBearJeanBeauworking.jpg/220px-GrizzlyBearJeanBeauworking.jpg' },
+  { name: 'Gorilla', emoji: '🦍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg/220px-Gorille_des_plaines_de_l%27ouest_%C3%A0_l%27Espace_Zoologique.jpg' },
+  { name: 'Great White Shark', emoji: '🦈', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/White_shark.jpg/220px-White_shark.jpg' },
+  { name: 'Crocodile', emoji: '🐊', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Nile_crocodile_head.jpg/220px-Nile_crocodile_head.jpg' },
+  { name: 'Elephant', emoji: '🐘', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/African_Bush_Elephant.jpg/220px-African_Bush_Elephant.jpg' },
+  { name: 'Polar Bear', emoji: '🐻‍❄️', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Polar_Bear_-_Alaska_%28cropped%29.jpg/220px-Polar_Bear_-_Alaska_%28cropped%29.jpg' },
+  { name: 'Orca', emoji: '🐋', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Killerwhales_jumping.jpg/220px-Killerwhales_jumping.jpg' },
+  { name: 'Hippo', emoji: '🦛', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Portrait_Hippopotamus_in_the_water.jpg/220px-Portrait_Hippopotamus_in_the_water.jpg' },
+  { name: 'Komodo Dragon', emoji: '🦎', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/z/z5/Komodo_dragon_with_tongue.jpg/220px-Komodo_dragon_with_tongue.jpg' },
+  { name: 'Wolf', emoji: '🐺', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Eurasian_wolf_2.jpg/220px-Eurasian_wolf_2.jpg' },
+  { name: 'Anaconda', emoji: '🐍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Anaconda_jaune_34.JPG/220px-Anaconda_jaune_34.JPG' },
+  { name: 'Eagle', emoji: '🦅', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Bald_Eagle_Portrait.jpg/220px-Bald_Eagle_Portrait.jpg' },
+  { name: 'Jaguar', emoji: '🐆', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Standing_jaguar.jpg/220px-Standing_jaguar.jpg' },
+  { name: 'Rhino', emoji: '🦏', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Rhinoceros_male_2003.jpg/220px-Rhinoceros_male_2003.jpg' },
+  { name: 'Hippo', emoji: '🦛', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Portrait_Hippopotamus_in_the_water.jpg/220px-Portrait_Hippopotamus_in_the_water.jpg' },
+  { name: 'King Cobra', emoji: '🐍', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/12_-_The_Myst., Ophiophagus_hannah.jpg/220px-12_-_Ophiophagus_hannah.jpg' },
+  { name: 'Wolverine', emoji: '🦡', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Wolverine_on_rock.jpg/220px-Wolverine_on_rock.jpg' },
+  { name: 'Honey Badger', emoji: '🦡', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Honey_badger.jpg/220px-Honey_badger.jpg' },
 ];
+
+// Keep old array for compatibility
+const POPULAR_ANIMALS = FIGHTERS;
 
 export default function Home() {
   const router = useRouter();
@@ -123,113 +130,132 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Fighter Selection - Main Card */}
+      {/* Fighter Selection - Arcade Style */}
       <section className="px-4 pb-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-[#f5f5dc] rounded-xl shadow-2xl overflow-hidden border-4 border-[#8B4513]">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-b from-[#1a1a2e] to-[#16213e] rounded-2xl shadow-2xl overflow-hidden border-4 border-[#FFD700]">
             
             {/* Header Bar */}
-            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-3 sm:py-4 px-4 sm:px-6">
-              <h2 className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#FFD700] text-center" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '1px' }}>
-                ⚔️ CHOOSE YOUR FIGHTERS ⚔️
+            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] py-4 px-6">
+              <h2 className="font-bangers text-2xl sm:text-3xl md:text-4xl text-[#FFD700] text-center" style={{ textShadow: '3px 3px 0 #000', letterSpacing: '2px' }}>
+                ⚔️ SELECT YOUR FIGHTERS ⚔️
               </h2>
             </div>
 
-            <div className="p-6 md:p-8">
-              {/* Two Fighter Columns */}
-              <div className="grid md:grid-cols-[1fr,80px,1fr] gap-4 md:gap-6">
+            <div className="p-4 md:p-6">
+              {/* Fighter Carousels - Side by Side */}
+              <div className="grid grid-cols-[1fr,auto,1fr] gap-2 md:gap-4">
                 
-                {/* RED CORNER - Fighter 1 */}
-                <div className="bg-gradient-to-b from-[#ffcccc] to-[#ff9999] rounded-xl p-5 border-4 border-[#CC0000] shadow-lg">
-                  <div className="bg-[#CC0000] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
+                {/* RED CORNER - Left Carousel */}
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-[#8B0000] to-[#CC0000] text-white font-bangers text-lg sm:text-xl text-center py-2 rounded-t-xl" style={{ letterSpacing: '2px' }}>
                     🔴 RED CORNER
                   </div>
-                  <div className="relative">
+                  <div className="bg-gradient-to-b from-[#4a0000] to-[#2a0000] rounded-b-xl p-3 border-2 border-[#CC0000]">
+                    {/* Custom Input */}
                     <input
                       type="text"
-                      placeholder="Type any creature..."
+                      placeholder="Or type any animal..."
                       value={customA}
                       onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
-                      className="w-full p-3 rounded-lg border-3 border-[#CC0000] focus:ring-2 focus:ring-[#CC0000] focus:outline-none text-center font-bold text-lg bg-white"
+                      className="w-full p-2 rounded-lg border-2 border-[#CC0000] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
                     />
-                    {customA && (
-                      <span className="absolute -top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        🧪 EXPERIMENTAL
-                      </span>
+                    {/* Scrolling Fighter Cards */}
+                    <div className="h-64 sm:h-80 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-[#CC0000] scrollbar-track-black/20 pr-1">
+                      {FIGHTERS.map((fighter, i) => (
+                        <motion.button
+                          key={`red-${fighter.name}-${i}`}
+                          onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
+                          className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all ${
+                            animalA === fighter.name
+                              ? 'bg-[#CC0000] ring-4 ring-[#FFD700] shadow-lg shadow-red-500/50'
+                              : 'bg-black/40 hover:bg-[#CC0000]/50 border border-[#CC0000]/30'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-red-900 to-red-700 flex items-center justify-center text-2xl sm:text-3xl overflow-hidden">
+                            {fighter.emoji}
+                          </div>
+                          <span className="text-white font-bold text-sm sm:text-base flex-1 text-left">{fighter.name}</span>
+                          {animalA === fighter.name && <span className="text-[#FFD700]">✓</span>}
+                        </motion.button>
+                      ))}
+                    </div>
+                    {/* Selected Display */}
+                    {effectiveA && (
+                      <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }} 
+                        animate={{ scale: 1, opacity: 1 }} 
+                        className="mt-3 bg-gradient-to-r from-[#CC0000] to-[#8B0000] text-white font-bangers text-xl sm:text-2xl text-center py-3 rounded-xl border-2 border-[#FFD700] shadow-lg"
+                      >
+                        {effectiveA.toUpperCase()}
+                      </motion.div>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
-                    {POPULAR_ANIMALS.slice(0, 8).map((animal) => (
-                      <button
-                        key={animal.name}
-                        onClick={() => { setAnimalA(animal.name); setCustomA(''); }}
-                        className={`px-3 py-2 rounded-full text-sm font-bold transition-all ${
-                          animalA === animal.name
-                            ? 'bg-[#CC0000] text-white shadow-lg transform scale-110'
-                            : 'bg-white hover:bg-[#ffeeee] border-2 border-[#CC0000]/30'
-                        }`}
-                      >
-                        {animal.emoji} {animal.name}
-                      </button>
-                    ))}
-                  </div>
-                  {effectiveA && (
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-4 bg-[#CC0000] text-white font-bangers text-2xl text-center py-3 rounded-lg">
-                      {effectiveA.toUpperCase()}
-                    </motion.div>
-                  )}
                 </div>
 
-                {/* VS Circle */}
+                {/* VS Badge - Center */}
                 <div className="flex items-center justify-center">
                   <motion.div 
-                    animate={{ rotate: [0, 5, -5, 0] }}
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0] 
+                    }}
                     transition={{ repeat: Infinity, duration: 2 }}
-                    className="w-20 h-20 bg-[#FFD700] rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
+                    className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-full flex items-center justify-center border-4 border-white shadow-2xl shadow-yellow-500/50"
                   >
-                    <span className="font-bangers text-3xl text-[#8B0000]">VS</span>
+                    <span className="font-bangers text-2xl sm:text-3xl text-[#8B0000]" style={{ textShadow: '1px 1px 0 #000' }}>VS</span>
                   </motion.div>
                 </div>
 
-                {/* BLUE CORNER - Fighter 2 */}
-                <div className="bg-gradient-to-b from-[#cce5ff] to-[#99ccff] rounded-xl p-5 border-4 border-[#0066CC] shadow-lg">
-                  <div className="bg-[#0066CC] text-white font-bangers text-xl text-center py-2 rounded-lg mb-4" style={{ letterSpacing: '2px' }}>
+                {/* BLUE CORNER - Right Carousel */}
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-[#0066CC] to-[#0044AA] text-white font-bangers text-lg sm:text-xl text-center py-2 rounded-t-xl" style={{ letterSpacing: '2px' }}>
                     🔵 BLUE CORNER
                   </div>
-                  <div className="relative">
+                  <div className="bg-gradient-to-b from-[#001a4d] to-[#000d26] rounded-b-xl p-3 border-2 border-[#0066CC]">
+                    {/* Custom Input */}
                     <input
                       type="text"
-                      placeholder="Type any creature..."
+                      placeholder="Or type any animal..."
                       value={customB}
                       onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
-                      className="w-full p-3 rounded-lg border-3 border-[#0066CC] focus:ring-2 focus:ring-[#0066CC] focus:outline-none text-center font-bold text-lg bg-white"
+                      className="w-full p-2 rounded-lg border-2 border-[#0066CC] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
                     />
-                    {customB && (
-                      <span className="absolute -top-2 right-2 bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                        🧪 EXPERIMENTAL
-                      </span>
+                    {/* Scrolling Fighter Cards */}
+                    <div className="h-64 sm:h-80 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-[#0066CC] scrollbar-track-black/20 pr-1">
+                      {FIGHTERS.map((fighter, i) => (
+                        <motion.button
+                          key={`blue-${fighter.name}-${i}`}
+                          onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
+                          className={`w-full flex items-center gap-3 p-2 rounded-xl transition-all ${
+                            animalB === fighter.name
+                              ? 'bg-[#0066CC] ring-4 ring-[#FFD700] shadow-lg shadow-blue-500/50'
+                              : 'bg-black/40 hover:bg-[#0066CC]/50 border border-[#0066CC]/30'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center text-2xl sm:text-3xl overflow-hidden">
+                            {fighter.emoji}
+                          </div>
+                          <span className="text-white font-bold text-sm sm:text-base flex-1 text-left">{fighter.name}</span>
+                          {animalB === fighter.name && <span className="text-[#FFD700]">✓</span>}
+                        </motion.button>
+                      ))}
+                    </div>
+                    {/* Selected Display */}
+                    {effectiveB && (
+                      <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }} 
+                        animate={{ scale: 1, opacity: 1 }} 
+                        className="mt-3 bg-gradient-to-r from-[#0066CC] to-[#0044AA] text-white font-bangers text-xl sm:text-2xl text-center py-3 rounded-xl border-2 border-[#FFD700] shadow-lg"
+                      >
+                        {effectiveB.toUpperCase()}
+                      </motion.div>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2 mt-4 justify-center max-h-40 overflow-y-auto">
-                    {POPULAR_ANIMALS.slice(8, 16).map((animal) => (
-                      <button
-                        key={animal.name}
-                        onClick={() => { setAnimalB(animal.name); setCustomB(''); }}
-                        className={`px-3 py-2 rounded-full text-sm font-bold transition-all ${
-                          animalB === animal.name
-                            ? 'bg-[#0066CC] text-white shadow-lg transform scale-110'
-                            : 'bg-white hover:bg-[#eef5ff] border-2 border-[#0066CC]/30'
-                        }`}
-                      >
-                        {animal.emoji} {animal.name}
-                      </button>
-                    ))}
-                  </div>
-                  {effectiveB && (
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="mt-4 bg-[#0066CC] text-white font-bangers text-2xl text-center py-3 rounded-lg">
-                      {effectiveB.toUpperCase()}
-                    </motion.div>
-                  )}
                 </div>
               </div>
 
