@@ -389,28 +389,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Original Books - Amazon Carousel */}
-      <section className="py-12 px-4 bg-[#1a3d1a]">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
-            ❤️ GET THE REAL BOOKS!
-          </h2>
-          <p className="text-white text-lg mb-8">
-            Check out Jerry Pallotta's original <strong className="text-[#FFD700]">Who Would Win?</strong> series — over 26 titles with amazing illustrations by Rob Bolster!
-          </p>
+      {/* Original Books - Full Amazon Collection */}
+      <section className="py-16 px-4 bg-gradient-to-b from-[#232f3e] to-[#131921]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-10">
+            <div className="inline-block bg-[#FF9900] px-6 py-2 rounded-full mb-4">
+              <span className="text-black font-bold text-sm">📚 OFFICIAL BOOK SERIES</span>
+            </div>
+            <h2 className="font-bangers text-4xl sm:text-5xl text-white mb-4" style={{ textShadow: '3px 3px 0 #000' }}>
+              GET THE REAL BOOKS!
+            </h2>
+            <p className="text-white/80 text-lg max-w-2xl mx-auto">
+              Jerry Pallotta's bestselling <strong className="text-[#FF9900]">Who Would Win?</strong> series — 26+ titles with amazing illustrations by Rob Bolster!
+            </p>
+          </div>
           
-          {/* Book Carousel */}
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-4 justify-start md:justify-center min-w-max px-4">
+          {/* Book Grid - All Books */}
+          <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-[#FF9900] scrollbar-track-white/10">
+            <div className="flex gap-5 px-4 min-w-max">
               {[
-                { title: 'Lion vs Tiger', asin: '0545175712', img: 'https://m.media-amazon.com/images/I/81V4eMXjZCL._SY466_.jpg' },
-                { title: 'Tyrannosaurus Rex vs Velociraptor', asin: '0545175720', img: 'https://m.media-amazon.com/images/I/91E9LD4o5bL._SY466_.jpg' },
-                { title: 'Killer Whale vs Great White Shark', asin: '0545175739', img: 'https://m.media-amazon.com/images/I/91vT7U9VQUL._SY466_.jpg' },
-                { title: 'Polar Bear vs Grizzly Bear', asin: '0545175747', img: 'https://m.media-amazon.com/images/I/918mGO3F4YL._SY466_.jpg' },
-                { title: 'Hammerhead vs Bull Shark', asin: '0545301718', img: 'https://m.media-amazon.com/images/I/91qFVHKaHvL._SY466_.jpg' },
-                { title: 'Komodo Dragon vs King Cobra', asin: '0545301726', img: 'https://m.media-amazon.com/images/I/91GXkxCZT-L._SY466_.jpg' },
-                { title: 'Tarantula vs Scorpion', asin: '0545451914', img: 'https://m.media-amazon.com/images/I/91I9J0auvOL._SY466_.jpg' },
-                { title: 'Wolverine vs Tasmanian Devil', asin: '0545451906', img: 'https://m.media-amazon.com/images/I/916gQ+9fZYL._SY466_.jpg' },
+                { title: 'Lion vs Tiger', asin: '0545175712' },
+                { title: 'Killer Whale vs Great White Shark', asin: '0545175739' },
+                { title: 'Tyrannosaurus Rex vs Velociraptor', asin: '0545175720' },
+                { title: 'Polar Bear vs Grizzly Bear', asin: '0545175747' },
+                { title: 'Hammerhead vs Bull Shark', asin: '0545301718' },
+                { title: 'Komodo Dragon vs King Cobra', asin: '0545301726' },
+                { title: 'Tarantula vs Scorpion', asin: '0545451914' },
+                { title: 'Wolverine vs Tasmanian Devil', asin: '0545451906' },
+                { title: 'Whale vs Giant Squid', asin: '0545301734' },
+                { title: 'Rhino vs Hippo', asin: '0545451922' },
+                { title: 'Lobster vs Crab', asin: '0545681197' },
+                { title: 'Rattlesnake vs Secretary Bird', asin: '0545451930' },
+                { title: 'Jaguar vs Skunk', asin: '0545946085' },
+                { title: 'Alligator vs Python', asin: '0545681200' },
+                { title: 'Falcon vs Hawk', asin: '1338320262' },
+                { title: 'Hyena vs Honey Badger', asin: '0545946093' },
+                { title: 'Triceratops vs Spinosaurus', asin: '0545681219' },
+                { title: 'Ultimate Ocean Rumble', asin: '0545681138' },
+                { title: 'Ultimate Jungle Rumble', asin: '1338320254' },
+                { title: 'Ultimate Dinosaur Rumble', asin: '1338320270' },
+                { title: 'Ultimate Bug Rumble', asin: '1338320289' },
+                { title: 'Green Ants vs Army Ants', asin: '1338672126' },
+                { title: 'Hornet vs Wasp', asin: '1338672134' },
+                { title: 'Ultimate Shark Rumble', asin: '1338672142' },
+                { title: 'Coyote vs Dingo', asin: '1338745271' },
+                { title: 'Biggest Shark vs Monster Crocodile', asin: '1339032139' },
               ].map((book) => (
                 <a
                   key={book.asin}
@@ -419,29 +442,33 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="flex-shrink-0 group"
                 >
-                  <div className="w-28 h-40 rounded-lg overflow-hidden shadow-lg border-2 border-white/20 group-hover:border-[#FFD700] transition-all group-hover:scale-105">
+                  <div className="w-36 h-52 rounded-lg overflow-hidden shadow-2xl border-3 border-white/10 group-hover:border-[#FF9900] transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(255,153,0,0.4)]">
                     <img 
-                      src={book.img} 
+                      src={`https://images-na.ssl-images-amazon.com/images/P/${book.asin}.01._SCLZZZZZZZ_.jpg`}
                       alt={book.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
-                  <p className="text-white/70 text-xs mt-2 max-w-28 group-hover:text-[#FFD700] transition-colors">{book.title}</p>
+                  <p className="text-white/60 text-xs mt-2 max-w-36 text-center group-hover:text-[#FF9900] transition-colors line-clamp-2">{book.title}</p>
                 </a>
               ))}
             </div>
           </div>
           
-          <a
-            href="https://www.amazon.com/s?k=who+would+win+jerry+pallotta&tag=fightingbooks-20"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-6 bg-[#FF9900] text-black font-bold text-lg px-8 py-3 rounded-lg hover:bg-[#FFB84D] transition-all shadow-lg"
-          >
-            📚 See All Books on Amazon
-          </a>
-          <p className="mt-6 text-white/60 text-sm">
-            FightingBooks is a fan project — not affiliated with Jerry Pallotta or Scholastic.
+          <div className="text-center mt-8">
+            <p className="text-white/50 text-sm mb-4">👆 Scroll to see all 26 books!</p>
+            <a
+              href="https://www.amazon.com/s?k=who+would+win+jerry+pallotta&tag=fightingbooks-20"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-[#FF9900] text-black font-bold text-xl px-10 py-4 rounded-xl hover:bg-[#FFB84D] transition-all shadow-xl hover:scale-105"
+            >
+              🛒 Shop Full Collection on Amazon
+            </a>
+          </div>
+          <p className="mt-8 text-white/40 text-sm text-center">
+            FightingBooks is a fan project — not affiliated with Jerry Pallotta or Scholastic. As an Amazon Associate we earn from qualifying purchases.
           </p>
         </div>
       </section>
