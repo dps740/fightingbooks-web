@@ -150,7 +150,7 @@ export default function Home() {
             <div className="grid md:grid-cols-[1fr,auto,1fr]">
               
               {/* LEFT PAGE - First Animal */}
-              <div className="p-4 md:p-6" style={{ 
+              <div className="p-4 md:p-6 flex flex-col" style={{ 
                 background: 'linear-gradient(to right, #e8e0d0 0%, #f5f0e1 100%)',
                 borderRight: '1px solid #d4c4a8'
               }}>
@@ -166,7 +166,7 @@ export default function Home() {
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000] mb-4"
                 />
                 {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[350px] sm:h-[450px] overflow-y-auto space-y-3 pr-2" style={{ scrollbarWidth: 'thin' }}>
+                <div className="h-[400px] overflow-y-auto space-y-3 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
                   {FIGHTERS.map((fighter, i) => (
                     <button
                       key={`left-${fighter.name}-${i}`}
@@ -179,12 +179,16 @@ export default function Home() {
                     >
                       {/* Animal Illustration Card */}
                       <div className="bg-white">
-                        <div className="aspect-[3/2] relative">
+                        <div className="aspect-[4/3] relative">
                           <img 
                             src={fighter.img} 
                             alt={fighter.name}
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://placehold.co/400x300/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
+                            }}
                           />
                           {animalA === fighter.name && (
                             <div className="absolute top-2 right-2 w-8 h-8 bg-[#CC0000] rounded-full flex items-center justify-center">
@@ -237,7 +241,7 @@ export default function Home() {
               </div>
 
               {/* RIGHT PAGE - Second Animal */}
-              <div className="p-4 md:p-6" style={{ 
+              <div className="p-4 md:p-6 flex flex-col" style={{ 
                 background: 'linear-gradient(to left, #e8e0d0 0%, #f5f0e1 100%)',
                 borderLeft: '1px solid #d4c4a8'
               }}>
@@ -253,7 +257,7 @@ export default function Home() {
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] mb-4"
                 />
                 {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[350px] sm:h-[450px] overflow-y-auto space-y-3 pr-2" style={{ scrollbarWidth: 'thin' }}>
+                <div className="h-[400px] overflow-y-auto space-y-3 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
                   {FIGHTERS.map((fighter, i) => (
                     <button
                       key={`right-${fighter.name}-${i}`}
@@ -266,12 +270,16 @@ export default function Home() {
                     >
                       {/* Animal Illustration Card */}
                       <div className="bg-white">
-                        <div className="aspect-[3/2] relative">
+                        <div className="aspect-[4/3] relative">
                           <img 
                             src={fighter.img} 
                             alt={fighter.name}
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://placehold.co/400x300/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
+                            }}
                           />
                           {animalB === fighter.name && (
                             <div className="absolute top-2 right-2 w-8 h-8 bg-[#0066CC] rounded-full flex items-center justify-center">

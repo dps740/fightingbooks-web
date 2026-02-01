@@ -323,16 +323,20 @@ async function generateBook(animalA: string, animalB: string, environment: strin
 }
 
 // Add CYOA choices
-function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string): BookPage[] {
+async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string): Promise<BookPage[]> {
   const battleIndex = pages.findIndex(p => p.type === 'battle');
   if (battleIndex === -1) return pages;
+
+  // Generate image for the first choice moment
+  const choiceImage = await generateImage(`${animalA} and ${animalB} facing off, tense moment before battle, dramatic standoff`);
 
   const introPages = pages.slice(0, battleIndex + 1);
   introPages[introPages.length - 1] = {
     ...introPages[introPages.length - 1],
     type: 'choice',
     title: 'What Happens Next?',
-    content: `<p>The battle has begun! Both fighters are ready...</p>`,
+    content: `<p>The battle has begun! Both fighters are ready...</p><p>What should ${animalA} do?</p>`,
+    imageUrl: choiceImage,
     choices: [
       { id: 'attack', text: `${animalA} charges with full force!`, emoji: '💥' },
       { id: 'defend', text: `${animalA} waits for the perfect moment`, emoji: '👁️' },
@@ -355,7 +359,7 @@ export async function POST(request: NextRequest) {
     let result = await generateBook(animalA, animalB, environment);
     
     if (mode === 'cyoa') {
-      result.pages = addCyoaChoices(result.pages, animalA, animalB);
+      result.pages = await addCyoaChoices(result.pages, animalA, animalB);
     }
 
     return NextResponse.json(result);
