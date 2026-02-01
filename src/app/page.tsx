@@ -87,12 +87,42 @@ export default function Home() {
           <span className="text-[#FFD700] font-bangers text-xl">🥊 FightingBooks</span>
           <a 
             href="/blog" 
-            className="text-white/80 hover:text-[#FFD700] font-bold transition-colors px-4 py-2 rounded-lg hover:bg-white/10"
+            className="text-white hover:text-[#FFD700] font-bold transition-colors px-4 py-2 rounded-lg hover:bg-white/10"
           >
             📚 Battle Guides
           </a>
         </div>
       </nav>
+
+      {/* Sticky Selected Animals Preview */}
+      {effectiveA && effectiveB && (
+        <motion.div 
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b-2 border-[#FFD700] shadow-lg"
+        >
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-[#CC0000] font-bangers text-lg">{effectiveA}</span>
+              <motion.span 
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                className="text-[#FFD700] font-bangers text-sm"
+              >
+                VS
+              </motion.span>
+              <span className="text-[#0066CC] font-bangers text-lg">{effectiveB}</span>
+            </div>
+            <button
+              onClick={handleGenerate}
+              disabled={!canGenerate || loading}
+              className="px-6 py-2 rounded-lg font-bangers text-lg bg-[#FFD700] text-[#8B0000] border-2 border-[#8B5A2B] hover:bg-yellow-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? '⏳' : cyoaMode ? '📖 START!' : '📖 CREATE!'}
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Hero - Book Cover Style */}
       <section className="py-8 px-4">
@@ -131,7 +161,7 @@ export default function Home() {
       </section>
 
       {/* Animal Selection - Book Page Style */}
-      <section className="px-4 pb-8">
+      <section className="px-4 pb-8 pt-4">
         <div className="max-w-5xl mx-auto">
           {/* Open Book Container */}
           <div className="bg-[#f5f0e1] rounded-lg shadow-2xl overflow-hidden" style={{ 
@@ -166,7 +196,7 @@ export default function Home() {
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000] mb-4"
                 />
                 {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[400px] overflow-y-auto space-y-3 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
+                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
                   {FIGHTERS.map((fighter, i) => (
                     <button
                       key={`left-${fighter.name}-${i}`}
@@ -174,7 +204,7 @@ export default function Home() {
                       className={`w-full rounded-lg overflow-hidden transition-all ${
                         animalA === fighter.name
                           ? 'ring-4 ring-[#CC0000] shadow-lg'
-                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#CC0000]'
+                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#CC0000] hover:shadow-md'
                       }`}
                     >
                       {/* Animal Illustration Card */}
@@ -203,12 +233,6 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
-                {/* Selected Display */}
-                {effectiveA && (
-                  <div className="mt-4 bg-[#CC0000] text-white font-bangers text-xl text-center py-3 rounded border-2 border-[#8B5A2B]">
-                    {effectiveA.toUpperCase()}
-                  </div>
-                )}
               </div>
 
               {/* CENTER BINDING / VS - Animated! */}
@@ -218,10 +242,9 @@ export default function Home() {
               }}>
                 <motion.div 
                   animate={{ 
-                    scale: [1, 1.15, 1],
-                    rotate: [0, 5, -5, 0] 
+                    scale: [1, 1.08, 1]
                   }}
-                  transition={{ repeat: Infinity, duration: 2 }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                   className="bg-[#FFD700] w-14 h-14 rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
                   style={{ boxShadow: '0 4px 15px rgba(0,0,0,0.4)' }}
                 >
@@ -232,8 +255,8 @@ export default function Home() {
               {/* Mobile VS divider - Animated! */}
               <div className="md:hidden py-4 text-center bg-[#d4c4a8]">
                 <motion.span 
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  animate={{ scale: [1, 1.06, 1] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
                   className="inline-block font-bangers text-2xl text-[#8B0000] bg-[#FFD700] px-5 py-2 rounded-full border-4 border-[#8B0000] shadow-lg"
                 >
                   VS
@@ -257,7 +280,7 @@ export default function Home() {
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] mb-4"
                 />
                 {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[400px] overflow-y-auto space-y-3 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
+                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
                   {FIGHTERS.map((fighter, i) => (
                     <button
                       key={`right-${fighter.name}-${i}`}
@@ -265,7 +288,7 @@ export default function Home() {
                       className={`w-full rounded-lg overflow-hidden transition-all ${
                         animalB === fighter.name
                           ? 'ring-4 ring-[#0066CC] shadow-lg'
-                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#0066CC]'
+                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#0066CC] hover:shadow-md'
                       }`}
                     >
                       {/* Animal Illustration Card */}
@@ -294,12 +317,6 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
-                {/* Selected Display */}
-                {effectiveB && (
-                  <div className="mt-4 bg-[#0066CC] text-white font-bangers text-xl text-center py-3 rounded border-2 border-[#8B5A2B]">
-                    {effectiveB.toUpperCase()}
-                  </div>
-                )}
               </div>
             </div>
 
