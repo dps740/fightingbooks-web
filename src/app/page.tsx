@@ -246,39 +246,42 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {/* Choose Your Own Adventure Mode Toggle */}
-              <div className="mt-6">
+              {/* Choose Your Own Adventure Mode - PROMINENT */}
+              <div className="mt-8">
                 <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className={`max-w-md mx-auto p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`max-w-lg mx-auto p-6 rounded-2xl border-4 transition-all cursor-pointer ${
                     cyoaMode 
-                      ? 'bg-gradient-to-r from-purple-900/50 to-purple-700/50 border-purple-400 shadow-lg shadow-purple-500/20' 
-                      : 'bg-gray-100 border-gray-300 hover:border-purple-300'
+                      ? 'bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 border-purple-400 shadow-2xl shadow-purple-500/40' 
+                      : 'bg-gradient-to-br from-purple-100 to-pink-100 border-purple-300 hover:border-purple-500 hover:shadow-xl'
                   }`}
                   onClick={() => setCyoaMode(!cyoaMode)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-12 h-6 rounded-full p-1 transition-all ${cyoaMode ? 'bg-purple-500' : 'bg-gray-300'}`}>
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🎮</div>
+                    <h3 className={`font-bangers text-2xl sm:text-3xl ${cyoaMode ? 'text-white' : 'text-purple-900'}`}>
+                      CHOOSE YOUR ADVENTURE
+                    </h3>
+                    <div className="flex justify-center gap-2 mt-2 mb-3">
+                      <span className={`text-sm font-bold px-3 py-1 rounded-full ${cyoaMode ? 'bg-green-500 text-white' : 'bg-purple-200 text-purple-700'}`}>
+                        {cyoaMode ? '✓ ACTIVE' : 'TAP TO ENABLE'}
+                      </span>
+                    </div>
+                    <p className={`text-sm ${cyoaMode ? 'text-purple-200' : 'text-purple-700'}`}>
+                      YOU control the battle! Make choices that change how the fight unfolds.
+                    </p>
+                    {cyoaMode && (
                       <motion.div 
-                        className="w-4 h-4 bg-white rounded-full shadow"
-                        animate={{ x: cyoaMode ? 24 : 0 }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className={`font-bangers text-lg ${cyoaMode ? 'text-white' : 'text-gray-800'}`}>
-                          🎮 CHOOSE YOUR ADVENTURE
-                        </span>
-                        <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                          PREMIUM
-                        </span>
-                      </div>
-                      <p className={`text-sm mt-1 ${cyoaMode ? 'text-purple-200' : 'text-gray-600'}`}>
-                        You control the battle! Make choices that change how the fight unfolds.
-                      </p>
-                    </div>
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-3 bg-white/10 rounded-lg p-2"
+                      >
+                        <p className="text-purple-200 text-xs">⚡ Interactive mode enabled - you'll make 3 battle decisions!</p>
+                      </motion.div>
+                    )}
                   </div>
                 </motion.div>
               </div>
@@ -297,7 +300,7 @@ export default function Home() {
                   }`}
                   style={canGenerate ? { textShadow: '2px 2px 0 #000' } : {}}
                 >
-                  {loading ? '⏳ CREATING...' : '📖 CREATE MY BOOK!'}
+                  {loading ? '⏳ CREATING...' : cyoaMode ? '🎮 START ADVENTURE!' : '📖 CREATE MY BOOK!'}
                 </motion.button>
                 
                 {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
