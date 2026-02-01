@@ -130,260 +130,215 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Fighter Selection - Arcade Style */}
+      {/* Animal Selection - Book Page Style */}
       <section className="px-4 pb-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-[#2d5a3d] rounded-2xl shadow-2xl overflow-hidden border-4 border-[#FFD700]">
+        <div className="max-w-5xl mx-auto">
+          {/* Open Book Container */}
+          <div className="bg-[#f5f0e1] rounded-lg shadow-2xl overflow-hidden" style={{ 
+            boxShadow: '0 0 40px rgba(0,0,0,0.4), inset 0 0 80px rgba(139,90,43,0.1)',
+            border: '8px solid #8B5A2B'
+          }}>
             
-            {/* Header Bar - Bold red like the books */}
-            <div className="bg-[#CC0000] py-4 px-6 border-b-4 border-[#FFD700]">
-              <h2 className="font-bangers text-2xl sm:text-3xl md:text-4xl text-[#FFD700] text-center" style={{ textShadow: '3px 3px 0 #000', letterSpacing: '2px' }}>
-                ⚔️ SELECT YOUR FIGHTERS ⚔️
+            {/* Book Spine / Header */}
+            <div className="bg-[#CC0000] py-3 px-6 text-center" style={{ borderBottom: '4px solid #8B5A2B' }}>
+              <h2 className="font-bangers text-2xl sm:text-3xl text-[#FFD700]" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '1px' }}>
+                PICK YOUR ANIMALS
               </h2>
             </div>
 
-            <div className="p-4 md:p-6">
-              {/* Fighter Carousels - Side by Side */}
-              <div className="grid grid-cols-[1fr,auto,1fr] gap-2 md:gap-4">
-                
-                {/* RED CORNER - Left Carousel */}
-                <div className="relative">
-                  <div className="bg-gradient-to-r from-[#8B0000] to-[#CC0000] text-white font-bangers text-lg sm:text-xl text-center py-2 rounded-t-xl" style={{ letterSpacing: '2px' }}>
-                    🔴 RED CORNER
-                  </div>
-                  <div className="bg-gradient-to-b from-[#4a0000] to-[#2a0000] rounded-b-xl p-3 border-2 border-[#CC0000]">
-                    {/* Custom Input */}
-                    <input
-                      type="text"
-                      placeholder="Or type any animal..."
-                      value={customA}
-                      onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
-                      className="w-full p-2 rounded-lg border-2 border-[#CC0000] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
-                    />
-                    {/* Scrolling Fighter Cards - BIG PHOTOS */}
-                    <div className="h-[400px] sm:h-[500px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-[#CC0000] scrollbar-track-black/20 pr-1">
-                      {FIGHTERS.map((fighter, i) => (
-                        <motion.button
-                          key={`red-${fighter.name}-${i}`}
-                          onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
-                          className={`w-full rounded-xl overflow-hidden transition-all relative ${
-                            animalA === fighter.name
-                              ? 'ring-4 ring-[#FFD700] shadow-lg shadow-red-500/50'
-                              : 'border-2 border-[#CC0000]/30 hover:border-[#FFD700]'
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {/* Big Animal Photo */}
-                          <div className="aspect-[4/3] relative">
-                            <img 
-                              src={fighter.img} 
-                              alt={fighter.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            {/* Gradient overlay for text */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                            {/* Animal name on image */}
-                            <div className="absolute bottom-0 left-0 right-0 p-3">
-                              <span className="font-bangers text-xl sm:text-2xl text-white" style={{ textShadow: '2px 2px 4px #000' }}>
-                                {fighter.name.toUpperCase()}
-                              </span>
+            {/* Two-Page Spread */}
+            <div className="grid md:grid-cols-[1fr,auto,1fr]">
+              
+              {/* LEFT PAGE - First Animal */}
+              <div className="p-4 md:p-6" style={{ 
+                background: 'linear-gradient(to right, #e8e0d0 0%, #f5f0e1 100%)',
+                borderRight: '1px solid #d4c4a8'
+              }}>
+                <h3 className="font-bangers text-xl text-[#8B0000] text-center mb-3" style={{ letterSpacing: '1px' }}>
+                  FIRST ANIMAL
+                </h3>
+                {/* Custom Input */}
+                <input
+                  type="text"
+                  placeholder="Type any animal..."
+                  value={customA}
+                  onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
+                  className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000] mb-4"
+                />
+                {/* Animal Cards - Encyclopedia Style */}
+                <div className="h-[350px] sm:h-[450px] overflow-y-auto space-y-3 pr-2" style={{ scrollbarWidth: 'thin' }}>
+                  {FIGHTERS.map((fighter, i) => (
+                    <button
+                      key={`left-${fighter.name}-${i}`}
+                      onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
+                      className={`w-full rounded-lg overflow-hidden transition-all ${
+                        animalA === fighter.name
+                          ? 'ring-4 ring-[#CC0000] shadow-lg'
+                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#CC0000]'
+                      }`}
+                    >
+                      {/* Animal Illustration Card */}
+                      <div className="bg-white">
+                        <div className="aspect-[3/2] relative">
+                          <img 
+                            src={fighter.img} 
+                            alt={fighter.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          {animalA === fighter.name && (
+                            <div className="absolute top-2 right-2 w-8 h-8 bg-[#CC0000] rounded-full flex items-center justify-center">
+                              <span className="text-white font-bold">✓</span>
                             </div>
-                            {/* Selected checkmark */}
-                            {animalA === fighter.name && (
-                              <div className="absolute top-2 right-2 w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center">
-                                <span className="text-[#8B0000] font-bold text-xl">✓</span>
-                              </div>
-                            )}
-                          </div>
-                        </motion.button>
-                      ))}
-                    </div>
-                    {/* Selected Display */}
-                    {effectiveA && (
-                      <motion.div 
-                        initial={{ scale: 0.8, opacity: 0 }} 
-                        animate={{ scale: 1, opacity: 1 }} 
-                        className="mt-3 bg-gradient-to-r from-[#CC0000] to-[#8B0000] text-white font-bangers text-xl sm:text-2xl text-center py-3 rounded-xl border-2 border-[#FFD700] shadow-lg"
-                      >
-                        {effectiveA.toUpperCase()}
-                      </motion.div>
-                    )}
-                  </div>
+                          )}
+                        </div>
+                        <div className="p-2 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
+                          <span className="font-bangers text-lg text-[#333]">{fighter.name.toUpperCase()}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-
-                {/* VS Badge - Center */}
-                <div className="flex items-center justify-center">
-                  <motion.div 
-                    animate={{ 
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0] 
-                    }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#FFD700] to-[#FFA500] rounded-full flex items-center justify-center border-4 border-white shadow-2xl shadow-yellow-500/50"
-                  >
-                    <span className="font-bangers text-2xl sm:text-3xl text-[#8B0000]" style={{ textShadow: '1px 1px 0 #000' }}>VS</span>
-                  </motion.div>
-                </div>
-
-                {/* BLUE CORNER - Right Carousel */}
-                <div className="relative">
-                  <div className="bg-gradient-to-r from-[#0066CC] to-[#0044AA] text-white font-bangers text-lg sm:text-xl text-center py-2 rounded-t-xl" style={{ letterSpacing: '2px' }}>
-                    🔵 BLUE CORNER
+                {/* Selected Display */}
+                {effectiveA && (
+                  <div className="mt-4 bg-[#CC0000] text-white font-bangers text-xl text-center py-3 rounded border-2 border-[#8B5A2B]">
+                    {effectiveA.toUpperCase()}
                   </div>
-                  <div className="bg-gradient-to-b from-[#001a4d] to-[#000d26] rounded-b-xl p-3 border-2 border-[#0066CC]">
-                    {/* Custom Input */}
-                    <input
-                      type="text"
-                      placeholder="Or type any animal..."
-                      value={customB}
-                      onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
-                      className="w-full p-2 rounded-lg border-2 border-[#0066CC] bg-black/50 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-3"
-                    />
-                    {/* Scrolling Fighter Cards - BIG PHOTOS */}
-                    <div className="h-[400px] sm:h-[500px] overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-[#0066CC] scrollbar-track-black/20 pr-1">
-                      {FIGHTERS.map((fighter, i) => (
-                        <motion.button
-                          key={`blue-${fighter.name}-${i}`}
-                          onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
-                          className={`w-full rounded-xl overflow-hidden transition-all relative ${
-                            animalB === fighter.name
-                              ? 'ring-4 ring-[#FFD700] shadow-lg shadow-blue-500/50'
-                              : 'border-2 border-[#0066CC]/30 hover:border-[#FFD700]'
-                          }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {/* Big Animal Photo */}
-                          <div className="aspect-[4/3] relative">
-                            <img 
-                              src={fighter.img} 
-                              alt={fighter.name}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            {/* Gradient overlay for text */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                            {/* Animal name on image */}
-                            <div className="absolute bottom-0 left-0 right-0 p-3">
-                              <span className="font-bangers text-xl sm:text-2xl text-white" style={{ textShadow: '2px 2px 4px #000' }}>
-                                {fighter.name.toUpperCase()}
-                              </span>
-                            </div>
-                            {/* Selected checkmark */}
-                            {animalB === fighter.name && (
-                              <div className="absolute top-2 right-2 w-8 h-8 bg-[#FFD700] rounded-full flex items-center justify-center">
-                                <span className="text-[#0044AA] font-bold text-xl">✓</span>
-                              </div>
-                            )}
-                          </div>
-                        </motion.button>
-                      ))}
-                    </div>
-                    {/* Selected Display */}
-                    {effectiveB && (
-                      <motion.div 
-                        initial={{ scale: 0.8, opacity: 0 }} 
-                        animate={{ scale: 1, opacity: 1 }} 
-                        className="mt-3 bg-gradient-to-r from-[#0066CC] to-[#0044AA] text-white font-bangers text-xl sm:text-2xl text-center py-3 rounded-xl border-2 border-[#FFD700] shadow-lg"
-                      >
-                        {effectiveB.toUpperCase()}
-                      </motion.div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* Matchup Display */}
-              {effectiveA && effectiveB && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
-                  <div className="inline-block bg-[#2d5a3d] px-8 py-4 rounded-xl border-4 border-[#FFD700]">
-                    <span className="font-bangers text-2xl md:text-3xl">
-                      <span className="text-[#ff6b6b]">{effectiveA.toUpperCase()}</span>
-                      <span className="text-[#FFD700] mx-4">VS</span>
-                      <span className="text-[#6bb3ff]">{effectiveB.toUpperCase()}</span>
-                    </span>
+              {/* CENTER BINDING / VS */}
+              <div className="hidden md:flex items-center justify-center px-2" style={{ 
+                background: 'linear-gradient(to right, #d4c4a8, #c4b498, #d4c4a8)',
+                width: '40px'
+              }}>
+                <div className="bg-[#FFD700] w-12 h-12 rounded-full flex items-center justify-center border-3 border-[#8B5A2B] shadow-lg">
+                  <span className="font-bangers text-lg text-[#8B0000]">VS</span>
+                </div>
+              </div>
+              
+              {/* Mobile VS divider */}
+              <div className="md:hidden py-4 text-center bg-[#d4c4a8]">
+                <span className="font-bangers text-2xl text-[#8B0000] bg-[#FFD700] px-4 py-2 rounded-full">VS</span>
+              </div>
+
+              {/* RIGHT PAGE - Second Animal */}
+              <div className="p-4 md:p-6" style={{ 
+                background: 'linear-gradient(to left, #e8e0d0 0%, #f5f0e1 100%)',
+                borderLeft: '1px solid #d4c4a8'
+              }}>
+                <h3 className="font-bangers text-xl text-[#0066CC] text-center mb-3" style={{ letterSpacing: '1px' }}>
+                  SECOND ANIMAL
+                </h3>
+                {/* Custom Input */}
+                <input
+                  type="text"
+                  placeholder="Type any animal..."
+                  value={customB}
+                  onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
+                  className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] mb-4"
+                />
+                {/* Animal Cards - Encyclopedia Style */}
+                <div className="h-[350px] sm:h-[450px] overflow-y-auto space-y-3 pr-2" style={{ scrollbarWidth: 'thin' }}>
+                  {FIGHTERS.map((fighter, i) => (
+                    <button
+                      key={`right-${fighter.name}-${i}`}
+                      onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
+                      className={`w-full rounded-lg overflow-hidden transition-all ${
+                        animalB === fighter.name
+                          ? 'ring-4 ring-[#0066CC] shadow-lg'
+                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#0066CC]'
+                      }`}
+                    >
+                      {/* Animal Illustration Card */}
+                      <div className="bg-white">
+                        <div className="aspect-[3/2] relative">
+                          <img 
+                            src={fighter.img} 
+                            alt={fighter.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          {animalB === fighter.name && (
+                            <div className="absolute top-2 right-2 w-8 h-8 bg-[#0066CC] rounded-full flex items-center justify-center">
+                              <span className="text-white font-bold">✓</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-2 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
+                          <span className="font-bangers text-lg text-[#333]">{fighter.name.toUpperCase()}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {/* Selected Display */}
+                {effectiveB && (
+                  <div className="mt-4 bg-[#0066CC] text-white font-bangers text-xl text-center py-3 rounded border-2 border-[#8B5A2B]">
+                    {effectiveB.toUpperCase()}
                   </div>
-                </motion.div>
+                )}
+              </div>
+            </div>
+
+            {/* Matchup Display - Book Style */}
+            {effectiveA && effectiveB && (
+              <div className="py-4 text-center bg-[#d4c4a8] border-t-2 border-[#8B5A2B]">
+                <span className="font-bangers text-2xl md:text-3xl text-[#333]">
+                  <span className="text-[#CC0000]">{effectiveA.toUpperCase()}</span>
+                  <span className="text-[#8B5A2B] mx-3">VS</span>
+                  <span className="text-[#0066CC]">{effectiveB.toUpperCase()}</span>
+                </span>
+              </div>
+            )}
+
+            {/* Choose Your Adventure Toggle - Book Page Style */}
+            <div className="p-4 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
+              <button
+                onClick={() => setCyoaMode(!cyoaMode)}
+                className={`w-full max-w-md mx-auto block p-4 rounded-lg border-2 transition-all ${
+                  cyoaMode 
+                    ? 'bg-[#CC0000] border-[#8B5A2B] text-white' 
+                    : 'bg-white border-[#8B5A2B] text-[#333] hover:bg-[#f5f0e1]'
+                }`}
+              >
+                <div className="font-bangers text-xl mb-1" style={cyoaMode ? { color: '#FFD700' } : {}}>
+                  📖 CHOOSE YOUR ADVENTURE MODE
+                </div>
+                <div className="text-sm opacity-80">
+                  {cyoaMode ? '✓ ACTIVE - You\'ll make 3 battle decisions!' : 'Tap to enable interactive story mode'}
+                </div>
+              </button>
+            </div>
+
+            {/* Create Book Button - Inside the book */}
+            <div className="p-6 bg-[#CC0000] text-center" style={{ borderTop: '4px solid #8B5A2B' }}>
+              <button
+                onClick={handleGenerate}
+                disabled={!canGenerate || loading}
+                className={`px-8 sm:px-12 py-4 rounded-lg font-bangers text-xl sm:text-2xl md:text-3xl transition-all ${
+                  canGenerate && !loading
+                    ? 'bg-[#FFD700] text-[#8B0000] border-4 border-[#8B5A2B] shadow-lg hover:bg-yellow-300 cursor-pointer'
+                    : 'bg-gray-400 text-gray-600 cursor-not-allowed border-4 border-gray-500'
+                }`}
+              >
+                {loading ? '⏳ CREATING...' : cyoaMode ? '📖 START ADVENTURE!' : '📖 CREATE MY BOOK!'}
+              </button>
+              
+              {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
+                <p className="mt-3 text-white font-bold bg-[#8B0000] inline-block px-4 py-1 rounded">⚠️ Pick two DIFFERENT animals!</p>
               )}
-
-              {/* Choose Your Own Adventure Mode - Bold Book Style */}
-              <div className="mt-8">
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`max-w-lg mx-auto p-6 rounded-2xl border-4 transition-all cursor-pointer ${
-                    cyoaMode 
-                      ? 'bg-[#CC0000] border-[#FFD700] shadow-2xl shadow-red-500/40' 
-                      : 'bg-[#1a472a] border-[#FFD700]/50 hover:border-[#FFD700] hover:shadow-xl'
-                  }`}
-                  onClick={() => setCyoaMode(!cyoaMode)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">⚔️</div>
-                    <h3 className="font-bangers text-2xl sm:text-3xl text-[#FFD700]" style={{ textShadow: '2px 2px 0 #000' }}>
-                      CHOOSE YOUR ADVENTURE
-                    </h3>
-                    <div className="flex justify-center gap-2 mt-2 mb-3">
-                      <span className={`text-sm font-bold px-3 py-1 rounded-full ${cyoaMode ? 'bg-[#FFD700] text-[#8B0000]' : 'bg-[#FFD700]/20 text-[#FFD700]'}`}>
-                        {cyoaMode ? '✓ ACTIVE' : 'TAP TO ENABLE'}
-                      </span>
-                    </div>
-                    <p className="text-sm text-white/90">
-                      YOU control the battle! Make choices that change how the fight unfolds.
-                    </p>
-                    {cyoaMode && (
-                      <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="mt-3 bg-black/20 rounded-lg p-2"
-                      >
-                        <p className="text-[#FFD700] text-xs">⚡ Interactive mode enabled - you'll make 3 battle decisions!</p>
-                      </motion.div>
-                    )}
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Generate Button */}
-              <div className="mt-8 text-center">
-                <motion.button
-                  onClick={handleGenerate}
-                  disabled={!canGenerate || loading}
-                  whileHover={canGenerate ? { scale: 1.05, boxShadow: '0 0 30px rgba(255,215,0,0.5)' } : {}}
-                  whileTap={canGenerate ? { scale: 0.95 } : {}}
-                  className={`px-6 sm:px-12 py-4 sm:py-5 rounded-xl font-bangers text-lg sm:text-2xl md:text-3xl tracking-wide transition-all ${
-                    canGenerate && !loading
-                      ? 'bg-gradient-to-b from-[#32CD32] to-[#228B22] text-white border-4 border-[#FFD700] shadow-xl cursor-pointer'
-                      : 'bg-gray-400 text-gray-600 cursor-not-allowed border-4 border-gray-500'
-                  }`}
-                  style={canGenerate ? { textShadow: '2px 2px 0 #000' } : {}}
-                >
-                  {loading ? '⏳ CREATING...' : cyoaMode ? '🎮 START ADVENTURE!' : '📖 CREATE MY BOOK!'}
-                </motion.button>
-                
-                {effectiveA && effectiveB && effectiveA.toLowerCase() === effectiveB.toLowerCase() && (
-                  <p className="mt-3 text-[#CC0000] font-bold bg-white inline-block px-4 py-1 rounded">⚠️ Pick two DIFFERENT animals!</p>
-                )}
-                {validationError && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 text-[#CC0000] font-bold bg-white inline-block px-4 py-2 rounded"
-                  >
-                    ⚠️ {validationError}
-                  </motion.p>
-                )}
-                <p className="mt-4 text-white/70">Free to create • No signup needed</p>
-                {(customA || customB) && (
-                  <p className="mt-2 text-orange-300/80 text-sm">
-                    🧪 Custom creatures are experimental — results may vary!
-                  </p>
-                )}
-              </div>
+              {validationError && (
+                <p className="mt-3 text-white font-bold bg-[#8B0000] inline-block px-4 py-2 rounded">
+                  ⚠️ {validationError}
+                </p>
+              )}
+              <p className="mt-4 text-white/90">Free to create • No signup needed</p>
+              {(customA || customB) && (
+                <p className="mt-2 text-[#FFD700]/80 text-sm">
+                  🧪 Custom creatures are experimental — results may vary!
+                </p>
+              )}
             </div>
           </div>
         </div>
