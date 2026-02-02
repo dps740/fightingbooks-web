@@ -93,6 +93,13 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           <div className="fighter-content">
             <div className="corner-label">RED CORNER</div>
             <div className="fighter-name">{fighterA.toUpperCase()}</div>
+            <div className="fighter-image-container">
+              <img 
+                src={`/fighters/${fighterA.toLowerCase().replace(/ /g, '-')}.jpg`} 
+                alt={fighterA}
+                className="fighter-image"
+              />
+            </div>
           </div>
           {/* Dramatic slash */}
           <div className="slash-effect red-slash" />
@@ -118,6 +125,13 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           <div className="fighter-content">
             <div className="corner-label">BLUE CORNER</div>
             <div className="fighter-name">{fighterB.toUpperCase()}</div>
+            <div className="fighter-image-container">
+              <img 
+                src={`/fighters/${fighterB.toLowerCase().replace(/ /g, '-')}.jpg`} 
+                alt={fighterB}
+                className="fighter-image"
+              />
+            </div>
           </div>
           {/* Dramatic slash */}
           <div className="slash-effect blue-slash" />
@@ -279,6 +293,10 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           z-index: 2;
           text-align: center;
           padding: 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
 
         .corner-label {
@@ -300,6 +318,31 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
             -2px -2px 0 rgba(255,255,255,0.2);
           letter-spacing: 0.05em;
           line-height: 1;
+        }
+
+        .fighter-image-container {
+          margin-top: 20px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .fighter-image {
+          width: clamp(80px, 20vw, 150px);
+          height: clamp(80px, 20vw, 150px);
+          border-radius: 50%;
+          object-fit: cover;
+          border: 4px solid rgba(255,255,255,0.8);
+          box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .fighter-panel.red .fighter-image {
+          border-color: #ff4444;
+          box-shadow: 0 0 30px rgba(255,68,68,0.5);
+        }
+
+        .fighter-panel.blue .fighter-image {
+          border-color: #4444ff;
+          box-shadow: 0 0 30px rgba(68,68,255,0.5);
         }
 
         .slash-effect {
