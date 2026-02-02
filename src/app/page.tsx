@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
+import { WHO_WOULD_WIN_BOOKS } from '@/data/who-would-win-books';
 
 // All fighters with AI-generated portraits (39 total + 1 custom slot = 40 = 5x8 grid)
 const FIGHTERS = [
@@ -491,39 +492,10 @@ export default function Home() {
           
           <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-[#FF9900] scrollbar-track-white/10">
             <div className="flex gap-5 px-4 min-w-max">
-              {[
-                // Classic matchups
-                { title: 'Lion vs Tiger', asin: '0545175712' },
-                { title: 'Killer Whale vs Great White Shark', asin: '0545175739' },
-                { title: 'Tyrannosaurus Rex vs Velociraptor', asin: '0545175720' },
-                { title: 'Polar Bear vs Grizzly Bear', asin: '054530170X' },
-                { title: 'Hammerhead vs Bull Shark', asin: '0545301718' },
-                { title: 'Komodo Dragon vs King Cobra', asin: '0545301726' },
-                { title: 'Tarantula vs Scorpion', asin: '0545451914' },
-                { title: 'Wolverine vs Tasmanian Devil', asin: '0545451906' },
-                { title: 'Whale vs Giant Squid', asin: '0545301734' },
-                { title: 'Rhino vs Hippo', asin: '0545451922' },
-                { title: 'Lobster vs Crab', asin: '0545681219' },
-                // More matchups
-                { title: 'Hornet vs Wasp', asin: '0545451930' },
-                { title: 'Triceratops vs Spinosaurus', asin: '0545681200' },
-                { title: 'Jaguar vs Skunk', asin: '1338320254' },
-                { title: 'Rattlesnake vs Secretary Bird', asin: '1338320289' },
-                { title: 'Hyena vs Honey Badger', asin: '1338320297' },
-                { title: 'Falcon vs Hawk', asin: '1338320300' },
-                { title: 'Alligator vs Python', asin: '1338320319' },
-                { title: 'Green Ants vs Army Ants', asin: '1338672118' },
-                // Ultimate Rumbles
-                { title: 'Ultimate Shark Rumble', asin: '1338320270' },
-                { title: 'Ultimate Ocean Rumble', asin: '1338320262' },
-                { title: 'Ultimate Jungle Rumble', asin: '0545946077' },
-                { title: 'Ultimate Dinosaur Rumble', asin: '1338320327' },
-                { title: 'Ultimate Bug Rumble', asin: '1338320335' },
-                { title: 'Ultimate Reptile Rumble', asin: '1338745530' },
-              ].map((book) => (
+              {WHO_WOULD_WIN_BOOKS.map((book) => (
                 <a
                   key={book.asin}
-                  href={`https://www.amazon.com/dp/${book.asin}?tag=fightingbooks-20`}
+                  href={book.amazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-shrink-0 group"
