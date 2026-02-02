@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import { generatePDF } from '@/lib/pdfGenerator';
+import { generateEPUB } from '@/lib/epubGenerator';
 
 // Must match BOOK_CACHE_VERSION in book/start/route.ts
 const BOOK_CACHE_VERSION = 'v7';
@@ -39,25 +40,26 @@ export async function GET(request: NextRequest) {
   try {
     const cacheKey = getCacheKey(animalA, animalB, environment);
     const cacheDir = path.join(process.cwd(), 'public', 'cache');
-    const cachedPDFPath = path.join(cacheDir, `${cacheKey}.pdf`);
+    const fileExtension = format === 'epub' ? 'epub' : 'pdf';
+    const cachedFilePath = path.join(cacheDir, `${cacheKey}.${fileExtension}`);
+    const contentType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
+    const filename = `${animalA}_vs_${animalB}.${fileExtension}`;
     
-    // Check for cached PDF first
-    if (fs.existsSync(cachedPDFPath)) {
-      const fileBuffer = fs.readFileSync(cachedPDFPath);
-      const filename = `${animalA}_vs_${animalB}.pdf`;
-      
-      console.log(`Serving cached PDF: ${cachedPDFPath}`);
+    // Check for cached file first
+    if (fs.existsSync(cachedFilePath)) {
+      const fileBuffer = fs.readFileSync(cachedFilePath);
+      console.log(`Serving cached ${format.toUpperCase()}: ${cachedFilePath}`);
       
       return new NextResponse(fileBuffer, {
         headers: {
-          'Content-Type': 'application/pdf',
+          'Content-Type': contentType,
           'Content-Disposition': `attachment; filename="${filename}"`,
           'Content-Length': fileBuffer.length.toString(),
         },
       });
     }
     
-    // PDF not cached - try to generate from book JSON
+    // File not cached - try to generate from book JSON
     const bookData = loadCachedBook(cacheKey);
     
     if (!bookData) {
@@ -67,37 +69,46 @@ export async function GET(request: NextRequest) {
       }, { status: 404 });
     }
     
-    console.log(`Generating PDF on-demand for: ${animalA} vs ${animalB}`);
+    console.log(`Generating ${format.toUpperCase()} on-demand for: ${animalA} vs ${animalB}`);
     
-    // Generate PDF
-    const pdfBuffer = await generatePDF({
-      animalA,
-      animalB,
-      pages: bookData.pages,
-      winner: bookData.winner,
-    });
+    // Generate file based on format
+    let fileBuffer: Buffer;
+    
+    if (format === 'epub') {
+      fileBuffer = await generateEPUB({
+        animalA,
+        animalB,
+        pages: bookData.pages,
+        winner: bookData.winner,
+      });
+    } else {
+      fileBuffer = await generatePDF({
+        animalA,
+        animalB,
+        pages: bookData.pages,
+        winner: bookData.winner,
+      });
+    }
     
     // Save to cache for next time
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
-    fs.writeFileSync(cachedPDFPath, pdfBuffer);
-    console.log(`PDF cached: ${cachedPDFPath}`);
+    fs.writeFileSync(cachedFilePath, fileBuffer);
+    console.log(`${format.toUpperCase()} cached: ${cachedFilePath}`);
     
-    const filename = `${animalA}_vs_${animalB}.pdf`;
-    
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(fileBuffer, {
       headers: {
-        'Content-Type': 'application/pdf',
+        'Content-Type': contentType,
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': pdfBuffer.length.toString(),
+        'Content-Length': fileBuffer.length.toString(),
       },
     });
 
   } catch (error) {
     console.error('Download error:', error);
     return NextResponse.json({ 
-      error: 'Failed to generate PDF',
+      error: `Failed to generate ${format.toUpperCase()}`,
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
