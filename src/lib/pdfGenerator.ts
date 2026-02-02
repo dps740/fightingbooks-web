@@ -1,9 +1,10 @@
 /**
  * PDF Generator - Converts web book pages to PDF format
- * Uses puppeteer to render HTML pages as PDF
+ * Uses puppeteer-core with @sparticuz/chromium for Vercel serverless
  */
 
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 
 interface BookPage {
   id: string;
@@ -130,10 +131,12 @@ function generateBookHTML(options: PDFOptions): string {
 export async function generatePDF(options: PDFOptions): Promise<Buffer> {
   const html = generateBookHTML(options);
   
-  // Launch puppeteer
+  // Launch puppeteer with @sparticuz/chromium for Vercel
   const browser = await puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: { width: 1280, height: 720 },
+    executablePath: await chromium.executablePath(),
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
   
   try {
