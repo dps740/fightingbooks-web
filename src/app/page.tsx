@@ -374,16 +374,16 @@ export default function Home() {
                 { title: 'Lion vs Tiger', asin: '0545175712' },
                 { title: 'Killer Whale vs Great White Shark', asin: '0545175739' },
                 { title: 'Tyrannosaurus Rex vs Velociraptor', asin: '0545175720' },
-                { title: 'Polar Bear vs Grizzly Bear', asin: '0545175747' },
+                { title: 'Polar Bear vs Grizzly Bear', asin: '054530170X' },
                 { title: 'Hammerhead vs Bull Shark', asin: '0545301718' },
                 { title: 'Komodo Dragon vs King Cobra', asin: '0545301726' },
                 { title: 'Tarantula vs Scorpion', asin: '0545451914' },
                 { title: 'Wolverine vs Tasmanian Devil', asin: '0545451906' },
                 { title: 'Whale vs Giant Squid', asin: '0545301734' },
                 { title: 'Rhino vs Hippo', asin: '0545451922' },
-                { title: 'Lobster vs Crab', asin: '0545681197' },
-                { title: 'Ultimate Shark Rumble', asin: '1338672142' },
-                { title: 'Ultimate Ocean Rumble', asin: '0545681138' },
+                { title: 'Lobster vs Crab', asin: '0545681219' },
+                { title: 'Ultimate Shark Rumble', asin: '1338320270' },
+                { title: 'Ultimate Ocean Rumble', asin: '1338320262' },
               ].map((book) => (
                 <a
                   key={book.asin}
