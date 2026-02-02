@@ -52,3 +52,38 @@
 - User requests via email or dashboard
 - Processed within 5-10 business days
 - Access revoked upon refund (downgrade to Free tier)
+
+## Updated Cost Model (With Pre-Generation)
+
+### One-Time Pre-Generation Costs
+| Item | Count | Cost |
+|------|-------|------|
+| Fighter portraits | 47 | Already done |
+| Habitat images | 47 | $0.14 |
+| Action images | 47 | $0.14 |
+| Closeup images | 47 | $0.14 |
+| Free tier books (28) | 28 | $3.50 |
+| Lion vs Tiger CYOA | 27 paths | $3.51 |
+| **Total One-Time** | | **~$7.50** |
+
+### Per-Book Generation (NEW matchups only)
+| Item | Count | Cost |
+|------|-------|------|
+| Cover image | 1 | $0.003 |
+| Battle images | 5 | $0.015 |
+| Victory image | 1 | $0.003 |
+| OpenAI text | 1 | $0.15 |
+| **Per new book** | | **$0.17** |
+
+### CYOA Per-Choice
+| Item | Count | Cost |
+|------|-------|------|
+| Battle images | 1-2 | $0.003-0.006 |
+| OpenAI text | 1 | $0.02 |
+| **Per choice** | | **~$0.03** |
+
+### Key Insight
+Educational images are SHARED across all matchups.
+- Lion portrait used in Lion vs Tiger, Lion vs Bear, Lion vs Shark, etc.
+- Only battle-specific images need generation per matchup
+- Reduces per-book cost from $0.20 to $0.17 (15% savings)

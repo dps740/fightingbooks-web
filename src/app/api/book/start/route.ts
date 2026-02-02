@@ -501,35 +501,29 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   const battle = await generateBattle(factsA, factsB, environment);
   const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
 
-  // Generate images in batches to avoid rate limiting
-  // Use cache keys for organized storage and reuse
+  // Use pre-generated educational images + generate only battle-specific images
   const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
   const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
   const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
   
-  console.log(`Starting image generation for ${animalA} vs ${animalB}`);
+  console.log(`Starting book generation for ${animalA} vs ${animalB}`);
   
-  // Batch 1: Cover + Animal A portraits (5 images)
-  const [coverImg, imgA_portrait, imgA_habitat, imgA_action, imgA_closeup] = await Promise.all([
+  // Use pre-generated educational images (stored in public/fighters/)
+  const imgA_portrait = `/fighters/${nameA}.jpg`;
+  const imgA_habitat = `/fighters/${nameA}-habitat.jpg`;
+  const imgA_action = `/fighters/${nameA}-action.jpg`;
+  const imgA_closeup = `/fighters/${nameA}-closeup.jpg`;
+  
+  const imgB_portrait = `/fighters/${nameB}.jpg`;
+  const imgB_habitat = `/fighters/${nameB}-habitat.jpg`;
+  const imgB_action = `/fighters/${nameB}-action.jpg`;
+  const imgB_closeup = `/fighters/${nameB}-closeup.jpg`;
+  
+  console.log('Using pre-generated educational images');
+  
+  // Generate only battle-specific images (7 total instead of 16)
+  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
-    generateImage(`${animalA} portrait, powerful pose, majestic wildlife photography`, `${nameA}-portrait`),
-    generateImage(`${animalA} in natural habitat, ${factsA.habitat}, wildlife documentary style`, `${nameA}-habitat`),
-    generateImage(`${animalA} hunting or attacking, showing ${factsA.weapons[0]}, action shot`, `${nameA}-action`),
-    generateImage(`${animalA} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameA}-closeup`),
-  ]);
-  console.log('Batch 1 complete (cover + animal A)');
-  
-  // Batch 2: Animal B portraits (4 images)
-  const [imgB_portrait, imgB_habitat, imgB_action, imgB_closeup] = await Promise.all([
-    generateImage(`${animalB} portrait, powerful pose, majestic wildlife photography`, `${nameB}-portrait`),
-    generateImage(`${animalB} in natural habitat, ${factsB.habitat}, wildlife documentary style`, `${nameB}-habitat`),
-    generateImage(`${animalB} hunting or attacking, showing ${factsB.weapons[0]}, action shot`, `${nameB}-action`),
-    generateImage(`${animalB} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameB}-closeup`),
-  ]);
-  console.log('Batch 2 complete (animal B)');
-  
-  // Batch 3: Battle scenes + victory (6 images)
-  const [battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
     generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
     generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
     generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
@@ -537,7 +531,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
     generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
   ]);
-  console.log('Batch 3 complete (battles + victory)');
+  console.log('Battle images generated');
   
   // Group images for easy access
   const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup };
