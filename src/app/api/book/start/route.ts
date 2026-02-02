@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import path from 'path';
 import fs from 'fs';
+import { generatePDF } from '@/lib/pdfGenerator';
 
 interface BookPage {
   id: string;
@@ -513,6 +514,28 @@ async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winne
   }
 }
 
+async function saveCachedPDF(cacheKey: string, animalA: string, animalB: string, data: { pages: BookPage[], winner: string }): Promise<void> {
+  try {
+    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    
+    const pdfBuffer = await generatePDF({
+      animalA,
+      animalB,
+      pages: data.pages,
+      winner: data.winner,
+    });
+    
+    const pdfPath = path.join(cacheDir, `${cacheKey}.pdf`);
+    fs.writeFileSync(pdfPath, pdfBuffer);
+    console.log(`PDF cached: ${pdfPath}`);
+  } catch (error) {
+    console.error('PDF cache save error:', error);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -529,8 +552,9 @@ export async function POST(request: NextRequest) {
     if (!result) {
       // Generate new book
       result = await generateBook(animalA, animalB, environment);
-      // Save to cache
+      // Save to cache (JSON + PDF)
       await saveCachedBook(cacheKey, result);
+      await saveCachedPDF(cacheKey, animalA, animalB, result); // Generate PDF alongside
     }
     
     if (mode === 'cyoa') {

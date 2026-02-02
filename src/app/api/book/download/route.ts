@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+
+// Same cache key logic as book/start
+function getCacheKey(animalA: string, animalB: string, environment: string): string {
+  const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
+  return `${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -15,82 +20,36 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Create unique output filename
-    const timestamp = Date.now();
-    const safeA = animalA.replace(/[^a-z0-9]/gi, '_');
-    const safeB = animalB.replace(/[^a-z0-9]/gi, '_');
-    const outputName = `${safeA}_vs_${safeB}_${timestamp}`;
-    const outputDir = path.join(process.cwd(), 'public', 'books');
-    const outputPath = path.join(outputDir, outputName);
-
-    // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
+    // Check for cached PDF first
+    const cacheKey = getCacheKey(animalA, animalB, environment);
+    const cachedPDFPath = path.join(process.cwd(), 'public', 'cache', `${cacheKey}.pdf`);
+    
+    if (fs.existsSync(cachedPDFPath)) {
+      // Serve cached PDF
+      const fileBuffer = fs.readFileSync(cachedPDFPath);
+      const filename = `${animalA}_vs_${animalB}.pdf`;
+      
+      console.log(`Serving cached PDF: ${cachedPDFPath}`);
+      
+      return new NextResponse(fileBuffer, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="${filename}"`,
+          'Content-Length': fileBuffer.length.toString(),
+        },
+      });
     }
-
-    // Path to the Python generator (reuse existing backend)
-    const generatorDir = path.resolve(process.cwd(), '..', 'fightingbooks-redesign');
-    const venvPython = path.join(generatorDir, 'venv', 'bin', 'python3');
-
-    // Run the generator
-    const args = [
-      'cli.py',
-      animalA,
-      animalB,
-      '-e', environment,
-      '-o', outputPath,
-      '-f', format, // pdf or epub
-    ];
-
-    await new Promise<void>((resolve, reject) => {
-      const proc = spawn(venvPython, args, {
-        cwd: generatorDir,
-        env: { ...process.env, PYTHONUNBUFFERED: '1' }
-      });
-
-      let stderr = '';
-      proc.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
-
-      proc.on('close', (code) => {
-        if (code === 0) {
-          resolve();
-        } else {
-          reject(new Error(`Generator failed with code ${code}: ${stderr}`));
-        }
-      });
-
-      proc.on('error', reject);
-    });
-
-    // Check if file was created
-    const filePath = `${outputPath}.${format}`;
-    if (!fs.existsSync(filePath)) {
-      throw new Error('Generated file not found');
-    }
-
-    // Read and send the file
-    const fileBuffer = fs.readFileSync(filePath);
-    const filename = `${animalA}_vs_${animalB}.${format}`;
-
-    // Set appropriate content type
-    const contentType = format === 'epub' 
-      ? 'application/epub+zip'
-      : 'application/pdf';
-
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': fileBuffer.length.toString(),
-      },
-    });
+    
+    // PDF not cached - return error (frontend should generate book first)
+    return NextResponse.json({ 
+      error: 'PDF not available',
+      message: 'Please generate the book first before downloading',
+    }, { status: 404 });
 
   } catch (error) {
     console.error('Download error:', error);
     return NextResponse.json({ 
-      error: 'Failed to generate book',
+      error: 'Failed to download book',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }

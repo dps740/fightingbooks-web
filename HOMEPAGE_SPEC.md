@@ -13,15 +13,34 @@
 - Tagline: "Inspired by Jerry Pallotta's bestselling series"
 
 ### 3. Fighter Selection - Street Fighter 2 Style
-- **Layout:**
-  - Red Corner (LEFT) - clickable selection box
-  - VS badge (CENTER)
-  - Blue Corner (RIGHT) - clickable selection box
-  - Character grid (BOTTOM) - 8 columns on desktop
+
+**⚠️ CRITICAL: This layout must NEVER be vertical!**
+
+```
+┌─────────────────┐      ┌─────────────────┐
+│   RED CORNER    │  VS  │  BLUE CORNER    │
+│     (LEFT)      │      │     (RIGHT)     │
+└─────────────────┘      └─────────────────┘
+┌───────────────────────────────────────────┐
+│         CHARACTER GRID (BOTTOM)            │
+└───────────────────────────────────────────┘
+```
+
+- **Layout (STRICT REQUIREMENTS):**
+  - **ALWAYS HORIZONTAL:** Red and Blue must be SIDE-BY-SIDE on ALL screen sizes
+  - **RED on LEFT, BLUE on RIGHT** - Street Fighter 2 character select style
+  - **VS badge in CENTER** between them (not above or below)
+  - **Character grid BELOW** the selection boxes (8 columns desktop, 4-6 mobile)
+  - **Code:** Use `grid grid-cols-[1fr,auto,1fr]` (3-column grid)
+  - **DO NOT:** Use `flex-col`, vertical stacking, or responsive breakpoints that change to vertical
+  - **Minimum height:** 250px for red/blue boxes
+  - **Equal width:** Both boxes get equal space (1fr each)
+  
 - **Fighter Grid:**
   - 24+ real animals with photos
   - 8 fantasy creatures
   - "Use Your Imagination" card ($1 custom option)
+  
 - **Selected Fighter Display:**
   - Shows animal photo as background
   - Name overlaid at bottom
