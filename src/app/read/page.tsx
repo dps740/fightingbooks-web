@@ -196,13 +196,67 @@ function BookReader() {
                   <h3 className="download-title">📥 Download Your Book</h3>
                   <div className="download-buttons">
                     <button 
-                      onClick={() => window.open(`/api/book/download?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&format=pdf`, '_blank')}
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/book/download', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              animalA,
+                              animalB,
+                              pages,
+                              winner: pages.find(p => p.type === 'victory')?.content?.match(/victory-name[^>]*>([^<]+)/)?.[1] || animalA,
+                              format: 'pdf'
+                            })
+                          });
+                          if (response.ok) {
+                            const blob = await response.blob();
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${animalA}_vs_${animalB}.pdf`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          } else {
+                            alert('Failed to generate PDF. Please try again.');
+                          }
+                        } catch (e) {
+                          alert('Download failed. Please try again.');
+                        }
+                      }}
                       className="download-btn download-pdf"
                     >
                       📄 Download PDF
                     </button>
                     <button 
-                      onClick={() => window.open(`/api/book/download?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&format=epub`, '_blank')}
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/book/download', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              animalA,
+                              animalB,
+                              pages,
+                              winner: pages.find(p => p.type === 'victory')?.content?.match(/victory-name[^>]*>([^<]+)/)?.[1] || animalA,
+                              format: 'epub'
+                            })
+                          });
+                          if (response.ok) {
+                            const blob = await response.blob();
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `${animalA}_vs_${animalB}.epub`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          } else {
+                            alert('Failed to generate EPUB. Please try again.');
+                          }
+                        } catch (e) {
+                          alert('Download failed. Please try again.');
+                        }
+                      }}
                       className="download-btn download-epub"
                     >
                       📖 Download EPUB

@@ -1,31 +1,64 @@
 import { NextRequest, NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs';
 import { generatePDF } from '@/lib/pdfGenerator';
 import { generateEPUB } from '@/lib/epubGenerator';
 
-// Must match BOOK_CACHE_VERSION in book/start/route.ts
-const BOOK_CACHE_VERSION = 'v7';
-
-// Same cache key logic as book/start
-function getCacheKey(animalA: string, animalB: string, environment: string): string {
-  const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
-  return `${BOOK_CACHE_VERSION}_${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
-}
-
-// Load cached book JSON
-function loadCachedBook(cacheKey: string): { pages: any[], winner: string } | null {
+// POST endpoint - accepts book data directly
+export async function POST(request: NextRequest) {
   try {
-    const cachePath = path.join('/tmp', 'cache', `${cacheKey}.json`);
-    if (fs.existsSync(cachePath)) {
-      return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+    const body = await request.json();
+    const { animalA, animalB, pages, winner, format = 'pdf' } = body;
+
+    if (!animalA || !animalB || !pages || !winner) {
+      return NextResponse.json({ 
+        error: 'Missing required data',
+        message: 'Please provide animalA, animalB, pages, and winner'
+      }, { status: 400 });
     }
-  } catch (e) {
-    console.error('Failed to load cached book:', e);
+
+    console.log(`Generating ${format.toUpperCase()} for: ${animalA} vs ${animalB} (${pages.length} pages)`);
+
+    const fileExtension = format === 'epub' ? 'epub' : 'pdf';
+    const contentType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
+    const filename = `${animalA}_vs_${animalB}.${fileExtension}`;
+
+    let fileBuffer: Buffer;
+
+    if (format === 'epub') {
+      fileBuffer = await generateEPUB({
+        animalA,
+        animalB,
+        pages,
+        winner,
+      });
+    } else {
+      fileBuffer = await generatePDF({
+        animalA,
+        animalB,
+        pages,
+        winner,
+      });
+    }
+
+    console.log(`Generated ${format.toUpperCase()}: ${fileBuffer.length} bytes`);
+
+    return new NextResponse(fileBuffer, {
+      headers: {
+        'Content-Type': contentType,
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': fileBuffer.length.toString(),
+      },
+    });
+
+  } catch (error) {
+    console.error('Download error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to generate file',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
-  return null;
 }
 
+// GET endpoint - for backwards compatibility, redirects to regenerate
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const animalA = searchParams.get('a');
@@ -38,75 +71,34 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const cacheKey = getCacheKey(animalA, animalB, environment);
-    const cacheDir = path.join('/tmp', 'cache');
-    const fileExtension = format === 'epub' ? 'epub' : 'pdf';
-    const cachedFilePath = path.join(cacheDir, `${cacheKey}.${fileExtension}`);
-    const contentType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
-    const filename = `${animalA}_vs_${animalB}.${fileExtension}`;
+    // Fetch book data fresh
+    const requestUrl = new URL(request.url);
+    const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
     
-    // Check for cached file first
-    if (fs.existsSync(cachedFilePath)) {
-      const fileBuffer = fs.readFileSync(cachedFilePath);
-      console.log(`Serving cached ${format.toUpperCase()}: ${cachedFilePath}`);
-      
-      return new NextResponse(fileBuffer, {
-        headers: {
-          'Content-Type': contentType,
-          'Content-Disposition': `attachment; filename="${filename}"`,
-          'Content-Length': fileBuffer.length.toString(),
-        },
-      });
-    }
+    console.log(`GET download: fetching book for ${animalA} vs ${animalB}...`);
     
-    // File not cached - try to load from cache or fetch fresh
-    let bookData = loadCachedBook(cacheKey);
-    
-    if (!bookData) {
-      // Fetch book data by calling the start API
-      console.log('Book not in cache, fetching fresh...');
-      try {
-        // Get the origin from the request URL
-        const requestUrl = new URL(request.url);
-        const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
-        console.log(`Fetching from: ${baseUrl}/api/book/start`);
-        
-        const bookResponse = await fetch(
-          `${baseUrl}/api/book/start?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=${encodeURIComponent(environment)}&mode=standard`,
-          { 
-            cache: 'no-store',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        );
-        
-        console.log(`Book API response status: ${bookResponse.status}`);
-        
-        if (bookResponse.ok) {
-          bookData = await bookResponse.json();
-          console.log(`Got book data with ${bookData.pages?.length} pages`);
-        } else {
-          const errorText = await bookResponse.text();
-          console.error('Book API error:', errorText);
-        }
-      } catch (fetchError) {
-        console.error('Failed to fetch book:', fetchError);
-      }
-    }
-    
-    if (!bookData) {
+    const bookResponse = await fetch(
+      `${baseUrl}/api/book/start?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=${encodeURIComponent(environment)}&mode=standard`,
+      { cache: 'no-store' }
+    );
+
+    if (!bookResponse.ok) {
       return NextResponse.json({ 
-        error: 'Book generation failed',
-        message: 'Could not generate the book. Please try again.',
+        error: 'Failed to generate book',
+        message: 'Could not generate the book data. Please try again.',
       }, { status: 500 });
     }
+
+    const bookData = await bookResponse.json();
     
-    console.log(`Generating ${format.toUpperCase()} on-demand for: ${animalA} vs ${animalB}`);
-    
-    // Generate file based on format
+    console.log(`Got book with ${bookData.pages?.length} pages, generating ${format.toUpperCase()}...`);
+
+    const fileExtension = format === 'epub' ? 'epub' : 'pdf';
+    const contentType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
+    const filename = `${animalA}_vs_${animalB}.${fileExtension}`;
+
     let fileBuffer: Buffer;
-    
+
     if (format === 'epub') {
       fileBuffer = await generateEPUB({
         animalA,
@@ -122,14 +114,7 @@ export async function GET(request: NextRequest) {
         winner: bookData.winner,
       });
     }
-    
-    // Save to cache for next time
-    if (!fs.existsSync(cacheDir)) {
-      fs.mkdirSync(cacheDir, { recursive: true });
-    }
-    fs.writeFileSync(cachedFilePath, fileBuffer);
-    console.log(`${format.toUpperCase()} cached: ${cachedFilePath}`);
-    
+
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
@@ -139,9 +124,9 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Download error:', error);
+    console.error('Download GET error:', error);
     return NextResponse.json({ 
-      error: `Failed to generate ${format.toUpperCase()}`,
+      error: 'Failed to generate file',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }
