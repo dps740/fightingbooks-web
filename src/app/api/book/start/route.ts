@@ -277,13 +277,79 @@ function generateTacticalAnalysis(factsA: AnimalFacts, factsB: AnimalFacts): str
 }
 
 // Generate all pages with AI
-// Generate comparative stats for both animals in one call for better differentiation
-async function generateComparativeStats(animalA: string, animalB: string): Promise<{
+// Stats cache type
+type ComparativeStats = {
   strengthA: number; strengthB: number;
   speedA: number; speedB: number;
   weaponsA: number; weaponsB: number;
   defenseA: number; defenseB: number;
-}> {
+};
+
+// In-memory cache for stats (persists across requests in same instance)
+const statsCache: Map<string, ComparativeStats> = new Map();
+
+// Load stats cache from file
+async function loadStatsCache(): Promise<Map<string, ComparativeStats>> {
+  try {
+    const cachePath = path.join(process.cwd(), 'public', 'cache', 'stats-cache.json');
+    if (fs.existsSync(cachePath)) {
+      const data = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+      return new Map(Object.entries(data));
+    }
+  } catch (error) {
+    console.error('Stats cache load error:', error);
+  }
+  return new Map();
+}
+
+// Save stats to cache file
+async function saveStatsToCache(key: string, stats: ComparativeStats): Promise<void> {
+  try {
+    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    const cachePath = path.join(cacheDir, 'stats-cache.json');
+    
+    // Load existing cache
+    let existingCache: Record<string, ComparativeStats> = {};
+    if (fs.existsSync(cachePath)) {
+      existingCache = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
+    }
+    
+    // Add new entry
+    existingCache[key] = stats;
+    fs.writeFileSync(cachePath, JSON.stringify(existingCache, null, 2));
+  } catch (error) {
+    console.error('Stats cache save error:', error);
+  }
+}
+
+// Generate comparative stats for both animals in one call for better differentiation
+async function generateComparativeStats(animalA: string, animalB: string): Promise<ComparativeStats> {
+  // Create cache key (sorted to handle A vs B and B vs A)
+  const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
+  const cacheKey = `${sorted[0]}-vs-${sorted[1]}`;
+  const isReversed = sorted[0] !== animalA.toLowerCase();
+  
+  // Check in-memory cache first
+  if (statsCache.has(cacheKey)) {
+    console.log(`Stats cache hit (memory): ${cacheKey}`);
+    const cached = statsCache.get(cacheKey)!;
+    return isReversed ? swapStats(cached) : cached;
+  }
+  
+  // Check file cache
+  const fileCache = await loadStatsCache();
+  if (fileCache.has(cacheKey)) {
+    console.log(`Stats cache hit (file): ${cacheKey}`);
+    const cached = fileCache.get(cacheKey)!;
+    statsCache.set(cacheKey, cached); // Populate memory cache
+    return isReversed ? swapStats(cached) : cached;
+  }
+  
+  console.log(`Stats cache miss: ${cacheKey} - calling API`);
+  
   const prompt = `Compare ${animalA} vs ${animalB} for a "Who Would Win?" battle book.
 
 Rate each animal from 1-10 in these categories, making sure scores DIFFER based on real advantages:
@@ -312,7 +378,7 @@ Return JSON only:
     });
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
-    return {
+    const stats: ComparativeStats = {
       strengthA: result.strengthA || 7,
       strengthB: result.strengthB || 7,
       speedA: result.speedA || 7,
@@ -322,16 +388,33 @@ Return JSON only:
       defenseA: result.defenseA || 7,
       defenseB: result.defenseB || 7,
     };
+    
+    // Save to both caches
+    statsCache.set(cacheKey, stats);
+    await saveStatsToCache(cacheKey, stats);
+    
+    return isReversed ? swapStats(stats) : stats;
   } catch (error) {
     console.error('Comparative stats error:', error);
     // Fallback with some variation
-    return {
+    const fallback: ComparativeStats = {
       strengthA: 7, strengthB: 6,
       speedA: 6, speedB: 7,
       weaponsA: 7, weaponsB: 8,
       defenseA: 8, defenseB: 6,
     };
+    return isReversed ? swapStats(fallback) : fallback;
   }
+}
+
+// Helper to swap A/B stats when cache key order differs from request order
+function swapStats(stats: ComparativeStats): ComparativeStats {
+  return {
+    strengthA: stats.strengthB, strengthB: stats.strengthA,
+    speedA: stats.speedB, speedB: stats.speedA,
+    weaponsA: stats.weaponsB, weaponsB: stats.weaponsA,
+    defenseA: stats.defenseB, defenseB: stats.defenseA,
+  };
 }
 
 async function generateBook(animalA: string, animalB: string, environment: string): Promise<{ pages: BookPage[], winner: string }> {
