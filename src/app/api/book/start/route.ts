@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import path from 'path';
 import fs from 'fs';
-import { put, list } from '@vercel/blob';
+import { put, head, BlobNotFoundError } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
 
 interface BookPage {
@@ -963,24 +963,39 @@ function getCacheKey(animalA: string, animalB: string, environment: string): str
   return `${BOOK_CACHE_VERSION}_${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
 }
 
+// In-memory URL cache for faster lookups (within same instance)
+const blobUrlCache = new Map<string, string>();
+
 async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
+  const blobPath = `fightingbooks/cache/${cacheKey}.json`;
+  
   // Try Vercel Blob first (persistent)
   try {
-    const { blobs } = await list({ prefix: `fightingbooks/cache/${cacheKey}.json` });
-    if (blobs.length > 0) {
-      const blobUrl = blobs[0].url;
-      const dataResponse = await fetch(blobUrl);
-      if (dataResponse.ok) {
-        const data = await dataResponse.json();
-        console.log(`Cache hit (Blob): ${cacheKey}`);
-        return data;
-      }
+    // Check if we have the URL cached in memory
+    let blobUrl = blobUrlCache.get(cacheKey);
+    
+    if (!blobUrl) {
+      // Use head() to check if blob exists and get its URL
+      const blobInfo = await head(blobPath);
+      blobUrl = blobInfo.url;
+      blobUrlCache.set(cacheKey, blobUrl);
+    }
+    
+    // Fetch the cached data
+    const dataResponse = await fetch(blobUrl);
+    if (dataResponse.ok) {
+      const data = await dataResponse.json();
+      console.log(`Cache hit (Blob): ${cacheKey}`);
+      return data;
     }
   } catch (error) {
-    console.log('Blob cache check error (continuing):', error);
+    // BlobNotFoundError is expected for cache miss
+    if (!(error instanceof BlobNotFoundError)) {
+      console.log('Blob cache error:', error);
+    }
   }
   
-  // Fallback to /tmp for backward compatibility during transition
+  // Fallback to /tmp for backward compatibility
   try {
     const cachePath = path.join('/tmp', 'cache', `${cacheKey}.json`);
     if (fs.existsSync(cachePath)) {
@@ -989,8 +1004,9 @@ async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], wi
       return JSON.parse(data);
     }
   } catch (error) {
-    console.error('Cache load error:', error);
+    console.error('Tmp cache error:', error);
   }
+  
   console.log(`Cache miss: ${cacheKey}`);
   return null;
 }
@@ -998,12 +1014,14 @@ async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], wi
 async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winner: string }): Promise<void> {
   // Save to Vercel Blob (persistent)
   try {
-    const jsonData = JSON.stringify(data, null, 2);
-    await put(`fightingbooks/cache/${cacheKey}.json`, jsonData, {
+    const jsonData = JSON.stringify(data);
+    const blob = await put(`fightingbooks/cache/${cacheKey}.json`, jsonData, {
       access: 'public',
       contentType: 'application/json',
     });
-    console.log(`Cache saved to Blob: ${cacheKey}`);
+    // Cache the URL for faster lookups
+    blobUrlCache.set(cacheKey, blob.url);
+    console.log(`Cache saved to Blob: ${cacheKey} -> ${blob.url}`);
   } catch (error) {
     console.error('Blob cache save error:', error);
   }
@@ -1015,7 +1033,7 @@ async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winne
       fs.mkdirSync(cacheDir, { recursive: true });
     }
     const cachePath = path.join(cacheDir, `${cacheKey}.json`);
-    fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
+    fs.writeFileSync(cachePath, JSON.stringify(data));
   } catch (error) {
     console.error('Tmp cache save error:', error);
   }
