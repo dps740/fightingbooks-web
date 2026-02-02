@@ -970,6 +970,56 @@ function BookReader() {
           font-family: 'Comic Neue', cursive;
           font-weight: bold;
         }
+        
+        /* Mobile responsive fixes for button overlaps */
+        @media (max-width: 640px) {
+          .nav-buttons {
+            flex-direction: row;
+            gap: 8px;
+            padding: 0 60px;
+          }
+          .nav-btn {
+            padding: 8px 14px;
+            font-size: 0.9em;
+          }
+          .page-indicator {
+            font-size: 0.9em;
+            white-space: nowrap;
+          }
+          .exit-btn {
+            top: 10px;
+            left: 10px;
+            padding: 8px 12px;
+            font-size: 0.85em;
+          }
+          .exit-btn span:last-child {
+            display: none;
+          }
+          .report-btn {
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            font-size: 0.85em;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .nav-buttons {
+            gap: 5px;
+            padding: 0 50px;
+          }
+          .nav-btn {
+            padding: 6px 10px;
+            font-size: 0.8em;
+          }
+          .page-indicator {
+            font-size: 0.75em;
+          }
+          .exit-btn, .report-btn {
+            padding: 6px 10px;
+            font-size: 0.75em;
+          }
+        }
       `}</style>
     </div>
   );

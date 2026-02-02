@@ -37,6 +37,16 @@ const FIGHTERS = [
   { name: 'Hyena', category: 'real' },
   { name: 'Walrus', category: 'real' },
   { name: 'Octopus', category: 'real' },
+  // Dinosaurs
+  { name: 'Tyrannosaurus Rex', category: 'dinosaur' },
+  { name: 'Velociraptor', category: 'dinosaur' },
+  { name: 'Triceratops', category: 'dinosaur' },
+  { name: 'Spinosaurus', category: 'dinosaur' },
+  { name: 'Stegosaurus', category: 'dinosaur' },
+  { name: 'Ankylosaurus', category: 'dinosaur' },
+  { name: 'Pteranodon', category: 'dinosaur' },
+  { name: 'Brachiosaurus', category: 'dinosaur' },
+  // Fantasy
   { name: 'Dragon', category: 'fantasy' },
   { name: 'Griffin', category: 'fantasy' },
   { name: 'Hydra', category: 'fantasy' },
