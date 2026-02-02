@@ -123,7 +123,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, ANATOMICALLY CORRECT: each animal has exactly ONE head, ONE body, FOUR legs, correct number of limbs, each animal must have its CORRECT distinctive markings, realistic proportions, no extra body parts, no merged animals, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs for the species, each animal must have its CORRECT distinctive markings, realistic proportions, no extra heads, no merged animals, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
