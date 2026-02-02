@@ -123,7 +123,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, ANATOMICALLY ACCURATE animal anatomy, each animal must have its CORRECT distinctive markings, correct number of limbs, realistic proportions, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, ANATOMICALLY CORRECT: each animal has exactly ONE head, ONE body, FOUR legs, correct number of limbs, each animal must have its CORRECT distinctive markings, realistic proportions, no extra body parts, no merged animals, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -946,7 +946,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v2';
+const BOOK_CACHE_VERSION = 'v3';
 
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
