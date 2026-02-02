@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import path from 'path';
 import fs from 'fs';
-import { put } from '@vercel/blob';
+import { put, list } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
 
 interface BookPage {
@@ -956,7 +956,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 // Book cache version - bump to invalidate old cached books when image/content logic changes
 const BOOK_CACHE_VERSION = 'v7';
 
-// Simple file-based cache for generated books
+// Persistent cache using Vercel Blob (survives deployments)
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
   // Normalize to always be alphabetical order for consistency
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
@@ -964,19 +964,51 @@ function getCacheKey(animalA: string, animalB: string, environment: string): str
 }
 
 async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
+  // Try Vercel Blob first (persistent)
+  try {
+    const { blobs } = await list({ prefix: `fightingbooks/cache/${cacheKey}.json` });
+    if (blobs.length > 0) {
+      const blobUrl = blobs[0].url;
+      const dataResponse = await fetch(blobUrl);
+      if (dataResponse.ok) {
+        const data = await dataResponse.json();
+        console.log(`Cache hit (Blob): ${cacheKey}`);
+        return data;
+      }
+    }
+  } catch (error) {
+    console.log('Blob cache check error (continuing):', error);
+  }
+  
+  // Fallback to /tmp for backward compatibility during transition
   try {
     const cachePath = path.join('/tmp', 'cache', `${cacheKey}.json`);
     if (fs.existsSync(cachePath)) {
       const data = fs.readFileSync(cachePath, 'utf-8');
+      console.log(`Cache hit (tmp): ${cacheKey}`);
       return JSON.parse(data);
     }
   } catch (error) {
     console.error('Cache load error:', error);
   }
+  console.log(`Cache miss: ${cacheKey}`);
   return null;
 }
 
 async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winner: string }): Promise<void> {
+  // Save to Vercel Blob (persistent)
+  try {
+    const jsonData = JSON.stringify(data, null, 2);
+    await put(`fightingbooks/cache/${cacheKey}.json`, jsonData, {
+      access: 'public',
+      contentType: 'application/json',
+    });
+    console.log(`Cache saved to Blob: ${cacheKey}`);
+  } catch (error) {
+    console.error('Blob cache save error:', error);
+  }
+  
+  // Also save to /tmp for faster local reads
   try {
     const cacheDir = path.join('/tmp', 'cache');
     if (!fs.existsSync(cacheDir)) {
@@ -985,7 +1017,7 @@ async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winne
     const cachePath = path.join(cacheDir, `${cacheKey}.json`);
     fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
   } catch (error) {
-    console.error('Cache save error:', error);
+    console.error('Tmp cache save error:', error);
   }
 }
 
