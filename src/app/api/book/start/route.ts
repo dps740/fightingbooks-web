@@ -573,8 +573,8 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   
   console.log('Using pre-generated educational images');
   
-  // Generate battle-specific images + secrets images (9 total)
-  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg, secretsImgA, secretsImgB] = await Promise.all([
+  // Generate only battle-specific images (7 total)
+  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
     generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
     generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
@@ -582,14 +582,16 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
     generateImage(`${battle.winner} powerful stance after battle, realistic animal behavior, dramatic lighting, wildlife photography`, `${imgPrefix}-victory`),
-    generateImage(`${animalA} mysterious close-up portrait, intense eyes, showing unique features, dramatic lighting, wildlife photography`, `${imgPrefix}-secrets-a`),
-    generateImage(`${animalB} mysterious close-up portrait, intense eyes, showing unique features, dramatic lighting, wildlife photography`, `${imgPrefix}-secrets-b`),
   ]);
-  console.log('Battle and secrets images generated');
+  console.log('Battle images generated');
+  
+  // Pre-generated secrets images
+  const imgA_secrets = `/fighters/${nameA}-secrets.jpg`;
+  const imgB_secrets = `/fighters/${nameB}-secrets.jpg`;
   
   // Group images for easy access
-  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup, secrets: secretsImgA };
-  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup, secrets: secretsImgB };
+  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup, secrets: imgA_secrets };
+  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup, secrets: imgB_secrets };
 
   const pages: BookPage[] = [
     {
