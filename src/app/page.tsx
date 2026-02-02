@@ -439,7 +439,7 @@ export default function Home() {
             
             {/* Close hint */}
             {!loading && (
-              <p className="mt-4 text-white/50 text-sm">Click outside to change fighters</p>
+              <p className="mt-4 text-white/50 text-sm">Click FIGHT to proceed or anywhere else to re-select</p>
             )}
           </div>
         </div>
