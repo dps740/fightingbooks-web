@@ -36,6 +36,21 @@ function getOpenAI() {
   });
 }
 
+// Convert image URL to base64 data URL for persistence
+async function imageToBase64(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return url;
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    return `data:${contentType};base64,${base64}`;
+  } catch (error) {
+    console.error('Image to base64 error:', error);
+    return url; // Return original URL as fallback
+  }
+}
+
 // Generate image using fal.ai Flux
 async function generateImage(prompt: string): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
@@ -66,7 +81,14 @@ async function generateImage(prompt: string): Promise<string> {
     }
 
     const result = await response.json();
-    return result.images?.[0]?.url || `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+    const imageUrl = result.images?.[0]?.url;
+    
+    if (!imageUrl) {
+      return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+    }
+    
+    // Convert to base64 for persistence (fal.ai URLs expire)
+    return await imageToBase64(imageUrl);
   } catch (error) {
     console.error('Image generation error:', error);
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
