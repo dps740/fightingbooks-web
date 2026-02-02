@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface VersusScreenProps {
   fighterA: string;
@@ -12,48 +11,32 @@ interface VersusScreenProps {
 
 export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusScreenProps) {
   const [phase, setPhase] = useState<'enter' | 'clash' | 'vs' | 'ready'>('enter');
-  const [showFightButton, setShowFightButton] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
-    // Animation timeline - stops at 'ready' and waits for user click
+    // Animation timeline - auto-proceeds after animation
     const timeline = [
       { phase: 'clash' as const, delay: 800 },   // Fighters slide in, then clash
       { phase: 'vs' as const, delay: 1400 },     // VS explodes
-      { phase: 'ready' as const, delay: 2200 },  // Ready for user input
+      { phase: 'ready' as const, delay: 2200 },  // Animation complete
     ];
 
     const timeouts = timeline.map(({ phase, delay }) =>
       setTimeout(() => setPhase(phase), delay)
     );
 
-    // Show FIGHT button after animation settles
-    const buttonTimeout = setTimeout(() => setShowFightButton(true), 2500);
+    // Auto-proceed to book after animation
+    const proceedTimeout = setTimeout(() => onComplete(), 3500);
 
     return () => {
       timeouts.forEach(clearTimeout);
-      clearTimeout(buttonTimeout);
+      clearTimeout(proceedTimeout);
     };
-  }, []);
-
-  // Click on background = go back to selection
-  const handleBackgroundClick = () => {
-    router.push('/');
-  };
-
-  // Click FIGHT = proceed to book
-  const handleFightClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Don't trigger background click
-    onComplete();
-  };
+  }, [onComplete]);
 
   return (
-    <div className="versus-screen" onClick={handleBackgroundClick}>
+    <div className="versus-screen">
       {/* Dark dramatic background */}
       <div className="vs-background" />
-      
-      {/* Hint text */}
-      <div className="click-hint">Click FIGHT to begin or anywhere else to change fighters</div>
       
       {/* Impact flash on clash */}
       <AnimatePresence>
@@ -205,22 +188,6 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           </div>
         )}
 
-        {/* FIGHT Button */}
-        <AnimatePresence>
-          {showFightButton && (
-            <motion.button
-              className="fight-button"
-              onClick={handleFightClick}
-              initial={{ scale: 0, y: 50 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              ⚔️ FIGHT!
-            </motion.button>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       <style jsx global>{`
@@ -392,45 +359,6 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           height: 8px;
           background: linear-gradient(45deg, #ffd700, #ff6b00);
           border-radius: 50%;
-        }
-
-        .click-hint {
-          position: absolute;
-          bottom: 5%;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 25;
-          color: rgba(255,255,255,0.6);
-          font-size: 0.9rem;
-          text-align: center;
-        }
-
-        .fight-button {
-          position: absolute;
-          bottom: 15%;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 30;
-          padding: 20px 60px;
-          font-family: 'Anton', 'Impact', 'Arial Black', sans-serif;
-          font-size: clamp(2rem, 5vw, 3rem);
-          font-weight: 900;
-          color: #8B0000;
-          background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
-          border: 4px solid #8B0000;
-          border-radius: 15px;
-          cursor: pointer;
-          text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-          box-shadow: 
-            0 6px 0 #8B4513,
-            0 0 30px rgba(255,215,0,0.6);
-          letter-spacing: 0.05em;
-        }
-
-        .fight-button:hover {
-          box-shadow: 
-            0 6px 0 #8B4513,
-            0 0 50px rgba(255,215,0,0.8);
         }
 
         /* Font import */
