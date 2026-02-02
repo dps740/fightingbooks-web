@@ -53,7 +53,7 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
       <div className="vs-background" />
       
       {/* Hint text */}
-      <div className="click-hint">Click anywhere to change fighters</div>
+      <div className="click-hint">Click FIGHT to begin or anywhere else to change fighters</div>
       
       {/* Impact flash on clash */}
       <AnimatePresence>
@@ -204,6 +204,23 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
             ))}
           </div>
         )}
+
+        {/* FIGHT Button */}
+        <AnimatePresence>
+          {showFightButton && (
+            <motion.button
+              className="fight-button"
+              onClick={handleFightClick}
+              initial={{ scale: 0, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              ⚔️ FIGHT!
+            </motion.button>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       <style jsx global>{`
@@ -375,6 +392,45 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
           height: 8px;
           background: linear-gradient(45deg, #ffd700, #ff6b00);
           border-radius: 50%;
+        }
+
+        .click-hint {
+          position: absolute;
+          bottom: 5%;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 25;
+          color: rgba(255,255,255,0.6);
+          font-size: 0.9rem;
+          text-align: center;
+        }
+
+        .fight-button {
+          position: absolute;
+          bottom: 15%;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 30;
+          padding: 20px 60px;
+          font-family: 'Anton', 'Impact', 'Arial Black', sans-serif;
+          font-size: clamp(2rem, 5vw, 3rem);
+          font-weight: 900;
+          color: #8B0000;
+          background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+          border: 4px solid #8B0000;
+          border-radius: 15px;
+          cursor: pointer;
+          text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+          box-shadow: 
+            0 6px 0 #8B4513,
+            0 0 30px rgba(255,215,0,0.6);
+          letter-spacing: 0.05em;
+        }
+
+        .fight-button:hover {
+          box-shadow: 
+            0 6px 0 #8B4513,
+            0 0 50px rgba(255,215,0,0.8);
         }
 
         /* Font import */
