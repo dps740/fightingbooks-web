@@ -59,14 +59,33 @@ export async function GET(request: NextRequest) {
       });
     }
     
-    // File not cached - try to generate from book JSON
-    const bookData = loadCachedBook(cacheKey);
+    // File not cached - try to load from cache or fetch fresh
+    let bookData = loadCachedBook(cacheKey);
+    
+    if (!bookData) {
+      // Fetch book data by calling the start API internally
+      console.log('Book not in cache, fetching fresh...');
+      try {
+        const baseUrl = process.env.VERCEL_URL 
+          ? `https://${process.env.VERCEL_URL}` 
+          : 'http://localhost:3000';
+        const bookResponse = await fetch(
+          `${baseUrl}/api/book/start?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=${encodeURIComponent(environment)}&mode=standard`,
+          { cache: 'no-store' }
+        );
+        if (bookResponse.ok) {
+          bookData = await bookResponse.json();
+        }
+      } catch (fetchError) {
+        console.error('Failed to fetch book:', fetchError);
+      }
+    }
     
     if (!bookData) {
       return NextResponse.json({ 
-        error: 'Book not found',
-        message: 'Please generate the book first by viewing it, then try downloading again.',
-      }, { status: 404 });
+        error: 'Book generation failed',
+        message: 'Could not generate the book. Please try again.',
+      }, { status: 500 });
     }
     
     console.log(`Generating ${format.toUpperCase()} on-demand for: ${animalA} vs ${animalB}`);
