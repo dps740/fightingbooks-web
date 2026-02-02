@@ -67,6 +67,7 @@ export default function Home() {
   const [gameMode, setGameMode] = useState<'classic' | 'adventure'>('classic');
   const [battleType, setBattleType] = useState<'single' | 'tournament'>('single');
   const [loading, setLoading] = useState(false);
+  const [showFightOverlay, setShowFightOverlay] = useState(false);
 
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
@@ -83,10 +84,20 @@ export default function Home() {
   const handleFighterSelect = (fighterName: string) => {
     if (selectingFor === 'A') {
       setAnimalA(fighterName);
-      if (!animalB) setSelectingFor('B');
+      if (!animalB) {
+        setSelectingFor('B');
+      } else if (fighterName !== animalB) {
+        // Both selected, show overlay
+        setShowFightOverlay(true);
+      }
     } else {
       setAnimalB(fighterName);
-      if (!animalA) setSelectingFor('A');
+      if (!animalA) {
+        setSelectingFor('A');
+      } else if (fighterName !== animalA) {
+        // Both selected, show overlay
+        setShowFightOverlay(true);
+      }
     }
   };
 
@@ -373,18 +384,25 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 5. Generate Button - Hidden, replaced by overlay */}
-          <div className="hidden">
-            <button id="generate-btn-hidden" onClick={handleGenerate} disabled={loading}>Generate</button>
-          </div>
+          {/* Show "Ready to Fight" button when both selected but overlay dismissed */}
+          {canGenerate && !showFightOverlay && (
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setShowFightOverlay(true)}
+                className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
+              >
+                ⚔️ READY TO FIGHT!
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* FIGHT! Overlay - appears when both fighters selected */}
-      {canGenerate && (
+      {/* FIGHT! Overlay - appears when both fighters selected AND overlay is open */}
+      {canGenerate && showFightOverlay && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
-          onClick={(e) => { if (e.target === e.currentTarget && !loading) handleGenerate(); }}
+          onClick={(e) => { if (e.target === e.currentTarget && !loading) setShowFightOverlay(false); }}
         >
           <div className="text-center transition-transform duration-300">
             {/* VS Display */}
@@ -421,7 +439,7 @@ export default function Home() {
             
             {/* Close hint */}
             {!loading && (
-              <p className="mt-4 text-white/50 text-sm">Click anywhere or press the button to begin</p>
+              <p className="mt-4 text-white/50 text-sm">Click outside to change fighters</p>
             )}
           </div>
         </div>

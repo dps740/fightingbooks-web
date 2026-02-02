@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface VersusScreenProps {
   fighterA: string;
@@ -10,33 +11,49 @@ interface VersusScreenProps {
 }
 
 export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusScreenProps) {
-  const [phase, setPhase] = useState<'enter' | 'clash' | 'vs' | 'exit'>('enter');
+  const [phase, setPhase] = useState<'enter' | 'clash' | 'vs' | 'ready'>('enter');
+  const [showFightButton, setShowFightButton] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Animation timeline - extended to show while AI processes
+    // Animation timeline - stops at 'ready' and waits for user click
     const timeline = [
       { phase: 'clash' as const, delay: 800 },   // Fighters slide in, then clash
       { phase: 'vs' as const, delay: 1400 },     // VS explodes
-      { phase: 'exit' as const, delay: 6000 },   // Hold longer (6 sec) while AI starts
+      { phase: 'ready' as const, delay: 2200 },  // Ready for user input
     ];
 
     const timeouts = timeline.map(({ phase, delay }) =>
       setTimeout(() => setPhase(phase), delay)
     );
 
-    // Complete callback after exit animation - gives AI time to start
-    const completeTimeout = setTimeout(onComplete, 7000);
+    // Show FIGHT button after animation settles
+    const buttonTimeout = setTimeout(() => setShowFightButton(true), 2500);
 
     return () => {
       timeouts.forEach(clearTimeout);
-      clearTimeout(completeTimeout);
+      clearTimeout(buttonTimeout);
     };
-  }, [onComplete]);
+  }, []);
+
+  // Click on background = go back to selection
+  const handleBackgroundClick = () => {
+    router.push('/');
+  };
+
+  // Click FIGHT = proceed to book
+  const handleFightClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Don't trigger background click
+    onComplete();
+  };
 
   return (
-    <div className="versus-screen">
+    <div className="versus-screen" onClick={handleBackgroundClick}>
       {/* Dark dramatic background */}
       <div className="vs-background" />
+      
+      {/* Hint text */}
+      <div className="click-hint">Click anywhere to change fighters</div>
       
       {/* Impact flash on clash */}
       <AnimatePresence>
