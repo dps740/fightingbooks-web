@@ -379,11 +379,26 @@ function BookReader() {
         
         /* Victory Page */
         .victory-page {
-          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
+          background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%) !important;
           text-align: center;
         }
-        .victory-title { color: #c62828 !important; font-size: 2.5em !important; }
-        .victory-image { max-width: 80%; max-height: 250px; border-radius: 12px; margin: 20px auto; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .victory-title { 
+          color: #d4af37 !important; 
+          font-size: 2em !important; 
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .victory-image { 
+          max-width: 90%; 
+          max-height: 300px; 
+          border-radius: 12px; 
+          margin: 20px auto; 
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          border: 4px solid #d4af37;
+        }
+        .victory-content {
+          max-width: 600px;
+          margin: 0 auto;
+        }
         
         /* Page Title */
         .page-title {
@@ -433,14 +448,23 @@ function BookReader() {
           font-size: 1.5em;
           margin-bottom: 10px;
         }
+        .battle-page .page-title:empty {
+          display: none;
+        }
         .battle-content {
           position: relative;
           z-index: 1;
-          background: linear-gradient(transparent, rgba(0,0,0,0.85) 20%, rgba(0,0,0,0.95));
-          padding: 60px 20px 20px 20px;
+          background: linear-gradient(transparent 60%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.9));
+          padding: 200px 20px 20px 20px;
           border-radius: 0 0 10px 10px;
           margin: 0 -20px -20px -20px;
           color: white;
+        }
+        
+        @media (max-width: 768px) {
+          .battle-content {
+            padding-top: 150px;
+          }
         }
         .battle-content p {
           background: rgba(255,255,255,0.1) !important;

@@ -168,6 +168,44 @@ Be exciting but educational. Base the winner on realistic animal capabilities.`;
   }
 }
 
+// Generate tactical analysis comparing the two animals
+function generateTacticalAnalysis(factsA: AnimalFacts, factsB: AnimalFacts): string {
+  const analyses: string[] = [];
+  
+  // Speed advantage
+  if (Math.abs(factsA.speed_score - factsB.speed_score) >= 2) {
+    const faster = factsA.speed_score > factsB.speed_score ? factsA : factsB;
+    const slower = faster === factsA ? factsB : factsA;
+    analyses.push(`${faster.name}'s superior speed (${faster.speed_score}/10 vs ${slower.speed_score}/10) gives it first-strike capability`);
+  }
+  
+  // Strength advantage
+  if (Math.abs(factsA.strength_score - factsB.strength_score) >= 2) {
+    const stronger = factsA.strength_score > factsB.strength_score ? factsA : factsB;
+    const weaker = stronger === factsA ? factsB : factsA;
+    analyses.push(`${stronger.name}'s raw power (${stronger.strength_score}/10) could overwhelm ${weaker.name}'s defenses`);
+  }
+  
+  // Weapons advantage
+  if (Math.abs(factsA.weapons_score - factsB.weapons_score) >= 2) {
+    const better_armed = factsA.weapons_score > factsB.weapons_score ? factsA : factsB;
+    analyses.push(`${better_armed.name}'s arsenal (${better_armed.weapons_score}/10) provides multiple attack options`);
+  }
+  
+  // Defense advantage
+  if (Math.abs(factsA.defense_score - factsB.defense_score) >= 2) {
+    const tougher = factsA.defense_score > factsB.defense_score ? factsA : factsB;
+    analyses.push(`${tougher.name}'s defenses (${tougher.defense_score}/10) make it extremely hard to take down`);
+  }
+  
+  // If no major advantages, note it's balanced
+  if (analyses.length === 0) {
+    return `This is an evenly matched fight! Both animals have comparable stats across all categories, making the outcome unpredictable.`;
+  }
+  
+  return analyses.join('. ') + '.';
+}
+
 // Generate all pages with AI
 async function generateBook(animalA: string, animalB: string, environment: string): Promise<{ pages: BookPage[], winner: string }> {
   console.log(`Generating book: ${animalA} vs ${animalB} in ${environment}`);
@@ -256,64 +294,78 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       type: 'stats',
       title: 'Tale of the Tape',
       content: `
-        <div class="border border-[#d4af37] p-3">
-          <table class="w-full text-center text-sm">
-            <tr class="border-b border-white/20">
-              <td class="py-2 text-[#c41e3a] font-bold">${factsA.name.toUpperCase()}</td>
-              <td class="py-2 text-[#d4af37]">STAT</td>
-              <td class="py-2 text-[#1e4fc4] font-bold">${factsB.name.toUpperCase()}</td>
+        <div class="border border-[#d4af37] p-4">
+          <table class="w-full text-center">
+            <tr class="border-b-2 border-[#d4af37]">
+              <td class="py-2 text-[#c41e3a] font-bold text-lg">${factsA.name.toUpperCase()}</td>
+              <td class="py-2 text-[#d4af37] font-bold">STAT</td>
+              <td class="py-2 text-[#1e4fc4] font-bold text-lg">${factsB.name.toUpperCase()}</td>
             </tr>
             <tr class="border-b border-white/10">
-              <td class="py-1">${'⭐'.repeat(factsA.strength_score > 5 ? Math.min(factsA.strength_score, 10) : 5)}</td>
-              <td class="py-1 text-gray-400">💪 STRENGTH</td>
-              <td class="py-1">${'⭐'.repeat(factsB.strength_score > 5 ? Math.min(factsB.strength_score, 10) : 5)}</td>
+              <td class="py-2 text-xl font-bold">${factsA.strength_score}/10</td>
+              <td class="py-2 text-gray-600">💪 STRENGTH</td>
+              <td class="py-2 text-xl font-bold">${factsB.strength_score}/10</td>
             </tr>
             <tr class="border-b border-white/10">
-              <td class="py-1">${'⭐'.repeat(factsA.speed_score > 5 ? Math.min(factsA.speed_score, 10) : 5)}</td>
-              <td class="py-1 text-gray-400">⚡ SPEED</td>
-              <td class="py-1">${'⭐'.repeat(factsB.speed_score > 5 ? Math.min(factsB.speed_score, 10) : 5)}</td>
+              <td class="py-2 text-xl font-bold">${factsA.speed_score}/10</td>
+              <td class="py-2 text-gray-600">⚡ SPEED</td>
+              <td class="py-2 text-xl font-bold">${factsB.speed_score}/10</td>
             </tr>
             <tr class="border-b border-white/10">
-              <td class="py-1">${'⭐'.repeat(factsA.weapons_score > 5 ? Math.min(factsA.weapons_score, 10) : 5)}</td>
-              <td class="py-1 text-gray-400">⚔️ WEAPONS</td>
-              <td class="py-1">${'⭐'.repeat(factsB.weapons_score > 5 ? Math.min(factsB.weapons_score, 10) : 5)}</td>
+              <td class="py-2 text-xl font-bold">${factsA.weapons_score}/10</td>
+              <td class="py-2 text-gray-600">⚔️ WEAPONS</td>
+              <td class="py-2 text-xl font-bold">${factsB.weapons_score}/10</td>
             </tr>
             <tr>
-              <td class="py-1">${'⭐'.repeat(factsA.defense_score > 5 ? Math.min(factsA.defense_score, 10) : 5)}</td>
-              <td class="py-1 text-gray-400">🛡️ DEFENSE</td>
-              <td class="py-1">${'⭐'.repeat(factsB.defense_score > 5 ? Math.min(factsB.defense_score, 10) : 5)}</td>
+              <td class="py-2 text-xl font-bold">${factsA.defense_score}/10</td>
+              <td class="py-2 text-gray-600">🛡️ DEFENSE</td>
+              <td class="py-2 text-xl font-bold">${factsB.defense_score}/10</td>
             </tr>
           </table>
+          <div class="mt-4 p-3 bg-amber-50 rounded border-l-4 border-amber-500">
+            <p class="text-sm font-bold text-gray-700">⚔️ TACTICAL ANALYSIS</p>
+            <p class="text-sm mt-1">${generateTacticalAnalysis(factsA, factsB)}</p>
+          </div>
         </div>
       `,
     },
     {
       id: 'battle-1',
       type: 'battle',
-      title: 'The Battle Begins!',
+      title: '',
       content: `<p>${battle.scenes[0]}</p>`,
       imageUrl: battleImg,
     },
     {
       id: 'battle-2',
       type: 'battle',
-      title: 'The Clash Intensifies!',
+      title: '',
       content: `<p>${battle.scenes[1]}</p>`,
     },
     {
       id: 'battle-3',
       type: 'battle',
-      title: 'The Final Showdown!',
+      title: '',
       content: `<p>${battle.scenes[2]}</p>`,
     },
     {
       id: 'victory',
       type: 'victory',
-      title: 'THE WINNER!',
+      title: 'The Victor',
       content: `
-        <p class="text-4xl font-black text-center mb-4 text-[#d4af37]">${battle.winner.toUpperCase()}</p>
-        <p>After an incredible battle, <strong>${battle.winner}</strong> emerges victorious!</p>
-        <p class="mt-4 text-gray-400 text-sm">Remember: in nature, outcomes depend on many factors. Every animal is amazing in its own way!</p>
+        <div class="victory-content">
+          <div class="text-center mb-6">
+            <p class="text-5xl font-black text-[#d4af37] mb-2">${battle.winner.toUpperCase()}</p>
+            <p class="text-xl text-gray-700">After an incredible battle, <strong>${battle.winner}</strong> emerges victorious!</p>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg border-2 border-[#d4af37]">
+            <p class="text-sm text-gray-600 italic">
+              Remember: in nature, outcomes depend on many factors including environment, health, experience, and luck. 
+              Both ${factsA.name} and ${factsB.name} are remarkable apex predators, perfectly adapted to their habitats. 
+              Every animal is amazing in its own way!
+            </p>
+          </div>
+        </div>
       `,
       imageUrl: victoryImg,
     },
