@@ -162,30 +162,49 @@ function renderPageHtml(page: BookPage, animalA: string, animalB: string, winner
         text-transform: uppercase;
       }
       
+      .cover-banner {
+        font-family: 'Bangers', cursive;
+        font-size: 48px;
+        color: #ff0000;
+        background: #ffeb3b;
+        padding: 15px 40px;
+        border: 5px solid #ff0000;
+        border-radius: 10px;
+        text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        letter-spacing: 3px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        text-transform: uppercase;
+      }
+      
       .cover-title {
         font-family: 'Bangers', cursive;
-        font-size: 56px;
+        font-size: 64px;
         color: #FFD700;
         text-align: center;
-        text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-        margin: 10px 0;
+        text-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        margin: 15px 0;
         text-transform: uppercase;
+        letter-spacing: 3px;
       }
       
       .cover-vs {
         font-family: 'Bangers', cursive;
-        font-size: 72px;
+        font-size: 80px;
         color: white;
         text-align: center;
-        text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-        margin: 15px 0;
+        text-shadow: 5px 5px 10px rgba(0,0,0,0.6);
+        margin: 20px 0;
+        letter-spacing: 5px;
       }
       
       .cover-subtitle {
-        font-size: 24px;
+        font-size: 28px;
         color: white;
         text-align: center;
-        margin-top: 20px;
+        margin-top: 25px;
+        font-family: 'Bangers', cursive;
+        letter-spacing: 2px;
       }
       
       .page-image {
@@ -279,12 +298,11 @@ function renderPageHtml(page: BookPage, animalA: string, animalB: string, winner
     return `
       ${baseStyles}
       <div class="page" style="justify-content: center; align-items: center;">
-        <div style="color: white; font-size: 24px; margin-bottom: 30px;">WHO WOULD WIN?</div>
-        ${page.imageUrl ? `<img src="${page.imageUrl}" class="page-image" style="max-height: 350px; margin-bottom: 30px;" crossorigin="anonymous" />` : ''}
+        <div class="cover-banner">WHO WOULD WIN?</div>
+        ${page.imageUrl ? `<img src="${page.imageUrl}" class="page-image" style="max-height: 320px; margin-bottom: 25px; border: 4px solid white;" crossorigin="anonymous" />` : ''}
         <div class="cover-title">${animalA}</div>
         <div class="cover-vs">VS</div>
         <div class="cover-title">${animalB}</div>
-        ${!page.imageUrl ? '<div class="cover-subtitle">THE ULTIMATE BATTLE!</div>' : ''}
       </div>
     `;
   }
