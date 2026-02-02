@@ -124,49 +124,108 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Game Mode Selector */}
+      {/* 3. Game Mode Selector - Hierarchical */}
       <section className="px-4 pb-4">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {/* Classic Mode */}
-            <button
-              onClick={() => setGameMode('classic')}
-              className={`relative p-4 sm:p-6 rounded-xl border-4 transition-all ${
-                gameMode === 'classic'
-                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-[#FFD700] shadow-2xl scale-[1.02]'
-                  : 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:border-green-500'
-              }`}
-            >
-              <div className="text-3xl sm:text-4xl mb-2">📖</div>
-              <div className="font-bangers text-xl sm:text-2xl text-white">CLASSIC BATTLES</div>
-              <div className="text-green-300 font-bold mt-1">100% FREE</div>
-              <div className="text-white/70 text-sm mt-2 hidden sm:block">Educational battle stories with real facts</div>
-              {gameMode === 'classic' && (
-                <div className="absolute -top-2 -right-2 bg-[#FFD700] text-black font-bangers px-3 py-1 rounded-full text-sm">
-                  ✓ SELECTED
-                </div>
-              )}
-            </button>
+            
+            {/* Classic Mode Card */}
+            <div className={`rounded-xl border-4 overflow-hidden transition-all ${
+              gameMode === 'classic' ? 'border-[#FFD700] shadow-2xl' : 'border-gray-600'
+            }`}>
+              {/* Header */}
+              <button
+                onClick={() => setGameMode('classic')}
+                className={`w-full p-3 sm:p-4 text-center transition-all ${
+                  gameMode === 'classic'
+                    ? 'bg-gradient-to-br from-green-600 to-green-800'
+                    : 'bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700'
+                }`}
+              >
+                <div className="text-2xl sm:text-3xl mb-1">📖</div>
+                <div className="font-bangers text-lg sm:text-xl text-white">CLASSIC BATTLES</div>
+                <div className="text-green-300 font-bold text-sm">100% FREE</div>
+              </button>
+              
+              {/* Sub-options */}
+              <div className={`grid grid-cols-2 gap-1 p-2 bg-black/40 ${gameMode !== 'classic' ? 'opacity-50' : ''}`}>
+                <button
+                  onClick={() => { setGameMode('classic'); setBattleType('single'); }}
+                  disabled={gameMode !== 'classic'}
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    gameMode === 'classic' && battleType === 'single'
+                      ? 'bg-green-600 ring-2 ring-[#FFD700]'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                  }`}
+                >
+                  <div className="text-lg">⚔️</div>
+                  <div className="font-bangers text-xs sm:text-sm text-white">SINGLE</div>
+                  <div className="text-green-400 text-xs font-bold">FREE</div>
+                </button>
+                <button
+                  onClick={() => { setGameMode('classic'); setBattleType('tournament'); }}
+                  disabled={gameMode !== 'classic'}
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    gameMode === 'classic' && battleType === 'tournament'
+                      ? 'bg-green-600 ring-2 ring-[#FFD700]'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                  }`}
+                >
+                  <div className="text-lg">🏆</div>
+                  <div className="font-bangers text-xs sm:text-sm text-white">TOURNAMENT</div>
+                  <div className="text-green-400 text-xs font-bold">FREE</div>
+                </button>
+              </div>
+            </div>
 
-            {/* Adventure Mode */}
-            <button
-              onClick={() => setGameMode('adventure')}
-              className={`relative p-4 sm:p-6 rounded-xl border-4 transition-all ${
-                gameMode === 'adventure'
-                  ? 'bg-gradient-to-br from-purple-600 to-purple-800 border-[#FFD700] shadow-2xl scale-[1.02]'
-                  : 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:border-purple-500'
-              }`}
-            >
-              <div className="text-3xl sm:text-4xl mb-2">🎮</div>
-              <div className="font-bangers text-xl sm:text-2xl text-white">ADVENTURE MODE</div>
-              <div className="text-purple-300 font-bold mt-1">PREMIUM ✨</div>
-              <div className="text-white/70 text-sm mt-2 hidden sm:block">YOU control the story! Make choices that matter</div>
-              {gameMode === 'adventure' && (
-                <div className="absolute -top-2 -right-2 bg-[#FFD700] text-black font-bangers px-3 py-1 rounded-full text-sm">
-                  ✓ SELECTED
-                </div>
-              )}
-            </button>
+            {/* Adventure Mode Card */}
+            <div className={`rounded-xl border-4 overflow-hidden transition-all ${
+              gameMode === 'adventure' ? 'border-[#FFD700] shadow-2xl' : 'border-gray-600'
+            }`}>
+              {/* Header */}
+              <button
+                onClick={() => setGameMode('adventure')}
+                className={`w-full p-3 sm:p-4 text-center transition-all ${
+                  gameMode === 'adventure'
+                    ? 'bg-gradient-to-br from-purple-600 to-purple-800'
+                    : 'bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700'
+                }`}
+              >
+                <div className="text-2xl sm:text-3xl mb-1">🎮</div>
+                <div className="font-bangers text-lg sm:text-xl text-white">ADVENTURE MODE</div>
+                <div className="text-purple-300 font-bold text-sm">PREMIUM ✨</div>
+              </button>
+              
+              {/* Sub-options */}
+              <div className={`grid grid-cols-2 gap-1 p-2 bg-black/40 ${gameMode !== 'adventure' ? 'opacity-50' : ''}`}>
+                <button
+                  onClick={() => { setGameMode('adventure'); setBattleType('single'); }}
+                  disabled={gameMode !== 'adventure'}
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    gameMode === 'adventure' && battleType === 'single'
+                      ? 'bg-purple-600 ring-2 ring-[#FFD700]'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                  }`}
+                >
+                  <div className="text-lg">⚔️</div>
+                  <div className="font-bangers text-xs sm:text-sm text-white">SINGLE</div>
+                  <div className="text-purple-300 text-xs font-bold">$1</div>
+                </button>
+                <button
+                  onClick={() => { setGameMode('adventure'); setBattleType('tournament'); }}
+                  disabled={gameMode !== 'adventure'}
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    gameMode === 'adventure' && battleType === 'tournament'
+                      ? 'bg-purple-600 ring-2 ring-[#FFD700]'
+                      : 'bg-gray-700 hover:bg-gray-600'
+                  }`}
+                >
+                  <div className="text-lg">🏆</div>
+                  <div className="font-bangers text-xs sm:text-sm text-white">TOURNAMENT</div>
+                  <div className="text-purple-300 text-xs font-bold">$5</div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -306,60 +365,22 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 5. Battle Type Selection */}
+          {/* 5. Generate Button */}
           {canGenerate && (
-            <div className="mt-6 space-y-4">
-              <h3 className="font-bangers text-2xl text-center text-[#FFD700]">⚔️ CHOOSE BATTLE TYPE</h3>
-              
-              <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto">
-                <button 
-                  onClick={() => setBattleType('single')} 
-                  className={`p-4 rounded-xl border-3 transition-all ${
-                    battleType === 'single' 
-                      ? 'bg-gradient-to-br from-red-600 to-red-800 border-[#FFD700] scale-105 shadow-xl' 
-                      : 'bg-gray-700 border-gray-600 hover:border-red-500'
-                  }`}
-                >
-                  <div className="text-4xl mb-2">⚔️</div>
-                  <div className="font-bangers text-xl text-white">SINGLE MATCH</div>
-                  <div className="text-sm text-white/80">One epic showdown</div>
-                  <div className={`mt-2 font-bold ${gameMode === 'classic' ? 'text-green-400' : 'text-purple-300'}`}>
-                    {gameMode === 'classic' ? 'FREE' : '$1'}
-                  </div>
-                </button>
-
-                <button 
-                  onClick={() => setBattleType('tournament')} 
-                  className={`p-4 rounded-xl border-3 transition-all ${
-                    battleType === 'tournament' 
-                      ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-[#FFD700] scale-105 shadow-xl' 
-                      : 'bg-gray-700 border-gray-600 hover:border-orange-500'
-                  }`}
-                >
-                  <div className="text-4xl mb-2">🏆</div>
-                  <div className="font-bangers text-xl text-white">TOURNAMENT</div>
-                  <div className="text-sm text-white/80">8-fighter bracket</div>
-                  <div className={`mt-2 font-bold ${gameMode === 'classic' ? 'text-green-400' : 'text-purple-300'}`}>
-                    {gameMode === 'classic' ? 'FREE' : '$5'}
-                  </div>
-                </button>
-              </div>
-
-              <div className="text-center">
-                <button onClick={handleGenerate} disabled={loading} className="px-12 py-4 rounded-xl font-bangers text-3xl bg-[#FFD700] text-[#8B0000] border-4 border-[#8B5A2B] shadow-xl hover:bg-yellow-300 hover:scale-105 transition-all disabled:opacity-50">
-                  {loading ? '⏳ CREATING...' : (
-                    <>
-                      {gameMode === 'adventure' && getPrice() ? `${getPrice()} • ` : ''}
-                      {battleType === 'tournament' ? '🏆 START TOURNAMENT!' : '📖 CREATE BOOK!'}
-                    </>
-                  )}
-                </button>
-                <p className="mt-4 text-white/90">
-                  {gameMode === 'classic' 
-                    ? 'Free to create • No signup needed' 
-                    : 'Premium interactive experience • You control the story'}
-                </p>
-              </div>
+            <div className="mt-6 text-center">
+              <button onClick={handleGenerate} disabled={loading} className="px-12 py-4 rounded-xl font-bangers text-3xl bg-[#FFD700] text-[#8B0000] border-4 border-[#8B5A2B] shadow-xl hover:bg-yellow-300 hover:scale-105 transition-all disabled:opacity-50">
+                {loading ? '⏳ CREATING...' : (
+                  <>
+                    {gameMode === 'adventure' && getPrice() ? `${getPrice()} • ` : ''}
+                    {battleType === 'tournament' ? '🏆 START TOURNAMENT!' : '📖 CREATE BOOK!'}
+                  </>
+                )}
+              </button>
+              <p className="mt-4 text-white/90">
+                {gameMode === 'classic' 
+                  ? 'Free to create • No signup needed' 
+                  : 'Premium interactive experience • You control the story'}
+              </p>
             </div>
           )}
         </div>
