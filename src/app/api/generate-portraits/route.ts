@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { put } from '@vercel/blob';
 
 const DINOSAURS = [
   'Tyrannosaurus Rex',
@@ -49,18 +48,15 @@ async function generateAndSaveImage(name: string): Promise<{ name: string; succe
     
     // Download image
     const imgResponse = await fetch(imageUrl);
-    const buffer = Buffer.from(await imgResponse.arrayBuffer());
+    const buffer = await imgResponse.arrayBuffer();
     
-    // Save to public/fighters
-    const fightersDir = path.join(process.cwd(), 'public', 'fighters');
-    if (!fs.existsSync(fightersDir)) {
-      fs.mkdirSync(fightersDir, { recursive: true });
-    }
+    // Upload to Vercel Blob
+    const blob = await put(`fighters/${filename}.jpg`, buffer, {
+      access: 'public',
+      contentType: 'image/jpeg',
+    });
     
-    const filepath = path.join(fightersDir, `${filename}.jpg`);
-    fs.writeFileSync(filepath, buffer);
-    
-    return { name, success: true, url: `/fighters/${filename}.jpg` };
+    return { name, success: true, url: blob.url };
   } catch (error) {
     return { name, success: false, error: String(error) };
   }
