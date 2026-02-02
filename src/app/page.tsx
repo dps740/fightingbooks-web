@@ -127,7 +127,7 @@ export default function Home() {
           </div>
 
           {/* Side-by-Side: Red LEFT, Blue RIGHT - ALWAYS HORIZONTAL */}
-          <div className="grid grid-cols-[1fr,auto,1fr] gap-2 sm:gap-4 mb-6">
+          <div className="grid gap-2 sm:gap-4 mb-6" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
             
             {/* RED CORNER - LEFT */}
             <button
