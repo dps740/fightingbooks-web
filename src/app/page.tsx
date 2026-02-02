@@ -53,11 +53,18 @@ export default function Home() {
   const [animalA, setAnimalA] = useState('');
   const [animalB, setAnimalB] = useState('');
   const [selectingFor, setSelectingFor] = useState<'A' | 'B'>('A');
-  const [battleMode, setBattleMode] = useState('standard');
+  const [gameMode, setGameMode] = useState<'classic' | 'adventure'>('classic');
+  const [battleType, setBattleType] = useState<'single' | 'tournament'>('single');
   const [loading, setLoading] = useState(false);
 
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
+  
+  // Pricing based on mode
+  const getPrice = () => {
+    if (gameMode === 'classic') return null; // Free
+    return battleType === 'single' ? '$1' : '$5';
+  };
   const canGenerate = animalA && animalB && animalA !== animalB;
 
   const getImagePath = (name: string) => `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
@@ -76,10 +83,11 @@ export default function Home() {
     if (!canGenerate) return;
     setLoading(true);
     
-    if (battleMode === 'tournament') {
-      router.push(`/tournament?seed1=${encodeURIComponent(animalA)}&seed2=${encodeURIComponent(animalB)}`);
+    if (battleType === 'tournament') {
+      const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
+      router.push(`/tournament?seed1=${encodeURIComponent(animalA)}&seed2=${encodeURIComponent(animalB)}&mode=${mode}`);
     } else {
-      const mode = battleMode === 'cyoa' ? 'cyoa' : 'standard';
+      const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
       router.push(`/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=neutral&mode=${mode}`);
     }
   };
@@ -116,7 +124,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Fighter Selection - Street Fighter 2 Style */}
+      {/* 3. Game Mode Selector */}
+      <section className="px-4 pb-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {/* Classic Mode */}
+            <button
+              onClick={() => setGameMode('classic')}
+              className={`relative p-4 sm:p-6 rounded-xl border-4 transition-all ${
+                gameMode === 'classic'
+                  ? 'bg-gradient-to-br from-green-600 to-green-800 border-[#FFD700] shadow-2xl scale-[1.02]'
+                  : 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:border-green-500'
+              }`}
+            >
+              <div className="text-3xl sm:text-4xl mb-2">📖</div>
+              <div className="font-bangers text-xl sm:text-2xl text-white">CLASSIC BATTLES</div>
+              <div className="text-green-300 font-bold mt-1">100% FREE</div>
+              <div className="text-white/70 text-sm mt-2 hidden sm:block">Educational battle stories with real facts</div>
+              {gameMode === 'classic' && (
+                <div className="absolute -top-2 -right-2 bg-[#FFD700] text-black font-bangers px-3 py-1 rounded-full text-sm">
+                  ✓ SELECTED
+                </div>
+              )}
+            </button>
+
+            {/* Adventure Mode */}
+            <button
+              onClick={() => setGameMode('adventure')}
+              className={`relative p-4 sm:p-6 rounded-xl border-4 transition-all ${
+                gameMode === 'adventure'
+                  ? 'bg-gradient-to-br from-purple-600 to-purple-800 border-[#FFD700] shadow-2xl scale-[1.02]'
+                  : 'bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:border-purple-500'
+              }`}
+            >
+              <div className="text-3xl sm:text-4xl mb-2">🎮</div>
+              <div className="font-bangers text-xl sm:text-2xl text-white">ADVENTURE MODE</div>
+              <div className="text-purple-300 font-bold mt-1">PREMIUM ✨</div>
+              <div className="text-white/70 text-sm mt-2 hidden sm:block">YOU control the story! Make choices that matter</div>
+              {gameMode === 'adventure' && (
+                <div className="absolute -top-2 -right-2 bg-[#FFD700] text-black font-bangers px-3 py-1 rounded-full text-sm">
+                  ✓ SELECTED
+                </div>
+              )}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Fighter Selection - Street Fighter 2 Style */}
       <section className="px-4 pb-6">
         <div className="max-w-6xl mx-auto">
           
@@ -251,36 +306,59 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 4. Battle Mode Selection */}
+          {/* 5. Battle Type Selection */}
           {canGenerate && (
             <div className="mt-6 space-y-4">
-              <h3 className="font-bangers text-2xl text-center text-[#FFD700]">⚔️ CHOOSE YOUR BATTLE MODE</h3>
+              <h3 className="font-bangers text-2xl text-center text-[#FFD700]">⚔️ CHOOSE BATTLE TYPE</h3>
               
-              <div className="grid sm:grid-cols-3 gap-4">
-                <button onClick={() => setBattleMode('standard')} className={`p-4 rounded-xl border-3 transition-all ${battleMode === 'standard' ? 'bg-green-600 border-green-800 scale-105 shadow-xl' : 'bg-gray-700 border-gray-600 hover:border-green-500'}`}>
-                  <div className="text-4xl mb-2">📖</div>
-                  <div className="font-bangers text-xl text-white">CLASSIC</div>
-                  <div className="text-sm text-white/80">Epic battle story</div>
+              <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto">
+                <button 
+                  onClick={() => setBattleType('single')} 
+                  className={`p-4 rounded-xl border-3 transition-all ${
+                    battleType === 'single' 
+                      ? 'bg-gradient-to-br from-red-600 to-red-800 border-[#FFD700] scale-105 shadow-xl' 
+                      : 'bg-gray-700 border-gray-600 hover:border-red-500'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">⚔️</div>
+                  <div className="font-bangers text-xl text-white">SINGLE MATCH</div>
+                  <div className="text-sm text-white/80">One epic showdown</div>
+                  <div className={`mt-2 font-bold ${gameMode === 'classic' ? 'text-green-400' : 'text-purple-300'}`}>
+                    {gameMode === 'classic' ? 'FREE' : '$1'}
+                  </div>
                 </button>
 
-                <button onClick={() => setBattleMode('cyoa')} className={`p-4 rounded-xl border-3 transition-all ${battleMode === 'cyoa' ? 'bg-purple-600 border-purple-800 scale-105 shadow-xl' : 'bg-gray-700 border-gray-600 hover:border-purple-500'}`}>
-                  <div className="text-4xl mb-2">🎮</div>
-                  <div className="font-bangers text-xl text-white">INTERACTIVE</div>
-                  <div className="text-sm text-white/80">YOU decide! Make 3 key choices</div>
-                </button>
-
-                <button onClick={() => setBattleMode('tournament')} className={`p-4 rounded-xl border-3 transition-all ${battleMode === 'tournament' ? 'bg-orange-600 border-orange-800 scale-105 shadow-xl' : 'bg-gray-700 border-gray-600 hover:border-orange-500'}`}>
+                <button 
+                  onClick={() => setBattleType('tournament')} 
+                  className={`p-4 rounded-xl border-3 transition-all ${
+                    battleType === 'tournament' 
+                      ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-[#FFD700] scale-105 shadow-xl' 
+                      : 'bg-gray-700 border-gray-600 hover:border-orange-500'
+                  }`}
+                >
                   <div className="text-4xl mb-2">🏆</div>
                   <div className="font-bangers text-xl text-white">TOURNAMENT</div>
-                  <div className="text-sm text-white/80">8-fighter bracket championship</div>
+                  <div className="text-sm text-white/80">8-fighter bracket</div>
+                  <div className={`mt-2 font-bold ${gameMode === 'classic' ? 'text-green-400' : 'text-purple-300'}`}>
+                    {gameMode === 'classic' ? 'FREE' : '$5'}
+                  </div>
                 </button>
               </div>
 
               <div className="text-center">
                 <button onClick={handleGenerate} disabled={loading} className="px-12 py-4 rounded-xl font-bangers text-3xl bg-[#FFD700] text-[#8B0000] border-4 border-[#8B5A2B] shadow-xl hover:bg-yellow-300 hover:scale-105 transition-all disabled:opacity-50">
-                  {loading ? '⏳ CREATING...' : '📖 CREATE BOOK!'}
+                  {loading ? '⏳ CREATING...' : (
+                    <>
+                      {gameMode === 'adventure' && getPrice() ? `${getPrice()} • ` : ''}
+                      {battleType === 'tournament' ? '🏆 START TOURNAMENT!' : '📖 CREATE BOOK!'}
+                    </>
+                  )}
                 </button>
-                <p className="mt-4 text-white/90">Free to create • No signup needed</p>
+                <p className="mt-4 text-white/90">
+                  {gameMode === 'classic' 
+                    ? 'Free to create • No signup needed' 
+                    : 'Premium interactive experience • You control the story'}
+                </p>
               </div>
             </div>
           )}
