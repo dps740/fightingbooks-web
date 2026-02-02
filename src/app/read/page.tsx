@@ -165,6 +165,26 @@ function BookReader() {
                 <h2 className="page-title victory-title">🏆 THE WINNER! 🏆</h2>
                 {page.imageUrl && <img src={page.imageUrl} alt="Winner" className="victory-image" />}
                 <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+                
+                {/* Download Options */}
+                <div className="download-section">
+                  <h3 className="download-title">📥 Download Your Book</h3>
+                  <div className="download-buttons">
+                    <button 
+                      onClick={() => window.open(`/api/book/download?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&format=pdf`, '_blank')}
+                      className="download-btn download-pdf"
+                    >
+                      📄 Download PDF
+                    </button>
+                    <button 
+                      onClick={() => window.open(`/api/book/download?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&format=epub`, '_blank')}
+                      className="download-btn download-epub"
+                    >
+                      📖 Download EPUB
+                    </button>
+                  </div>
+                  <p className="download-note">Save your book to read offline or print!</p>
+                </div>
               </>
             )}
 
@@ -398,6 +418,63 @@ function BookReader() {
         .victory-content {
           max-width: 600px;
           margin: 0 auto;
+        }
+        
+        /* Download Section */
+        .download-section {
+          margin-top: 30px;
+          padding: 20px;
+          background: white;
+          border-radius: 12px;
+          border: 3px solid #d4af37;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .download-title {
+          font-family: 'Bangers', cursive;
+          font-size: 1.8em;
+          color: #d4af37;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+        .download-buttons {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        .download-btn {
+          padding: 15px 30px;
+          font-size: 1.1em;
+          font-family: 'Comic Neue', cursive;
+          font-weight: bold;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .download-pdf {
+          background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+          color: white;
+        }
+        .download-pdf:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .download-epub {
+          background: linear-gradient(135deg, #5e35b1 0%, #4527a0 100%);
+          color: white;
+        }
+        .download-epub:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .download-note {
+          text-align: center;
+          margin-top: 10px;
+          font-size: 0.9em;
+          color: #666;
+          font-style: italic;
         }
         
         /* Page Title */
