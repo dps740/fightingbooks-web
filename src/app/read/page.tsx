@@ -46,15 +46,12 @@ function BookReader() {
     setShowVersusScreen(false);
   }, []);
 
+  // Start loading book data immediately (parallel with VS animation)
   useEffect(() => { 
-    // Only start loading after VS screen completes
-    if (!showVersusScreen) {
-      loadBook(); 
-    }
-  }, [showVersusScreen]);
+    loadBook(); 
+  }, [animalA, animalB, mode, environment]);
 
   const loadBook = async () => {
-    setLoading(true);
     try {
       const response = await fetch('/api/book/start', {
         method: 'POST',
@@ -107,7 +104,7 @@ function BookReader() {
     return backgrounds[i % backgrounds.length];
   };
 
-  // Show VS screen first
+  // Show VS screen first (book loads in parallel)
   if (showVersusScreen) {
     return (
       <VersusScreen 
@@ -118,7 +115,8 @@ function BookReader() {
     );
   }
 
-  if (loading) {
+  // Only show loading if VS is done but book data isn't ready yet
+  if (pages.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center font-comic">
         <div className="text-center">
