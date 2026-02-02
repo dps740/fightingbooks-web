@@ -125,12 +125,12 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
 
         {/* VS Badge - appears on clash with explosion */}
         <AnimatePresence>
-          {(phase === 'clash' || phase === 'vs' || phase === 'exit') && (
+          {(phase === 'clash' || phase === 'vs' || phase === 'ready') && (
             <motion.div
               className="vs-container"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ 
-                scale: phase === 'vs' || phase === 'exit' ? [1.2, 1] : 3,
+                scale: phase === 'vs' || phase === 'ready' ? [1.2, 1] : 3,
                 rotate: 0,
               }}
               transition={{ 
