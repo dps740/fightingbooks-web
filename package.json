@@ -12,7 +12,7 @@
     "@fontsource/bangers": "^5.2.8",
     "@fontsource/comic-neue": "^5.2.7",
     "@sentry/nextjs": "^10.38.0",
-    "@sparticuz/chromium": "^143.0.4",
+    "@sparticuz/chromium": "^123.0.1",
     "@stripe/stripe-js": "^8.7.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.93.3",
