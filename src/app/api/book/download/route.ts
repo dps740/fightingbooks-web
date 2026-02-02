@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 // Must match BOOK_CACHE_VERSION in book/start/route.ts
-const BOOK_CACHE_VERSION = 'v6';
+const BOOK_CACHE_VERSION = 'v7';
 
 // Same cache key logic as book/start
 function getCacheKey(animalA: string, animalB: string, environment: string): string {

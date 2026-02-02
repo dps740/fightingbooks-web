@@ -573,8 +573,8 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   
   console.log('Using pre-generated educational images');
   
-  // Generate only battle-specific images (7 total instead of 16)
-  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
+  // Generate battle-specific images + secrets images (9 total)
+  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg, secretsImgA, secretsImgB] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
     generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
     generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
@@ -582,12 +582,14 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
     generateImage(`${battle.winner} powerful stance after battle, realistic animal behavior, dramatic lighting, wildlife photography`, `${imgPrefix}-victory`),
+    generateImage(`${animalA} mysterious close-up portrait, intense eyes, showing unique features, dramatic lighting, wildlife photography`, `${imgPrefix}-secrets-a`),
+    generateImage(`${animalB} mysterious close-up portrait, intense eyes, showing unique features, dramatic lighting, wildlife photography`, `${imgPrefix}-secrets-b`),
   ]);
-  console.log('Battle images generated');
+  console.log('Battle and secrets images generated');
   
   // Group images for easy access
-  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup };
-  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup };
+  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup, secrets: secretsImgA };
+  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup, secrets: secretsImgB };
 
   const pages: BookPage[] = [
     {
@@ -684,6 +686,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>What would YOU do if you met a ${factsA.name} in the wild?</p>
         </div>
       `,
+      imageUrl: imagesA.secrets,
     },
     
     // Animal B - Educational Pages (Who Would Win? style) - Different images for variety
@@ -772,6 +775,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>What would YOU do if you met a ${factsB.name} in the wild?</p>
         </div>
       `,
+      imageUrl: imagesB.secrets,
     },
     {
       id: 'stats',
@@ -948,7 +952,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v6';
+const BOOK_CACHE_VERSION = 'v7';
 
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
