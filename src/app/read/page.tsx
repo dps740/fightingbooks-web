@@ -223,39 +223,6 @@ function BookReader() {
                     >
                       {pdfGenerating ? `📄 Generating... (${pdfProgress.current}/${pdfProgress.total})` : '📄 Download PDF'}
                     </button>
-                    <button 
-                      onClick={async () => {
-                        try {
-                          const response = await fetch('/api/book/download', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              animalA,
-                              animalB,
-                              pages,
-                              winner: pages.find(p => p.type === 'victory')?.content?.match(/victory-name[^>]*>([^<]+)/)?.[1] || animalA,
-                              format: 'epub'
-                            })
-                          });
-                          if (response.ok) {
-                            const blob = await response.blob();
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `${animalA}_vs_${animalB}.epub`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                          } else {
-                            alert('Failed to generate EPUB. Please try again.');
-                          }
-                        } catch (e) {
-                          alert('Download failed. Please try again.');
-                        }
-                      }}
-                      className="download-btn download-epub"
-                    >
-                      📖 Download EPUB
-                    </button>
                   </div>
                   <p className="download-note">Save your book to read offline or print!</p>
                 </div>
@@ -589,14 +556,6 @@ function BookReader() {
           color: white;
         }
         .download-pdf:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-        }
-        .download-epub {
-          background: linear-gradient(135deg, #5e35b1 0%, #4527a0 100%);
-          color: white;
-        }
-        .download-epub:hover {
           transform: translateY(-2px);
           box-shadow: 0 6px 12px rgba(0,0,0,0.3);
         }
