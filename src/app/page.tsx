@@ -372,26 +372,59 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 5. Generate Button */}
-          {canGenerate && (
-            <div className="mt-6 text-center">
-              <button onClick={handleGenerate} disabled={loading} className="px-12 py-4 rounded-xl font-bangers text-3xl bg-[#FFD700] text-[#8B0000] border-4 border-[#8B5A2B] shadow-xl hover:bg-yellow-300 hover:scale-105 transition-all disabled:opacity-50">
-                {loading ? '⏳ CREATING...' : (
-                  <>
-                    {gameMode === 'adventure' && getPrice() ? `${getPrice()} • ` : ''}
-                    {battleType === 'tournament' ? '🏆 START TOURNAMENT!' : '📖 CREATE BOOK!'}
-                  </>
-                )}
-              </button>
-              <p className="mt-4 text-white/90">
-                {gameMode === 'classic' 
-                  ? 'Free to create • No signup needed' 
-                  : 'Premium interactive experience • You control the story'}
-              </p>
-            </div>
-          )}
+          {/* 5. Generate Button - Hidden, replaced by overlay */}
+          <div className="hidden">
+            <button id="generate-btn-hidden" onClick={handleGenerate} disabled={loading}>Generate</button>
+          </div>
         </div>
       </section>
+
+      {/* FIGHT! Overlay - appears when both fighters selected */}
+      {canGenerate && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
+          onClick={(e) => { if (e.target === e.currentTarget && !loading) handleGenerate(); }}
+        >
+          <div className="text-center transition-transform duration-300">
+            {/* VS Display */}
+            <div className="flex items-center justify-center gap-6 mb-8">
+              <div className="text-center">
+                <div className="w-24 h-24 rounded-full border-4 border-red-500 overflow-hidden bg-gray-800 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
+                  <img src={`/fighters/${animalA?.toLowerCase().replace(/ /g, '-')}.jpg`} alt={animalA || ''} className="w-full h-full object-cover" />
+                </div>
+                <p className="font-bangers text-red-400 text-xl mt-2">{animalA}</p>
+              </div>
+              <div className="font-bangers text-6xl text-yellow-400" style={{ textShadow: '0 0 20px rgba(255,215,0,0.8)' }}>VS</div>
+              <div className="text-center">
+                <div className="w-24 h-24 rounded-full border-4 border-blue-500 overflow-hidden bg-gray-800 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
+                  <img src={`/fighters/${animalB?.toLowerCase().replace(/ /g, '-')}.jpg`} alt={animalB || ''} className="w-full h-full object-cover" />
+                </div>
+                <p className="font-bangers text-blue-400 text-xl mt-2">{animalB}</p>
+              </div>
+            </div>
+            
+            {/* FIGHT Button */}
+            <button 
+              onClick={handleGenerate} 
+              disabled={loading}
+              className="px-16 py-6 rounded-2xl font-bangers text-5xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.6)] hover:scale-110 hover:shadow-[0_0_60px_rgba(255,215,0,0.8)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+            >
+              {loading ? '⏳ CREATING...' : '⚔️ FIGHT!'}
+            </button>
+            
+            <p className="mt-6 text-white/80 text-lg">
+              {gameMode === 'classic' 
+                ? 'Click to create your battle book!' 
+                : '✨ Interactive adventure mode'}
+            </p>
+            
+            {/* Close hint */}
+            {!loading && (
+              <p className="mt-4 text-white/50 text-sm">Click anywhere or press the button to begin</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 5. What's Inside Your Book */}
       <section className="py-12 px-4" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)' }}>
