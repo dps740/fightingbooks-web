@@ -77,6 +77,35 @@ async function uploadToBlob(imageUrl: string, filename: string): Promise<string>
   }
 }
 
+// Animal-specific features to ensure accurate depictions
+const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
+  'lion': {
+    include: 'male lion with LARGE GOLDEN MANE around face and neck, tawny golden-brown fur, NO STRIPES, solid colored coat',
+    avoid: 'NO stripes, NO tiger stripes, NO spotted pattern, NOT orange with black stripes'
+  },
+  'tiger': {
+    include: 'tiger with ORANGE fur with BLACK STRIPES all over body, NO MANE, striped pattern from head to tail',
+    avoid: 'NO mane, NO lion mane, NOT solid colored, NOT golden brown without stripes'
+  },
+  'leopard': {
+    include: 'leopard with ROSETTE SPOTS (ring-shaped spots with lighter centers), golden-yellow fur',
+    avoid: 'NO stripes, NO mane, NOT solid colored'
+  },
+  'cheetah': {
+    include: 'cheetah with SOLID BLACK SPOTS (not rosettes), slender build, black tear marks on face',
+    avoid: 'NO stripes, NO mane, NOT bulky, NOT ring-shaped spots'
+  },
+  'jaguar': {
+    include: 'jaguar with LARGE ROSETTES with spots inside them, stocky muscular build, shorter legs',
+    avoid: 'NO stripes, NO mane, NOT slender like cheetah'
+  },
+};
+
+function getAnimalFeatures(animalName: string): { include: string, avoid: string } {
+  const key = animalName.toLowerCase();
+  return ANIMAL_FEATURES[key] || { include: '', avoid: '' };
+}
+
 // Generate image using fal.ai Flux with retry logic
 async function generateImage(prompt: string, cacheKey?: string, retries = 2): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
@@ -85,7 +114,16 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
   }
 
-  const fullPrompt = `${prompt}, detailed painted wildlife illustration, ANATOMICALLY ACCURATE animal anatomy, correct number of limbs, realistic proportions, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  // Extract animal names from prompt and add their specific features
+  let animalFeatures = '';
+  for (const animal of Object.keys(ANIMAL_FEATURES)) {
+    if (prompt.toLowerCase().includes(animal)) {
+      const features = ANIMAL_FEATURES[animal];
+      animalFeatures += ` [${animal.toUpperCase()}: ${features.include}. ${features.avoid}]`;
+    }
+  }
+
+  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, ANATOMICALLY ACCURATE animal anatomy, each animal must have its CORRECT distinctive markings, correct number of limbs, realistic proportions, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
