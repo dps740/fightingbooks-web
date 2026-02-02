@@ -179,13 +179,13 @@ export default function Home() {
             {/* Two-Page Spread */}
             <div className="grid md:grid-cols-[1fr,auto,1fr]">
               
-              {/* LEFT PAGE - First Animal */}
+              {/* LEFT PAGE - Red Corner */}
               <div className="p-4 md:p-6 flex flex-col" style={{ 
                 background: 'linear-gradient(to right, #e8e0d0 0%, #f5f0e1 100%)',
                 borderRight: '1px solid #d4c4a8'
               }}>
                 <h3 className="font-bangers text-xl text-[#8B0000] text-center mb-3" style={{ letterSpacing: '1px' }}>
-                  FIRST ANIMAL
+                  🔴 RED CORNER
                 </h3>
                 {/* Custom Input */}
                 <input
@@ -195,43 +195,46 @@ export default function Home() {
                   onChange={(e) => { setCustomA(e.target.value); setAnimalA(''); }}
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000] mb-4"
                 />
-                {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
-                  {FIGHTERS.map((fighter, i) => (
-                    <button
-                      key={`left-${fighter.name}-${i}`}
-                      onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
-                      className={`w-full rounded-lg overflow-hidden transition-all ${
-                        animalA === fighter.name
-                          ? 'ring-4 ring-[#CC0000] shadow-lg'
-                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#CC0000] hover:shadow-md'
-                      }`}
-                    >
-                      {/* Animal Illustration Card */}
-                      <div className="bg-white">
-                        <div className="aspect-[4/3] relative">
-                          <img 
-                            src={fighter.img} 
-                            alt={fighter.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = `https://placehold.co/400x300/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
-                            }}
-                          />
-                          {animalA === fighter.name && (
-                            <div className="absolute top-2 right-2 w-8 h-8 bg-[#CC0000] rounded-full flex items-center justify-center">
-                              <span className="text-white font-bold">✓</span>
-                            </div>
-                          )}
+                {/* Animal Grid - Compact */}
+                <div className="h-[500px] overflow-y-auto pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
+                  <div className="grid grid-cols-2 gap-3">
+                    {FIGHTERS.map((fighter, i) => (
+                      <button
+                        key={`left-${fighter.name}-${i}`}
+                        onClick={() => { setAnimalA(fighter.name); setCustomA(''); }}
+                        className={`rounded-lg overflow-hidden transition-all ${
+                          animalA === fighter.name
+                            ? 'ring-3 ring-[#CC0000] shadow-lg scale-105'
+                            : 'border-2 border-[#8B5A2B]/40 hover:border-[#CC0000] hover:shadow-md'
+                        }`}
+                      >
+                        <div className="bg-white">
+                          <div className="aspect-square relative">
+                            <img 
+                              src={fighter.img} 
+                              alt={fighter.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = `https://placehold.co/200x200/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
+                              }}
+                            />
+                            {animalA === fighter.name && (
+                              <div className="absolute inset-0 bg-[#CC0000]/20 flex items-center justify-center">
+                                <div className="w-10 h-10 bg-[#CC0000] rounded-full flex items-center justify-center">
+                                  <span className="text-white font-bold text-xl">✓</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-1.5 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
+                            <span className="font-bangers text-xs text-[#333] block truncate">{fighter.name.toUpperCase()}</span>
+                          </div>
                         </div>
-                        <div className="p-2 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
-                          <span className="font-bangers text-lg text-[#333]">{fighter.name.toUpperCase()}</span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -263,13 +266,13 @@ export default function Home() {
                 </motion.span>
               </div>
 
-              {/* RIGHT PAGE - Second Animal */}
+              {/* RIGHT PAGE - Blue Corner */}
               <div className="p-4 md:p-6 flex flex-col" style={{ 
                 background: 'linear-gradient(to left, #e8e0d0 0%, #f5f0e1 100%)',
                 borderLeft: '1px solid #d4c4a8'
               }}>
                 <h3 className="font-bangers text-xl text-[#0066CC] text-center mb-3" style={{ letterSpacing: '1px' }}>
-                  SECOND ANIMAL
+                  🔵 BLUE CORNER
                 </h3>
                 {/* Custom Input */}
                 <input
@@ -279,43 +282,46 @@ export default function Home() {
                   onChange={(e) => { setCustomB(e.target.value); setAnimalB(''); }}
                   className="w-full p-2 rounded border-2 border-[#8B5A2B] bg-white text-[#333] text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-[#0066CC] mb-4"
                 />
-                {/* Animal Cards - Encyclopedia Style */}
-                <div className="h-[400px] overflow-y-auto space-y-4 pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
-                  {FIGHTERS.map((fighter, i) => (
-                    <button
-                      key={`right-${fighter.name}-${i}`}
-                      onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
-                      className={`w-full rounded-lg overflow-hidden transition-all ${
-                        animalB === fighter.name
-                          ? 'ring-4 ring-[#0066CC] shadow-lg'
-                          : 'border-2 border-[#8B5A2B]/40 hover:border-[#0066CC] hover:shadow-md'
-                      }`}
-                    >
-                      {/* Animal Illustration Card */}
-                      <div className="bg-white">
-                        <div className="aspect-[4/3] relative">
-                          <img 
-                            src={fighter.img} 
-                            alt={fighter.name}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = `https://placehold.co/400x300/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
-                            }}
-                          />
-                          {animalB === fighter.name && (
-                            <div className="absolute top-2 right-2 w-8 h-8 bg-[#0066CC] rounded-full flex items-center justify-center">
-                              <span className="text-white font-bold">✓</span>
-                            </div>
-                          )}
+                {/* Animal Grid - Compact */}
+                <div className="h-[500px] overflow-y-auto pr-2 flex-shrink-0" style={{ scrollbarWidth: 'thin' }}>
+                  <div className="grid grid-cols-2 gap-3">
+                    {FIGHTERS.map((fighter, i) => (
+                      <button
+                        key={`right-${fighter.name}-${i}`}
+                        onClick={() => { setAnimalB(fighter.name); setCustomB(''); }}
+                        className={`rounded-lg overflow-hidden transition-all ${
+                          animalB === fighter.name
+                            ? 'ring-3 ring-[#0066CC] shadow-lg scale-105'
+                            : 'border-2 border-[#8B5A2B]/40 hover:border-[#0066CC] hover:shadow-md'
+                        }`}
+                      >
+                        <div className="bg-white">
+                          <div className="aspect-square relative">
+                            <img 
+                              src={fighter.img} 
+                              alt={fighter.name}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = `https://placehold.co/200x200/8B5A2B/FFFFFF?text=${encodeURIComponent(fighter.name)}`;
+                              }}
+                            />
+                            {animalB === fighter.name && (
+                              <div className="absolute inset-0 bg-[#0066CC]/20 flex items-center justify-center">
+                                <div className="w-10 h-10 bg-[#0066CC] rounded-full flex items-center justify-center">
+                                  <span className="text-white font-bold text-xl">✓</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-1.5 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
+                            <span className="font-bangers text-xs text-[#333] block truncate">{fighter.name.toUpperCase()}</span>
+                          </div>
                         </div>
-                        <div className="p-2 bg-[#f5f0e1] border-t-2 border-[#8B5A2B]">
-                          <span className="font-bangers text-lg text-[#333]">{fighter.name.toUpperCase()}</span>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
