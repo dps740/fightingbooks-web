@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import path from 'path';
+import fs from 'fs';
 
 interface BookPage {
   id: string;
@@ -122,23 +124,25 @@ Return JSON only:
   }
 }
 
-// Generate battle narrative
+// Generate battle narrative with 5 varied scenes
 async function generateBattle(animalA: AnimalFacts, animalB: AnimalFacts, environment: string): Promise<{ scenes: string[], winner: string }> {
-  const prompt = `Write a 3-scene battle between a ${animalA.name} and a ${animalB.name} in a ${environment} environment for a children's book.
+  const prompt = `Write a 5-scene battle between a ${animalA.name} and a ${animalB.name} in a ${environment} environment for a children's book.
 
 Animal A stats: ${JSON.stringify({ weapons: animalA.weapons, defenses: animalA.defenses, speed: animalA.speed })}
 Animal B stats: ${JSON.stringify({ weapons: animalB.weapons, defenses: animalB.defenses, speed: animalB.speed })}
 
 Return JSON only:
 {
-  "scene1": "Opening clash - 2-3 exciting sentences",
-  "scene2": "Battle intensifies - 2-3 sentences with specific moves",
-  "scene3": "Final showdown - 2-3 sentences with decisive moment",
+  "scene1": "Initial confrontation - sizing each other up (2-3 sentences)",
+  "scene2": "First strike - one attacks (2-3 sentences with specific moves)",
+  "scene3": "Counter-attack - the other fights back (2-3 sentences)",
+  "scene4": "Momentum shift - surprise tactic or terrain use (2-3 sentences)",
+  "scene5": "Decisive finale - final blow and outcome (2-3 sentences)",
   "winner": "Name of the winning animal",
   "winning_move": "How they won"
 }
 
-Be exciting but educational. Base the winner on realistic animal capabilities.`;
+Make each scene UNIQUE and DIFFERENT. Be exciting but educational. Base the winner on realistic animal capabilities.`;
 
   try {
     const response = await getOpenAI().chat.completions.create({
@@ -150,18 +154,21 @@ Be exciting but educational. Base the winner on realistic animal capabilities.`;
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
     return {
-      scenes: [result.scene1, result.scene2, result.scene3],
+      scenes: [result.scene1, result.scene2, result.scene3, result.scene4, result.scene5],
       winner: result.winner,
     };
   } catch (error) {
     console.error('OpenAI error for battle:', error);
     // Fallback
     const winner = Math.random() > 0.5 ? animalA.name : animalB.name;
+    const loser = winner === animalA.name ? animalB.name : animalA.name;
     return {
       scenes: [
-        `The ${animalA.name} and ${animalB.name} face off in the ${environment}!`,
-        `They clash with incredible force! Neither backs down!`,
-        `With a final mighty effort, ${winner} delivers the decisive blow!`,
+        `The ${animalA.name} and ${animalB.name} face off in the ${environment}, eyes locked in fierce determination!`,
+        `${animalA.name} makes the first move, using its powerful ${animalA.weapons[0]}!`,
+        `${animalB.name} counters with lightning speed, deploying its ${animalB.defenses[0]} for protection!`,
+        `The battle shifts as ${winner} finds an opening, using the terrain to its advantage!`,
+        `With a final decisive strike using its ${winner === animalA.name ? animalA.weapons[0] : animalB.weapons[0]}, ${winner} claims victory!`,
       ],
       winner,
     };
@@ -237,56 +244,118 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       content: `<p class="text-center text-2xl font-black text-[#d4af37]">WHO WOULD WIN?</p>`,
       imageUrl: coverImg,
     },
+    
+    // Animal A - Educational Pages
     {
       id: 'intro-a',
       type: 'intro',
       title: `Meet the ${factsA.name}!`,
       content: `
-        <p><strong>${factsA.name}</strong> (<em>${factsA.scientific_name}</em>)</p>
-        <p class="mt-2">📍 <strong>Habitat:</strong> ${factsA.habitat}</p>
-        <p>📏 <strong>Size:</strong> ${factsA.size}</p>
-        <p>🍖 <strong>Diet:</strong> ${factsA.diet}</p>
-        <p>⚡ <strong>Speed:</strong> ${factsA.speed}</p>
-        <p class="mt-2"><strong>⚔️ Weapons:</strong></p>
-        <ul class="list-disc ml-4">${factsA.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
-        <p class="mt-2"><strong>🛡️ Defenses:</strong></p>
-        <ul class="list-disc ml-4">${factsA.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        <h3 class="text-2xl font-bold text-[#c62828] mb-3">${factsA.name}</h3>
+        <p class="text-lg mb-2"><em>${factsA.scientific_name}</em></p>
+        <p class="text-gray-700">The ${factsA.name} is one of nature's most impressive creatures. Let's learn what makes this animal so special!</p>
       `,
       imageUrl: imgA,
     },
     {
-      id: 'facts-a',
+      id: 'habitat-a',
       type: 'intro',
-      title: `${factsA.name} Fun Facts!`,
+      title: `Where ${factsA.name}s Live`,
       content: `
-        <p class="text-[#d4af37] font-bold mb-2">DID YOU KNOW?</p>
-        <ul class="space-y-2">${factsA.fun_facts.map(f => `<li>🌟 ${f}</li>`).join('')}</ul>
+        <h4 class="text-xl font-bold text-[#4caf50] mb-2">🌍 Habitat & Range</h4>
+        <p class="mb-3">${factsA.habitat}</p>
+        <p class="text-sm text-gray-600 italic">These animals have adapted perfectly to their environment over millions of years!</p>
       `,
     },
+    {
+      id: 'diet-a',
+      type: 'intro',
+      title: `What ${factsA.name}s Eat`,
+      content: `
+        <h4 class="text-xl font-bold text-[#ff9800] mb-2">🍖 Diet & Hunting</h4>
+        <p class="mb-2">${factsA.diet}</p>
+        <p class="mb-2"><strong>⚡ Speed:</strong> ${factsA.speed}</p>
+      `,
+    },
+    {
+      id: 'weapons-a',
+      type: 'intro',
+      title: `${factsA.name} Arsenal`,
+      content: `
+        <h4 class="text-xl font-bold text-[#f44336] mb-2">⚔️ Weapons & Defenses</h4>
+        <p class="mb-2"><strong>📏 Size:</strong> ${factsA.size}</p>
+        <div class="mt-3">
+          <p class="font-bold text-red-700">WEAPONS:</p>
+          <ul class="list-disc ml-4 mb-3">${factsA.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
+          <p class="font-bold text-blue-700">DEFENSES:</p>
+          <ul class="list-disc ml-4">${factsA.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        </div>
+      `,
+    },
+    {
+      id: 'facts-a',
+      type: 'intro',
+      title: `Amazing ${factsA.name} Facts!`,
+      content: `
+        <h4 class="text-xl font-bold text-[#9c27b0] mb-3">✨ DID YOU KNOW?</h4>
+        <ul class="space-y-3">${factsA.fun_facts.map(f => `<li class="text-base">🌟 ${f}</li>`).join('')}</ul>
+      `,
+    },
+    
+    // Animal B - Educational Pages
     {
       id: 'intro-b',
       type: 'intro',
       title: `Meet the ${factsB.name}!`,
       content: `
-        <p><strong>${factsB.name}</strong> (<em>${factsB.scientific_name}</em>)</p>
-        <p class="mt-2">📍 <strong>Habitat:</strong> ${factsB.habitat}</p>
-        <p>📏 <strong>Size:</strong> ${factsB.size}</p>
-        <p>🍖 <strong>Diet:</strong> ${factsB.diet}</p>
-        <p>⚡ <strong>Speed:</strong> ${factsB.speed}</p>
-        <p class="mt-2"><strong>⚔️ Weapons:</strong></p>
-        <ul class="list-disc ml-4">${factsB.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
-        <p class="mt-2"><strong>🛡️ Defenses:</strong></p>
-        <ul class="list-disc ml-4">${factsB.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        <h3 class="text-2xl font-bold text-[#1e88e5] mb-3">${factsB.name}</h3>
+        <p class="text-lg mb-2"><em>${factsB.scientific_name}</em></p>
+        <p class="text-gray-700">The ${factsB.name} is one of nature's most impressive creatures. Let's learn what makes this animal so special!</p>
       `,
       imageUrl: imgB,
     },
     {
+      id: 'habitat-b',
+      type: 'intro',
+      title: `Where ${factsB.name}s Live`,
+      content: `
+        <h4 class="text-xl font-bold text-[#4caf50] mb-2">🌍 Habitat & Range</h4>
+        <p class="mb-3">${factsB.habitat}</p>
+        <p class="text-sm text-gray-600 italic">These animals have adapted perfectly to their environment over millions of years!</p>
+      `,
+    },
+    {
+      id: 'diet-b',
+      type: 'intro',
+      title: `What ${factsB.name}s Eat`,
+      content: `
+        <h4 class="text-xl font-bold text-[#ff9800] mb-2">🍖 Diet & Hunting</h4>
+        <p class="mb-2">${factsB.diet}</p>
+        <p class="mb-2"><strong>⚡ Speed:</strong> ${factsB.speed}</p>
+      `,
+    },
+    {
+      id: 'weapons-b',
+      type: 'intro',
+      title: `${factsB.name} Arsenal`,
+      content: `
+        <h4 class="text-xl font-bold text-[#f44336] mb-2">⚔️ Weapons & Defenses</h4>
+        <p class="mb-2"><strong>📏 Size:</strong> ${factsB.size}</p>
+        <div class="mt-3">
+          <p class="font-bold text-red-700">WEAPONS:</p>
+          <ul class="list-disc ml-4 mb-3">${factsB.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
+          <p class="font-bold text-blue-700">DEFENSES:</p>
+          <ul class="list-disc ml-4">${factsB.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        </div>
+      `,
+    },
+    {
       id: 'facts-b',
       type: 'intro',
-      title: `${factsB.name} Fun Facts!`,
+      title: `Amazing ${factsB.name} Facts!`,
       content: `
-        <p class="text-[#d4af37] font-bold mb-2">DID YOU KNOW?</p>
-        <ul class="space-y-2">${factsB.fun_facts.map(f => `<li>🌟 ${f}</li>`).join('')}</ul>
+        <h4 class="text-xl font-bold text-[#9c27b0] mb-3">✨ DID YOU KNOW?</h4>
+        <ul class="space-y-3">${factsB.fun_facts.map(f => `<li class="text-base">🌟 ${f}</li>`).join('')}</ul>
       `,
     },
     {
@@ -349,6 +418,18 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       content: `<p>${battle.scenes[2]}</p>`,
     },
     {
+      id: 'battle-4',
+      type: 'battle',
+      title: '',
+      content: `<p>${battle.scenes[3]}</p>`,
+    },
+    {
+      id: 'battle-5',
+      type: 'battle',
+      title: '',
+      content: `<p>${battle.scenes[4]}</p>`,
+    },
+    {
       id: 'victory',
       type: 'victory',
       title: 'The Victor',
@@ -399,6 +480,39 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
   return introPages;
 }
 
+// Simple file-based cache for generated books
+function getCacheKey(animalA: string, animalB: string, environment: string): string {
+  // Normalize to always be alphabetical order for consistency
+  const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
+  return `${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
+}
+
+async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
+  try {
+    const cachePath = path.join(process.cwd(), 'public', 'cache', `${cacheKey}.json`);
+    if (fs.existsSync(cachePath)) {
+      const data = fs.readFileSync(cachePath, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Cache load error:', error);
+  }
+  return null;
+}
+
+async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winner: string }): Promise<void> {
+  try {
+    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+    const cachePath = path.join(cacheDir, `${cacheKey}.json`);
+    fs.writeFileSync(cachePath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error('Cache save error:', error);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -408,7 +522,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
     }
 
-    let result = await generateBook(animalA, animalB, environment);
+    // Check cache first
+    const cacheKey = getCacheKey(animalA, animalB, environment);
+    let result = await loadCachedBook(cacheKey);
+    
+    if (!result) {
+      // Generate new book
+      result = await generateBook(animalA, animalB, environment);
+      // Save to cache
+      await saveCachedBook(cacheKey, result);
+    }
     
     if (mode === 'cyoa') {
       result.pages = await addCyoaChoices(result.pages, animalA, animalB);
