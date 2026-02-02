@@ -162,8 +162,7 @@ function BookReader() {
             {/* VICTORY PAGE */}
             {page?.type === 'victory' && (
               <>
-                <h2 className="page-title victory-title">🏆 THE WINNER! 🏆</h2>
-                {page.imageUrl && <img src={page.imageUrl} alt="Winner" className="victory-image" />}
+                {page.imageUrl && <div className="victory-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />}
                 <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
                 
                 {/* Download Options */}
@@ -395,93 +394,67 @@ function BookReader() {
         .cover-image-container { flex: 1; display: flex; align-items: center; justify-content: center; }
         .cover-image { max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
         
-        /* Victory Page */
+        /* Victory Page - matches battle page dramatic style */
         .victory-page {
-          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ff4500 100%) !important;
-          text-align: center;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          min-height: 500px;
+          background: #1a1a1a !important;
         }
         .victory-title { 
-          color: #1a1a1a !important; 
-          font-size: 2.5em !important; 
-          text-shadow: 3px 3px 0px #fff, 5px 5px 0px rgba(0,0,0,0.3);
-          letter-spacing: 3px;
+          display: none;
         }
-        .victory-image { 
-          max-width: 85%; 
-          max-height: 280px; 
-          border-radius: 16px; 
-          margin: 15px auto; 
-          box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 0 6px #d4af37, 0 0 0 10px #1a1a1a;
+        .victory-bg-image {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background-size: cover;
+          background-position: center top;
+          z-index: 0;
+          border-radius: 10px;
         }
-        .victory-content {
-          max-width: 600px;
-          margin: 0 auto;
-        }
-        .champion-box {
-          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-          border: 5px solid #d4af37;
-          border-radius: 16px;
+        .victory-overlay {
+          position: relative;
+          z-index: 1;
+          text-align: center;
           padding: 20px;
-          margin: 15px 0;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+          background: linear-gradient(transparent 0%, rgba(0,0,0,0.8) 100%);
+          margin: 0 -20px;
+          padding-top: 300px;
         }
-        .champion-label {
+        .victory-label {
           font-family: 'Bangers', cursive;
-          font-size: 1.8em;
+          font-size: 1.5em;
           color: #d4af37;
           letter-spacing: 4px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
           margin-bottom: 5px;
         }
-        .champion-name {
+        .victory-name {
           font-family: 'Bangers', cursive;
-          font-size: 3em;
+          font-size: 3.5em;
           color: #fff;
-          text-shadow: 3px 3px 0px #d4af37;
+          text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
           letter-spacing: 3px;
-          margin: 10px 0;
         }
-        .champion-subtitle {
-          font-family: 'Bangers', cursive;
-          font-size: 1.5em;
-          color: #d4af37;
-          letter-spacing: 2px;
+        .victory-note {
+          position: relative;
+          z-index: 1;
+          background: rgba(0,0,0,0.85);
+          padding: 15px 20px;
+          margin: 0 -20px -20px -20px;
+          border-radius: 0 0 10px 10px;
         }
-        .battle-recap {
-          background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
-          border: 4px solid #d4af37;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          font-size: 1.2em;
-          font-weight: bold;
-          color: #1a1a1a;
-        }
-        .nature-note {
-          background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-          border: 4px solid #2e7d32;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-        }
-        .nature-note p {
-          color: #1a1a1a !important;
-          font-size: 1em;
-          line-height: 1.4;
-        }
-        .both-winners {
-          background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
-          border: 4px solid #ff5722;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-        }
-        .both-winners p {
-          font-family: 'Bangers', cursive;
-          font-size: 1.5em;
-          color: #ff5722;
-          letter-spacing: 2px;
+        .victory-note p {
+          color: #ccc !important;
+          font-size: 0.9em;
+          line-height: 1.5;
+          font-style: italic;
+          margin: 0;
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
         }
         
         /* Download Section */

@@ -893,23 +893,14 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     {
       id: 'victory',
       type: 'victory',
-      title: 'The Victor',
+      title: '',
       content: `
-        <div class="victory-content">
-          <div class="champion-box">
-            <p class="champion-label">🥇 CHAMPION 🥇</p>
-            <p class="champion-name">${battle.winner.toUpperCase()}</p>
-            <p class="champion-subtitle">WINS THE BATTLE!</p>
-          </div>
-          <div class="battle-recap">
-            <p>After an INCREDIBLE showdown, <strong>${battle.winner}</strong> proved ${battle.winner === factsA.name ? 'its' : 'its'} power!</p>
-          </div>
-          <div class="nature-note">
-            <p>🌿 <strong>REMEMBER:</strong> In nature, battles depend on environment, health, and luck. Both ${factsA.name} and ${factsB.name} are AMAZING animals perfectly adapted to their habitats!</p>
-          </div>
-          <div class="both-winners">
-            <p>🏆 EVERY ANIMAL IS A WINNER! 🏆</p>
-          </div>
+        <div class="victory-overlay">
+          <p class="victory-label">THE WINNER</p>
+          <p class="victory-name">${battle.winner.toUpperCase()}</p>
+        </div>
+        <div class="victory-note">
+          <p>In nature, outcomes depend on many factors: environment, health, experience, and luck. Both ${factsA.name} and ${factsB.name} are remarkable predators, perfectly adapted to their habitats.</p>
         </div>
       `,
       imageUrl: victoryImg,
