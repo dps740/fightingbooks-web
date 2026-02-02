@@ -6,7 +6,7 @@
 import React from 'react';
 import { renderToBuffer, Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
 
-// Register fonts - Comic Neue for body, system sans for headings
+// Register fonts
 Font.register({
   family: 'Comic Neue',
   fonts: [
@@ -22,10 +22,12 @@ const colors = {
   darkRed: '#d32f2f',
   gold: '#d4af37',
   coverBlue: '#0077be',
-  factGreen: '#a5d6a7',
-  factYellow: '#fff59d',
-  factPurple: '#ce93d8',
-  factPink: '#ff69b4',
+  factGreen: '#c8e6c9',
+  factYellow: '#fff9c4',
+  factPurple: '#e1bee7',
+  factPink: '#f8bbd9',
+  weaponRed: '#ffcdd2',
+  defenseBlue: '#bbdefb',
 };
 
 // Styles
@@ -38,32 +40,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  coverImage: {
+    width: '100%',
+    maxHeight: 350,
+    marginBottom: 20,
+    borderRadius: 8,
+  },
   coverTitle: {
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: 700,
     color: '#FFD700',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
     textTransform: 'uppercase',
   },
   coverVs: {
-    fontSize: 60,
+    fontSize: 48,
     fontWeight: 700,
     color: '#FFFFFF',
     textAlign: 'center',
-    marginVertical: 15,
+    marginVertical: 10,
   },
   coverSubtitle: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 700,
     color: '#FFFFFF',
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 15,
   },
   
   // Regular pages
   page: {
-    padding: 35,
+    padding: 30,
     backgroundColor: '#ffffff',
     fontFamily: 'Comic Neue',
   },
@@ -75,108 +83,90 @@ const styles = StyleSheet.create({
   
   // Titles
   pageTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 700,
     color: colors.titleOrange,
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 12,
     textTransform: 'uppercase',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 700,
-    color: colors.darkRed,
-    marginBottom: 8,
-    marginTop: 12,
   },
   
   // Content
   content: {
-    fontSize: 13,
-    lineHeight: 1.7,
+    fontSize: 12,
+    lineHeight: 1.6,
     color: '#333333',
     marginBottom: 8,
   },
-  boldText: {
-    fontWeight: 700,
-    color: colors.darkRed,
-  },
-  
-  // Scientific name banner
-  scientificBanner: {
-    backgroundColor: colors.factPink,
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  scientificText: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: colors.darkBlue,
-    fontStyle: 'italic',
-  },
-  
-  // Fact boxes
-  factBox: {
-    borderRadius: 10,
-    padding: 12,
-    marginVertical: 10,
-  },
-  funFact: {
-    backgroundColor: colors.factGreen,
-  },
-  didYouKnow: {
-    backgroundColor: colors.factYellow,
-  },
-  interestingFact: {
-    backgroundColor: colors.factPurple,
-  },
-  factTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: colors.darkRed,
-    marginBottom: 5,
-  },
-  factContent: {
-    fontSize: 12,
-    color: '#333',
-    lineHeight: 1.5,
-  },
   
   // Images
-  image: {
-    maxWidth: '100%',
-    maxHeight: 220,
-    marginVertical: 12,
+  pageImage: {
+    width: '100%',
+    maxHeight: 250,
+    marginVertical: 10,
     alignSelf: 'center',
     borderRadius: 8,
   },
   
-  // Stats table
+  // Fact boxes
+  factBox: {
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 8,
+  },
+  funFact: { backgroundColor: colors.factGreen },
+  didYouKnow: { backgroundColor: colors.factYellow },
+  weaponBox: { backgroundColor: colors.weaponRed },
+  defenseBox: { backgroundColor: colors.defenseBlue },
+  
+  factTitle: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: colors.darkRed,
+    marginBottom: 4,
+  },
+  factContent: {
+    fontSize: 11,
+    color: '#333',
+    lineHeight: 1.5,
+  },
+  
+  // Stats comparison
+  statsContainer: {
+    marginVertical: 10,
+  },
   statsRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
+    paddingVertical: 5,
+  },
+  statsHeader: {
+    flexDirection: 'row',
+    backgroundColor: colors.gold,
     paddingVertical: 6,
+    borderRadius: 4,
+    marginBottom: 4,
   },
   statsLabel: {
-    flex: 1,
-    fontSize: 12,
+    flex: 2,
+    fontSize: 10,
     fontWeight: 700,
-    color: '#555',
+    color: '#333',
   },
   statsValueA: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 10,
     color: colors.darkRed,
     textAlign: 'center',
+    fontWeight: 700,
   },
   statsValueB: {
     flex: 1,
-    fontSize: 12,
+    fontSize: 10,
     color: colors.darkBlue,
     textAlign: 'center',
+    fontWeight: 700,
   },
   
   // Victory page
@@ -187,36 +177,42 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   victoryTitle: {
-    fontSize: 48,
+    fontSize: 42,
     fontWeight: 700,
     color: colors.darkRed,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   winnerName: {
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: 700,
     color: colors.coverBlue,
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
     textTransform: 'uppercase',
   },
+  victoryImage: {
+    width: '80%',
+    maxHeight: 280,
+    marginVertical: 15,
+    borderRadius: 8,
+  },
   victoryText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
     textAlign: 'center',
-    lineHeight: 1.6,
+    lineHeight: 1.5,
   },
   
   // Footer
   footer: {
     position: 'absolute',
-    bottom: 20,
-    left: 35,
-    right: 35,
+    bottom: 15,
+    left: 30,
+    right: 30,
     textAlign: 'center',
-    fontSize: 10,
-    color: '#999',
+    fontSize: 9,
+    color: '#666',
   },
 });
 
@@ -236,65 +232,91 @@ interface PDFOptions {
   winner: string;
 }
 
-// Helper to strip HTML tags
+// Helper to strip HTML tags and clean content
 function stripHtml(html: string): string {
   return html
     .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<p[^>]*>/gi, '')
+    .replace(/<\/div>/gi, '\n')
+    .replace(/<div[^>]*>/gi, '')
     .replace(/<\/li>/gi, '\n')
     .replace(/<li>/gi, '• ')
-    .replace(/<strong>/gi, '**')
-    .replace(/<\/strong>/gi, '**')
+    .replace(/<ul[^>]*>/gi, '')
+    .replace(/<\/ul>/gi, '')
+    .replace(/<strong>/gi, '')
+    .replace(/<\/strong>/gi, '')
     .replace(/<em>/gi, '')
     .replace(/<\/em>/gi, '')
+    .replace(/<span[^>]*>/gi, '')
+    .replace(/<\/span>/gi, '')
     .replace(/<[^>]*>/g, '')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
+    .replace(/\n\s*\n/g, '\n')
     .trim();
 }
 
-// Get background style based on page index
-function getPageStyle(index: number) {
-  const bgStyles = [styles.pageGreen, styles.pageGold, styles.pageBlue, styles.pagePink, styles.pagePurple];
-  return bgStyles[index % bgStyles.length];
+// Check if URL is valid for images
+function isValidImageUrl(url?: string): boolean {
+  if (!url) return false;
+  if (url.includes('placehold.co')) return false;
+  if (url.startsWith('http://') || url.startsWith('https://')) return true;
+  return false;
 }
 
-// Render a fact box
-function FactBox({ type, title, content }: { type: 'fun' | 'know' | 'interesting'; title: string; content: string }) {
-  const boxStyle = type === 'fun' ? styles.funFact : type === 'know' ? styles.didYouKnow : styles.interestingFact;
-  return React.createElement(
-    View,
-    { style: [styles.factBox, boxStyle] },
-    React.createElement(Text, { style: styles.factTitle }, title),
-    React.createElement(Text, { style: styles.factContent }, content)
-  );
+// Get background color based on page type and index
+function getBackgroundColor(pageType: string, index: number): string {
+  const typeColors: Record<string, string> = {
+    'intro': '#e8f5e9',
+    'habitat': '#e3f2fd',
+    'size': '#fff8e1',
+    'weapons': '#fce4ec',
+    'defense': '#e3f2fd',
+    'secrets': '#ede7f6',
+    'battle': '#fce4ec',
+    'stats': '#fff8e1',
+  };
+  
+  if (typeColors[pageType]) return typeColors[pageType];
+  
+  const bgColors = ['#e8f5e9', '#fff8e1', '#e3f2fd', '#fce4ec', '#ede7f6'];
+  return bgColors[index % bgColors.length];
 }
 
 // Create PDF Document
 function BookDocument({ animalA, animalB, pages, winner }: PDFOptions) {
   const pageElements: React.ReactElement[] = [];
   
+  // Find cover page if exists
+  const coverPage = pages.find(p => p.type === 'cover');
+  const hasCoverImage = isValidImageUrl(coverPage?.imageUrl);
+  
   // Cover page
   pageElements.push(
     React.createElement(
       Page,
       { key: 'cover', size: 'LETTER', style: styles.coverPage },
-      React.createElement(Text, { style: { fontSize: 20, color: '#fff', marginBottom: 30 } }, 'WHO WOULD WIN?'),
+      React.createElement(Text, { style: { fontSize: 16, color: '#fff', marginBottom: 10 } }, 'WHO WOULD WIN?'),
+      hasCoverImage && React.createElement(Image, { style: styles.coverImage, src: coverPage!.imageUrl }),
       React.createElement(Text, { style: styles.coverTitle }, animalA),
       React.createElement(Text, { style: styles.coverVs }, 'VS'),
       React.createElement(Text, { style: styles.coverTitle }, animalB),
-      React.createElement(Text, { style: styles.coverSubtitle }, 'THE ULTIMATE BATTLE!')
+      !hasCoverImage && React.createElement(Text, { style: styles.coverSubtitle }, 'THE ULTIMATE BATTLE!')
     )
   );
   
-  // Content pages
-  pages.forEach((page, index) => {
-    const hasValidImage = page.imageUrl && !page.imageUrl.includes('placehold.co');
+  // Content pages (skip cover page type)
+  const contentPages = pages.filter(p => p.type !== 'cover');
+  
+  contentPages.forEach((page, index) => {
+    const hasImage = isValidImageUrl(page.imageUrl);
     const plainContent = stripHtml(page.content);
     const isVictory = page.type === 'victory' || page.title?.toLowerCase().includes('victory') || page.title?.toLowerCase().includes('winner');
+    const isStats = page.type === 'stats';
     
     if (isVictory) {
       // Victory page with special styling
@@ -304,33 +326,30 @@ function BookDocument({ animalA, animalB, pages, winner }: PDFOptions) {
           { key: page.id || `page-${index}`, size: 'LETTER', style: styles.victoryPage },
           React.createElement(Text, { style: styles.victoryTitle }, '🏆 WINNER! 🏆'),
           React.createElement(Text, { style: styles.winnerName }, winner || 'THE CHAMPION'),
-          hasValidImage && React.createElement(Image, { style: styles.image, src: page.imageUrl }),
+          hasImage && React.createElement(Image, { style: styles.victoryImage, src: page.imageUrl }),
           React.createElement(Text, { style: styles.victoryText }, plainContent),
-          React.createElement(Text, { style: styles.footer }, `${index + 2}`)
+          React.createElement(Text, { style: styles.footer }, `Page ${index + 2}`)
         )
       );
     } else {
       // Regular content page
-      const bgStyle = getPageStyle(index);
-      
-      // Detect if content has facts we can box
-      const hasFunFact = plainContent.toLowerCase().includes('fun fact') || plainContent.toLowerCase().includes('did you know');
+      const bgColor = getBackgroundColor(page.type, index);
       
       pageElements.push(
         React.createElement(
           Page,
-          { key: page.id || `page-${index}`, size: 'LETTER', style: [styles.page, bgStyle] },
+          { key: page.id || `page-${index}`, size: 'LETTER', style: { ...styles.page, backgroundColor: bgColor } },
           // Title
           page.title && React.createElement(Text, { style: styles.pageTitle }, page.title),
           
-          // Image at top if present
-          hasValidImage && React.createElement(Image, { style: styles.image, src: page.imageUrl }),
+          // Image
+          hasImage && React.createElement(Image, { style: styles.pageImage, src: page.imageUrl }),
           
-          // Main content
+          // Content
           React.createElement(Text, { style: styles.content }, plainContent),
           
           // Page number
-          React.createElement(Text, { style: styles.footer }, `${index + 2}`)
+          React.createElement(Text, { style: styles.footer }, `Page ${index + 2}`)
         )
       );
     }
@@ -348,6 +367,10 @@ function BookDocument({ animalA, animalB, pages, winner }: PDFOptions) {
  * Returns PDF as Buffer
  */
 export async function generatePDF(options: PDFOptions): Promise<Buffer> {
+  console.log(`PDF Generator: Creating PDF for ${options.animalA} vs ${options.animalB}`);
+  console.log(`PDF Generator: ${options.pages.length} pages, winner: ${options.winner}`);
+  console.log(`PDF Generator: Pages with images: ${options.pages.filter(p => isValidImageUrl(p.imageUrl)).length}`);
+  
   const buffer = await renderToBuffer(BookDocument(options));
   return Buffer.from(buffer);
 }
