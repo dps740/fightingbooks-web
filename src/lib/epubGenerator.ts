@@ -53,7 +53,6 @@ export async function generateEPUB(options: EPUBOptions): Promise<Buffer> {
     publisher: 'FightingBooks',
     description: `An epic battle between ${animalA} and ${animalB}! Who will win?`,
     tocTitle: 'Contents',
-    content: chapters,
     css: `
       body { font-family: Georgia, serif; line-height: 1.6; }
       h1, h2, h3 { font-family: Arial, sans-serif; color: #d4af37; }
@@ -65,7 +64,7 @@ export async function generateEPUB(options: EPUBOptions): Promise<Buffer> {
   };
 
   try {
-    const epubBuffer = await epub(epubOptions);
+    const epubBuffer = await epub(epubOptions, chapters);
     return Buffer.from(epubBuffer);
   } catch (error) {
     console.error('EPUB generation error:', error);

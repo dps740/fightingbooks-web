@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`Generated ${format.toUpperCase()}: ${fileBuffer.length} bytes`);
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
         'Content-Type': contentType,
         'Content-Disposition': `attachment; filename="${filename}"`,
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
         'Content-Type': contentType,
         'Content-Disposition': `attachment; filename="${filename}"`,
