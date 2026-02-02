@@ -502,7 +502,9 @@ function BookReader() {
         
         /* Download Section */
         .download-section {
-          margin-top: 30px;
+          position: relative;
+          z-index: 2;
+          margin-top: 20px;
           padding: 20px;
           background: white;
           border-radius: 12px;
