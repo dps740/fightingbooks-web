@@ -425,34 +425,40 @@ async function generateComparativeStats(animalA: string, animalB: string): Promi
   
   const prompt = `Compare ${animalA} vs ${animalB} for a "Who Would Win?" battle book.
 
-Rate each animal from 1-10 in these categories with REAL scientific facts:
+Rate each animal from 1-10 in these categories with REAL scientific facts.
 
-STRENGTH (bite force PSI, lifting power, crushing ability):
-- Consider actual measurements if known (lion ~650 PSI, crocodile ~3700 PSI, etc.)
+CRITICAL: The animal with the BETTER stat in the note MUST have the HIGHER score!
+- If ${animalA} has higher bite force → ${animalA} gets higher strength score
+- If ${animalB} is faster → ${animalB} gets higher speed score
+- NEVER give a lower score to the animal with the better stat!
 
-SPEED (top speed mph, acceleration, agility):  
-- Use real speeds (cheetah 70mph, lion 50mph, elephant 25mph, etc.)
+STRENGTH (bite force PSI, lifting power):
+- Tiger ~1,050 PSI, Lion ~650 PSI, Crocodile ~3,700 PSI, Jaguar ~1,500 PSI
 
-WEAPONS (specific weapons with measurements):
-- Claws (how long?), teeth (how sharp?), horns, venom potency, etc.
+SPEED (top speed mph):  
+- Cheetah 70mph, Lion 50mph, Tiger 35-40mph, Elephant 25mph
 
-DEFENSE (actual protection):
-- Thick hide (how thick?), armor, camouflage, size as deterrent
+WEAPONS (claws, teeth with measurements):
+- Tiger: 4-inch claws, 3-inch canines
+- Lion: 3-inch claws, 1-inch canines
 
-IMPORTANT: 
-- Scores must DIFFER by 2-4 points where there's a real advantage
-- Include SPECIFIC facts about THESE animals, not generic descriptions
+DEFENSE (hide thickness, size, armor):
+- Thickness, muscle mass, evasion ability
 
 Return JSON only:
 {
-  "strengthA": 8, "strengthB": 6,
-  "speedA": 5, "speedB": 8, 
-  "weaponsA": 7, "weaponsB": 9,
-  "defenseA": 8, "defenseB": 5,
-  "strengthNote": "${animalA}'s 650 PSI bite vs ${animalB}'s 300 PSI",
-  "speedNote": "${animalA} hits 50 mph, ${animalB} maxes at 35 mph",
-  "weaponsNote": "${animalA}'s 3-inch claws vs ${animalB}'s 6-inch horns",
-  "defenseNote": "${animalA}'s 1-inch thick hide vs ${animalB}'s speed-based evasion",
+  "strengthA": <number 1-10>,
+  "strengthB": <number 1-10>,
+  "speedA": <number 1-10>,
+  "speedB": <number 1-10>,
+  "weaponsA": <number 1-10>,
+  "weaponsB": <number 1-10>,
+  "defenseA": <number 1-10>,
+  "defenseB": <number 1-10>,
+  "strengthNote": "Compare both animals' bite force/strength - winner of comparison MUST have higher score above",
+  "speedNote": "Compare both animals' speed - faster animal MUST have higher score above",
+  "weaponsNote": "Compare both animals' weapons - better armed animal MUST have higher score above",
+  "defenseNote": "Compare both animals' defense - better defended MUST have higher score above",
   "keyAdvantage": "One sentence: who has the main advantage and why"
 }`;
 
