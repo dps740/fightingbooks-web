@@ -581,7 +581,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
     generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
-    generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
+    generateImage(`${battle.winner} powerful stance after battle, realistic animal behavior, dramatic lighting, wildlife photography`, `${imgPrefix}-victory`),
   ]);
   console.log('Battle images generated');
   
@@ -948,7 +948,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v5';
+const BOOK_CACHE_VERSION = 'v6';
 
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
