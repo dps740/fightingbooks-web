@@ -137,15 +137,41 @@ function BookReader() {
       </div>
 
       {/* Book */}
-      <div className="book-container">
+      <div className="book-container" style={{ perspective: '2000px' }}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={currentPage}
-            initial={{ rotateY: direction > 0 ? 90 : -90, opacity: 0 }}
-            animate={{ rotateY: 0, opacity: 1 }}
-            exit={{ rotateY: direction > 0 ? -90 : 90, opacity: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ transformOrigin: direction > 0 ? 'left center' : 'right center' }}
+            initial={{ 
+              rotateY: direction > 0 ? 90 : -90, 
+              opacity: 0,
+              scale: 0.95,
+              boxShadow: direction > 0 
+                ? '-20px 0 40px rgba(0,0,0,0.4)' 
+                : '20px 0 40px rgba(0,0,0,0.4)'
+            }}
+            animate={{ 
+              rotateY: 0, 
+              opacity: 1,
+              scale: 1,
+              boxShadow: '0 5px 30px rgba(0,0,0,0.3)'
+            }}
+            exit={{ 
+              rotateY: direction > 0 ? -90 : 90, 
+              opacity: 0,
+              scale: 0.95,
+              boxShadow: direction > 0 
+                ? '20px 0 40px rgba(0,0,0,0.4)' 
+                : '-20px 0 40px rgba(0,0,0,0.4)'
+            }}
+            transition={{ 
+              duration: 0.5,
+              ease: [0.4, 0, 0.2, 1]
+            }}
+            style={{ 
+              transformOrigin: direction > 0 ? 'left center' : 'right center',
+              transformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden'
+            }}
             className={`page ${getBg(currentPage, page?.type || 'intro')}`}
           >
             {/* COVER PAGE */}
@@ -323,6 +349,7 @@ function BookReader() {
           min-height: 500px;
           height: auto;
           perspective: 2000px;
+          transform-style: preserve-3d;
         }
         
         @media (max-width: 768px) {
@@ -335,12 +362,28 @@ function BookReader() {
           position: relative;
           width: 100%;
           min-height: 500px;
-          background: #fff;
-          border-radius: 10px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          background: linear-gradient(to right, #f8f6f1 0%, #fffef9 5%, #fffef9 95%, #f5f3ee 100%);
+          border-radius: 3px 10px 10px 3px;
+          box-shadow: 
+            0 0 5px rgba(0,0,0,0.1),
+            0 5px 15px rgba(0,0,0,0.2),
+            inset -2px 0 5px rgba(0,0,0,0.05),
+            inset 3px 0 10px rgba(0,0,0,0.03);
           padding: 20px;
           overflow: auto;
           backface-visibility: hidden;
+          transform-style: preserve-3d;
+        }
+        
+        .page::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 5%;
+          bottom: 5%;
+          width: 3px;
+          background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+          border-radius: 0 2px 2px 0;
         }
         
         @media (max-width: 768px) {
