@@ -117,7 +117,7 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     animals: ["Jungle Animals", "Jungle Animals"],
     asin: "0545946085",
     amazonUrl: `https://www.amazon.com/dp/0545946085?tag=${AFFILIATE_TAG}`,
-    coverImage: amazonImg("0545946085"),
+    coverImage: openLibImg("9780545946087"),
   },
   {
     title: "Ultimate Shark Rumble",
@@ -131,7 +131,7 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     animals: ["Bugs", "Bugs"],
     asin: "1338320270",
     amazonUrl: `https://www.amazon.com/dp/1338320270?tag=${AFFILIATE_TAG}`,
-    coverImage: amazonImg("1338320270"),
+    coverImage: openLibImg("9781338320275"),
   },
   
   // === OPEN LIBRARY FALLBACKS (Amazon ASIN images don't work) ===
@@ -189,7 +189,7 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     animals: ["Reptiles", "Reptiles"],
     asin: "1338672169",
     amazonUrl: `https://www.amazon.com/dp/1338672169?tag=${AFFILIATE_TAG}`,
-    coverImage: amazonImg("1338672169"), // Corrected ASIN
+    coverImage: openLibImg("9781338672169"),
   },
 ];
 
