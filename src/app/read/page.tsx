@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import VersusScreen from './VersusScreen';
+import { generatePdfClientSide, downloadPdf } from '@/lib/clientPdfGenerator';
 
 interface BookPage {
   id: string;
@@ -33,6 +34,8 @@ function BookReader() {
   const [choicesMade, setChoicesMade] = useState<string[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
 
   const animalA = searchParams.get('a') || 'Lion';
   const animalB = searchParams.get('b') || 'Tiger';
@@ -197,36 +200,30 @@ function BookReader() {
                   <div className="download-buttons">
                     <button 
                       onClick={async () => {
+                        if (pdfGenerating) return;
+                        setPdfGenerating(true);
+                        setPdfProgress({ current: 0, total: pages.length });
                         try {
-                          const response = await fetch('/api/book/download', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                              animalA,
-                              animalB,
-                              pages,
-                              winner: pages.find(p => p.type === 'victory')?.content?.match(/victory-name[^>]*>([^<]+)/)?.[1] || animalA,
-                              format: 'pdf'
-                            })
+                          const winner = pages.find(p => p.type === 'victory')?.content?.match(/victory-name[^>]*>([^<]+)/)?.[1] || animalA;
+                          const blob = await generatePdfClientSide({
+                            animalA,
+                            animalB,
+                            pages,
+                            winner,
+                            onProgress: (current, total) => setPdfProgress({ current, total }),
                           });
-                          if (response.ok) {
-                            const blob = await response.blob();
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `${animalA}_vs_${animalB}.pdf`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                          } else {
-                            alert('Failed to generate PDF. Please try again.');
-                          }
+                          downloadPdf(blob, `${animalA}_vs_${animalB}.pdf`);
                         } catch (e) {
-                          alert('Download failed. Please try again.');
+                          console.error('PDF generation failed:', e);
+                          alert('Failed to generate PDF. Please try again.');
+                        } finally {
+                          setPdfGenerating(false);
                         }
                       }}
                       className="download-btn download-pdf"
+                      disabled={pdfGenerating}
                     >
-                      📄 Download PDF
+                      {pdfGenerating ? `📄 Generating... (${pdfProgress.current}/${pdfProgress.total})` : '📄 Download PDF'}
                     </button>
                     <button 
                       onClick={async () => {
