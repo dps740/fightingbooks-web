@@ -858,16 +858,19 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       title: 'The Victor',
       content: `
         <div class="victory-content">
-          <div class="text-center mb-6">
-            <p class="text-5xl font-black text-[#d4af37] mb-2">${battle.winner.toUpperCase()}</p>
-            <p class="text-xl text-gray-700">After an incredible battle, <strong>${battle.winner}</strong> emerges victorious!</p>
+          <div class="champion-box">
+            <p class="champion-label">🥇 CHAMPION 🥇</p>
+            <p class="champion-name">${battle.winner.toUpperCase()}</p>
+            <p class="champion-subtitle">WINS THE BATTLE!</p>
           </div>
-          <div class="bg-gray-50 p-4 rounded-lg border-2 border-[#d4af37]">
-            <p class="text-sm text-gray-600 italic">
-              Remember: in nature, outcomes depend on many factors including environment, health, experience, and luck. 
-              Both ${factsA.name} and ${factsB.name} are remarkable apex predators, perfectly adapted to their habitats. 
-              Every animal is amazing in its own way!
-            </p>
+          <div class="battle-recap">
+            <p>After an INCREDIBLE showdown, <strong>${battle.winner}</strong> proved ${battle.winner === factsA.name ? 'its' : 'its'} power!</p>
+          </div>
+          <div class="nature-note">
+            <p>🌿 <strong>REMEMBER:</strong> In nature, battles depend on environment, health, and luck. Both ${factsA.name} and ${factsB.name} are AMAZING animals perfectly adapted to their habitats!</p>
+          </div>
+          <div class="both-winners">
+            <p>🏆 EVERY ANIMAL IS A WINNER! 🏆</p>
           </div>
         </div>
       `,

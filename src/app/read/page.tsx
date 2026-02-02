@@ -397,25 +397,91 @@ function BookReader() {
         
         /* Victory Page */
         .victory-page {
-          background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%) !important;
+          background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #ff4500 100%) !important;
           text-align: center;
         }
         .victory-title { 
-          color: #d4af37 !important; 
-          font-size: 2em !important; 
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+          color: #1a1a1a !important; 
+          font-size: 2.5em !important; 
+          text-shadow: 3px 3px 0px #fff, 5px 5px 0px rgba(0,0,0,0.3);
+          letter-spacing: 3px;
         }
         .victory-image { 
-          max-width: 90%; 
-          max-height: 300px; 
-          border-radius: 12px; 
-          margin: 20px auto; 
-          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-          border: 4px solid #d4af37;
+          max-width: 85%; 
+          max-height: 280px; 
+          border-radius: 16px; 
+          margin: 15px auto; 
+          box-shadow: 0 15px 40px rgba(0,0,0,0.5), 0 0 0 6px #d4af37, 0 0 0 10px #1a1a1a;
         }
         .victory-content {
           max-width: 600px;
           margin: 0 auto;
+        }
+        .champion-box {
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+          border: 5px solid #d4af37;
+          border-radius: 16px;
+          padding: 20px;
+          margin: 15px 0;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .champion-label {
+          font-family: 'Bangers', cursive;
+          font-size: 1.8em;
+          color: #d4af37;
+          letter-spacing: 4px;
+          margin-bottom: 5px;
+        }
+        .champion-name {
+          font-family: 'Bangers', cursive;
+          font-size: 3em;
+          color: #fff;
+          text-shadow: 3px 3px 0px #d4af37;
+          letter-spacing: 3px;
+          margin: 10px 0;
+        }
+        .champion-subtitle {
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #d4af37;
+          letter-spacing: 2px;
+        }
+        .battle-recap {
+          background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+          border: 4px solid #d4af37;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          font-size: 1.2em;
+          font-weight: bold;
+          color: #1a1a1a;
+        }
+        .nature-note {
+          background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
+          border: 4px solid #2e7d32;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .nature-note p {
+          color: #1a1a1a !important;
+          font-size: 1em;
+          line-height: 1.4;
+        }
+        .both-winners {
+          background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+          border: 4px solid #ff5722;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .both-winners p {
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #ff5722;
+          letter-spacing: 2px;
         }
         
         /* Download Section */
