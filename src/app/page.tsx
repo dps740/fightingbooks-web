@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 
-// All fighters with AI-generated portraits
+// All fighters with AI-generated portraits (39 total + 1 custom slot = 40 = 5x8 grid)
 const FIGHTERS = [
   { name: 'Lion', category: 'real' },
   { name: 'Tiger', category: 'real' },
@@ -31,6 +31,12 @@ const FIGHTERS = [
   { name: 'Cape Buffalo', category: 'real' },
   { name: 'Cassowary', category: 'real' },
   { name: 'Python', category: 'real' },
+  { name: 'Alligator', category: 'real' },
+  { name: 'Black Panther', category: 'real' },
+  { name: 'Cheetah', category: 'real' },
+  { name: 'Hyena', category: 'real' },
+  { name: 'Walrus', category: 'real' },
+  { name: 'Octopus', category: 'real' },
   { name: 'Dragon', category: 'fantasy' },
   { name: 'Griffin', category: 'fantasy' },
   { name: 'Hydra', category: 'fantasy' },
@@ -39,6 +45,7 @@ const FIGHTERS = [
   { name: 'Chimera', category: 'fantasy' },
   { name: 'Manticore', category: 'fantasy' },
   { name: 'Basilisk', category: 'fantasy' },
+  { name: 'Kraken', category: 'fantasy' },
 ];
 
 export default function Home() {
@@ -119,8 +126,8 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Side-by-Side: Red LEFT, Blue RIGHT */}
-          <div className="grid md:grid-cols-[1fr,auto,1fr] gap-4 mb-6">
+          {/* Side-by-Side: Red LEFT, Blue RIGHT - ALWAYS HORIZONTAL */}
+          <div className="grid grid-cols-[1fr,auto,1fr] gap-2 sm:gap-4 mb-6">
             
             {/* RED CORNER - LEFT */}
             <button
@@ -156,18 +163,14 @@ export default function Home() {
             </button>
 
             {/* VS Badge - CENTER */}
-            <div className="hidden md:flex items-center justify-center px-2">
+            <div className="flex items-center justify-center px-1 sm:px-2">
               <motion.div 
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="bg-[#FFD700] w-20 h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
+                className="bg-[#FFD700] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
               >
-                <span className="font-bangers text-3xl text-[#8B0000]">VS</span>
+                <span className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#8B0000]">VS</span>
               </motion.div>
-            </div>
-
-            <div className="md:hidden text-center py-2">
-              <span className="inline-block font-bangers text-2xl bg-[#FFD700] px-6 py-2 rounded-full border-4 border-[#8B0000]">VS</span>
             </div>
 
             {/* BLUE CORNER - RIGHT */}
