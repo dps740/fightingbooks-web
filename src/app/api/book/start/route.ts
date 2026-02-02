@@ -913,9 +913,6 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p class="victory-label">THE WINNER</p>
           <p class="victory-name">${battle.winner.toUpperCase()}</p>
         </div>
-        <div class="victory-note">
-          <p>In nature, outcomes depend on many factors: environment, health, experience, and luck. Both ${factsA.name} and ${factsB.name} are remarkable predators, perfectly adapted to their habitats.</p>
-        </div>
       `,
       imageUrl: victoryImg,
     },
@@ -951,7 +948,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v4';
+const BOOK_CACHE_VERSION = 'v5';
 
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
