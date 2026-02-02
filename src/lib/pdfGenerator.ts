@@ -1,10 +1,82 @@
 /**
- * PDF Generator - Converts web book pages to PDF format
- * Uses puppeteer-core with @sparticuz/chromium for Vercel serverless
+ * PDF Generator - Converts book pages to PDF format
+ * Uses @react-pdf/renderer for serverless-compatible PDF generation
  */
 
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
+import React from 'react';
+import { renderToBuffer, Document, Page, Text, View, Image, StyleSheet, Font } from '@react-pdf/renderer';
+
+// Register fonts
+Font.register({
+  family: 'Comic Neue',
+  fonts: [
+    { src: 'https://fonts.gstatic.com/s/comicneue/v8/4UaHrEJDsxBrF37olUeDx63j5pN1MwI.ttf', fontWeight: 400 },
+    { src: 'https://fonts.gstatic.com/s/comicneue/v8/4UaErEJDsxBrF37olUeD_xHMwpteLwtHJlc.ttf', fontWeight: 700 },
+  ],
+});
+
+// Styles
+const styles = StyleSheet.create({
+  page: {
+    padding: 40,
+    backgroundColor: '#ffffff',
+    fontFamily: 'Comic Neue',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 700,
+    color: '#d4af37',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#c62828',
+    marginBottom: 10,
+    marginTop: 15,
+  },
+  content: {
+    fontSize: 14,
+    lineHeight: 1.6,
+    color: '#333333',
+    marginBottom: 10,
+  },
+  image: {
+    maxWidth: '100%',
+    maxHeight: 300,
+    marginVertical: 15,
+    alignSelf: 'center',
+    borderRadius: 8,
+  },
+  choiceBox: {
+    backgroundColor: '#f5f5f5',
+    padding: 12,
+    marginVertical: 6,
+    borderLeftWidth: 4,
+    borderLeftColor: '#d4af37',
+  },
+  choiceText: {
+    fontSize: 12,
+    color: '#333',
+  },
+  factBox: {
+    backgroundColor: '#fffde7',
+    padding: 12,
+    marginVertical: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ff9800',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 40,
+    right: 40,
+    textAlign: 'center',
+    fontSize: 10,
+    color: '#999',
+  },
+});
 
 interface BookPage {
   id: string;
@@ -22,106 +94,70 @@ interface PDFOptions {
   winner: string;
 }
 
-/**
- * Generate a full HTML document from book pages
- */
-function generateBookHTML(options: PDFOptions): string {
-  const { animalA, animalB, pages, winner } = options;
-  
-  const htmlPages = pages.map(page => {
-    const hasImage = page.imageUrl && !page.imageUrl.includes('placehold.co');
-    
-    return `
-      <div class="book-page" style="page-break-after: always; padding: 40px; min-height: 100vh; position: relative;">
-        ${page.title ? `<h1 style="font-size: 36px; font-weight: bold; color: #d4af37; text-align: center; margin-bottom: 24px;">${page.title}</h1>` : ''}
-        
-        ${hasImage ? `
-          <div style="text-align: center; margin: 20px 0;">
-            <img src="${page.imageUrl}" alt="${page.title}" style="max-width: 600px; max-height: 400px; width: auto; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);" />
-          </div>
-        ` : ''}
-        
-        <div style="font-size: 18px; line-height: 1.8; color: #333; ${hasImage ? 'margin-top: 20px;' : ''}">
-          ${page.content}
-        </div>
-        
-        ${page.choices ? `
-          <div style="margin-top: 30px;">
-            <h3 style="font-size: 24px; color: #d4af37; margin-bottom: 16px;">Choose Your Path:</h3>
-            ${page.choices.map((choice, i) => `
-              <div style="background: #f5f5f5; padding: 16px; margin: 12px 0; border-left: 4px solid #d4af37; border-radius: 4px;">
-                <span style="font-size: 24px; margin-right: 12px;">${choice.emoji}</span>
-                <strong>${choice.text}</strong>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  }).join('');
+// Helper to strip HTML tags and convert to plain text
+function stripHtml(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<li>/gi, '• ')
+    .replace(/<strong>/gi, '')
+    .replace(/<\/strong>/gi, '')
+    .replace(/<em>/gi, '')
+    .replace(/<\/em>/gi, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim();
+}
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>${animalA} vs ${animalB} - Who Would Win?</title>
-      <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
+// Create PDF Document component
+function BookDocument({ animalA, animalB, pages, winner }: PDFOptions) {
+  return React.createElement(
+    Document,
+    { title: `${animalA} vs ${animalB} - Who Would Win?`, author: 'FightingBooks' },
+    pages.map((page, index) => {
+      const hasValidImage = page.imageUrl && !page.imageUrl.includes('placehold.co');
+      const plainContent = stripHtml(page.content);
+      
+      return React.createElement(
+        Page,
+        { key: page.id || index, size: 'LETTER', style: styles.page },
+        // Title
+        page.title && React.createElement(Text, { style: styles.title }, page.title),
         
-        body {
-          font-family: 'Comic Neue', cursive, sans-serif;
-          margin: 0;
-          padding: 0;
-          background: white;
-        }
+        // Image
+        hasValidImage && React.createElement(Image, { style: styles.image, src: page.imageUrl }),
         
-        h1, h2, h3, h4 {
-          font-family: 'Bangers', cursive;
-          letter-spacing: 1px;
-        }
+        // Content
+        React.createElement(Text, { style: styles.content }, plainContent),
         
-        .book-page ul {
-          list-style-position: inside;
-          margin-left: 0;
-          padding-left: 20px;
-        }
+        // Choices (for CYOA mode)
+        page.choices && React.createElement(
+          View,
+          { style: { marginTop: 20 } },
+          React.createElement(Text, { style: styles.subtitle }, 'Choose Your Path:'),
+          ...page.choices.map((choice, i) =>
+            React.createElement(
+              View,
+              { key: choice.id || i, style: styles.choiceBox },
+              React.createElement(Text, { style: styles.choiceText }, `${choice.emoji} ${choice.text}`)
+            )
+          )
+        ),
         
-        .book-page li {
-          margin: 8px 0;
-        }
-        
-        .book-page strong {
-          color: #c62828;
-        }
-        
-        .book-page em {
-          font-style: italic;
-          color: #666;
-        }
-        
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 20px 0;
-        }
-        
-        table td {
-          padding: 12px;
-          border: 1px solid #ddd;
-        }
-        
-        .victory-content {
-          text-align: center;
-          padding: 40px;
-        }
-      </style>
-    </head>
-    <body>
-      ${htmlPages}
-    </body>
-    </html>
-  `;
+        // Page number
+        React.createElement(
+          Text,
+          { style: styles.footer },
+          `${index + 1} / ${pages.length}`
+        )
+      );
+    })
+  );
 }
 
 /**
@@ -129,38 +165,6 @@ function generateBookHTML(options: PDFOptions): string {
  * Returns PDF as Buffer
  */
 export async function generatePDF(options: PDFOptions): Promise<Buffer> {
-  const html = generateBookHTML(options);
-  
-  // Launch puppeteer with @sparticuz/chromium for Vercel
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: { width: 1280, height: 720 },
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
-  
-  try {
-    const page = await browser.newPage();
-    
-    // Set content
-    await page.setContent(html, {
-      waitUntil: 'networkidle0',
-    });
-    
-    // Generate PDF
-    const pdfBuffer = await page.pdf({
-      format: 'Letter',
-      printBackground: true,
-      margin: {
-        top: '0.5in',
-        right: '0.5in',
-        bottom: '0.5in',
-        left: '0.5in',
-      },
-    });
-    
-    return Buffer.from(pdfBuffer);
-  } finally {
-    await browser.close();
-  }
+  const buffer = await renderToBuffer(BookDocument(options));
+  return Buffer.from(buffer);
 }
