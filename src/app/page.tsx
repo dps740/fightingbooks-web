@@ -434,25 +434,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. Tournament Mode Standalone CTA */}
-      <section className="py-10 px-4 bg-gradient-to-r from-amber-900 via-yellow-900 to-orange-900">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
-            🏆 TOURNAMENT MODE
-          </h2>
-          <p className="text-white text-lg mb-6">
-            Pick 8 animals and run a bracket tournament to crown the ultimate champion!
-          </p>
-          <a
-            href="/tournament"
-            className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bangers text-2xl px-10 py-4 rounded-xl hover:from-yellow-300 hover:to-orange-400 transition-all shadow-xl"
-          >
-            🎮 START TOURNAMENT
-          </a>
-        </div>
-      </section>
-
-      {/* 8. Official Books - Amazon Affiliate */}
+      {/* 7. Official Books - Amazon Affiliate */}
       <section className="py-16 px-4 bg-gradient-to-b from-[#232f3e] to-[#131921]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
@@ -470,6 +452,7 @@ export default function Home() {
           <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-[#FF9900] scrollbar-track-white/10">
             <div className="flex gap-5 px-4 min-w-max">
               {[
+                // Classic matchups
                 { title: 'Lion vs Tiger', asin: '0545175712' },
                 { title: 'Killer Whale vs Great White Shark', asin: '0545175739' },
                 { title: 'Tyrannosaurus Rex vs Velociraptor', asin: '0545175720' },
@@ -481,8 +464,22 @@ export default function Home() {
                 { title: 'Whale vs Giant Squid', asin: '0545301734' },
                 { title: 'Rhino vs Hippo', asin: '0545451922' },
                 { title: 'Lobster vs Crab', asin: '0545681219' },
+                // More matchups
+                { title: 'Hornet vs Wasp', asin: '0545451930' },
+                { title: 'Triceratops vs Spinosaurus', asin: '0545681200' },
+                { title: 'Jaguar vs Skunk', asin: '1338320254' },
+                { title: 'Rattlesnake vs Secretary Bird', asin: '1338320289' },
+                { title: 'Hyena vs Honey Badger', asin: '1338320297' },
+                { title: 'Falcon vs Hawk', asin: '1338320300' },
+                { title: 'Alligator vs Python', asin: '1338320319' },
+                { title: 'Green Ants vs Army Ants', asin: '1338672118' },
+                // Ultimate Rumbles
                 { title: 'Ultimate Shark Rumble', asin: '1338320270' },
                 { title: 'Ultimate Ocean Rumble', asin: '1338320262' },
+                { title: 'Ultimate Jungle Rumble', asin: '0545946077' },
+                { title: 'Ultimate Dinosaur Rumble', asin: '1338320327' },
+                { title: 'Ultimate Bug Rumble', asin: '1338320335' },
+                { title: 'Ultimate Reptile Rumble', asin: '1338745530' },
               ].map((book) => (
                 <a
                   key={book.asin}
