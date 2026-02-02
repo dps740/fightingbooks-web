@@ -358,20 +358,17 @@ export default function Home() {
                 </button>
               ))}
               
-              {/* Use Your Imagination */}
-              <button
-                onClick={() => {
-                  const custom = prompt('Enter your creature:');
-                  if (custom) handleFighterSelect(custom);
-                }}
-                className="relative aspect-square rounded-lg overflow-hidden border-3 border-dashed border-purple-400 transition-all hover:scale-110 hover:border-purple-300 bg-gradient-to-br from-purple-600 to-purple-800"
+              {/* Use Your Imagination - Coming Soon */}
+              <div
+                className="relative aspect-square rounded-lg overflow-hidden border-3 border-dashed border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-not-allowed"
+                title="Coming Soon!"
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
                   <div className="text-3xl mb-1">✨</div>
                   <p className="font-bangers text-white text-xs text-center leading-tight">YOUR IMAGINATION</p>
-                  <p className="text-white text-[10px]">$1</p>
+                  <p className="text-yellow-400 text-[10px] font-bold">COMING SOON</p>
                 </div>
-              </button>
+              </div>
             </div>
           </div>
 
