@@ -659,6 +659,17 @@ function BookReader() {
           margin-bottom: 5px;
           letter-spacing: 1px;
         }
+        .stat-note {
+          font-size: 0.9em;
+          color: #333;
+          font-style: italic;
+          margin: 5px 0 10px 0;
+          text-align: center;
+          background: rgba(255,215,0,0.2);
+          padding: 5px 10px;
+          border-radius: 8px;
+          border-left: 3px solid #FFD700;
+        }
         .stat-bar {
           width: 100%;
           height: 30px;

@@ -38,34 +38,42 @@ function getOpenAI() {
   });
 }
 
-// Upload image to Vercel Blob for permanent storage
+// Upload image to Vercel Blob for permanent storage, with base64 fallback
 async function uploadToBlob(imageUrl: string, filename: string): Promise<string> {
+  let imageBuffer: ArrayBuffer;
+  let contentType = 'image/jpeg';
+  
+  // Step 1: Fetch the image ONCE and store the buffer
   try {
-    // Fetch the image from fal.ai
     const response = await fetch(imageUrl);
     if (!response.ok) throw new Error('Failed to fetch image');
-    
-    const imageBuffer = await response.arrayBuffer();
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    
-    // Upload to Vercel Blob
+    imageBuffer = await response.arrayBuffer();
+    contentType = response.headers.get('content-type') || 'image/jpeg';
+  } catch (error) {
+    console.error('Image fetch error:', error);
+    return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+  }
+  
+  // Step 2: Try Vercel Blob upload
+  try {
     const blob = await put(`fightingbooks/${filename}.jpg`, imageBuffer, {
       access: 'public',
       contentType,
     });
-    
+    console.log(`Blob upload success: ${blob.url}`);
     return blob.url;
   } catch (error) {
-    console.error('Blob upload error:', error);
-    // Fallback to base64 if blob upload fails
-    try {
-      const response = await fetch(imageUrl);
-      const arrayBuffer = await response.arrayBuffer();
-      const base64 = Buffer.from(arrayBuffer).toString('base64');
-      return `data:image/jpeg;base64,${base64}`;
-    } catch {
-      return imageUrl;
-    }
+    console.error('Blob upload error (falling back to base64):', error);
+  }
+  
+  // Step 3: Fallback to base64 (using already-fetched buffer)
+  try {
+    const base64 = Buffer.from(imageBuffer).toString('base64');
+    console.log(`Using base64 fallback for ${filename}`);
+    return `data:${contentType};base64,${base64}`;
+  } catch (error) {
+    console.error('Base64 conversion error:', error);
+    return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
   }
 }
 
@@ -283,6 +291,12 @@ type ComparativeStats = {
   speedA: number; speedB: number;
   weaponsA: number; weaponsB: number;
   defenseA: number; defenseB: number;
+  // Specific notes for Tale of the Tape
+  strengthNote?: string;
+  speedNote?: string;
+  weaponsNote?: string;
+  defenseNote?: string;
+  keyAdvantage?: string;
 };
 
 // In-memory cache for stats (persists across requests in same instance)
@@ -352,21 +366,35 @@ async function generateComparativeStats(animalA: string, animalB: string): Promi
   
   const prompt = `Compare ${animalA} vs ${animalB} for a "Who Would Win?" battle book.
 
-Rate each animal from 1-10 in these categories, making sure scores DIFFER based on real advantages:
-- STRENGTH: Raw power, bite force, crushing ability
-- SPEED: Top speed, agility, reflexes
-- WEAPONS: Claws, teeth, horns, venom - lethality
-- DEFENSE: Armor, thick hide, evasion, size
+Rate each animal from 1-10 in these categories with REAL scientific facts:
 
-IMPORTANT: Scores should reflect REAL differences. If one animal is clearly better in a category, the gap should be 2-4 points, not just 1.
+STRENGTH (bite force PSI, lifting power, crushing ability):
+- Consider actual measurements if known (lion ~650 PSI, crocodile ~3700 PSI, etc.)
+
+SPEED (top speed mph, acceleration, agility):  
+- Use real speeds (cheetah 70mph, lion 50mph, elephant 25mph, etc.)
+
+WEAPONS (specific weapons with measurements):
+- Claws (how long?), teeth (how sharp?), horns, venom potency, etc.
+
+DEFENSE (actual protection):
+- Thick hide (how thick?), armor, camouflage, size as deterrent
+
+IMPORTANT: 
+- Scores must DIFFER by 2-4 points where there's a real advantage
+- Include SPECIFIC facts about THESE animals, not generic descriptions
 
 Return JSON only:
 {
   "strengthA": 8, "strengthB": 6,
-  "speedA": 5, "speedB": 8,
+  "speedA": 5, "speedB": 8, 
   "weaponsA": 7, "weaponsB": 9,
   "defenseA": 8, "defenseB": 5,
-  "reasoning": "Brief explanation of key differences"
+  "strengthNote": "${animalA}'s 650 PSI bite vs ${animalB}'s 300 PSI",
+  "speedNote": "${animalA} hits 50 mph, ${animalB} maxes at 35 mph",
+  "weaponsNote": "${animalA}'s 3-inch claws vs ${animalB}'s 6-inch horns",
+  "defenseNote": "${animalA}'s 1-inch thick hide vs ${animalB}'s speed-based evasion",
+  "keyAdvantage": "One sentence: who has the main advantage and why"
 }`;
 
   try {
@@ -387,6 +415,11 @@ Return JSON only:
       weaponsB: result.weaponsB || 7,
       defenseA: result.defenseA || 7,
       defenseB: result.defenseB || 7,
+      strengthNote: result.strengthNote || '',
+      speedNote: result.speedNote || '',
+      weaponsNote: result.weaponsNote || '',
+      defenseNote: result.defenseNote || '',
+      keyAdvantage: result.keyAdvantage || '',
     };
     
     // Save to both caches
@@ -414,6 +447,11 @@ function swapStats(stats: ComparativeStats): ComparativeStats {
     speedA: stats.speedB, speedB: stats.speedA,
     weaponsA: stats.weaponsB, weaponsB: stats.weaponsA,
     defenseA: stats.defenseB, defenseB: stats.defenseA,
+    strengthNote: stats.strengthNote,
+    speedNote: stats.speedNote,
+    weaponsNote: stats.weaponsNote,
+    defenseNote: stats.defenseNote,
+    keyAdvantage: stats.keyAdvantage,
   };
 }
 
@@ -442,16 +480,40 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   const battle = await generateBattle(factsA, factsB, environment);
   const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
 
-  // Generate images in parallel (cover + 2 animal portraits + battle + victory)
-  // Use cache keys for organized storage
+  // Generate images in parallel - multiple per animal for variety
+  // Use cache keys for organized storage and reuse
   const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
-  const [coverImg, imgA, imgB, battleImg, victoryImg] = await Promise.all([
+  const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
+  const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
+  
+  const [
+    coverImg, 
+    // Animal A images
+    imgA_portrait, imgA_habitat, imgA_action, imgA_closeup,
+    // Animal B images  
+    imgB_portrait, imgB_habitat, imgB_action, imgB_closeup,
+    // Battle images
+    battleImg, victoryImg
+  ] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
-    generateImage(`${animalA} portrait, powerful pose, wildlife photography style`, `${imgPrefix}-${animalA.toLowerCase().replace(/\s+/g, '-')}`),
-    generateImage(`${animalB} portrait, powerful pose, wildlife photography style`, `${imgPrefix}-${animalB.toLowerCase().replace(/\s+/g, '-')}`),
+    // Animal A - 4 different images
+    generateImage(`${animalA} portrait, powerful pose, majestic wildlife photography`, `${nameA}-portrait`),
+    generateImage(`${animalA} in natural habitat, ${factsA.habitat}, wildlife documentary style`, `${nameA}-habitat`),
+    generateImage(`${animalA} hunting or attacking, showing ${factsA.weapons[0]}, action shot`, `${nameA}-action`),
+    generateImage(`${animalA} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameA}-closeup`),
+    // Animal B - 4 different images
+    generateImage(`${animalB} portrait, powerful pose, majestic wildlife photography`, `${nameB}-portrait`),
+    generateImage(`${animalB} in natural habitat, ${factsB.habitat}, wildlife documentary style`, `${nameB}-habitat`),
+    generateImage(`${animalB} hunting or attacking, showing ${factsB.weapons[0]}, action shot`, `${nameB}-action`),
+    generateImage(`${animalB} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameB}-closeup`),
+    // Battle
     generateImage(`${animalA} fighting ${animalB}, intense battle, action scene`, `${imgPrefix}-battle`),
     generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
   ]);
+  
+  // Group images for easy access
+  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup };
+  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup };
 
   const pages: BookPage[] = [
     {
@@ -462,7 +524,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       imageUrl: coverImg,
     },
     
-    // Animal A - Educational Pages (Who Would Win? style)
+    // Animal A - Educational Pages (Who Would Win? style) - Different images for variety
     {
       id: 'intro-a',
       type: 'intro',
@@ -474,7 +536,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
         </div>
         <div class="habitat-badge">${factsA.habitat.split(',')[0] || factsA.habitat}</div>
       `,
-      imageUrl: imgA,
+      imageUrl: imagesA.portrait,
     },
     {
       id: 'size-a',
@@ -500,7 +562,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>Could YOU fit under a ${factsA.name}? Would it be taller than your house?</p>
         </div>
       `,
-      imageUrl: imgA,
+      imageUrl: imagesA.habitat,
     },
     {
       id: 'weapons-a',
@@ -516,7 +578,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>⚡ TOP SPEED: ${factsA.speed}</p>
         </div>
       `,
-      imageUrl: imgA,
+      imageUrl: imagesA.action,
     },
     {
       id: 'defense-a',
@@ -532,6 +594,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>🍖 DIET: ${factsA.diet}</p>
         </div>
       `,
+      imageUrl: imagesA.closeup,
     },
     {
       id: 'facts-a',
@@ -549,7 +612,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       `,
     },
     
-    // Animal B - Educational Pages (Who Would Win? style)
+    // Animal B - Educational Pages (Who Would Win? style) - Different images for variety
     {
       id: 'intro-b',
       type: 'intro',
@@ -561,7 +624,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
         </div>
         <div class="habitat-badge">${factsB.habitat.split(',')[0] || factsB.habitat}</div>
       `,
-      imageUrl: imgB,
+      imageUrl: imagesB.portrait,
     },
     {
       id: 'size-b',
@@ -587,7 +650,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>Could YOU fit under a ${factsB.name}? Would it be taller than your house?</p>
         </div>
       `,
-      imageUrl: imgB,
+      imageUrl: imagesB.habitat,
     },
     {
       id: 'weapons-b',
@@ -603,7 +666,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>⚡ TOP SPEED: ${factsB.speed}</p>
         </div>
       `,
-      imageUrl: imgB,
+      imageUrl: imagesB.action,
     },
     {
       id: 'defense-b',
@@ -619,6 +682,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           <p>🍖 DIET: ${factsB.diet}</p>
         </div>
       `,
+      imageUrl: imagesB.closeup,
     },
     {
       id: 'facts-b',
@@ -642,6 +706,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       content: `
         <div class="stat-bar-container">
           <div class="stat-bar-label">💪 STRENGTH</div>
+          ${compStats.strengthNote ? `<p class="stat-note">${compStats.strengthNote}</p>` : ''}
           <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -662,6 +727,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
 
           <div class="stat-bar-label">⚡ SPEED</div>
+          ${compStats.speedNote ? `<p class="stat-note">${compStats.speedNote}</p>` : ''}
           <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -680,6 +746,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
 
           <div class="stat-bar-label">⚔️ WEAPONS</div>
+          ${compStats.weaponsNote ? `<p class="stat-note">${compStats.weaponsNote}</p>` : ''}
           <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -698,6 +765,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
 
           <div class="stat-bar-label">🛡️ DEFENSE</div>
+          ${compStats.defenseNote ? `<p class="stat-note">${compStats.defenseNote}</p>` : ''}
           <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -716,9 +784,15 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
         </div>
 
+        ${compStats.keyAdvantage ? `
+        <div class="did-you-know" style="margin-top: 20px;">
+          <p>🎯 KEY ADVANTAGE: ${compStats.keyAdvantage}</p>
+        </div>
+        ` : `
         <div class="think-about-it" style="margin-top: 20px;">
           <p>${generateTacticalAnalysis(factsA, factsB)}</p>
         </div>
+        `}
       `,
     },
     {
