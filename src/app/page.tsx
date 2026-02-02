@@ -402,7 +402,7 @@ export default function Home() {
       {canGenerate && showFightOverlay && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => { if (!loading) setShowFightOverlay(false); }}
+          onClick={() => { if (!loading) { setShowFightOverlay(false); setAnimalA(''); setAnimalB(''); setSelectingFor('A'); } }}
         >
           <div className="text-center transition-transform duration-300">
             {/* VS Display */}
