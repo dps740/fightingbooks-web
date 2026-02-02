@@ -945,11 +945,14 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
   return introPages;
 }
 
+// Book cache version - bump to invalidate old cached books when image/content logic changes
+const BOOK_CACHE_VERSION = 'v2';
+
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
   // Normalize to always be alphabetical order for consistency
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
-  return `${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
+  return `${BOOK_CACHE_VERSION}_${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
 }
 
 async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
