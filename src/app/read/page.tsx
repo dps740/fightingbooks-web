@@ -700,6 +700,30 @@ function BookReader() {
           font-size: 1.2em;
         }
         
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+          .edu-image-hero {
+            height: 55%;
+            min-height: 250px;
+          }
+          .edu-title {
+            font-size: 1.8em;
+          }
+          .edu-content {
+            font-size: 1em;
+          }
+          .did-you-know::before,
+          .think-about-it::before {
+            font-size: 1.2em;
+          }
+          .size-compare .size-emoji {
+            font-size: 2.5em;
+          }
+          .stat-bar-label {
+            font-size: 1.1em;
+          }
+        }
+        
         /* Stats page */
         .stats-hero-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
         

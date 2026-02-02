@@ -163,14 +163,22 @@ Return JSON only:
     console.error('OpenAI error for facts:', error);
     return {
       name: animalName,
-      scientific_name: 'Unknown',
+      scientific_name: 'Unknown species',
       habitat: 'Various regions worldwide',
-      size: 'Varies',
-      diet: 'Carnivore/Omnivore',
-      weapons: ['Claws', 'Teeth', 'Strength'],
-      defenses: ['Thick hide', 'Speed', 'Agility'],
-      speed: 'Fast',
-      fun_facts: ['Amazing predator', 'Top of food chain', 'Incredible hunter'],
+      size: 'Varies by region and species',
+      diet: 'Carnivore/Omnivore - hunts for food',
+      weapons: ['Sharp claws for gripping', 'Powerful teeth for biting', 'Raw strength'],
+      defenses: ['Thick hide for protection', 'Quick reflexes', 'Camouflage abilities'],
+      speed: 'Fast runner when needed',
+      fun_facts: [
+        'This animal is an AMAZING predator!',
+        'It sits at the TOP of the food chain!',
+        'An INCREDIBLE hunter with years of evolution!'
+      ],
+      size_comparisons: [
+        { item: 'car', emoji: '🚗', comparison: 'About as big as a car!' },
+        { item: 'person', emoji: '🧍', comparison: 'Much larger than a person!' }
+      ],
       strength_score: 7,
       speed_score: 7,
       weapons_score: 7,
@@ -302,156 +310,262 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       imageUrl: coverImg,
     },
     
-    // Animal A - Educational Pages
+    // Animal A - Educational Pages (Who Would Win? style)
     {
       id: 'intro-a',
       type: 'intro',
-      title: `Meet the ${factsA.name}!`,
+      title: `MEET THE ${factsA.name.toUpperCase()}!`,
       content: `
-        <h3 class="text-2xl font-bold text-[#c62828] mb-3">${factsA.name}</h3>
-        <p class="text-lg mb-2"><em>${factsA.scientific_name}</em></p>
-        <p class="text-gray-700">The ${factsA.name} is one of nature's most impressive creatures. Let's learn what makes this animal so special!</p>
+        <p class="text-lg mb-2" style="text-align: center;"><em style="color: #666;">${factsA.scientific_name}</em></p>
+        <div class="did-you-know">
+          <p>${factsA.fun_facts[0]}</p>
+        </div>
+        <div class="habitat-badge">${factsA.habitat.split(',')[0] || factsA.habitat}</div>
       `,
       imageUrl: imgA,
     },
     {
-      id: 'habitat-a',
+      id: 'size-a',
       type: 'intro',
-      title: `Where ${factsA.name}s Live`,
+      title: `HOW BIG IS IT?`,
       content: `
-        <h4 class="text-xl font-bold text-[#4caf50] mb-2">🌍 Habitat & Range</h4>
-        <p class="mb-3">${factsA.habitat}</p>
-        <p class="text-sm text-gray-600 italic">These animals have adapted perfectly to their environment over millions of years!</p>
+        <div class="size-compare">
+          ${factsA.size_comparisons && factsA.size_comparisons.length > 0 ? `
+            <span class="size-emoji">${factsA.size_comparisons[0].emoji}</span>
+            <p>${factsA.size_comparisons[0].comparison}</p>
+          ` : `
+            <span class="size-emoji">📏</span>
+            <p>${factsA.size}</p>
+          `}
+        </div>
+        ${factsA.size_comparisons && factsA.size_comparisons.length > 1 ? `
+          <div class="size-compare">
+            <span class="size-emoji">${factsA.size_comparisons[1].emoji}</span>
+            <p>${factsA.size_comparisons[1].comparison}</p>
+          </div>
+        ` : ''}
+        <div class="think-about-it">
+          <p>Could YOU fit under a ${factsA.name}? Would it be taller than your house?</p>
+        </div>
       `,
-    },
-    {
-      id: 'diet-a',
-      type: 'intro',
-      title: `What ${factsA.name}s Eat`,
-      content: `
-        <h4 class="text-xl font-bold text-[#ff9800] mb-2">🍖 Diet & Hunting</h4>
-        <p class="mb-2">${factsA.diet}</p>
-        <p class="mb-2"><strong>⚡ Speed:</strong> ${factsA.speed}</p>
-      `,
+      imageUrl: imgA,
     },
     {
       id: 'weapons-a',
       type: 'intro',
-      title: `${factsA.name} Arsenal`,
+      title: `${factsA.name.toUpperCase()} WEAPONS!`,
       content: `
-        <h4 class="text-xl font-bold text-[#f44336] mb-2">⚔️ Weapons & Defenses</h4>
-        <p class="mb-2"><strong>📏 Size:</strong> ${factsA.size}</p>
-        <div class="mt-3">
-          <p class="font-bold text-red-700">WEAPONS:</p>
-          <ul class="list-disc ml-4 mb-3">${factsA.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
-          <p class="font-bold text-blue-700">DEFENSES:</p>
-          <ul class="list-disc ml-4">${factsA.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        <div class="weapon-box">
+          <p>${factsA.weapons[0]}</p>
+        </div>
+        ${factsA.weapons[1] ? `<div class="weapon-box"><p>${factsA.weapons[1]}</p></div>` : ''}
+        ${factsA.weapons[2] ? `<div class="weapon-box"><p>${factsA.weapons[2]}</p></div>` : ''}
+        <div class="did-you-know">
+          <p>⚡ TOP SPEED: ${factsA.speed}</p>
+        </div>
+      `,
+      imageUrl: imgA,
+    },
+    {
+      id: 'defense-a',
+      type: 'intro',
+      title: `${factsA.name.toUpperCase()} DEFENSES!`,
+      content: `
+        <div class="defense-box">
+          <p>${factsA.defenses[0]}</p>
+        </div>
+        ${factsA.defenses[1] ? `<div class="defense-box"><p>${factsA.defenses[1]}</p></div>` : ''}
+        ${factsA.defenses[2] ? `<div class="defense-box"><p>${factsA.defenses[2]}</p></div>` : ''}
+        <div class="did-you-know">
+          <p>🍖 DIET: ${factsA.diet}</p>
         </div>
       `,
     },
     {
       id: 'facts-a',
       type: 'intro',
-      title: `Amazing ${factsA.name} Facts!`,
+      title: `${factsA.name.toUpperCase()} SECRETS!`,
       content: `
-        <h4 class="text-xl font-bold text-[#9c27b0] mb-3">✨ DID YOU KNOW?</h4>
-        <ul class="space-y-3">${factsA.fun_facts.map(f => `<li class="text-base">🌟 ${f}</li>`).join('')}</ul>
+        ${factsA.fun_facts.slice(1).map(fact => `
+          <div class="did-you-know">
+            <p>${fact}</p>
+          </div>
+        `).join('')}
+        <div class="think-about-it">
+          <p>What would YOU do if you met a ${factsA.name} in the wild?</p>
+        </div>
       `,
     },
     
-    // Animal B - Educational Pages
+    // Animal B - Educational Pages (Who Would Win? style)
     {
       id: 'intro-b',
       type: 'intro',
-      title: `Meet the ${factsB.name}!`,
+      title: `MEET THE ${factsB.name.toUpperCase()}!`,
       content: `
-        <h3 class="text-2xl font-bold text-[#1e88e5] mb-3">${factsB.name}</h3>
-        <p class="text-lg mb-2"><em>${factsB.scientific_name}</em></p>
-        <p class="text-gray-700">The ${factsB.name} is one of nature's most impressive creatures. Let's learn what makes this animal so special!</p>
+        <p class="text-lg mb-2" style="text-align: center;"><em style="color: #666;">${factsB.scientific_name}</em></p>
+        <div class="did-you-know">
+          <p>${factsB.fun_facts[0]}</p>
+        </div>
+        <div class="habitat-badge">${factsB.habitat.split(',')[0] || factsB.habitat}</div>
       `,
       imageUrl: imgB,
     },
     {
-      id: 'habitat-b',
+      id: 'size-b',
       type: 'intro',
-      title: `Where ${factsB.name}s Live`,
+      title: `HOW BIG IS IT?`,
       content: `
-        <h4 class="text-xl font-bold text-[#4caf50] mb-2">🌍 Habitat & Range</h4>
-        <p class="mb-3">${factsB.habitat}</p>
-        <p class="text-sm text-gray-600 italic">These animals have adapted perfectly to their environment over millions of years!</p>
+        <div class="size-compare">
+          ${factsB.size_comparisons && factsB.size_comparisons.length > 0 ? `
+            <span class="size-emoji">${factsB.size_comparisons[0].emoji}</span>
+            <p>${factsB.size_comparisons[0].comparison}</p>
+          ` : `
+            <span class="size-emoji">📏</span>
+            <p>${factsB.size}</p>
+          `}
+        </div>
+        ${factsB.size_comparisons && factsB.size_comparisons.length > 1 ? `
+          <div class="size-compare">
+            <span class="size-emoji">${factsB.size_comparisons[1].emoji}</span>
+            <p>${factsB.size_comparisons[1].comparison}</p>
+          </div>
+        ` : ''}
+        <div class="think-about-it">
+          <p>Could YOU fit under a ${factsB.name}? Would it be taller than your house?</p>
+        </div>
       `,
-    },
-    {
-      id: 'diet-b',
-      type: 'intro',
-      title: `What ${factsB.name}s Eat`,
-      content: `
-        <h4 class="text-xl font-bold text-[#ff9800] mb-2">🍖 Diet & Hunting</h4>
-        <p class="mb-2">${factsB.diet}</p>
-        <p class="mb-2"><strong>⚡ Speed:</strong> ${factsB.speed}</p>
-      `,
+      imageUrl: imgB,
     },
     {
       id: 'weapons-b',
       type: 'intro',
-      title: `${factsB.name} Arsenal`,
+      title: `${factsB.name.toUpperCase()} WEAPONS!`,
       content: `
-        <h4 class="text-xl font-bold text-[#f44336] mb-2">⚔️ Weapons & Defenses</h4>
-        <p class="mb-2"><strong>📏 Size:</strong> ${factsB.size}</p>
-        <div class="mt-3">
-          <p class="font-bold text-red-700">WEAPONS:</p>
-          <ul class="list-disc ml-4 mb-3">${factsB.weapons.map(w => `<li>${w}</li>`).join('')}</ul>
-          <p class="font-bold text-blue-700">DEFENSES:</p>
-          <ul class="list-disc ml-4">${factsB.defenses.map(d => `<li>${d}</li>`).join('')}</ul>
+        <div class="weapon-box">
+          <p>${factsB.weapons[0]}</p>
+        </div>
+        ${factsB.weapons[1] ? `<div class="weapon-box"><p>${factsB.weapons[1]}</p></div>` : ''}
+        ${factsB.weapons[2] ? `<div class="weapon-box"><p>${factsB.weapons[2]}</p></div>` : ''}
+        <div class="did-you-know">
+          <p>⚡ TOP SPEED: ${factsB.speed}</p>
+        </div>
+      `,
+      imageUrl: imgB,
+    },
+    {
+      id: 'defense-b',
+      type: 'intro',
+      title: `${factsB.name.toUpperCase()} DEFENSES!`,
+      content: `
+        <div class="defense-box">
+          <p>${factsB.defenses[0]}</p>
+        </div>
+        ${factsB.defenses[1] ? `<div class="defense-box"><p>${factsB.defenses[1]}</p></div>` : ''}
+        ${factsB.defenses[2] ? `<div class="defense-box"><p>${factsB.defenses[2]}</p></div>` : ''}
+        <div class="did-you-know">
+          <p>🍖 DIET: ${factsB.diet}</p>
         </div>
       `,
     },
     {
       id: 'facts-b',
       type: 'intro',
-      title: `Amazing ${factsB.name} Facts!`,
+      title: `${factsB.name.toUpperCase()} SECRETS!`,
       content: `
-        <h4 class="text-xl font-bold text-[#9c27b0] mb-3">✨ DID YOU KNOW?</h4>
-        <ul class="space-y-3">${factsB.fun_facts.map(f => `<li class="text-base">🌟 ${f}</li>`).join('')}</ul>
+        ${factsB.fun_facts.slice(1).map(fact => `
+          <div class="did-you-know">
+            <p>${fact}</p>
+          </div>
+        `).join('')}
+        <div class="think-about-it">
+          <p>What would YOU do if you met a ${factsB.name} in the wild?</p>
+        </div>
       `,
     },
     {
       id: 'stats',
       type: 'stats',
-      title: 'Tale of the Tape',
+      title: 'TALE OF THE TAPE!',
       content: `
-        <div class="border border-[#d4af37] p-4">
-          <table class="w-full text-center">
-            <tr class="border-b-2 border-[#d4af37]">
-              <td class="py-2 text-[#c41e3a] font-bold text-lg">${factsA.name.toUpperCase()}</td>
-              <td class="py-2 text-[#d4af37] font-bold">STAT</td>
-              <td class="py-2 text-[#1e4fc4] font-bold text-lg">${factsB.name.toUpperCase()}</td>
-            </tr>
-            <tr class="border-b border-white/10">
-              <td class="py-2 text-xl font-bold">${factsA.strength_score}/10</td>
-              <td class="py-2 text-gray-600">💪 STRENGTH</td>
-              <td class="py-2 text-xl font-bold">${factsB.strength_score}/10</td>
-            </tr>
-            <tr class="border-b border-white/10">
-              <td class="py-2 text-xl font-bold">${factsA.speed_score}/10</td>
-              <td class="py-2 text-gray-600">⚡ SPEED</td>
-              <td class="py-2 text-xl font-bold">${factsB.speed_score}/10</td>
-            </tr>
-            <tr class="border-b border-white/10">
-              <td class="py-2 text-xl font-bold">${factsA.weapons_score}/10</td>
-              <td class="py-2 text-gray-600">⚔️ WEAPONS</td>
-              <td class="py-2 text-xl font-bold">${factsB.weapons_score}/10</td>
-            </tr>
-            <tr>
-              <td class="py-2 text-xl font-bold">${factsA.defense_score}/10</td>
-              <td class="py-2 text-gray-600">🛡️ DEFENSE</td>
-              <td class="py-2 text-xl font-bold">${factsB.defense_score}/10</td>
-            </tr>
-          </table>
-          <div class="mt-4 p-3 bg-amber-50 rounded border-l-4 border-amber-500">
-            <p class="text-sm font-bold text-gray-700">⚔️ TACTICAL ANALYSIS</p>
-            <p class="text-sm mt-1">${generateTacticalAnalysis(factsA, factsB)}</p>
+        <div class="stat-bar-container">
+          <div class="stat-bar-label">💪 STRENGTH</div>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsA.strength_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
+                  ${factsA.strength_score}/10
+                </div>
+              </div>
+              <p style="text-align: center; margin-top: 5px; font-weight: bold; color: #c41e3a;">${factsA.name}</p>
+            </div>
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsB.strength_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
+                  ${factsB.strength_score}/10
+                </div>
+              </div>
+              <p style="text-align: center; margin-top: 5px; font-weight: bold; color: #1e4fc4;">${factsB.name}</p>
+            </div>
           </div>
+
+          <div class="stat-bar-label">⚡ SPEED</div>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsA.speed_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
+                  ${factsA.speed_score}/10
+                </div>
+              </div>
+            </div>
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsB.speed_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
+                  ${factsB.speed_score}/10
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-bar-label">⚔️ WEAPONS</div>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsA.weapons_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
+                  ${factsA.weapons_score}/10
+                </div>
+              </div>
+            </div>
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsB.weapons_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
+                  ${factsB.weapons_score}/10
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-bar-label">🛡️ DEFENSE</div>
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsA.defense_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
+                  ${factsA.defense_score}/10
+                </div>
+              </div>
+            </div>
+            <div style="flex: 1;">
+              <div class="stat-bar">
+                <div class="stat-bar-fill" style="width: ${factsB.defense_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
+                  ${factsB.defense_score}/10
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="think-about-it" style="margin-top: 20px;">
+          <p>${generateTacticalAnalysis(factsA, factsB)}</p>
         </div>
       `,
     },
