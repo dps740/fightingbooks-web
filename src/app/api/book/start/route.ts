@@ -398,11 +398,14 @@ async function saveStatsToCache(key: string, stats: ComparativeStats): Promise<v
   }
 }
 
+// Cache version - bump this to invalidate old cached stats when logic changes
+const STATS_CACHE_VERSION = 'v2';
+
 // Generate comparative stats for both animals in one call for better differentiation
 async function generateComparativeStats(animalA: string, animalB: string): Promise<ComparativeStats> {
-  // Create cache key (sorted to handle A vs B and B vs A)
+  // Create cache key (sorted to handle A vs B and B vs A) with version
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
-  const cacheKey = `${sorted[0]}-vs-${sorted[1]}`;
+  const cacheKey = `${STATS_CACHE_VERSION}-${sorted[0]}-vs-${sorted[1]}`;
   const isReversed = sorted[0] !== animalA.toLowerCase();
   
   // Check in-memory cache first
