@@ -402,7 +402,7 @@ export default function Home() {
       {canGenerate && showFightOverlay && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
-          onClick={(e) => { if (e.target === e.currentTarget && !loading) setShowFightOverlay(false); }}
+          onClick={() => { if (!loading) setShowFightOverlay(false); }}
         >
           <div className="text-center transition-transform duration-300">
             {/* VS Display */}
@@ -424,7 +424,7 @@ export default function Home() {
             
             {/* FIGHT Button */}
             <button 
-              onClick={handleGenerate} 
+              onClick={(e) => { e.stopPropagation(); handleGenerate(); }} 
               disabled={loading}
               className="px-16 py-6 rounded-2xl font-bangers text-5xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.6)] hover:scale-110 hover:shadow-[0_0_60px_rgba(255,215,0,0.8)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
             >
