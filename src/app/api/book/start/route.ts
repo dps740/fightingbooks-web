@@ -185,7 +185,12 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
 async function generateAnimalFacts(animalName: string): Promise<AnimalFacts> {
   const prompt = `Generate educational facts about a ${animalName} for a children's "Who Would Win?" style book by Jerry Pallotta.
 
-CRITICAL STYLE REQUIREMENTS:
+CRITICAL: Use REAL, ACCURATE measurements for ${animalName}!
+- Look up the ACTUAL size and weight of a ${animalName}
+- size_comparisons must reflect the REAL dimensions of THIS specific animal
+- Do NOT use generic comparisons - make them ACCURATE for ${animalName}
+
+STYLE REQUIREMENTS:
 - SHORT, PUNCHY sentences! Kids love excitement!
 - Use CAPS for emphasis!
 - Compare sizes to things kids know (cars, buses, people, basketballs, etc.)
@@ -208,8 +213,8 @@ Return JSON only:
     "COOL sensory ability or special feature"
   ],
   "size_comparisons": [
-    {"item": "PICK A RELATABLE OBJECT", "emoji": "🚗🏠🧍🦁", "comparison": "ACTUAL SIZE comparison for THIS animal (e.g., 'As long as a bathtub!' or 'Weighs as much as 2 refrigerators!')"},
-    {"item": "PICK ANOTHER OBJECT", "emoji": "📏⚖️", "comparison": "ACTUAL WEIGHT comparison for THIS animal - must be ACCURATE for the species!"}
+    {"item": "object name", "emoji": "relevant emoji", "comparison": "LENGTH: Use REAL measurements! A gorilla is about 5.5 feet tall (as tall as a short adult). A lion is 8 feet long (as long as a sofa). BE SPECIFIC AND ACCURATE!"},
+    {"item": "object name", "emoji": "relevant emoji", "comparison": "WEIGHT: Use REAL measurements! A gorilla weighs 400 lbs (as heavy as 2 adult men). A lion weighs 420 lbs. BE SPECIFIC AND ACCURATE!"}
   ],
   "strength_score": 7,
   "speed_score": 6,
@@ -946,7 +951,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v3';
+const BOOK_CACHE_VERSION = 'v4';
 
 // Simple file-based cache for generated books
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
