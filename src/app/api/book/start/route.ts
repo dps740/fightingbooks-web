@@ -492,8 +492,9 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     imgA_portrait, imgA_habitat, imgA_action, imgA_closeup,
     // Animal B images  
     imgB_portrait, imgB_habitat, imgB_action, imgB_closeup,
-    // Battle images
-    battleImg, victoryImg
+    // 5 unique battle images for each scene
+    battleImg1, battleImg2, battleImg3, battleImg4, battleImg5,
+    victoryImg
   ] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
     // Animal A - 4 different images
@@ -506,8 +507,12 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalB} in natural habitat, ${factsB.habitat}, wildlife documentary style`, `${nameB}-habitat`),
     generateImage(`${animalB} hunting or attacking, showing ${factsB.weapons[0]}, action shot`, `${nameB}-action`),
     generateImage(`${animalB} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameB}-closeup`),
-    // Battle
-    generateImage(`${animalA} fighting ${animalB}, intense battle, action scene`, `${imgPrefix}-battle`),
+    // 5 unique battle scenes - each with different action
+    generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
+    generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
+    generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
+    generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
+    generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
     generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
   ]);
   
@@ -800,31 +805,35 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       type: 'battle',
       title: '',
       content: `<p>${battle.scenes[0]}</p>`,
-      imageUrl: battleImg,
+      imageUrl: battleImg1,
     },
     {
       id: 'battle-2',
       type: 'battle',
       title: '',
       content: `<p>${battle.scenes[1]}</p>`,
+      imageUrl: battleImg2,
     },
     {
       id: 'battle-3',
       type: 'battle',
       title: '',
       content: `<p>${battle.scenes[2]}</p>`,
+      imageUrl: battleImg3,
     },
     {
       id: 'battle-4',
       type: 'battle',
       title: '',
       content: `<p>${battle.scenes[3]}</p>`,
+      imageUrl: battleImg4,
     },
     {
       id: 'battle-5',
       type: 'battle',
       title: '',
       content: `<p>${battle.scenes[4]}</p>`,
+      imageUrl: battleImg5,
     },
     {
       id: 'victory',

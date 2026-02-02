@@ -768,8 +768,8 @@ function BookReader() {
         .battle-content {
           position: relative;
           z-index: 1;
-          background: linear-gradient(transparent 60%, rgba(0,0,0,0.7) 85%, rgba(0,0,0,0.9));
-          padding: 200px 20px 20px 20px;
+          background: linear-gradient(transparent 0%, transparent 75%, rgba(0,0,0,0.6) 90%, rgba(0,0,0,0.85) 100%);
+          padding: 320px 20px 15px 20px;
           border-radius: 0 0 10px 10px;
           margin: 0 -20px -20px -20px;
           color: white;
@@ -777,7 +777,8 @@ function BookReader() {
         
         @media (max-width: 768px) {
           .battle-content {
-            padding-top: 150px;
+            padding-top: 250px;
+            background: linear-gradient(transparent 0%, transparent 70%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.85) 100%);
           }
         }
         .battle-content p {
