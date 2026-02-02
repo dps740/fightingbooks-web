@@ -280,12 +280,12 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
 
         .red-bg {
           background: linear-gradient(135deg, #c41e3a 0%, #8b0000 50%, #4a0000 100%);
-          clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+          clip-path: polygon(0 0, 110% 0, 95% 100%, 0 100%);
         }
 
         .blue-bg {
           background: linear-gradient(225deg, #1e4fc4 0%, #00008b 50%, #00004a 100%);
-          clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+          clip-path: polygon(5% 0, 100% 0, 100% 100%, -10% 100%);
         }
 
         .fighter-content {
