@@ -277,14 +277,83 @@ function generateTacticalAnalysis(factsA: AnimalFacts, factsB: AnimalFacts): str
 }
 
 // Generate all pages with AI
+// Generate comparative stats for both animals in one call for better differentiation
+async function generateComparativeStats(animalA: string, animalB: string): Promise<{
+  strengthA: number; strengthB: number;
+  speedA: number; speedB: number;
+  weaponsA: number; weaponsB: number;
+  defenseA: number; defenseB: number;
+}> {
+  const prompt = `Compare ${animalA} vs ${animalB} for a "Who Would Win?" battle book.
+
+Rate each animal from 1-10 in these categories, making sure scores DIFFER based on real advantages:
+- STRENGTH: Raw power, bite force, crushing ability
+- SPEED: Top speed, agility, reflexes
+- WEAPONS: Claws, teeth, horns, venom - lethality
+- DEFENSE: Armor, thick hide, evasion, size
+
+IMPORTANT: Scores should reflect REAL differences. If one animal is clearly better in a category, the gap should be 2-4 points, not just 1.
+
+Return JSON only:
+{
+  "strengthA": 8, "strengthB": 6,
+  "speedA": 5, "speedB": 8,
+  "weaponsA": 7, "weaponsB": 9,
+  "defenseA": 8, "defenseB": 5,
+  "reasoning": "Brief explanation of key differences"
+}`;
+
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: 'json_object' },
+      temperature: 0.5,
+    });
+
+    const result = JSON.parse(response.choices[0].message.content || '{}');
+    return {
+      strengthA: result.strengthA || 7,
+      strengthB: result.strengthB || 7,
+      speedA: result.speedA || 7,
+      speedB: result.speedB || 7,
+      weaponsA: result.weaponsA || 7,
+      weaponsB: result.weaponsB || 7,
+      defenseA: result.defenseA || 7,
+      defenseB: result.defenseB || 7,
+    };
+  } catch (error) {
+    console.error('Comparative stats error:', error);
+    // Fallback with some variation
+    return {
+      strengthA: 7, strengthB: 6,
+      speedA: 6, speedB: 7,
+      weaponsA: 7, weaponsB: 8,
+      defenseA: 8, defenseB: 6,
+    };
+  }
+}
+
 async function generateBook(animalA: string, animalB: string, environment: string): Promise<{ pages: BookPage[], winner: string }> {
   console.log(`Generating book: ${animalA} vs ${animalB} in ${environment}`);
   
-  // Generate facts in parallel
-  const [factsA, factsB] = await Promise.all([
+  // Generate facts and comparative stats in parallel
+  const [factsA, factsB, compStats] = await Promise.all([
     generateAnimalFacts(animalA),
     generateAnimalFacts(animalB),
+    generateComparativeStats(animalA, animalB),
   ]);
+  
+  // Override individual scores with comparative ones
+  factsA.strength_score = compStats.strengthA;
+  factsA.speed_score = compStats.speedA;
+  factsA.weapons_score = compStats.weaponsA;
+  factsA.defense_score = compStats.defenseA;
+  
+  factsB.strength_score = compStats.strengthB;
+  factsB.speed_score = compStats.speedB;
+  factsB.weapons_score = compStats.weaponsB;
+  factsB.defense_score = compStats.defenseB;
 
   // Generate battle
   const battle = await generateBattle(factsA, factsB, environment);
