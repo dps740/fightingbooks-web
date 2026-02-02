@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     
     if (!fs.existsSync(cacheDir)) {
       return NextResponse.json({ message: 'Cache directory does not exist', cleared: 0 });
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     
     if (!fs.existsSync(cacheDir)) {
       return NextResponse.json({ files: [], count: 0 });

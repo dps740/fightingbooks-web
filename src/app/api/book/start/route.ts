@@ -369,7 +369,7 @@ const statsCache: Map<string, ComparativeStats> = new Map();
 // Load stats cache from file
 async function loadStatsCache(): Promise<Map<string, ComparativeStats>> {
   try {
-    const cachePath = path.join(process.cwd(), 'public', 'cache', 'stats-cache.json');
+    const cachePath = path.join('/tmp', 'cache', 'stats-cache.json');
     if (fs.existsSync(cachePath)) {
       const data = JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
       return new Map(Object.entries(data));
@@ -383,7 +383,7 @@ async function loadStatsCache(): Promise<Map<string, ComparativeStats>> {
 // Save stats to cache file
 async function saveStatsToCache(key: string, stats: ComparativeStats): Promise<void> {
   try {
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
@@ -965,7 +965,7 @@ function getCacheKey(animalA: string, animalB: string, environment: string): str
 
 async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
   try {
-    const cachePath = path.join(process.cwd(), 'public', 'cache', `${cacheKey}.json`);
+    const cachePath = path.join('/tmp', 'cache', `${cacheKey}.json`);
     if (fs.existsSync(cachePath)) {
       const data = fs.readFileSync(cachePath, 'utf-8');
       return JSON.parse(data);
@@ -978,7 +978,7 @@ async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], wi
 
 async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winner: string }): Promise<void> {
   try {
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
@@ -991,7 +991,7 @@ async function saveCachedBook(cacheKey: string, data: { pages: BookPage[], winne
 
 async function saveCachedPDF(cacheKey: string, animalA: string, animalB: string, data: { pages: BookPage[], winner: string }): Promise<void> {
   try {
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }

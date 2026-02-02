@@ -16,7 +16,7 @@ function getCacheKey(animalA: string, animalB: string, environment: string): str
 // Load cached book JSON
 function loadCachedBook(cacheKey: string): { pages: any[], winner: string } | null {
   try {
-    const cachePath = path.join(process.cwd(), 'public', 'cache', `${cacheKey}.json`);
+    const cachePath = path.join('/tmp', 'cache', `${cacheKey}.json`);
     if (fs.existsSync(cachePath)) {
       return JSON.parse(fs.readFileSync(cachePath, 'utf-8'));
     }
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const cacheKey = getCacheKey(animalA, animalB, environment);
-    const cacheDir = path.join(process.cwd(), 'public', 'cache');
+    const cacheDir = path.join('/tmp', 'cache');
     const fileExtension = format === 'epub' ? 'epub' : 'pdf';
     const cachedFilePath = path.join(cacheDir, `${cacheKey}.${fileExtension}`);
     const contentType = format === 'epub' ? 'application/epub+zip' : 'application/pdf';
