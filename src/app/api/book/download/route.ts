@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 
+// Must match BOOK_CACHE_VERSION in book/start/route.ts
+const BOOK_CACHE_VERSION = 'v6';
+
 // Same cache key logic as book/start
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
-  return `${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
+  return `${BOOK_CACHE_VERSION}_${sorted[0]}_vs_${sorted[1]}_${environment}`.replace(/[^a-z0-9_]/g, '_');
 }
 
 export async function GET(request: NextRequest) {
