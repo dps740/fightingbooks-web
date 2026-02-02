@@ -170,8 +170,8 @@ Return JSON only:
     "COOL sensory ability or special feature"
   ],
   "size_comparisons": [
-    {"item": "school bus", "emoji": "🚌", "comparison": "As long as 2 school buses!"},
-    {"item": "elephant", "emoji": "🐘", "comparison": "Weighs as much as 3 elephants!"}
+    {"item": "PICK A RELATABLE OBJECT", "emoji": "🚗🏠🧍🦁", "comparison": "ACTUAL SIZE comparison for THIS animal (e.g., 'As long as a bathtub!' or 'Weighs as much as 2 refrigerators!')"},
+    {"item": "PICK ANOTHER OBJECT", "emoji": "📏⚖️", "comparison": "ACTUAL WEIGHT comparison for THIS animal - must be ACCURATE for the species!"}
   ],
   "strength_score": 7,
   "speed_score": 6,
@@ -205,8 +205,8 @@ Return JSON only:
         'An INCREDIBLE hunter with years of evolution!'
       ],
       size_comparisons: [
-        { item: 'car', emoji: '🚗', comparison: 'About as big as a car!' },
-        { item: 'person', emoji: '🧍', comparison: 'Much larger than a person!' }
+        { item: 'size', emoji: '📏', comparison: `A powerful ${animalName}!` },
+        { item: 'weight', emoji: '⚖️', comparison: 'Built for battle!' }
       ],
       strength_score: 7,
       speed_score: 7,
