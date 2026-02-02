@@ -1,5 +1,5 @@
 // Who Would Win? Book Series by Jerry Pallotta
-// Amazon affiliate links - replace AFFILIATE_TAG with your Amazon Associates tag
+// Amazon affiliate links
 
 export interface WhoWouldWinBook {
   title: string;
@@ -12,177 +12,184 @@ export interface WhoWouldWinBook {
 export const AFFILIATE_TAG = 'fightingbooks-20'; // TODO: Replace with real tag
 
 // Helper to get Amazon product image from ASIN
-const getAmazonImage = (asin: string) => 
+const amazonImg = (asin: string) => 
   `https://images-na.ssl-images-amazon.com/images/P/${asin}.01.LZZZZZZZ.jpg`;
 
+// Open Library fallback (uses ISBN-13)
+const openLibImg = (isbn13: string) =>
+  `https://covers.openlibrary.org/b/isbn/${isbn13}-L.jpg`;
+
 export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
+  // === WORKING AMAZON IMAGES ===
   {
     title: "Lion vs. Tiger",
     animals: ["Lion", "Tiger"],
     asin: "0545175712",
     amazonUrl: `https://www.amazon.com/dp/0545175712?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545175712"),
+    coverImage: amazonImg("0545175712"),
   },
   {
     title: "Polar Bear vs. Grizzly Bear",
     animals: ["Polar Bear", "Grizzly Bear"],
     asin: "0545175720",
     amazonUrl: `https://www.amazon.com/dp/0545175720?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545175720"),
+    coverImage: amazonImg("0545175720"),
   },
   {
     title: "Komodo Dragon vs. King Cobra",
     animals: ["Komodo Dragon", "King Cobra"],
     asin: "0545301718",
     amazonUrl: `https://www.amazon.com/dp/0545301718?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545301718"),
+    coverImage: amazonImg("0545301718"),
   },
   {
     title: "Killer Whale vs. Great White Shark",
     animals: ["Killer Whale", "Great White Shark"],
     asin: "0545160758",
     amazonUrl: `https://www.amazon.com/dp/0545160758?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545160758"),
+    coverImage: amazonImg("0545160758"),
   },
   {
     title: "Tyrannosaurus Rex vs. Velociraptor",
     animals: ["Tyrannosaurus Rex", "Velociraptor"],
     asin: "0545175739",
     amazonUrl: `https://www.amazon.com/dp/0545175739?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545175739"),
-  },
-  {
-    title: "Whale vs. Giant Squid",
-    animals: ["Whale", "Giant Squid"],
-    asin: "0545175747",
-    amazonUrl: `https://www.amazon.com/dp/0545175747?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545175747"),
+    coverImage: amazonImg("0545175739"),
   },
   {
     title: "Tarantula vs. Scorpion",
     animals: ["Tarantula", "Scorpion"],
     asin: "0545301726",
     amazonUrl: `https://www.amazon.com/dp/0545301726?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545301726"),
+    coverImage: amazonImg("0545301726"),
   },
   {
     title: "Hammerhead vs. Bull Shark",
     animals: ["Hammerhead Shark", "Bull Shark"],
     asin: "0545301734",
     amazonUrl: `https://www.amazon.com/dp/0545301734?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545301734"),
+    coverImage: amazonImg("0545301734"),
   },
   {
     title: "Rhino vs. Hippo",
     animals: ["Rhino", "Hippo"],
     asin: "0545451914",
     amazonUrl: `https://www.amazon.com/dp/0545451914?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545451914"),
+    coverImage: amazonImg("0545451914"),
   },
   {
     title: "Wolverine vs. Tasmanian Devil",
     animals: ["Wolverine", "Tasmanian Devil"],
     asin: "0545451906",
     amazonUrl: `https://www.amazon.com/dp/0545451906?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545451906"),
+    coverImage: amazonImg("0545451906"),
   },
   {
     title: "Hornet vs. Wasp",
     animals: ["Hornet", "Wasp"],
     asin: "0545451922",
     amazonUrl: `https://www.amazon.com/dp/0545451922?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545451922"),
-  },
-  {
-    title: "Alligator vs. Python",
-    animals: ["Alligator", "Python"],
-    asin: "0545451930",
-    amazonUrl: `https://www.amazon.com/dp/0545451930?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545451930"),
-  },
-  {
-    title: "Lobster vs. Crab",
-    animals: ["Lobster", "Crab"],
-    asin: "0545681138",
-    amazonUrl: `https://www.amazon.com/dp/0545681138?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681138"),
-  },
-  {
-    title: "Falcon vs. Hawk",
-    animals: ["Falcon", "Hawk"],
-    asin: "0545681146",
-    amazonUrl: `https://www.amazon.com/dp/0545681146?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681146"),
+    coverImage: amazonImg("0545451922"),
   },
   {
     title: "Jaguar vs. Skunk",
     animals: ["Jaguar", "Skunk"],
     asin: "0545681154",
     amazonUrl: `https://www.amazon.com/dp/0545681154?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681154"),
-  },
-  {
-    title: "Hyena vs. Honey Badger",
-    animals: ["Hyena", "Honey Badger"],
-    asin: "0545681162",
-    amazonUrl: `https://www.amazon.com/dp/0545681162?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681162"),
-  },
-  {
-    title: "Triceratops vs. Spinosaurus",
-    animals: ["Triceratops", "Spinosaurus"],
-    asin: "0545681170",
-    amazonUrl: `https://www.amazon.com/dp/0545681170?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681170"),
+    coverImage: amazonImg("0545681154"),
   },
   {
     title: "Green Ants vs. Army Ants",
     animals: ["Green Ants", "Army Ants"],
     asin: "1338320262",
     amazonUrl: `https://www.amazon.com/dp/1338320262?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("1338320262"),
+    coverImage: amazonImg("1338320262"),
   },
   {
     title: "Ultimate Ocean Rumble",
     animals: ["Ocean Animals", "Ocean Animals"],
     asin: "0545681189",
     amazonUrl: `https://www.amazon.com/dp/0545681189?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545681189"),
+    coverImage: amazonImg("0545681189"),
   },
   {
     title: "Ultimate Jungle Rumble",
     animals: ["Jungle Animals", "Jungle Animals"],
     asin: "0545946085",
     amazonUrl: `https://www.amazon.com/dp/0545946085?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("0545946085"),
-  },
-  {
-    title: "Ultimate Dinosaur Rumble",
-    animals: ["Dinosaurs", "Dinosaurs"],
-    asin: "1338153951",
-    amazonUrl: `https://www.amazon.com/dp/1338153951?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("1338153951"),
+    coverImage: amazonImg("0545946085"),
   },
   {
     title: "Ultimate Shark Rumble",
     animals: ["Sharks", "Sharks"],
     asin: "1338320254",
     amazonUrl: `https://www.amazon.com/dp/1338320254?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("1338320254"),
+    coverImage: amazonImg("1338320254"),
   },
   {
     title: "Ultimate Bug Rumble",
     animals: ["Bugs", "Bugs"],
     asin: "1338320270",
     amazonUrl: `https://www.amazon.com/dp/1338320270?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("1338320270"),
+    coverImage: amazonImg("1338320270"),
+  },
+  
+  // === OPEN LIBRARY FALLBACKS (Amazon ASIN images don't work) ===
+  {
+    title: "Whale vs. Giant Squid",
+    animals: ["Whale", "Giant Squid"],
+    asin: "0545175747",
+    amazonUrl: `https://www.amazon.com/dp/0545175747?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545175746"),
+  },
+  {
+    title: "Alligator vs. Python",
+    animals: ["Alligator", "Python"],
+    asin: "0545451930",
+    amazonUrl: `https://www.amazon.com/dp/0545451930?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545451932"),
+  },
+  {
+    title: "Lobster vs. Crab",
+    animals: ["Lobster", "Crab"],
+    asin: "0545681138",
+    amazonUrl: `https://www.amazon.com/dp/0545681138?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545681131"),
+  },
+  {
+    title: "Falcon vs. Hawk",
+    animals: ["Falcon", "Hawk"],
+    asin: "0545681146",
+    amazonUrl: `https://www.amazon.com/dp/0545681146?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545681148"),
+  },
+  {
+    title: "Hyena vs. Honey Badger",
+    animals: ["Hyena", "Honey Badger"],
+    asin: "0545681162",
+    amazonUrl: `https://www.amazon.com/dp/0545681162?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545681162"),
+  },
+  {
+    title: "Triceratops vs. Spinosaurus",
+    animals: ["Triceratops", "Spinosaurus"],
+    asin: "0545681170",
+    amazonUrl: `https://www.amazon.com/dp/0545681170?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9780545681179"),
+  },
+  {
+    title: "Ultimate Dinosaur Rumble",
+    animals: ["Dinosaurs", "Dinosaurs"],
+    asin: "1338153951",
+    amazonUrl: `https://www.amazon.com/dp/1338153951?tag=${AFFILIATE_TAG}`,
+    coverImage: openLibImg("9781338153958"),
   },
   {
     title: "Ultimate Reptile Rumble",
     animals: ["Reptiles", "Reptiles"],
-    asin: "1338672126",
-    amazonUrl: `https://www.amazon.com/dp/1338672126?tag=${AFFILIATE_TAG}`,
-    coverImage: getAmazonImage("1338672126"),
+    asin: "1338672169",
+    amazonUrl: `https://www.amazon.com/dp/1338672169?tag=${AFFILIATE_TAG}`,
+    coverImage: amazonImg("1338672169"), // Corrected ASIN
   },
 ];
 
