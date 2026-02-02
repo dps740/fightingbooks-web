@@ -15,6 +15,7 @@ export const AFFILIATE_TAG = 'fightingbooks-20'; // TODO: Replace with real tag
 const localCover = (asin: string) => `/covers/${asin}.jpg`;
 
 export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
+  // === VERIFIED ASIN MAPPINGS ===
   {
     title: "Lion vs. Tiger",
     animals: ["Lion", "Tiger"],
@@ -79,8 +80,8 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     coverImage: localCover("0545451906"),
   },
   {
-    title: "Hornet vs. Wasp",
-    animals: ["Hornet", "Wasp"],
+    title: "Alligator vs. Python",
+    animals: ["Alligator", "Python"],
     asin: "0545451922",
     amazonUrl: `https://www.amazon.com/dp/0545451922?tag=${AFFILIATE_TAG}`,
     coverImage: localCover("0545451922"),
@@ -93,12 +94,41 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     coverImage: localCover("0545681154"),
   },
   {
-    title: "Green Ants vs. Army Ants",
-    animals: ["Green Ants", "Army Ants"],
+    title: "Lobster vs. Crab",
+    animals: ["Lobster", "Crab"],
+    asin: "0545681219",
+    amazonUrl: `https://www.amazon.com/dp/0545681219?tag=${AFFILIATE_TAG}`,
+    coverImage: localCover("0545681219"),
+  },
+  {
+    title: "Falcon vs. Hawk",
+    animals: ["Falcon", "Hawk"],
     asin: "1338320262",
     amazonUrl: `https://www.amazon.com/dp/1338320262?tag=${AFFILIATE_TAG}`,
     coverImage: localCover("1338320262"),
   },
+  {
+    title: "Hyena vs. Honey Badger",
+    animals: ["Hyena", "Honey Badger"],
+    asin: "0545946107",
+    amazonUrl: `https://www.amazon.com/dp/0545946107?tag=${AFFILIATE_TAG}`,
+    coverImage: localCover("0545946107"),
+  },
+  {
+    title: "Triceratops vs. Spinosaurus",
+    animals: ["Triceratops", "Spinosaurus"],
+    asin: "1098252624",
+    amazonUrl: `https://www.amazon.com/dp/1098252624?tag=${AFFILIATE_TAG}`,
+    coverImage: localCover("1098252624"),
+  },
+  {
+    title: "Whale vs. Giant Squid",
+    animals: ["Whale", "Giant Squid"],
+    asin: "0545175747",
+    amazonUrl: `https://www.amazon.com/dp/0545175747?tag=${AFFILIATE_TAG}`,
+    coverImage: localCover("0545175747"),
+  },
+  // === RUMBLES ===
   {
     title: "Ultimate Ocean Rumble",
     animals: ["Ocean Animals", "Ocean Animals"],
@@ -114,8 +144,8 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     coverImage: localCover("0545946085"),
   },
   {
-    title: "Ultimate Shark Rumble",
-    animals: ["Sharks", "Sharks"],
+    title: "Ultimate Dinosaur Rumble",
+    animals: ["Dinosaurs", "Dinosaurs"],
     asin: "1338320254",
     amazonUrl: `https://www.amazon.com/dp/1338320254?tag=${AFFILIATE_TAG}`,
     coverImage: localCover("1338320254"),
@@ -126,13 +156,6 @@ export const WHO_WOULD_WIN_BOOKS: WhoWouldWinBook[] = [
     asin: "1338320270",
     amazonUrl: `https://www.amazon.com/dp/1338320270?tag=${AFFILIATE_TAG}`,
     coverImage: localCover("1338320270"),
-  },
-  {
-    title: "Whale vs. Giant Squid",
-    animals: ["Whale", "Giant Squid"],
-    asin: "0545175747",
-    amazonUrl: `https://www.amazon.com/dp/0545175747?tag=${AFFILIATE_TAG}`,
-    coverImage: localCover("0545175747"),
   },
   {
     title: "Ultimate Reptile Rumble",
