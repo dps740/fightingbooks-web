@@ -77,8 +77,8 @@ async function uploadToBlob(imageUrl: string, filename: string): Promise<string>
   }
 }
 
-// Generate image using fal.ai Flux
-async function generateImage(prompt: string, cacheKey?: string): Promise<string> {
+// Generate image using fal.ai Flux with retry logic
+async function generateImage(prompt: string, cacheKey?: string, retries = 2): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
   if (!falKey) {
     console.log('No FAL_API_KEY, using placeholder');
@@ -87,39 +87,60 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
 
   const fullPrompt = `${prompt}, detailed painted wildlife illustration, ANATOMICALLY ACCURATE animal anatomy, correct number of limbs, realistic proportions, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
-  try {
-    const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Key ${falKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        prompt: fullPrompt,
-        image_size: 'square_hd',
-        num_inference_steps: 4,
-      }),
-    });
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`Retry attempt ${attempt} for: ${cacheKey || prompt.slice(0, 30)}`);
+        await new Promise(r => setTimeout(r, 1000 * attempt)); // Backoff delay
+      }
+      
+      const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Key ${falKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: fullPrompt,
+          image_size: 'square_hd',
+          num_inference_steps: 4,
+        }),
+      });
 
-    if (!response.ok) {
-      console.error('Fal.ai error:', await response.text());
-      return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Fal.ai error (attempt ${attempt + 1}):`, errorText);
+        if (attempt === retries) {
+          return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
+        }
+        continue;
+      }
 
-    const result = await response.json();
-    const imageUrl = result.images?.[0]?.url;
-    
-    if (!imageUrl) {
-      return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+      const result = await response.json();
+      const imageUrl = result.images?.[0]?.url;
+      
+      if (!imageUrl) {
+        console.error(`No image URL returned (attempt ${attempt + 1})`);
+        if (attempt === retries) {
+          return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+        }
+        continue;
+      }
+      
+      // Upload to Vercel Blob for permanent storage
+      const filename = cacheKey || `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const finalUrl = await uploadToBlob(imageUrl, filename);
+      console.log(`Generated: ${cacheKey || 'image'}`);
+      return finalUrl;
+    } catch (error) {
+      console.error(`Image generation error (attempt ${attempt + 1}):`, error);
+      if (attempt === retries) {
+        return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
+      }
     }
-    
-    // Upload to Vercel Blob for permanent storage
-    const filename = cacheKey || `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    return await uploadToBlob(imageUrl, filename);
-  } catch (error) {
-    console.error('Image generation error:', error);
-    return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
   }
+  
+  return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
 }
 
 // Generate animal facts using GPT-4o-mini
@@ -480,34 +501,35 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   const battle = await generateBattle(factsA, factsB, environment);
   const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
 
-  // Generate images in parallel - multiple per animal for variety
+  // Generate images in batches to avoid rate limiting
   // Use cache keys for organized storage and reuse
   const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
   const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
   const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
   
-  const [
-    coverImg, 
-    // Animal A images
-    imgA_portrait, imgA_habitat, imgA_action, imgA_closeup,
-    // Animal B images  
-    imgB_portrait, imgB_habitat, imgB_action, imgB_closeup,
-    // 5 unique battle images for each scene
-    battleImg1, battleImg2, battleImg3, battleImg4, battleImg5,
-    victoryImg
-  ] = await Promise.all([
+  console.log(`Starting image generation for ${animalA} vs ${animalB}`);
+  
+  // Batch 1: Cover + Animal A portraits (5 images)
+  const [coverImg, imgA_portrait, imgA_habitat, imgA_action, imgA_closeup] = await Promise.all([
     generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
-    // Animal A - 4 different images
     generateImage(`${animalA} portrait, powerful pose, majestic wildlife photography`, `${nameA}-portrait`),
     generateImage(`${animalA} in natural habitat, ${factsA.habitat}, wildlife documentary style`, `${nameA}-habitat`),
     generateImage(`${animalA} hunting or attacking, showing ${factsA.weapons[0]}, action shot`, `${nameA}-action`),
     generateImage(`${animalA} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameA}-closeup`),
-    // Animal B - 4 different images
+  ]);
+  console.log('Batch 1 complete (cover + animal A)');
+  
+  // Batch 2: Animal B portraits (4 images)
+  const [imgB_portrait, imgB_habitat, imgB_action, imgB_closeup] = await Promise.all([
     generateImage(`${animalB} portrait, powerful pose, majestic wildlife photography`, `${nameB}-portrait`),
     generateImage(`${animalB} in natural habitat, ${factsB.habitat}, wildlife documentary style`, `${nameB}-habitat`),
     generateImage(`${animalB} hunting or attacking, showing ${factsB.weapons[0]}, action shot`, `${nameB}-action`),
     generateImage(`${animalB} close-up face showing teeth/eyes/features, intense stare, detailed`, `${nameB}-closeup`),
-    // 5 unique battle scenes - each with different action
+  ]);
+  console.log('Batch 2 complete (animal B)');
+  
+  // Batch 3: Battle scenes + victory (6 images)
+  const [battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
     generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
     generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
     generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
@@ -515,6 +537,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
     generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
   ]);
+  console.log('Batch 3 complete (battles + victory)');
   
   // Group images for easy access
   const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup };
