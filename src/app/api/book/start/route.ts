@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import path from 'path';
 import fs from 'fs';
+import { put } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
 
 interface BookPage {
@@ -23,6 +24,7 @@ interface AnimalFacts {
   defenses: string[];
   speed: string;
   fun_facts: string[];
+  size_comparisons?: { item: string; emoji: string; comparison: string }[];
   strength_score: number;
   speed_score: number;
   weapons_score: number;
@@ -36,23 +38,39 @@ function getOpenAI() {
   });
 }
 
-// Convert image URL to base64 data URL for persistence
-async function imageToBase64(url: string): Promise<string> {
+// Upload image to Vercel Blob for permanent storage
+async function uploadToBlob(imageUrl: string, filename: string): Promise<string> {
   try {
-    const response = await fetch(url);
-    if (!response.ok) return url;
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    // Fetch the image from fal.ai
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error('Failed to fetch image');
+    
+    const imageBuffer = await response.arrayBuffer();
     const contentType = response.headers.get('content-type') || 'image/jpeg';
-    return `data:${contentType};base64,${base64}`;
+    
+    // Upload to Vercel Blob
+    const blob = await put(`fightingbooks/${filename}.jpg`, imageBuffer, {
+      access: 'public',
+      contentType,
+    });
+    
+    return blob.url;
   } catch (error) {
-    console.error('Image to base64 error:', error);
-    return url; // Return original URL as fallback
+    console.error('Blob upload error:', error);
+    // Fallback to base64 if blob upload fails
+    try {
+      const response = await fetch(imageUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      return `data:image/jpeg;base64,${base64}`;
+    } catch {
+      return imageUrl;
+    }
   }
 }
 
 // Generate image using fal.ai Flux
-async function generateImage(prompt: string): Promise<string> {
+async function generateImage(prompt: string, cacheKey?: string): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
   if (!falKey) {
     console.log('No FAL_API_KEY, using placeholder');
@@ -87,8 +105,9 @@ async function generateImage(prompt: string): Promise<string> {
       return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
     }
     
-    // Convert to base64 for persistence (fal.ai URLs expire)
-    return await imageToBase64(imageUrl);
+    // Upload to Vercel Blob for permanent storage
+    const filename = cacheKey || `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    return await uploadToBlob(imageUrl, filename);
   } catch (error) {
     console.error('Image generation error:', error);
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
@@ -97,21 +116,34 @@ async function generateImage(prompt: string): Promise<string> {
 
 // Generate animal facts using GPT-4o-mini
 async function generateAnimalFacts(animalName: string): Promise<AnimalFacts> {
-  const prompt = `Generate educational facts about a ${animalName} for a children's "Who Would Win?" style book.
+  const prompt = `Generate educational facts about a ${animalName} for a children's "Who Would Win?" style book by Jerry Pallotta.
 
-STYLE: SHORT and PUNCHY - every sentence must hit hard! Use comparisons kids understand.
+CRITICAL STYLE REQUIREMENTS:
+- SHORT, PUNCHY sentences! Kids love excitement!
+- Use CAPS for emphasis!
+- Compare sizes to things kids know (cars, buses, people, basketballs, etc.)
+- Include specific measurements with WOW factor
+- Make it DRAMATIC and FUN!
 
 Return JSON only:
 {
   "name": "Common name",
   "scientific_name": "Latin name",
-  "habitat": "Where they live with specific details",
-  "size": "Height/length AND weight with fun comparison",
-  "diet": "What they eat with specifics",
-  "weapons": ["Weapon 1 with measurement", "Weapon 2", "Weapon 3"],
-  "defenses": ["Defense 1", "Defense 2", "Defense 3"],
-  "speed": "Top speed with comparison",
-  "fun_facts": ["WOW fact 1", "WOW fact 2", "WOW fact 3"],
+  "habitat": "Where they live - be specific and exciting!",
+  "size": "Exact measurements PLUS fun comparison (e.g., 'As long as 2 cars! Weighs as much as 40 people!')",
+  "diet": "What they eat with DRAMATIC details (how much, how often, hunting style)",
+  "weapons": ["Primary weapon with MEASUREMENT and damage potential", "Secondary weapon - what makes it special", "Bonus weapon or tactic"],
+  "defenses": ["Main defense with specifics", "Secondary defense", "Special survival trick"],
+  "speed": "Top speed with comparison (faster than a car? slower than a bike?)",
+  "fun_facts": [
+    "AMAZING size/strength comparison kids can visualize",
+    "SHOCKING hunting or survival fact",
+    "COOL sensory ability or special feature"
+  ],
+  "size_comparisons": [
+    {"item": "school bus", "emoji": "🚌", "comparison": "As long as 2 school buses!"},
+    {"item": "elephant", "emoji": "🐘", "comparison": "Weighs as much as 3 elephants!"}
+  ],
   "strength_score": 7,
   "speed_score": 6,
   "weapons_score": 8,
@@ -251,12 +283,14 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
 
   // Generate images in parallel (cover + 2 animal portraits + battle + victory)
+  // Use cache keys for organized storage
+  const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
   const [coverImg, imgA, imgB, battleImg, victoryImg] = await Promise.all([
-    generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`),
-    generateImage(`${animalA} portrait, powerful pose, wildlife photography style`),
-    generateImage(`${animalB} portrait, powerful pose, wildlife photography style`),
-    generateImage(`${animalA} fighting ${animalB}, intense battle, action scene`),
-    generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`),
+    generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
+    generateImage(`${animalA} portrait, powerful pose, wildlife photography style`, `${imgPrefix}-${animalA.toLowerCase().replace(/\s+/g, '-')}`),
+    generateImage(`${animalB} portrait, powerful pose, wildlife photography style`, `${imgPrefix}-${animalB.toLowerCase().replace(/\s+/g, '-')}`),
+    generateImage(`${animalA} fighting ${animalB}, intense battle, action scene`, `${imgPrefix}-battle`),
+    generateImage(`${battle.winner} victorious, triumphant pose, dramatic lighting`, `${imgPrefix}-victory`),
   ]);
 
   const pages: BookPage[] = [
@@ -484,7 +518,8 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
   if (battleIndex === -1) return pages;
 
   // Generate image for the first choice moment
-  const choiceImage = await generateImage(`${animalA} and ${animalB} facing off, tense moment before battle, dramatic standoff`);
+  const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
+  const choiceImage = await generateImage(`${animalA} and ${animalB} facing off, tense moment before battle, dramatic standoff`, `${imgPrefix}-choice`);
 
   const introPages = pages.slice(0, battleIndex + 1);
   introPages[introPages.length - 1] = {

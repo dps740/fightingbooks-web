@@ -197,19 +197,17 @@ function BookReader() {
               </>
             )}
 
-            {/* INTRO / FACTS PAGES */}
+            {/* EDU / FACTS PAGES - "Who Would Win?" style */}
             {(page?.type === 'intro') && (
               <>
-                <h2 className="page-title">{page.title}</h2>
-                <div className={`page-content-wrapper ${page.imageUrl ? 'side-by-side' : ''}`}>
-                  <div className="page-content-text">
-                    <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+                {page.imageUrl && (
+                  <div className="edu-image-hero">
+                    <img src={page.imageUrl} alt={page.title} className="edu-hero-img" />
                   </div>
-                  {page.imageUrl && (
-                    <div className="page-image-side">
-                      <img src={page.imageUrl} alt={page.title} className="page-image-integrated" />
-                    </div>
-                  )}
+                )}
+                <div className="edu-content-bottom">
+                  <h2 className="edu-title">{page.title}</h2>
+                  <div className="page-content edu-content" dangerouslySetInnerHTML={{ __html: page.content }} />
                 </div>
               </>
             )}
@@ -488,15 +486,219 @@ function BookReader() {
           letter-spacing: 2px;
         }
         
-        /* Side-by-side layout */
-        .page-content-wrapper.side-by-side {
-          display: flex;
-          gap: 20px;
-          align-items: flex-start;
+        /* EDUCATIONAL PAGES - "Who Would Win?" Style */
+        .edu-image-hero {
+          width: 100%;
+          height: 65%;
+          min-height: 320px;
+          overflow: hidden;
+          border-radius: 10px 10px 0 0;
+          margin: -20px -20px 0 -20px;
+          position: relative;
         }
-        .page-content-text { flex: 1; }
-        .page-image-side { flex: 0 0 45%; }
-        .page-image-integrated { width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .edu-hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center center;
+        }
+        .edu-content-bottom {
+          position: relative;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 20%);
+          padding: 15px 20px 20px;
+          margin: -40px 0 0 0;
+          border-radius: 15px 15px 0 0;
+          z-index: 1;
+        }
+        .edu-title {
+          font-family: 'Bangers', cursive;
+          font-size: 2.5em;
+          color: #ff5722;
+          text-shadow: 3px 3px 0px #ffd54f, 4px 4px 8px rgba(0,0,0,0.3);
+          margin-bottom: 15px;
+          text-align: center;
+          letter-spacing: 2px;
+          line-height: 1.1;
+        }
+        .edu-content {
+          font-size: 1.1em;
+        }
+        
+        /* DID YOU KNOW boxes */
+        .did-you-know {
+          background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+          border: 4px solid #ff5722;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+          position: relative;
+        }
+        .did-you-know::before {
+          content: '💡 DID YOU KNOW?';
+          display: block;
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #ff5722;
+          text-shadow: 2px 2px 0px white;
+          margin-bottom: 8px;
+          letter-spacing: 2px;
+        }
+        .did-you-know p {
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+          color: #1a1a1a !important;
+          font-weight: bold;
+          font-size: 1.05em;
+          line-height: 1.4;
+        }
+        
+        /* THINK ABOUT IT boxes */
+        .think-about-it {
+          background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+          border: 4px solid #0277bd;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        .think-about-it::before {
+          content: '🤔 THINK ABOUT IT!';
+          display: block;
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #0277bd;
+          text-shadow: 2px 2px 0px white;
+          margin-bottom: 8px;
+          letter-spacing: 2px;
+        }
+        .think-about-it p {
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+          color: #1a1a1a !important;
+          font-weight: bold;
+          font-size: 1.05em;
+          font-style: italic;
+        }
+        
+        /* SIZE COMPARISON boxes */
+        .size-compare {
+          background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
+          border: 4px solid #2e7d32;
+          border-radius: 12px;
+          padding: 15px;
+          margin: 15px 0;
+          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+          text-align: center;
+        }
+        .size-compare .size-emoji {
+          font-size: 3em;
+          display: block;
+          margin-bottom: 10px;
+        }
+        .size-compare p {
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+          color: #1a1a1a !important;
+          font-weight: bold;
+          font-size: 1.2em;
+        }
+        
+        /* WEAPON/DEFENSE highlight boxes */
+        .weapon-box {
+          background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+          border: 4px solid #b71c1c;
+          border-radius: 12px;
+          padding: 12px;
+          margin: 10px 0;
+          color: white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .weapon-box::before {
+          content: '⚔️ WEAPON: ';
+          font-family: 'Bangers', cursive;
+          font-size: 1.2em;
+          letter-spacing: 1px;
+        }
+        .defense-box {
+          background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+          border: 4px solid #0d47a1;
+          border-radius: 12px;
+          padding: 12px;
+          margin: 10px 0;
+          color: white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .defense-box::before {
+          content: '🛡️ DEFENSE: ';
+          font-family: 'Bangers', cursive;
+          font-size: 1.2em;
+          letter-spacing: 1px;
+        }
+        .weapon-box p, .defense-box p {
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          display: inline;
+          font-weight: bold;
+          font-size: 1.1em;
+        }
+        
+        /* Visual stat bars */
+        .stat-bar-container {
+          margin: 20px 0;
+        }
+        .stat-bar-label {
+          font-family: 'Bangers', cursive;
+          font-size: 1.3em;
+          color: #ff5722;
+          margin-bottom: 5px;
+          letter-spacing: 1px;
+        }
+        .stat-bar {
+          width: 100%;
+          height: 30px;
+          background: #e0e0e0;
+          border-radius: 15px;
+          overflow: hidden;
+          box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+          position: relative;
+        }
+        .stat-bar-fill {
+          height: 100%;
+          background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+          border-radius: 15px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding-right: 10px;
+          font-weight: bold;
+          color: white;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+          transition: width 0.5s ease;
+        }
+        
+        /* Habitat icons */
+        .habitat-badge {
+          display: inline-block;
+          background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+          color: white;
+          padding: 8px 15px;
+          border-radius: 20px;
+          font-weight: bold;
+          margin: 5px;
+          border: 3px solid #2e7d32;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+          font-size: 0.95em;
+        }
+        .habitat-badge::before {
+          content: '🌍 ';
+          font-size: 1.2em;
+        }
         
         /* Stats page */
         .stats-hero-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
