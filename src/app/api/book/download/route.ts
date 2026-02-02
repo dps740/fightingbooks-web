@@ -63,18 +63,32 @@ export async function GET(request: NextRequest) {
     let bookData = loadCachedBook(cacheKey);
     
     if (!bookData) {
-      // Fetch book data by calling the start API internally
+      // Fetch book data by calling the start API
       console.log('Book not in cache, fetching fresh...');
       try {
-        const baseUrl = process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'http://localhost:3000';
+        // Get the origin from the request URL
+        const requestUrl = new URL(request.url);
+        const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`;
+        console.log(`Fetching from: ${baseUrl}/api/book/start`);
+        
         const bookResponse = await fetch(
           `${baseUrl}/api/book/start?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=${encodeURIComponent(environment)}&mode=standard`,
-          { cache: 'no-store' }
+          { 
+            cache: 'no-store',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
         );
+        
+        console.log(`Book API response status: ${bookResponse.status}`);
+        
         if (bookResponse.ok) {
           bookData = await bookResponse.json();
+          console.log(`Got book data with ${bookData.pages?.length} pages`);
+        } else {
+          const errorText = await bookResponse.text();
+          console.error('Book API error:', errorText);
         }
       } catch (fetchError) {
         console.error('Failed to fetch book:', fetchError);
