@@ -768,8 +768,8 @@ function BookReader() {
         .battle-content {
           position: relative;
           z-index: 1;
-          background: linear-gradient(transparent 0%, transparent 75%, rgba(0,0,0,0.6) 90%, rgba(0,0,0,0.85) 100%);
-          padding: 320px 20px 15px 20px;
+          background: linear-gradient(transparent 0%, transparent 85%, rgba(0,0,0,0.7) 95%, rgba(0,0,0,0.9) 100%);
+          padding: 420px 20px 12px 20px;
           border-radius: 0 0 10px 10px;
           margin: 0 -20px -20px -20px;
           color: white;
@@ -777,8 +777,8 @@ function BookReader() {
         
         @media (max-width: 768px) {
           .battle-content {
-            padding-top: 250px;
-            background: linear-gradient(transparent 0%, transparent 70%, rgba(0,0,0,0.6) 85%, rgba(0,0,0,0.85) 100%);
+            padding-top: 350px;
+            background: linear-gradient(transparent 0%, transparent 82%, rgba(0,0,0,0.7) 92%, rgba(0,0,0,0.9) 100%);
           }
         }
         .battle-content p {
@@ -786,6 +786,10 @@ function BookReader() {
           color: white !important;
           border-left-color: #ffd700 !important;
           text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+          font-size: 0.95em;
+          line-height: 1.4;
+          padding: 6px 10px !important;
+          margin-bottom: 0 !important;
         }
         
         /* Content styling */
