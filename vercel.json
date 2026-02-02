@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "src/app/api/book/start/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/book/choice/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/generate-portraits/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}
