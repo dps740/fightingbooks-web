@@ -310,14 +310,57 @@ function renderPageHtml(page: BookPage, animalA: string, animalB: string, winner
   if (isVictory) {
     return `
       ${baseStyles}
-      <div class="page" style="justify-content: center; align-items: center;">
-        <div class="victory-title">🏆 WINNER! 🏆</div>
-        <div class="winner-name">${winner}</div>
-        ${page.imageUrl ? `<img src="${page.imageUrl}" class="page-image" crossorigin="anonymous" />` : ''}
-        <div class="page-content" style="text-align: center; margin-top: 20px;">
-          ${page.content}
-        </div>
-        <div class="page-number">Page ${index + 1}</div>
+      <style>
+        .victory-page {
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+        }
+        .victory-crown {
+          font-size: 120px;
+          margin-bottom: 20px;
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+        .victory-label {
+          font-family: 'Bangers', cursive;
+          font-size: 36px;
+          color: #d4af37;
+          letter-spacing: 8px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+          margin-bottom: 10px;
+        }
+        .victory-winner {
+          font-family: 'Bangers', cursive;
+          font-size: 72px;
+          color: white;
+          text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          margin-bottom: 30px;
+        }
+        .victory-image {
+          max-width: 80%;
+          max-height: 400px;
+          border-radius: 16px;
+          border: 4px solid #d4af37;
+          box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4);
+        }
+        .victory-tagline {
+          font-family: 'Comic Neue', cursive;
+          font-size: 24px;
+          color: #ccc;
+          margin-top: 30px;
+          font-style: italic;
+        }
+      </style>
+      <div class="page victory-page">
+        <div class="victory-crown">👑</div>
+        <div class="victory-label">THE WINNER</div>
+        <div class="victory-winner">${winner}</div>
+        ${page.imageUrl ? `<img src="${page.imageUrl}" class="victory-image" crossorigin="anonymous" />` : ''}
+        <div class="victory-tagline">The ultimate champion!</div>
+        <div class="page-number" style="color: rgba(255,255,255,0.5);">Page ${index + 1}</div>
       </div>
     `;
   }
