@@ -66,17 +66,24 @@ export default function Home() {
   const [selectingFor, setSelectingFor] = useState<'A' | 'B'>('A');
   const [gameMode, setGameMode] = useState<'classic' | 'adventure'>('classic');
   const [battleType, setBattleType] = useState<'single' | 'tournament'>('single');
+  const [modeStep, setModeStep] = useState<1 | 2>(1); // Step 1: battle type, Step 2: game mode
   const [loading, setLoading] = useState(false);
   const [showFightOverlay, setShowFightOverlay] = useState(false);
 
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
   
-  // Pricing based on mode
-  const getPrice = () => {
-    if (gameMode === 'classic') return null; // Free
-    return battleType === 'single' ? '$1' : '$5';
+  // Handle battle type selection (step 1)
+  const handleBattleTypeSelect = (type: 'single' | 'tournament') => {
+    setBattleType(type);
+    setModeStep(2); // Advance to step 2
   };
+  
+  // Handle going back to step 1
+  const handleBackToStep1 = () => {
+    setModeStep(1);
+  };
+  
   const canGenerate = animalA && animalB && animalA !== animalB;
 
   const getImagePath = (name: string) => `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
@@ -146,78 +153,171 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Mode Selector */}
+      {/* 3. Two-Step Mode Selector */}
       <section className="px-4 pb-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-[#1a1a2e] rounded-xl p-6 border-4 border-[#FFD700] shadow-2xl">
-            <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
-              🎮 CHOOSE YOUR MODE
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Classic Mode */}
-              <button
-                onClick={() => setGameMode('classic')}
-                className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
-                  gameMode === 'classic' 
-                    ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
-                    : 'border-green-600 hover:border-green-400'
-                }`}
-                style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
-              >
-                <div className="text-center">
-                  <div className="text-5xl mb-3">📖</div>
-                  <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
-                  <p className="text-white/80 text-sm mb-3">Watch the complete battle unfold</p>
-                  <div className="inline-block bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    FREE
-                  </div>
-                </div>
-                {gameMode === 'classic' && (
-                  <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                    <span className="text-black font-bold">✓</span>
-                  </div>
-                )}
-              </button>
-
-              {/* Adventure Mode */}
-              <button
-                onClick={() => setGameMode('adventure')}
-                className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
-                  gameMode === 'adventure' 
-                    ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
-                    : 'border-purple-600 hover:border-purple-400'
-                }`}
-                style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
-              >
-                <div className="text-center">
-                  <div className="text-5xl mb-3">🎭</div>
-                  <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
-                  <p className="text-white/80 text-sm mb-3">YOU decide what happens next!</p>
-                  <div className="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                    INTERACTIVE
-                  </div>
-                </div>
-                {gameMode === 'adventure' && (
-                  <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                    <span className="text-black font-bold">✓</span>
-                  </div>
-                )}
-              </button>
-            </div>
             
-            {/* Mode description */}
-            <div className="mt-4 p-4 bg-black/30 rounded-lg">
-              <p className="text-white/90 text-sm text-center">
-                {gameMode === 'classic' 
-                  ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
-                  : '🎭 Make critical choices that shape the battle! Three key decisions determine who wins!'}
-              </p>
-            </div>
+            {/* Step 1: Battle Type (Single vs Tournament) */}
+            {modeStep === 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
+                  ⚔️ CHOOSE YOUR BATTLE
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Single Battle */}
+                  <button
+                    onClick={() => handleBattleTypeSelect('single')}
+                    className="relative overflow-hidden rounded-lg p-6 border-4 transition-all border-red-600 hover:border-red-400 hover:shadow-[0_0_30px_rgba(220,38,38,0.4)]"
+                    style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}
+                  >
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">⚔️</div>
+                      <h3 className="font-bangers text-2xl text-white mb-2">SINGLE BATTLE</h3>
+                      <p className="text-white/80 text-sm">One epic fight between two champions</p>
+                    </div>
+                  </button>
+
+                  {/* Tournament */}
+                  <button
+                    onClick={() => handleBattleTypeSelect('tournament')}
+                    className="relative overflow-hidden rounded-lg p-6 border-4 transition-all border-amber-500 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
+                    style={{ background: 'linear-gradient(135deg, #78350f 0%, #92400e 100%)' }}
+                  >
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">🏆</div>
+                      <h3 className="font-bangers text-2xl text-white mb-2">TOURNAMENT</h3>
+                      <p className="text-white/80 text-sm">8 champions battle through the bracket</p>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Game Mode (Classic vs Adventure) */}
+            {modeStep === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Back button */}
+                <button
+                  onClick={handleBackToStep1}
+                  className="mb-4 text-white/70 hover:text-white flex items-center gap-2 transition-colors"
+                >
+                  <span>←</span>
+                  <span className="text-sm">Back to battle type</span>
+                </button>
+                
+                <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
+                  🎮 CHOOSE YOUR MODE
+                </h2>
+                <p className="text-white/60 text-center text-sm mb-4">
+                  {battleType === 'single' ? '⚔️ Single Battle' : '🏆 Tournament'} selected
+                </p>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Classic Mode */}
+                  <button
+                    onClick={() => setGameMode('classic')}
+                    className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                      gameMode === 'classic' 
+                        ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                        : 'border-green-600 hover:border-green-400'
+                    }`}
+                    style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
+                  >
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">📖</div>
+                      <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
+                      <p className="text-white/80 text-sm">Watch the battle unfold</p>
+                    </div>
+                    {gameMode === 'classic' && (
+                      <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                        <span className="text-black font-bold">✓</span>
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Adventure Mode */}
+                  <button
+                    onClick={() => setGameMode('adventure')}
+                    className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                      gameMode === 'adventure' 
+                        ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                        : 'border-purple-600 hover:border-purple-400'
+                    }`}
+                    style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
+                  >
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">🎭</div>
+                      <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
+                      <p className="text-white/80 text-sm">YOU decide what happens!</p>
+                    </div>
+                    {gameMode === 'adventure' && (
+                      <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                        <span className="text-black font-bold">✓</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+                
+                {/* Mode description */}
+                <div className="mt-4 p-4 bg-black/30 rounded-lg">
+                  <p className="text-white/90 text-sm text-center">
+                    {gameMode === 'classic' 
+                      ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
+                      : '🎭 Make critical choices that shape the battle! Your decisions determine who wins!'}
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* 4. Fighter Selection - Street Fighter 2 Style */}
+      {/* 4. Tournament Start - Only shown when tournament mode is selected */}
+      {battleType === 'tournament' && modeStep === 2 && (
+        <section className="px-4 pb-6">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-br from-amber-900 via-yellow-900 to-orange-900 rounded-xl p-8 border-4 border-[#FFD700] shadow-2xl text-center"
+            >
+              <div className="text-7xl mb-4">🏆</div>
+              <h2 className="font-bangers text-4xl text-[#FFD700] mb-4" style={{ textShadow: '3px 3px 0 #000' }}>
+                TOURNAMENT MODE
+              </h2>
+              <p className="text-white/90 text-lg mb-2">
+                Select <strong>8 champions</strong> to battle through the bracket!
+              </p>
+              <p className="text-white/70 mb-6">
+                {gameMode === 'classic' ? '📖 Classic battles' : '🎭 Adventure mode'} • Elimination format • One winner takes all
+              </p>
+              <button
+                onClick={() => {
+                  const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
+                  router.push(`/tournament?mode=${mode}`);
+                }}
+                className="px-12 py-5 rounded-2xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_60px_rgba(255,215,0,0.7)] transition-all duration-300"
+              >
+                🏆 START TOURNAMENT
+              </button>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* 4b. Fighter Selection - Only shown for single battle */}
+      {battleType === 'single' && modeStep === 2 && (
       <section className="px-4 pb-6">
         <div className="max-w-6xl mx-auto">
           
@@ -362,6 +462,7 @@ export default function Home() {
           )}
         </div>
       </section>
+      )}
 
       {/* FIGHT! Overlay - appears when both fighters selected AND overlay is open */}
       {canGenerate && showFightOverlay && (
