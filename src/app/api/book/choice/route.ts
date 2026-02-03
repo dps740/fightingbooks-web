@@ -118,6 +118,9 @@ const generateNextScene = async (req: ChoiceRequest, choiceNumber: number) => {
   } else {
     // Add another choice with varied questions
     const nextChoiceNum = req.previousChoices.length + 2;
+    const decisionNumber = req.previousChoices.length + 1; // 1-based for display (will be 2 or 3)
+    const isFinalChoice = req.previousChoices.length === 1; // This will be choice 2, next one (choice 3) ends it
+    
     const questionVariations = [
       `<p>The battle rages on! Both creatures are wounded but determined.</p><p>What should ${animalA} do next?</p>`,
       `<p>The fight continues to escalate! ${animalB} is preparing another attack.</p><p>How should ${animalA} respond?</p>`,
@@ -129,7 +132,7 @@ const generateNextScene = async (req: ChoiceRequest, choiceNumber: number) => {
     pages.push({
       id: `choice-${nextChoiceNum}`,
       type: 'choice',
-      title: '🤔 The Battle Continues!',
+      title: isFinalChoice ? `⚡ Final Decision ${decisionNumber} of 3!` : `🤔 Decision ${decisionNumber} of 3`,
       content: questionVariations[(req.previousChoices.length) % questionVariations.length],
       imageUrl: choiceImage,
       choices: [

@@ -197,8 +197,43 @@ function BookReader() {
                 {page.imageUrl && <div className="victory-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />}
                 <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
                 
-                {/* Download Options */}
-                <div className="download-section">
+                {/* Tournament Winner Selection */}
+                {searchParams.get('tournament') === 'true' && (
+                  <div className="tournament-winner-section">
+                    <h3 className="tournament-winner-title">🏆 Who Won This Battle?</h3>
+                    <div className="tournament-winner-buttons">
+                      <button 
+                        onClick={() => {
+                          const tournamentState = JSON.parse(localStorage.getItem('tournament') || '{}');
+                          tournamentState.lastWinner = animalA;
+                          localStorage.setItem('tournament', JSON.stringify(tournamentState));
+                          router.push('/tournament');
+                        }}
+                        className="tournament-winner-btn winner-a"
+                      >
+                        <span className="winner-emoji">🦁</span>
+                        <span className="winner-name">{animalA}</span>
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const tournamentState = JSON.parse(localStorage.getItem('tournament') || '{}');
+                          tournamentState.lastWinner = animalB;
+                          localStorage.setItem('tournament', JSON.stringify(tournamentState));
+                          router.push('/tournament');
+                        }}
+                        className="tournament-winner-btn winner-b"
+                      >
+                        <span className="winner-emoji">🐅</span>
+                        <span className="winner-name">{animalB}</span>
+                      </button>
+                    </div>
+                    <p className="tournament-winner-note">Click the winner to continue the tournament!</p>
+                  </div>
+                )}
+                
+                {/* Download Options - Only show if NOT tournament mode */}
+                {searchParams.get('tournament') !== 'true' && (
+                  <div className="download-section">
                   <h3 className="download-title">📥 Download Your Book</h3>
                   <div className="download-buttons">
                     <button 

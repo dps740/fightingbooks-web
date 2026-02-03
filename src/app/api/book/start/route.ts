@@ -958,7 +958,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
   introPages[introPages.length - 1] = {
     ...introPages[introPages.length - 1],
     type: 'choice',
-    title: 'What Happens Next?',
+    title: '🎮 Decision 1 of 3',
     content: `<p>The battle has begun! Both fighters are ready...</p><p>What should ${animalA} do?</p>`,
     imageUrl: choiceImage,
     choices: [
