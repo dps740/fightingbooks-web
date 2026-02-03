@@ -95,6 +95,16 @@ function BookReader() {
     
     setGeneratingChoice(true);
     try {
+      // Extract Tale of the Tape stats from pages if available
+      const statsPage = pages.find(p => p.type === 'stats');
+      let taleOfTheTape = undefined;
+      if (statsPage && statsPage.stats) {
+        taleOfTheTape = {
+          animalA: statsPage.stats.animalA || { strength: 50, speed: 50, weapons: 50, defense: 50 },
+          animalB: statsPage.stats.animalB || { strength: 50, speed: 50, weapons: 50, defense: 50 },
+        };
+      }
+      
       const response = await fetch('/api/book/choice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -107,6 +117,7 @@ function BookReader() {
           choiceOutcome: choice.outcome || 'The battle continues!',
           currentScore: cyoaScore,
           allPages: pages,
+          taleOfTheTape,
         }),
       });
       const data = await response.json();
@@ -373,8 +384,8 @@ function BookReader() {
                   )}
                 </div>
 
-                {/* Gate title */}
-                <h2 className="cyoa-gate-title">{page.title}</h2>
+                {/* Decision header */}
+                <h2 className="cyoa-gate-title">⚔️ YOUR CHOICE ⚔️</h2>
                 <p className="cyoa-decision-number">Decision {page.gateNumber} of 3</p>
 
                 {/* Introduction text */}
