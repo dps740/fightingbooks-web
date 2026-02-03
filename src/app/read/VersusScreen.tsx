@@ -10,38 +10,10 @@ interface VersusScreenProps {
   onComplete: () => void;
 }
 
-// Fighter stats for dramatic reveal
-const FIGHTER_STATS: Record<string, { size: string; speed: string; weapons: string; special: string }> = {
-  'lion': { size: '420 LBS', speed: '50 MPH', weapons: '3" CLAWS', special: 'PRIDE LEADER' },
-  'tiger': { size: '660 LBS', speed: '40 MPH', weapons: '4" FANGS', special: 'AMBUSH HUNTER' },
-  'grizzly bear': { size: '800 LBS', speed: '35 MPH', weapons: '4" CLAWS', special: 'BRUTE FORCE' },
-  'polar bear': { size: '1,200 LBS', speed: '25 MPH', weapons: '3.75" CLAWS', special: 'ARCTIC APEX' },
-  'gorilla': { size: '400 LBS', speed: '25 MPH', weapons: '2" CANINES', special: 'CRUSHING GRIP' },
-  'great white shark': { size: '5,000 LBS', speed: '35 MPH', weapons: '300 TEETH', special: 'OCEAN TERROR' },
-  'orca': { size: '12,000 LBS', speed: '34 MPH', weapons: '4" TEETH', special: 'PACK TACTICS' },
-  'crocodile': { size: '2,000 LBS', speed: '20 MPH', weapons: '3,700 PSI', special: 'DEATH ROLL' },
-  'elephant': { size: '14,000 LBS', speed: '25 MPH', weapons: '6\' TUSKS', special: 'UNSTOPPABLE' },
-  'hippo': { size: '4,000 LBS', speed: '19 MPH', weapons: '1,800 PSI', special: 'RIVER KING' },
-  'rhino': { size: '5,000 LBS', speed: '34 MPH', weapons: '2\' HORN', special: 'TANK MODE' },
-  'komodo dragon': { size: '150 LBS', speed: '13 MPH', weapons: 'VENOM', special: 'TOXIC BITE' },
-  'king cobra': { size: '13 LBS', speed: '12 MPH', weapons: 'NEUROTOXIN', special: 'INSTANT DEATH' },
-  'anaconda': { size: '550 LBS', speed: '5 MPH', weapons: '90 PSI', special: 'CONSTRICTOR' },
-  'wolf': { size: '175 LBS', speed: '40 MPH', weapons: '400 PSI', special: 'PACK HUNTER' },
-  'jaguar': { size: '250 LBS', speed: '50 MPH', weapons: '1,500 PSI', special: 'SKULL CRUSHER' },
-  'leopard': { size: '140 LBS', speed: '36 MPH', weapons: '310 PSI', special: 'STEALTH KILL' },
-  'eagle': { size: '14 LBS', speed: '100 MPH', weapons: '3" TALONS', special: 'DIVE BOMB' },
-  'wolverine': { size: '40 LBS', speed: '30 MPH', weapons: 'FEARLESS', special: 'NEVER QUITS' },
-  'honey badger': { size: '30 LBS', speed: '19 MPH', weapons: 'THICK SKIN', special: 'IMMUNE TO VENOM' },
-  'moose': { size: '1,500 LBS', speed: '35 MPH', weapons: '6\' ANTLERS', special: 'CHARGING FURY' },
-  'cape buffalo': { size: '2,000 LBS', speed: '35 MPH', weapons: 'HORNS', special: 'REVENGE SEEKER' },
-  'tyrannosaurus rex': { size: '15,000 LBS', speed: '17 MPH', weapons: '12,800 PSI', special: 'KING OF DINOS' },
-  'velociraptor': { size: '33 LBS', speed: '40 MPH', weapons: '3" CLAW', special: 'PACK ATTACK' },
-  'dragon': { size: '???', speed: '???', weapons: 'FIRE BREATH', special: 'LEGENDARY' },
-};
-
-function getStats(name: string): { size: string; speed: string; weapons: string; special: string } {
-  const key = name.toLowerCase();
-  return FIGHTER_STATS[key] || { size: '???', speed: '???', weapons: '???', special: 'WILD CARD' };
+interface FighterTagline {
+  stat: string;
+  tagline: string;
+  special: string;
 }
 
 function getImagePath(name: string): string {
@@ -52,9 +24,33 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
   const [phase, setPhase] = useState<'enter' | 'clash' | 'stats' | 'ready'>('enter');
   const [animationDone, setAnimationDone] = useState(false);
   const [visibleStats, setVisibleStats] = useState<number>(0);
+  const [taglines, setTaglines] = useState<{ fighterA: FighterTagline; fighterB: FighterTagline } | null>(null);
 
-  const statsA = getStats(fighterA);
-  const statsB = getStats(fighterB);
+  // Fetch dynamic taglines from API
+  useEffect(() => {
+    async function fetchTaglines() {
+      try {
+        const response = await fetch('/api/vs-taglines', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fighterA, fighterB }),
+        });
+        const data = await response.json();
+        setTaglines(data);
+      } catch (error) {
+        console.error('Failed to fetch taglines:', error);
+        // Fallback
+        setTaglines({
+          fighterA: { stat: '???', tagline: 'Apex predator', special: 'DEADLY' },
+          fighterB: { stat: '???', tagline: 'Born to fight', special: 'FIERCE' },
+        });
+      }
+    }
+    fetchTaglines();
+  }, [fighterA, fighterB]);
+
+  const statsA = taglines?.fighterA || { stat: '...', tagline: 'Loading...', special: '...' };
+  const statsB = taglines?.fighterB || { stat: '...', tagline: 'Loading...', special: '...' };
 
   useEffect(() => {
     // Animation timeline
@@ -190,49 +186,23 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
               {fighterA.toUpperCase()}
             </motion.div>
             
-            {/* Stats reveal */}
+            {/* Stats reveal - Dynamic taglines */}
             <div className="fighter-stats">
               <AnimatePresence>
                 {visibleStats >= 1 && (
                   <motion.div
-                    className="stat-item"
+                    className="stat-item highlight"
                     initial={{ x: -100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <span className="stat-icon">⚖️</span>
-                    <span className="stat-value">{statsA.size}</span>
+                    <span className="stat-icon">💪</span>
+                    <span className="stat-value">{statsA.stat}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
               <AnimatePresence>
                 {visibleStats >= 2 && (
-                  <motion.div
-                    className="stat-item"
-                    initial={{ x: -100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <span className="stat-icon">⚡</span>
-                    <span className="stat-value">{statsA.speed}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {visibleStats >= 3 && (
-                  <motion.div
-                    className="stat-item"
-                    initial={{ x: -100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <span className="stat-icon">⚔️</span>
-                    <span className="stat-value">{statsA.weapons}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {visibleStats >= 4 && (
                   <motion.div
                     className="stat-item special"
                     initial={{ x: -100, opacity: 0, scale: 0.5 }}
@@ -241,6 +211,18 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
                   >
                     <span className="stat-icon">🔥</span>
                     <span className="stat-value">{statsA.special}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {visibleStats >= 3 && (
+                  <motion.div
+                    className="tagline-item"
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <span className="tagline-text">"{statsA.tagline}"</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -298,49 +280,23 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
               {fighterB.toUpperCase()}
             </motion.div>
             
-            {/* Stats reveal */}
+            {/* Stats reveal - Dynamic taglines */}
             <div className="fighter-stats">
               <AnimatePresence>
                 {visibleStats >= 1 && (
                   <motion.div
-                    className="stat-item"
+                    className="stat-item highlight"
                     initial={{ x: 100, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <span className="stat-value">{statsB.size}</span>
-                    <span className="stat-icon">⚖️</span>
+                    <span className="stat-value">{statsB.stat}</span>
+                    <span className="stat-icon">💪</span>
                   </motion.div>
                 )}
               </AnimatePresence>
               <AnimatePresence>
                 {visibleStats >= 2 && (
-                  <motion.div
-                    className="stat-item"
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <span className="stat-value">{statsB.speed}</span>
-                    <span className="stat-icon">⚡</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {visibleStats >= 3 && (
-                  <motion.div
-                    className="stat-item"
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <span className="stat-value">{statsB.weapons}</span>
-                    <span className="stat-icon">⚔️</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <AnimatePresence>
-                {visibleStats >= 4 && (
                   <motion.div
                     className="stat-item special"
                     initial={{ x: 100, opacity: 0, scale: 0.5 }}
@@ -349,6 +305,18 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
                   >
                     <span className="stat-value">{statsB.special}</span>
                     <span className="stat-icon">🔥</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {visibleStats >= 3 && (
+                  <motion.div
+                    className="tagline-item"
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <span className="tagline-text">"{statsB.tagline}"</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -698,6 +666,42 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
         .stat-item.special .stat-value {
           color: #fff;
           text-shadow: 0 0 10px rgba(255,215,0,0.8);
+        }
+
+        .stat-item.highlight {
+          background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+          border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .stat-item.highlight .stat-value {
+          font-size: 1.3rem;
+          color: #fff;
+          text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .tagline-item {
+          padding: 8px 12px;
+          background: rgba(0,0,0,0.5);
+          border-radius: 8px;
+          border-left: 3px solid #ffd700;
+        }
+
+        .tagline-text {
+          font-family: 'Georgia', serif;
+          font-size: 0.9rem;
+          color: #ffd700;
+          font-style: italic;
+          text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+          letter-spacing: 0.02em;
+        }
+
+        @media (min-width: 768px) {
+          .tagline-text {
+            font-size: 1rem;
+          }
+          .stat-item.highlight .stat-value {
+            font-size: 1.5rem;
+          }
         }
 
         @media (min-width: 768px) {
