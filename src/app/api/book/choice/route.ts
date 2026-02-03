@@ -3,13 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 interface ChoiceRequest {
   animalA: string;
   animalB: string;
-  choiceId: string;
-  choiceText: string;
-  previousChoices: string[];
+  choiceIndex: number;
+  gateNumber: number;
+  choiceFavors: string;
+  choiceOutcome: string;
+  currentScore: { A: number; B: number };
+  allPages: any[];
 }
 
 // Generate image using fal.ai Flux
-async function generateImage(prompt: string): Promise<string> {
+async function generateImage(prompt: string, cacheKey?: string): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
   if (!falKey) {
     console.log('No FAL_API_KEY, using placeholder');
@@ -45,115 +48,79 @@ async function generateImage(prompt: string): Promise<string> {
   }
 }
 
-// Generate next scene based on choice
-const generateNextScene = async (req: ChoiceRequest, choiceNumber: number) => {
-  const { animalA, animalB, choiceId, choiceText } = req;
-  
-  const pages = [];
-  
-  let sceneTitle, sceneContent, imagePrompt;
-  
-  // Generate battle scene based on choice with variety
-  if (choiceId === 'attack') {
-    sceneTitle = '💥 Aggressive Attack!';
-    sceneContent = `
-      <p>The ${animalA} charges forward with incredible speed!</p>
-      <p>You chose: ${choiceText}</p>
-      <p>The ${animalB} barely has time to react as the ${animalA} closes the distance with a fierce assault!</p>
-      <p>Dust and debris fly as the two titans clash!</p>
-    `;
-    imagePrompt = `${animalA} aggressively attacking ${animalB}, dynamic action scene, intense battle`;
-  } else if (choiceId === 'defend') {
-    sceneTitle = '👁️ Patient Strategy';
-    sceneContent = `
-      <p>The ${animalA} holds back, watching every move with calculated precision...</p>
-      <p>You chose: ${choiceText}</p>
-      <p>The ${animalB} grows impatient and makes a hasty move!</p>
-      <p>The ${animalA} seizes the opportunity to counter!</p>
-    `;
-    imagePrompt = `${animalA} defensively positioned against ${animalB}, tense standoff, strategic battle`;
-  } else {
-    sceneTitle = '🔄 Tactical Positioning';
-    sceneContent = `
-      <p>The ${animalA} moves with purpose, seeking the perfect angle...</p>
-      <p>You chose: ${choiceText}</p>
-      <p>The ${animalB} tries to track the movement but loses sight momentarily!</p>
-      <p>This could be the opening the ${animalA} needs!</p>
-    `;
-    imagePrompt = `${animalA} circling around ${animalB}, tactical movement, battle scene from side angle`;
-  }
-  
-  // Generate battle scene image
-  const battleImage = await generateImage(imagePrompt);
-  
-  pages.push({
-    id: `battle-${choiceNumber}`,
-    type: 'battle',
-    title: sceneTitle,
-    content: sceneContent,
-    imageUrl: battleImage,
-  });
-
-  // After 3 choices, end the battle
-  if (req.previousChoices.length >= 2) {
-    // Determine winner based on choices made
-    const aggressiveChoices = [...req.previousChoices, choiceId].filter(c => c === 'attack').length;
-    const winner = aggressiveChoices >= 2 ? animalA : animalB;
-    
-    // Generate victory image
-    const victoryImage = await generateImage(`${winner} victorious, triumphant pose, winner of the battle`);
-    
-    pages.push({
-      id: 'victory',
-      type: 'victory',
-      title: '🏆 The Winner!',
-      content: `
-        <p class="text-3xl font-bold text-yellow-400 text-center mb-4">${winner.toUpperCase()} WINS!</p>
-        <p>After an incredible battle shaped by YOUR choices, the ${winner} emerges victorious!</p>
-        <p class="mt-4">Your adventure had ${req.previousChoices.length + 1} key decisions that led to this outcome.</p>
-        <p class="mt-4 text-gray-400">Want a different ending? Try making different choices next time! 🌟</p>
-      `,
-      imageUrl: victoryImage,
-    });
-  } else {
-    // Add another choice with varied questions
-    const nextChoiceNum = req.previousChoices.length + 2;
-    const decisionNumber = req.previousChoices.length + 1; // 1-based for display (will be 2 or 3)
-    const isFinalChoice = req.previousChoices.length === 1; // This will be choice 2, next one (choice 3) ends it
-    
-    const questionVariations = [
-      `<p>The battle rages on! Both creatures are wounded but determined.</p><p>What should ${animalA} do next?</p>`,
-      `<p>The fight continues to escalate! ${animalB} is preparing another attack.</p><p>How should ${animalA} respond?</p>`,
-      `<p>A critical moment! Both fighters are looking for an opening.</p><p>What's ${animalA}'s next move?</p>`,
-    ];
-    
-    const choiceImage = await generateImage(`${animalA} and ${animalB} mid-battle, both wounded, tense moment`);
-    
-    pages.push({
-      id: `choice-${nextChoiceNum}`,
-      type: 'choice',
-      title: isFinalChoice ? `⚡ Final Decision ${decisionNumber} of 3!` : `🤔 Decision ${decisionNumber} of 3`,
-      content: questionVariations[(req.previousChoices.length) % questionVariations.length],
-      imageUrl: choiceImage,
-      choices: [
-        { id: 'attack', text: `${animalA} goes for a powerful strike!`, emoji: '⚔️' },
-        { id: 'defend', text: `${animalA} dodges and counterattacks!`, emoji: '🛡️' },
-        { id: 'flank', text: `${animalA} tries a surprise maneuver!`, emoji: '🎯' },
-      ],
-    });
-  }
-
-  return pages;
-};
-
 export async function POST(request: NextRequest) {
   try {
     const body: ChoiceRequest = await request.json();
-    
-    const choiceNumber = body.previousChoices.length + 2;
-    const pages = await generateNextScene(body, choiceNumber);
+    const { animalA, animalB, choiceFavors, choiceOutcome, currentScore, gateNumber, allPages } = body;
 
-    return NextResponse.json({ pages });
+    // Score points based on gate number (1, 2, 3 points)
+    const pointValue = gateNumber;
+    const newScore = { ...currentScore };
+    
+    if (choiceFavors === 'A') {
+      newScore.A += pointValue;
+    } else if (choiceFavors === 'B') {
+      newScore.B += pointValue;
+    }
+    // Neutral choices don't add points
+
+    console.log(`Gate ${gateNumber} choice made. Favors: ${choiceFavors}. Score: A=${newScore.A}, B=${newScore.B}`);
+
+    const pages = [];
+
+    // Add outcome page
+    const outcomeImage = await generateImage(`${animalA} and ${animalB} battling, dramatic action scene, ${choiceOutcome}`);
+    
+    pages.push({
+      id: `outcome-${gateNumber}`,
+      type: 'battle',
+      title: '',
+      content: `<p class="outcome-text">${choiceOutcome}</p>`,
+      imageUrl: outcomeImage,
+    });
+
+    // If this was the 3rd decision, determine winner and add victory page
+    if (gateNumber === 3) {
+      const winner = newScore.A > newScore.B ? animalA : newScore.B > newScore.A ? animalB : (Math.random() > 0.5 ? animalA : animalB);
+      const loser = winner === animalA ? animalB : animalA;
+      
+      // Generate victory image
+      const victoryImage = await generateImage(`${winner} victorious, triumphant powerful stance after battle, realistic wildlife photography style`);
+      
+      pages.push({
+        id: 'victory',
+        type: 'victory',
+        title: '',
+        content: `
+          <div class="victory-overlay">
+            <p class="victory-label">THE WINNER</p>
+            <p class="victory-name">${winner.toUpperCase()}</p>
+          </div>
+          <div class="cyoa-results">
+            <p class="results-title">🎯 YOUR CHOICES DETERMINED THE OUTCOME</p>
+            <div class="score-reveal">
+              <div class="score-item">
+                <span class="score-animal">${animalA}</span>
+                <span class="score-value">${newScore.A} points</span>
+              </div>
+              <div class="score-item">
+                <span class="score-animal">${animalB}</span>
+                <span class="score-value">${newScore.B} points</span>
+              </div>
+            </div>
+            <p class="results-note">Each decision earned 1-3 points based on which animal it favored!</p>
+          </div>
+        `,
+        imageUrl: victoryImage,
+      });
+    }
+
+    // Return new pages and updated score
+    return NextResponse.json({ 
+      pages,
+      score: newScore,
+      isComplete: gateNumber === 3,
+    });
   } catch (error) {
     console.error('Choice generation error:', error);
     return NextResponse.json({ error: 'Failed to generate scene' }, { status: 500 });
