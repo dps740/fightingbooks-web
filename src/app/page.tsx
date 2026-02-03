@@ -69,6 +69,10 @@ export default function Home() {
   const [modeStep, setModeStep] = useState<1 | 2>(1); // Step 1: battle type, Step 2: game mode
   const [loading, setLoading] = useState(false);
   const [showFightOverlay, setShowFightOverlay] = useState(false);
+  
+  // Tournament state
+  const [tournamentFighters, setTournamentFighters] = useState<string[]>([]);
+  const [showTournamentOverlay, setShowTournamentOverlay] = useState(false);
 
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
@@ -77,14 +81,69 @@ export default function Home() {
   const handleBattleTypeSelect = (type: 'single' | 'tournament') => {
     setBattleType(type);
     setModeStep(2); // Advance to step 2
+    // Reset selections when switching
+    if (type === 'tournament') {
+      setTournamentFighters([]);
+      setAnimalA('');
+      setAnimalB('');
+    } else {
+      setTournamentFighters([]);
+    }
   };
   
   // Handle going back to step 1
   const handleBackToStep1 = () => {
     setModeStep(1);
+    setTournamentFighters([]);
+  };
+  
+  // Handle tournament fighter selection
+  const handleTournamentFighterSelect = (fighterName: string) => {
+    if (tournamentFighters.includes(fighterName)) {
+      // Deselect - remove from array
+      setTournamentFighters(tournamentFighters.filter(f => f !== fighterName));
+      setShowTournamentOverlay(false);
+    } else if (tournamentFighters.length < 8) {
+      // Select - add to array
+      const newFighters = [...tournamentFighters, fighterName];
+      setTournamentFighters(newFighters);
+      // Show overlay when 8th fighter selected
+      if (newFighters.length === 8) {
+        setShowTournamentOverlay(true);
+      }
+    }
+  };
+  
+  // Start tournament - save state and navigate to bracket
+  const handleStartTournament = () => {
+    if (tournamentFighters.length !== 8) return;
+    setLoading(true);
+    
+    // Create bracket structure
+    const bracket = {
+      fighters: tournamentFighters,
+      round1: [
+        [tournamentFighters[0], tournamentFighters[1]],
+        [tournamentFighters[2], tournamentFighters[3]],
+        [tournamentFighters[4], tournamentFighters[5]],
+        [tournamentFighters[6], tournamentFighters[7]],
+      ],
+      semis: [[null, null], [null, null]],
+      final: [null, null],
+      winner: null,
+      currentMatch: 0,
+      mode: gameMode === 'adventure' ? 'cyoa' : 'standard',
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('tournament', JSON.stringify(bracket));
+    
+    // Navigate to bracket view
+    router.push('/tournament/bracket');
   };
   
   const canGenerate = animalA && animalB && animalA !== animalB;
+  const canStartTournament = tournamentFighters.length === 8;
 
   const getImagePath = (name: string) => `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
 
@@ -283,35 +342,147 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Tournament Start - Only shown when tournament mode is selected */}
+      {/* 4. Tournament Fighter Selection - 8 slots */}
       {battleType === 'tournament' && modeStep === 2 && (
         <section className="px-4 pb-6">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-amber-900 via-yellow-900 to-orange-900 rounded-xl p-8 border-4 border-[#FFD700] shadow-2xl text-center"
-            >
-              <div className="text-7xl mb-4">🏆</div>
-              <h2 className="font-bangers text-4xl text-[#FFD700] mb-4" style={{ textShadow: '3px 3px 0 #000' }}>
-                TOURNAMENT MODE
+          <div className="max-w-6xl mx-auto">
+            
+            <div className="text-center mb-4">
+              <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
+                🏆 SELECT 8 CHAMPIONS
               </h2>
-              <p className="text-white/90 text-lg mb-2">
-                Select <strong>8 champions</strong> to battle through the bracket!
+              <p className="text-white/70 mt-2">
+                {gameMode === 'classic' ? '📖 Classic' : '🎭 Adventure'} mode • {tournamentFighters.length}/8 selected
               </p>
-              <p className="text-white/70 mb-6">
-                {gameMode === 'classic' ? '📖 Classic battles' : '🎭 Adventure mode'} • Elimination format • One winner takes all
-              </p>
-              <button
-                onClick={() => {
-                  const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
-                  router.push(`/tournament?mode=${mode}`);
-                }}
-                className="px-12 py-5 rounded-2xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_60px_rgba(255,215,0,0.7)] transition-all duration-300"
-              >
-                🏆 START TOURNAMENT
-              </button>
-            </motion.div>
+            </div>
+
+            {/* 8 Fighter Slots - 2 rows of 4 */}
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              {[...Array(8)].map((_, index) => {
+                const fighter = tournamentFighters[index];
+                const matchLabels = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B'];
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={`relative aspect-square rounded-xl border-4 overflow-hidden transition-all ${
+                      fighter 
+                        ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255,215,0,0.4)]' 
+                        : 'border-white/30 border-dashed'
+                    }`}
+                    style={{ 
+                      background: fighter 
+                        ? 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%)' 
+                        : 'rgba(0,0,0,0.3)' 
+                    }}
+                  >
+                    {/* Match label */}
+                    <div className="absolute top-1 left-1 bg-black/60 px-2 py-0.5 rounded text-xs font-bold text-[#FFD700] z-10">
+                      {matchLabels[index]}
+                    </div>
+                    
+                    {fighter ? (
+                      <>
+                        <img 
+                          src={getImagePath(fighter)} 
+                          alt={fighter} 
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-2">
+                          <p className="font-bangers text-white text-sm text-center truncate" style={{ textShadow: '2px 2px 0 #000' }}>
+                            {fighter.toUpperCase()}
+                          </p>
+                        </div>
+                        {/* Remove button */}
+                        <button
+                          onClick={() => handleTournamentFighterSelect(fighter)}
+                          className="absolute top-1 right-1 bg-red-600 hover:bg-red-500 w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold z-10"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <span className="text-white/40 text-3xl">?</span>
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Bracket Preview */}
+            <div className="bg-black/30 rounded-xl p-4 mb-6">
+              <div className="flex justify-center items-center gap-2 text-white/60 text-sm">
+                <span>{tournamentFighters[0] || '?'}</span>
+                <span className="text-[#FFD700]">vs</span>
+                <span>{tournamentFighters[1] || '?'}</span>
+                <span className="mx-2">•</span>
+                <span>{tournamentFighters[2] || '?'}</span>
+                <span className="text-[#FFD700]">vs</span>
+                <span>{tournamentFighters[3] || '?'}</span>
+                <span className="mx-2">→</span>
+                <span className="text-[#FFD700]">SEMI</span>
+                <span className="mx-2">→</span>
+                <span>{tournamentFighters[4] || '?'}</span>
+                <span className="text-[#FFD700]">vs</span>
+                <span>{tournamentFighters[5] || '?'}</span>
+                <span className="mx-2">•</span>
+                <span>{tournamentFighters[6] || '?'}</span>
+                <span className="text-[#FFD700]">vs</span>
+                <span>{tournamentFighters[7] || '?'}</span>
+              </div>
+            </div>
+
+            {/* Character Grid */}
+            <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+                {FIGHTERS.map((fighter, i) => {
+                  const isSelected = tournamentFighters.includes(fighter.name);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleTournamentFighterSelect(fighter.name)}
+                      disabled={!isSelected && tournamentFighters.length >= 8}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all ${
+                        isSelected
+                          ? 'border-[#FFD700] ring-2 ring-[#FFD700] opacity-50 grayscale'
+                          : tournamentFighters.length >= 8
+                          ? 'border-gray-600 opacity-30 cursor-not-allowed'
+                          : 'border-gray-600 hover:border-white hover:scale-110 hover:z-10'
+                      }`}
+                    >
+                      <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
+                        <p className="font-bangers text-white text-xs text-center truncate">
+                          {fighter.name.toUpperCase()}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                          <span className="text-[#FFD700] text-2xl font-bold">✓</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Ready button when 8 selected */}
+            {canStartTournament && !showTournamentOverlay && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => setShowTournamentOverlay(true)}
+                  className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
+                >
+                  🏆 READY FOR BATTLE!
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -506,6 +677,76 @@ export default function Home() {
             {/* Close hint */}
             {!loading && (
               <p className="mt-4 text-white/50 text-sm">Click FIGHT to proceed or anywhere else to re-select</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TOURNAMENT Overlay - appears when 8 fighters selected */}
+      {battleType === 'tournament' && canStartTournament && showTournamentOverlay && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity duration-300"
+          onClick={() => { if (!loading) { setShowTournamentOverlay(false); } }}
+        >
+          <div className="text-center max-w-4xl mx-auto px-4" onClick={(e) => e.stopPropagation()}>
+            {/* Trophy */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 200 }}
+              className="text-8xl mb-6"
+            >
+              🏆
+            </motion.div>
+            
+            <h2 className="font-bangers text-5xl text-[#FFD700] mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
+              TOURNAMENT READY!
+            </h2>
+            
+            {/* Bracket Preview */}
+            <div className="bg-black/50 rounded-xl p-6 mb-6 border-2 border-[#FFD700]/30">
+              <p className="text-white/60 text-sm mb-4">FIRST ROUND MATCHUPS</p>
+              <div className="grid grid-cols-2 gap-4">
+                {[0, 2, 4, 6].map((i) => (
+                  <div key={i} className="flex items-center justify-center gap-3 bg-white/5 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src={getImagePath(tournamentFighters[i])} 
+                        alt={tournamentFighters[i]} 
+                        className="w-10 h-10 rounded-full object-cover border-2 border-red-500"
+                      />
+                      <span className="text-white text-sm font-bold truncate max-w-[80px]">{tournamentFighters[i]}</span>
+                    </div>
+                    <span className="text-[#FFD700] font-bangers">VS</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-white text-sm font-bold truncate max-w-[80px]">{tournamentFighters[i + 1]}</span>
+                      <img 
+                        src={getImagePath(tournamentFighters[i + 1])} 
+                        alt={tournamentFighters[i + 1]} 
+                        className="w-10 h-10 rounded-full object-cover border-2 border-blue-500"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Start Button */}
+            <button 
+              onClick={handleStartTournament}
+              disabled={loading}
+              className="px-16 py-6 rounded-2xl font-bangers text-4xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.6)] hover:scale-110 hover:shadow-[0_0_60px_rgba(255,215,0,0.8)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+            >
+              {loading ? '⏳ PREPARING...' : '🏆 START TOURNAMENT'}
+            </button>
+            
+            <p className="mt-6 text-white/60 text-sm">
+              {gameMode === 'classic' ? '📖 Classic mode' : '🎭 Adventure mode'} • 7 battles to the championship
+            </p>
+            
+            {/* Close hint */}
+            {!loading && (
+              <p className="mt-4 text-white/50 text-sm">Click START to begin or outside to re-select fighters</p>
             )}
           </div>
         </div>
