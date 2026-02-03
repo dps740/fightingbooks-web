@@ -895,6 +895,21 @@ async function generateBook(animalA: string, animalB: string, environment: strin
         </div>
         `}
       `,
+      // Store numeric stats for CYOA winner calculation
+      stats: {
+        animalA: {
+          strength: factsA.strength_score * 10,
+          speed: factsA.speed_score * 10,
+          weapons: factsA.weapons_score * 10,
+          defense: factsA.defense_score * 10,
+        },
+        animalB: {
+          strength: factsB.strength_score * 10,
+          speed: factsB.speed_score * 10,
+          weapons: factsB.weapons_score * 10,
+          defense: factsB.defense_score * 10,
+        },
+      },
     },
     {
       id: 'battle-1',

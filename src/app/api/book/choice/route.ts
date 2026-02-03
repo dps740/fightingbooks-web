@@ -9,6 +9,10 @@ interface ChoiceRequest {
   choiceOutcome: string;
   currentScore: { A: number; B: number };
   allPages: any[];
+  taleOfTheTape?: {
+    animalA: { strength: number; speed: number; weapons: number; defense: number };
+    animalB: { strength: number; speed: number; weapons: number; defense: number };
+  };
 }
 
 // Generate image using fal.ai Flux
@@ -79,13 +83,46 @@ export async function POST(request: NextRequest) {
       imageUrl: outcomeImage,
     });
 
-    // If this was the 3rd decision, determine winner and add victory page
+    // If this was the 3rd decision, determine winner using Tale of the Tape + choices
     if (gateNumber === 3) {
-      const winner = newScore.A > newScore.B ? animalA : newScore.B > newScore.A ? animalB : (Math.random() > 0.5 ? animalA : animalB);
+      // Calculate base strength from Tale of the Tape (if available)
+      let baseScoreA = 50; // Default baseline
+      let baseScoreB = 50;
+      
+      if (body.taleOfTheTape) {
+        const statsA = body.taleOfTheTape.animalA;
+        const statsB = body.taleOfTheTape.animalB;
+        // Average of stats gives base "power level" (0-100 scale)
+        baseScoreA = (statsA.strength + statsA.speed + statsA.weapons + statsA.defense) / 4;
+        baseScoreB = (statsB.strength + statsB.speed + statsB.weapons + statsB.defense) / 4;
+      }
+      
+      // User choices can swing the battle (each point = 5% swing)
+      // Max user score is 6 (1+2+3), so max swing is 30%
+      const choiceSwingA = newScore.A * 5;
+      const choiceSwingB = newScore.B * 5;
+      
+      // Final battle score
+      const finalScoreA = baseScoreA + choiceSwingA;
+      const finalScoreB = baseScoreB + choiceSwingB;
+      
+      console.log(`Final battle scores - ${animalA}: ${finalScoreA} (base ${baseScoreA} + choices ${choiceSwingA}) vs ${animalB}: ${finalScoreB} (base ${baseScoreB} + choices ${choiceSwingB})`);
+      
+      // Determine winner
+      const winner = finalScoreA > finalScoreB ? animalA : finalScoreB > finalScoreA ? animalB : (Math.random() > 0.5 ? animalA : animalB);
       const loser = winner === animalA ? animalB : animalA;
       
       // Generate victory image
       const victoryImage = await generateImage(`${winner} victorious, triumphant powerful stance after battle, realistic wildlife photography style`);
+      
+      // Determine how decisive the victory was
+      const scoreDiff = Math.abs(finalScoreA - finalScoreB);
+      const victoryType = scoreDiff > 20 ? 'dominant' : scoreDiff > 10 ? 'hard-fought' : 'narrow';
+      const victoryDesc = victoryType === 'dominant' 
+        ? `${winner} dominated this battle from start to finish!`
+        : victoryType === 'hard-fought'
+        ? `After an intense struggle, ${winner} emerges victorious!`
+        : `In an incredibly close fight, ${winner} barely edges out the win!`;
       
       pages.push({
         id: 'victory',
@@ -97,18 +134,9 @@ export async function POST(request: NextRequest) {
             <p class="victory-name">${winner.toUpperCase()}</p>
           </div>
           <div class="cyoa-results">
-            <p class="results-title">🎯 YOUR CHOICES DETERMINED THE OUTCOME</p>
-            <div class="score-reveal">
-              <div class="score-item">
-                <span class="score-animal">${animalA}</span>
-                <span class="score-value">${newScore.A} points</span>
-              </div>
-              <div class="score-item">
-                <span class="score-animal">${animalB}</span>
-                <span class="score-value">${newScore.B} points</span>
-              </div>
-            </div>
-            <p class="results-note">Each decision earned 1-3 points based on which animal it favored!</p>
+            <p class="results-title">🎯 BATTLE RESULTS</p>
+            <p class="results-desc">${victoryDesc}</p>
+            <p class="results-note">Your choices combined with each animal's natural abilities to determine the outcome!</p>
           </div>
         `,
         imageUrl: victoryImage,
