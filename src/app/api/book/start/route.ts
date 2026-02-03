@@ -11,7 +11,10 @@ interface BookPage {
   title: string;
   content: string;
   imageUrl?: string;
-  choices?: { id: string; text: string; emoji: string }[];
+  choices?: { id: string; text: string; emoji: string; favors?: string; outcome?: string }[];
+  gateNumber?: number;
+  animalAPortrait?: string;
+  animalBPortrait?: string;
 }
 
 interface AnimalFacts {
@@ -945,30 +948,145 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   return { pages, winner: battle.winner };
 }
 
-// Add CYOA choices
-async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string): Promise<BookPage[]> {
-  const battleIndex = pages.findIndex(p => p.type === 'battle');
-  if (battleIndex === -1) return pages;
+// Generate CYOA choices using AI for all 3 gates
+async function generateCyoaGates(animalA: string, animalB: string, factsA: AnimalFacts, factsB: AnimalFacts): Promise<any[]> {
+  const gates = [
+    {
+      type: 'arena',
+      title: '⚔️ THE ARENA SHIFTS ⚔️',
+      intro: 'The battlefield trembles... Something is about to change!',
+    },
+    {
+      type: 'turning_point',
+      title: '⚡ THE TURNING POINT ⚡',
+      intro: 'A critical moment! The tide of battle can shift either way!',
+    },
+    {
+      type: 'final_moment',
+      title: '🔥 THE FINAL MOMENT 🔥',
+      intro: 'This is it! The decisive moment that will determine the winner!',
+    },
+  ];
 
-  // Generate image for the first choice moment
-  const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
-  const choiceImage = await generateImage(`${animalA} and ${animalB} facing off, tense moment before battle, dramatic standoff`, `${imgPrefix}-choice`);
+  const allGateChoices = [];
 
-  const introPages = pages.slice(0, battleIndex + 1);
-  introPages[introPages.length - 1] = {
-    ...introPages[introPages.length - 1],
+  for (const gate of gates) {
+    const prompt = `Generate 3 dramatic choices for a ${gate.type} moment in a battle between ${animalA} and ${animalB}.
+
+Animal A (${animalA}):
+- Weapons: ${factsA.weapons.join(', ')}
+- Speed: ${factsA.speed}
+- Habitat: ${factsA.habitat}
+
+Animal B (${animalB}):
+- Weapons: ${factsB.weapons.join(', ')}
+- Speed: ${factsB.speed}
+- Habitat: ${factsB.habitat}
+
+Gate types:
+- "arena": Environmental/terrain changes that favor different abilities based on habitat or physical traits
+- "turning_point": Unexpected events that shift momentum based on speed, weapons, or tactics
+- "final_moment": Decisive actions that determine the winner based on their key strengths
+
+Each choice should:
+1. Be vivid and dramatic (1-2 sentences max)
+2. NOT mention "${animalA}" or "${animalB}" by name in the choice text itself
+3. Subtly favor one animal based on their REAL abilities and traits
+4. Feel natural to an animal battle
+5. Be written from a neutral observer perspective
+
+Return JSON array with EXACTLY 3 choices:
+[
+  {
+    "text": "The dramatic choice description (no animal names!)",
+    "icon": "single emoji that fits the choice",
+    "favors": "A" or "B" or "neutral",
+    "outcome": "What happens if chosen (2-3 sentences, dramatic but educational)"
+  }
+]
+
+IMPORTANT: Each choice must favor a DIFFERENT option (one favors A, one favors B, one neutral) for balance.`;
+
+    try {
+      const response = await getOpenAI().chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+        temperature: 0.8,
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const choices = result.choices || [];
+      
+      // Ensure we have exactly 3 choices
+      while (choices.length < 3) {
+        choices.push({
+          text: 'The battle intensifies!',
+          icon: '⚡',
+          favors: 'neutral',
+          outcome: 'Both animals continue to fight with equal determination!',
+        });
+      }
+
+      allGateChoices.push({
+        ...gate,
+        choices: choices.slice(0, 3),
+      });
+    } catch (error) {
+      console.error(`Error generating choices for ${gate.type}:`, error);
+      // Fallback choices
+      allGateChoices.push({
+        ...gate,
+        choices: [
+          { text: 'The terrain shifts to favor speed and agility!', icon: '💨', favors: 'A', outcome: `The faster animal gains an advantage!` },
+          { text: 'Heavy cover appears, favoring stealth and power!', icon: '🌿', favors: 'B', outcome: `The more powerful animal uses the cover!` },
+          { text: 'The battlefield remains neutral!', icon: '⚖️', favors: 'neutral', outcome: 'Both animals adapt to the conditions!' },
+        ],
+      });
+    }
+  }
+
+  return allGateChoices;
+}
+
+// Add CYOA choices - generates all 3 decision gates upfront
+async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string, factsA: AnimalFacts, factsB: AnimalFacts): Promise<BookPage[]> {
+  const statsIndex = pages.findIndex(p => p.type === 'stats');
+  if (statsIndex === -1) return pages;
+
+  // Generate all 3 gates of choices
+  console.log('Generating CYOA gates...');
+  const gates = await generateCyoaGates(animalA, animalB, factsA, factsB);
+
+  // Get animal portraits for VS header
+  const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
+  const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
+  const portraitA = `/fighters/${nameA}.jpg`;
+  const portraitB = `/fighters/${nameB}.jpg`;
+
+  // Generate battle scene image
+  const imgPrefix = `${nameA}-vs-${nameB}`;
+  const battleBg = await generateImage(
+    `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield`,
+    `${imgPrefix}-cyoa-bg`
+  );
+
+  // Insert the 3 decision gates after stats
+  const beforeStats = pages.slice(0, statsIndex + 1);
+  
+  const decisionPages: BookPage[] = gates.map((gate, index) => ({
+    id: `decision-${index + 1}`,
     type: 'choice',
-    title: '🎮 Decision 1 of 3',
-    content: `<p>The battle has begun! Both fighters are ready...</p><p>What should ${animalA} do?</p>`,
-    imageUrl: choiceImage,
-    choices: [
-      { id: 'attack', text: `${animalA} charges with full force!`, emoji: '💥' },
-      { id: 'defend', text: `${animalA} waits for the perfect moment`, emoji: '👁️' },
-      { id: 'flank', text: `${animalA} circles for advantage`, emoji: '🔄' },
-    ],
-  };
+    title: gate.title,
+    content: `<p class="decision-intro">${gate.intro}</p>`,
+    imageUrl: battleBg,
+    choices: gate.choices,
+    gateNumber: index + 1,
+    animalAPortrait: portraitA,
+    animalBPortrait: portraitB,
+  }));
 
-  return introPages;
+  return [...beforeStats, ...decisionPages];
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
@@ -1117,8 +1235,15 @@ export async function POST(request: NextRequest) {
       console.log(`[CACHE] ${cacheStatus} - returning cached book for ${animalA} vs ${animalB}`);
     }
     
+    // For CYOA mode, we need the facts to generate intelligent choices
     if (mode === 'cyoa') {
-      result.pages = await addCyoaChoices(result.pages, animalA, animalB);
+      // Generate facts if not cached (needed for choice generation)
+      const [factsA, factsB] = await Promise.all([
+        generateAnimalFacts(animalA),
+        generateAnimalFacts(animalB),
+      ]);
+      
+      result.pages = await addCyoaChoices(result.pages, animalA, animalB, factsA, factsB);
     }
 
     // Include cache status in response for debugging

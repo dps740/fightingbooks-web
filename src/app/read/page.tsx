@@ -14,12 +14,17 @@ interface BookPage {
   content: string;
   imageUrl?: string;
   choices?: Choice[];
+  gateNumber?: number;
+  animalAPortrait?: string;
+  animalBPortrait?: string;
 }
 
 interface Choice {
   id: string;
   text: string;
   emoji: string;
+  favors?: string;
+  outcome?: string;
 }
 
 function BookReader() {
@@ -36,6 +41,9 @@ function BookReader() {
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
+  const [cyoaScore, setCyoaScore] = useState({ A: 0, B: 0 });
+  const [showChoiceOverlay, setShowChoiceOverlay] = useState(false);
+  const [selectedChoiceText, setSelectedChoiceText] = useState('');
 
   const animalA = searchParams.get('a') || 'Lion';
   const animalB = searchParams.get('b') || 'Tiger';
@@ -74,18 +82,55 @@ function BookReader() {
     setLoading(false);
   };
 
-  const handleChoice = async (choice: Choice) => {
+  const handleChoice = async (choice: Choice, choiceIndex: number) => {
+    const currentPageData = pages[currentPage];
+    
+    // Show overlay with chosen text
+    setSelectedChoiceText(choice.text);
+    setShowChoiceOverlay(true);
+    
+    // Wait 1.5 seconds before proceeding
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setShowChoiceOverlay(false);
+    
     setGeneratingChoice(true);
     try {
       const response = await fetch('/api/book/choice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ animalA, animalB, choiceId: choice.id, choiceText: choice.text, previousChoices: choicesMade, currentPage: pages[currentPage] }),
+        body: JSON.stringify({
+          animalA,
+          animalB,
+          choiceIndex,
+          gateNumber: currentPageData.gateNumber || 1,
+          choiceFavors: choice.favors || 'neutral',
+          choiceOutcome: choice.outcome || 'The battle continues!',
+          currentScore: cyoaScore,
+          allPages: pages,
+        }),
       });
       const data = await response.json();
-      if (data.pages) { setPages([...pages, ...data.pages]); goToPage(currentPage + 1); }
-    } catch (error) { console.error(error); }
-    setGeneratingChoice(false);
+      
+      if (data.pages) {
+        // Update score
+        if (data.score) {
+          setCyoaScore(data.score);
+        }
+        
+        // Add new pages and advance
+        setPages([...pages, ...data.pages]);
+        setChoicesMade([...choicesMade, choice.id]);
+        
+        // Auto-advance to the outcome page
+        setTimeout(() => {
+          goToPage(currentPage + 1);
+          setGeneratingChoice(false);
+        }, 300);
+      }
+    } catch (error) {
+      console.error(error);
+      setGeneratingChoice(false);
+    }
   };
 
   const goToPage = (i: number) => { if (i >= 0 && i < pages.length) { setDirection(i > currentPage ? 1 : -1); setCurrentPage(i); } };
@@ -302,28 +347,86 @@ function BookReader() {
               </>
             )}
 
-            {/* CHOICE PAGE */}
+            {/* CHOICE PAGE - CYOA Redesign */}
             {page?.type === 'choice' && (
-              <>
-                <h2 className="page-title">{page.title}</h2>
-                <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
-                {!generatingChoice && page.choices && (
-                  <div className="choices-container">
-                    <p className="choices-header">⚡ YOU DECIDE! ⚡</p>
-                    {page.choices.map((c) => (
-                      <button key={c.id} onClick={() => handleChoice(c)} className="choice-btn">
-                        <span className="choice-emoji">{c.emoji}</span> {c.text}
-                      </button>
+              <div className="cyoa-decision-page">
+                {/* Dark dramatic background */}
+                {page.imageUrl && (
+                  <div className="cyoa-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />
+                )}
+                <div className="cyoa-bg-overlay" />
+                
+                {/* VS Header with animal portraits */}
+                <div className="cyoa-vs-header">
+                  {page.animalAPortrait && (
+                    <div className="cyoa-fighter-portrait">
+                      <img src={page.animalAPortrait} alt={animalA} />
+                      <p className="fighter-name">{animalA}</p>
+                    </div>
+                  )}
+                  <div className="cyoa-vs-badge">⚡VS⚡</div>
+                  {page.animalBPortrait && (
+                    <div className="cyoa-fighter-portrait">
+                      <img src={page.animalBPortrait} alt={animalB} />
+                      <p className="fighter-name">{animalB}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Gate title */}
+                <h2 className="cyoa-gate-title">{page.title}</h2>
+                <p className="cyoa-decision-number">Decision {page.gateNumber} of 3</p>
+
+                {/* Introduction text */}
+                <div className="cyoa-intro-box" dangerouslySetInnerHTML={{ __html: page.content }} />
+
+                {/* Choice cards */}
+                {!generatingChoice && !showChoiceOverlay && page.choices && (
+                  <div className="cyoa-choices-grid">
+                    {page.choices.map((c, index) => (
+                      <motion.button
+                        key={index}
+                        onClick={() => handleChoice(c, index)}
+                        className="cyoa-choice-card"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <span className="choice-card-icon">{c.emoji}</span>
+                        <p className="choice-card-text">{c.text}</p>
+                      </motion.button>
                     ))}
                   </div>
                 )}
-                {generatingChoice && (
+
+                {/* Choice overlay - "You chose..." */}
+                {showChoiceOverlay && (
+                  <motion.div
+                    className="choice-overlay"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <p className="overlay-label">You chose:</p>
+                    <p className="overlay-choice">{selectedChoiceText}</p>
+                  </motion.div>
+                )}
+
+                {/* Generating next scene */}
+                {generatingChoice && !showChoiceOverlay && (
                   <div className="generating">
-                    <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>⏳</motion.span>
-                    <p>Creating next scene...</p>
+                    <motion.span
+                      animate={{ rotate: 360 }}
+                      transition={{ repeat: Infinity, duration: 1 }}
+                    >
+                      ⏳
+                    </motion.span>
+                    <p>Creating the outcome...</p>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </motion.div>
         </AnimatePresence>
@@ -1155,6 +1258,313 @@ function BookReader() {
           .exit-btn, .report-btn {
             padding: 6px 10px;
             font-size: 0.75em;
+          }
+        }
+
+        /* CYOA REDESIGN STYLES */
+        
+        .cyoa-decision-page {
+          position: relative;
+          width: 100%;
+          min-height: 600px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 30px 20px;
+          overflow: hidden;
+        }
+        
+        .cyoa-bg-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-size: cover;
+          background-position: center;
+          filter: blur(3px);
+          z-index: 0;
+        }
+        
+        .cyoa-bg-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(26, 26, 46, 0.92) 0%, rgba(22, 33, 62, 0.95) 100%);
+          z-index: 1;
+        }
+        
+        .cyoa-vs-header {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+          margin-bottom: 20px;
+        }
+        
+        .cyoa-fighter-portrait {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .cyoa-fighter-portrait img {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          border: 3px solid rgba(212, 175, 55, 0.8);
+          object-fit: cover;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cyoa-fighter-portrait .fighter-name {
+          font-family: 'Bangers', cursive;
+          font-size: 1.1em;
+          color: #d4af37;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+          margin: 0;
+        }
+        
+        .cyoa-vs-badge {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: #ff0000;
+          background: #ffeb3b;
+          padding: 8px 20px;
+          border: 3px solid #ff0000;
+          border-radius: 8px;
+          text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cyoa-gate-title {
+          position: relative;
+          z-index: 2;
+          font-family: 'Bangers', cursive;
+          font-size: 2.5em;
+          color: #d4af37;
+          text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+          text-align: center;
+          margin: 10px 0 5px;
+          letter-spacing: 2px;
+        }
+        
+        .cyoa-decision-number {
+          position: relative;
+          z-index: 2;
+          font-family: 'Comic Neue', cursive;
+          font-size: 1.2em;
+          color: rgba(255, 255, 255, 0.8);
+          text-align: center;
+          margin: 0 0 20px;
+        }
+        
+        .cyoa-intro-box {
+          position: relative;
+          z-index: 2;
+          background: rgba(0, 0, 0, 0.6);
+          border: 2px solid rgba(212, 175, 55, 0.4);
+          border-radius: 12px;
+          padding: 15px 25px;
+          margin-bottom: 30px;
+          max-width: 600px;
+        }
+        
+        .cyoa-intro-box p {
+          color: white;
+          font-size: 1.1em;
+          margin: 0;
+          text-align: center;
+          line-height: 1.6;
+        }
+        
+        .decision-intro {
+          color: white !important;
+          font-weight: bold;
+          font-size: 1.2em !important;
+        }
+        
+        .cyoa-choices-grid {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          gap: 20px;
+          flex-wrap: wrap;
+          justify-content: center;
+          max-width: 900px;
+          margin-top: 20px;
+        }
+        
+        .cyoa-choice-card {
+          background: linear-gradient(135deg, #4a1a6b 0%, #2d1b4e 100%);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+          padding: 25px 20px;
+          min-width: 200px;
+          max-width: 250px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .cyoa-choice-card:hover {
+          transform: scale(1.05);
+          box-shadow: 0 0 30px rgba(255, 200, 0, 0.5);
+          border-color: gold;
+        }
+        
+        .choice-card-icon {
+          font-size: 3rem;
+          line-height: 1;
+          animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
+        }
+        
+        .choice-card-text {
+          color: white;
+          font-family: 'Comic Neue', cursive;
+          font-size: 1.1em;
+          font-weight: bold;
+          text-align: center;
+          margin: 0;
+          line-height: 1.4;
+        }
+        
+        .choice-overlay {
+          position: relative;
+          z-index: 3;
+          background: rgba(0, 0, 0, 0.9);
+          border: 3px solid gold;
+          border-radius: 16px;
+          padding: 40px;
+          text-align: center;
+          box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
+          max-width: 500px;
+        }
+        
+        .overlay-label {
+          font-family: 'Bangers', cursive;
+          font-size: 1.8em;
+          color: #d4af37;
+          margin: 0 0 15px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .overlay-choice {
+          font-family: 'Comic Neue', cursive;
+          font-size: 1.3em;
+          color: white;
+          font-weight: bold;
+          margin: 0;
+          line-height: 1.5;
+        }
+        
+        .outcome-text {
+          font-size: 1.2em;
+          line-height: 1.8;
+          color: #333;
+        }
+        
+        .cyoa-results {
+          background: rgba(0, 0, 0, 0.7);
+          border: 2px solid gold;
+          border-radius: 12px;
+          padding: 20px;
+          margin-top: 20px;
+        }
+        
+        .results-title {
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #d4af37;
+          text-align: center;
+          margin: 0 0 15px;
+        }
+        
+        .score-reveal {
+          display: flex;
+          gap: 30px;
+          justify-content: center;
+          margin-bottom: 15px;
+        }
+        
+        .score-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .score-animal {
+          font-family: 'Comic Neue', cursive;
+          font-size: 1.2em;
+          font-weight: bold;
+          color: white;
+        }
+        
+        .score-value {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: #d4af37;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .results-note {
+          font-family: 'Comic Neue', cursive;
+          color: rgba(255, 255, 255, 0.8);
+          text-align: center;
+          font-size: 0.95em;
+          margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+          .cyoa-gate-title {
+            font-size: 1.8em;
+          }
+          
+          .cyoa-vs-header {
+            gap: 15px;
+          }
+          
+          .cyoa-fighter-portrait img {
+            width: 60px;
+            height: 60px;
+          }
+          
+          .cyoa-vs-badge {
+            font-size: 1.5em;
+            padding: 6px 15px;
+          }
+          
+          .cyoa-choices-grid {
+            gap: 15px;
+          }
+          
+          .cyoa-choice-card {
+            min-width: 150px;
+            max-width: 180px;
+            padding: 20px 15px;
+          }
+          
+          .choice-card-icon {
+            font-size: 2.5rem;
+          }
+          
+          .choice-card-text {
+            font-size: 1em;
           }
         }
       `}</style>
