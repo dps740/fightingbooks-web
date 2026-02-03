@@ -139,7 +139,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} PHOTOREALISTIC wildlife photography, National Geographic quality, real photograph taken with professional DSLR camera, 85mm lens f/1.8, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs, species-accurate distinctive markings and coloring, realistic proportions and muscle definition, sharp focus on animals, natural lighting, real fur/scales/feathers texture with individual hair detail, authentic wild animal behavior, NO cartoon style, NO illustration, NO painting, NO digital art, NO fantasy elements, NO anthropomorphism, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, natural history museum quality art, educational wildlife book style, dramatic lighting, detailed fur/scales/feathers texture, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, NEVER merge animals together, each animal is SEPARATE and DISTINCT, NO human weapons (no swords no guns no armor), NO anthropomorphism, NO human clothing on animals, NO fantasy elements, NO extra limbs or heads, NO conjoined animals, NO mutant features, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -157,7 +157,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
         body: JSON.stringify({
           prompt: fullPrompt,
           image_size: 'square_hd',
-          num_inference_steps: 8,
+          num_inference_steps: 4,
         }),
       });
 
