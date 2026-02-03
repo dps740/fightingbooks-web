@@ -44,6 +44,67 @@ export default function TournamentPage() {
   const [started, setStarted] = useState(false);
   const [bracket, setBracket] = useState<TournamentState['bracket'] | null>(null);
   const [currentMatch, setCurrentMatch] = useState(0);
+  const [showChampion, setShowChampion] = useState(false);
+
+  // Check for returning tournament state and process winner
+  React.useEffect(() => {
+    const tournamentData = localStorage.getItem('tournament');
+    if (tournamentData) {
+      try {
+        const state: TournamentState & { lastWinner?: string } = JSON.parse(tournamentData);
+        
+        // If we have a returning winner, process bracket progression
+        if (state.lastWinner && state.bracket) {
+          const winner = state.lastWinner;
+          const newBracket = { ...state.bracket };
+          const matchNum = state.currentBattle;
+          
+          // Determine which round and advance winner
+          if (matchNum < 4) {
+            // Round 1 - advance to semis
+            const semiIndex = Math.floor(matchNum / 2);
+            const position = matchNum % 2;
+            newBracket.semis[semiIndex][position] = winner;
+          } else if (matchNum < 6) {
+            // Semis - advance to final
+            const position = matchNum - 4;
+            newBracket.final[position] = winner;
+          } else if (matchNum === 6) {
+            // Final - declare champion!
+            newBracket.winner = winner;
+            setShowChampion(true);
+          }
+          
+          // Update state
+          setBracket(newBracket);
+          setFighters(state.fighters);
+          setMode(state.mode);
+          setStarted(true);
+          setCurrentMatch(matchNum + 1);
+          
+          // Clear lastWinner but keep tournament state
+          delete state.lastWinner;
+          state.bracket = newBracket;
+          state.currentBattle = matchNum + 1;
+          localStorage.setItem('tournament', JSON.stringify(state));
+        } else if (state.bracket && state.fighters) {
+          // Restore existing tournament state (page refresh)
+          setBracket(state.bracket);
+          setFighters(state.fighters);
+          setMode(state.mode);
+          setStarted(true);
+          setCurrentMatch(state.currentBattle);
+          
+          // Check if tournament is already complete
+          if (state.bracket.winner) {
+            setShowChampion(true);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load tournament state:', e);
+      }
+    }
+  }, []);
 
   const addFighter = (name: string) => {
     if (fighters.length < 8 && !fighters.includes(name)) {
@@ -85,6 +146,21 @@ export default function TournamentPage() {
     setBracket(newBracket);
     setStarted(true);
     setCurrentMatch(0);
+    setShowChampion(false);
+    
+    // Clear any old tournament data
+    localStorage.removeItem('tournament');
+  };
+
+  const startNewTournament = () => {
+    // Clear everything and start fresh
+    localStorage.removeItem('tournament');
+    setFighters([]);
+    setBracket(null);
+    setStarted(false);
+    setCurrentMatch(0);
+    setShowChampion(false);
+    setMode('standard');
   };
 
   const startCurrentBattle = () => {
