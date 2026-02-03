@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { put, head, BlobNotFoundError } from '@vercel/blob';
+import { put, head, del, BlobNotFoundError } from '@vercel/blob';
 
 // Simple admin key check (you can make this more secure)
 const ADMIN_KEY = process.env.ADMIN_KEY || 'fightingbooks-admin-2024';
@@ -112,6 +112,7 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
     const blob = await put(`fightingbooks/${cacheKey}.jpg`, imageBuffer, {
       access: 'public',
       contentType,
+      addRandomSuffix: true, // Use random suffix for new images
     });
     
     return blob.url;
@@ -139,12 +140,27 @@ async function loadCachedBook(cacheKey: string): Promise<any | null> {
 }
 
 async function saveCachedBook(cacheKey: string, data: any): Promise<void> {
+  const blobPath = `fightingbooks/cache/${cacheKey}.json`;
+  
   try {
+    // Delete existing blob first (if it exists)
+    try {
+      const existing = await head(blobPath);
+      if (existing?.url) {
+        await del(existing.url);
+        console.log(`[ADMIN] Deleted old cache: ${existing.url}`);
+      }
+    } catch (e) {
+      // Blob doesn't exist, that's fine
+    }
+    
+    // Now save the new version
     const jsonData = JSON.stringify(data);
-    await put(`fightingbooks/cache/${cacheKey}.json`, jsonData, {
+    const blob = await put(blobPath, jsonData, {
       access: 'public',
       contentType: 'application/json',
     });
+    console.log(`[ADMIN] Saved updated book to: ${blob.url}`);
   } catch (error) {
     console.error('Cache save error:', error);
     throw error;
