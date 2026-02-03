@@ -156,8 +156,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { animalA, animalB, pageId, adminKey, environment = 'neutral' } = body;
 
+    console.log(`[ADMIN] Regenerate request: ${animalA} vs ${animalB}, page: ${pageId}`);
+
     // Simple auth check
     if (adminKey !== ADMIN_KEY) {
+      console.log(`[ADMIN] Auth failed`);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -174,7 +177,14 @@ export async function POST(request: NextRequest) {
 
     // Load existing cached book
     const cacheKey = getCacheKey(animalA, animalB, environment);
+    console.log(`[ADMIN] Looking for cached book: ${cacheKey}`);
     const cachedBook = await loadCachedBook(cacheKey);
+    
+    if (!cachedBook) {
+      console.log(`[ADMIN] Book not found in cache`);
+    } else {
+      console.log(`[ADMIN] Found cached book with ${cachedBook.pages?.length} pages`);
+    }
     
     if (!cachedBook) {
       return NextResponse.json({ 
@@ -215,6 +225,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Admin regenerate error:', error);
-    return NextResponse.json({ error: 'Failed to regenerate image' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: `Failed to regenerate image: ${errorMessage}` }, { status: 500 });
   }
 }
