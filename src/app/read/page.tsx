@@ -266,6 +266,7 @@ function BookReader() {
                   </div>
                   <p className="download-note">Save your book to read offline or print!</p>
                 </div>
+                )}
               </>
             )}
 
@@ -554,6 +555,77 @@ function BookReader() {
           background: transparent !important;
           border: none !important;
           padding: 0 !important;
+        }
+        
+        /* Tournament Winner Selection */
+        .tournament-winner-section {
+          position: relative;
+          z-index: 2;
+          margin-top: 20px;
+          padding: 20px;
+          background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+          border-radius: 12px;
+          border: 4px solid #ff5722;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .tournament-winner-title {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: #c62828;
+          margin-bottom: 20px;
+          text-align: center;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+          letter-spacing: 2px;
+        }
+        .tournament-winner-buttons {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin-bottom: 15px;
+        }
+        .tournament-winner-btn {
+          flex: 1;
+          min-width: 150px;
+          padding: 20px;
+          font-size: 1.2em;
+          font-family: 'Comic Neue', cursive;
+          font-weight: bold;
+          border: 4px solid #fff;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+        .winner-a {
+          background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+          color: white;
+        }
+        .winner-b {
+          background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+          color: white;
+        }
+        .tournament-winner-btn:hover {
+          transform: translateY(-4px) scale(1.05);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+        .winner-emoji {
+          font-size: 2.5em;
+        }
+        .winner-name {
+          font-size: 1.3em;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .tournament-winner-note {
+          text-align: center;
+          font-size: 0.95em;
+          color: #333;
+          font-weight: bold;
+          font-style: italic;
         }
         
         /* Download Section */

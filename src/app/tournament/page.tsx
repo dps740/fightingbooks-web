@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Swords, X, Plus, Play, Crown, Zap } from 'lucide-react';
+import { Trophy, Swords, X, Plus, Play, Crown, Zap, Sparkles } from 'lucide-react';
 
 const SUGGESTED_ANIMALS = [
   { name: 'Lion', emoji: '🦁' },
@@ -470,6 +470,97 @@ export default function TournamentPage() {
                 )}
               </div>
             </div>
+
+            {/* Champion Celebration Modal */}
+            <AnimatePresence>
+              {showChampion && bracket?.winner && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+                  onClick={() => setShowChampion(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.5, rotateY: -180 }}
+                    animate={{ scale: 1, rotateY: 0 }}
+                    exit={{ scale: 0.5, rotateY: 180 }}
+                    transition={{ type: 'spring', duration: 0.8 }}
+                    className="bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-600 rounded-3xl p-12 max-w-2xl w-full mx-4 border-8 border-yellow-300 shadow-2xl"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Confetti effect */}
+                    <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                      {[...Array(50)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ y: -20, x: Math.random() * 100 + '%', rotate: 0 }}
+                          animate={{
+                            y: '100vh',
+                            rotate: Math.random() * 360,
+                            transition: {
+                              duration: Math.random() * 2 + 3,
+                              repeat: Infinity,
+                              delay: Math.random() * 2,
+                            },
+                          }}
+                          className="absolute"
+                          style={{
+                            fontSize: '24px',
+                          }}
+                        >
+                          {['🎉', '🏆', '⭐', '✨', '👑'][Math.floor(Math.random() * 5)]}
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    <div className="text-center relative z-10">
+                      <motion.div
+                        animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                      >
+                        <Trophy className="w-32 h-32 mx-auto text-yellow-200 mb-6 drop-shadow-2xl" />
+                      </motion.div>
+
+                      <h2 className="text-6xl font-bold text-white mb-4 drop-shadow-lg" style={{ fontFamily: 'Bangers, cursive', letterSpacing: '3px' }}>
+                        TOURNAMENT CHAMPION!
+                      </h2>
+
+                      <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 mb-8 border-4 border-yellow-200">
+                        <div className="text-8xl mb-4">
+                          {SUGGESTED_ANIMALS.find(a => a.name === bracket.winner)?.emoji || '🏆'}
+                        </div>
+                        <div className="text-5xl font-bold text-white drop-shadow-lg" style={{ fontFamily: 'Bangers, cursive' }}>
+                          {bracket.winner}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4 justify-center">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={startNewTournament}
+                          className="px-8 py-4 bg-white text-black rounded-xl font-bold text-xl flex items-center gap-2 shadow-xl"
+                          style={{ fontFamily: 'Bangers, cursive' }}
+                        >
+                          <Sparkles className="w-6 h-6" />
+                          New Tournament
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowChampion(false)}
+                          className="px-8 py-4 bg-black/30 text-white rounded-xl font-bold text-xl border-2 border-white/50"
+                          style={{ fontFamily: 'Bangers, cursive' }}
+                        >
+                          View Bracket
+                        </motion.button>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </main>

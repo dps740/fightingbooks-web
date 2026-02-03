@@ -134,3 +134,4 @@ const winner = aggressiveChoices >= 2 ? animalA : animalB;
 - [ ] Share "your adventure path" social feature
 - [ ] More than 3 decision points for premium users
 - [ ] Branching narratives (different story paths, not just winner)
+
