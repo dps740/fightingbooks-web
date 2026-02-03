@@ -1091,18 +1091,18 @@ async function saveCachedPDF(cacheKey: string, animalA: string, animalB: string,
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { animalA, animalB, mode = 'standard', environment = 'neutral' } = body;
+    const { animalA, animalB, mode = 'standard', environment = 'neutral', forceRegenerate = false } = body;
 
     if (!animalA || !animalB) {
       return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
     }
 
-    // Check cache first
+    // Check cache first (skip if forceRegenerate)
     const cacheKey = getCacheKey(animalA, animalB, environment);
-    console.log(`[CACHE] Looking for book: ${cacheKey}`);
+    console.log(`[CACHE] Looking for book: ${cacheKey} (forceRegenerate: ${forceRegenerate})`);
     console.log(`[CACHE] BLOB_READ_WRITE_TOKEN present: ${!!process.env.BLOB_READ_WRITE_TOKEN}`);
     
-    let result = await loadCachedBook(cacheKey);
+    let result = forceRegenerate ? null : await loadCachedBook(cacheKey);
     let cacheStatus = 'HIT';
     
     if (!result) {

@@ -41,6 +41,7 @@ function BookReader() {
   const animalB = searchParams.get('b') || 'Tiger';
   const mode = searchParams.get('mode') || 'standard';
   const environment = searchParams.get('env') || 'neutral';
+  const forceRegenerate = searchParams.get('regenerate') === 'true';
 
   const handleVersusComplete = useCallback(() => {
     setShowVersusScreen(false);
@@ -59,7 +60,7 @@ function BookReader() {
       const response = await fetch('/api/book/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ animalA, animalB, mode, environment }),
+        body: JSON.stringify({ animalA, animalB, mode, environment, forceRegenerate }),
       });
       const data = await response.json();
       if (data.pages?.length > 0) {
