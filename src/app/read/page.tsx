@@ -46,6 +46,9 @@ function BookReader() {
     setShowVersusScreen(false);
   }, []);
 
+  // Book is ready when pages are loaded
+  const bookReady = pages.length > 0;
+
   // Start loading book data immediately (parallel with VS animation)
   useEffect(() => { 
     loadBook(); 
@@ -110,6 +113,7 @@ function BookReader() {
       <VersusScreen 
         fighterA={animalA} 
         fighterB={animalB} 
+        bookReady={bookReady}
         onComplete={handleVersusComplete} 
       />
     );

@@ -6,14 +6,16 @@ import { useState, useEffect } from 'react';
 interface VersusScreenProps {
   fighterA: string;
   fighterB: string;
+  bookReady: boolean;
   onComplete: () => void;
 }
 
-export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusScreenProps) {
+export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete }: VersusScreenProps) {
   const [phase, setPhase] = useState<'enter' | 'clash' | 'vs' | 'ready'>('enter');
+  const [animationDone, setAnimationDone] = useState(false);
 
   useEffect(() => {
-    // Animation timeline - auto-proceeds after animation
+    // Animation timeline
     const timeline = [
       { phase: 'clash' as const, delay: 800 },   // Fighters slide in, then clash
       { phase: 'vs' as const, delay: 1400 },     // VS explodes
@@ -24,14 +26,21 @@ export default function VersusScreen({ fighterA, fighterB, onComplete }: VersusS
       setTimeout(() => setPhase(phase), delay)
     );
 
-    // Auto-proceed to book after animation
-    const proceedTimeout = setTimeout(() => onComplete(), 3500);
+    // Mark animation as done after minimum display time
+    const animationTimeout = setTimeout(() => setAnimationDone(true), 2500);
 
     return () => {
       timeouts.forEach(clearTimeout);
-      clearTimeout(proceedTimeout);
+      clearTimeout(animationTimeout);
     };
-  }, [onComplete]);
+  }, []);
+
+  // Auto-proceed when both animation is done AND book is ready
+  useEffect(() => {
+    if (animationDone && bookReady) {
+      onComplete();
+    }
+  }, [animationDone, bookReady, onComplete]);
 
   return (
     <div className="versus-screen">
