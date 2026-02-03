@@ -197,6 +197,36 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           </div>
         )}
 
+        {/* Loading indicator - shows after animation if book not ready */}
+        <AnimatePresence>
+          {animationDone && !bookReady && (
+            <motion.div
+              className="generating-indicator"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div 
+                className="generating-book"
+                animate={{ rotateY: [0, 360] }}
+                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              >
+                📖
+              </motion.div>
+              <div className="generating-text">Generating your battle book...</div>
+              <div className="generating-subtext">This takes about 20-30 seconds</div>
+              <motion.div 
+                className="generating-dots"
+                animate={{ opacity: [1, 0.3, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+              >
+                ⚔️ AI is writing the epic battle ⚔️
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </motion.div>
 
       <style jsx global>{`
@@ -372,6 +402,45 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
 
         /* Font import */
         @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+        /* Generating indicator */
+        .generating-indicator {
+          position: absolute;
+          bottom: 10%;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 30;
+          text-align: center;
+          background: rgba(0,0,0,0.8);
+          padding: 24px 48px;
+          border-radius: 16px;
+          border: 2px solid #ffd700;
+          box-shadow: 0 0 30px rgba(255,215,0,0.3);
+        }
+
+        .generating-book {
+          font-size: 4rem;
+          margin-bottom: 12px;
+        }
+
+        .generating-text {
+          font-family: 'Bangers', cursive, sans-serif;
+          font-size: 1.5rem;
+          color: #ffd700;
+          text-shadow: 2px 2px 0 #000;
+          margin-bottom: 4px;
+        }
+
+        .generating-subtext {
+          font-size: 0.9rem;
+          color: rgba(255,255,255,0.7);
+          margin-bottom: 12px;
+        }
+
+        .generating-dots {
+          font-size: 1rem;
+          color: #ff6b00;
+        }
       `}</style>
     </div>
   );
