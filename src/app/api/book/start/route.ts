@@ -986,6 +986,7 @@ const blobUrlCache = new Map<string, string>();
 
 async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], winner: string } | null> {
   const blobPath = `fightingbooks/cache/${cacheKey}.json`;
+  console.log(`[CACHE-LOAD] Checking blob: ${blobPath}`);
   
   // Try Vercel Blob first (persistent)
   try {
@@ -993,23 +994,31 @@ async function loadCachedBook(cacheKey: string): Promise<{ pages: BookPage[], wi
     let blobUrl = blobUrlCache.get(cacheKey);
     
     if (!blobUrl) {
+      console.log(`[CACHE-LOAD] No in-memory URL, calling head()...`);
       // Use head() to check if blob exists and get its URL
       const blobInfo = await head(blobPath);
       blobUrl = blobInfo.url;
       blobUrlCache.set(cacheKey, blobUrl);
+      console.log(`[CACHE-LOAD] Found blob URL: ${blobUrl}`);
+    } else {
+      console.log(`[CACHE-LOAD] Using in-memory URL: ${blobUrl}`);
     }
     
     // Fetch the cached data
     const dataResponse = await fetch(blobUrl);
     if (dataResponse.ok) {
       const data = await dataResponse.json();
-      console.log(`Cache hit (Blob): ${cacheKey}`);
+      console.log(`[CACHE-LOAD] SUCCESS - Blob cache hit: ${cacheKey}`);
       return data;
+    } else {
+      console.log(`[CACHE-LOAD] Blob fetch failed: ${dataResponse.status}`);
     }
   } catch (error) {
     // BlobNotFoundError is expected for cache miss
-    if (!(error instanceof BlobNotFoundError)) {
-      console.log('Blob cache error:', error);
+    if (error instanceof BlobNotFoundError) {
+      console.log(`[CACHE-LOAD] Blob not found (expected for first generation): ${blobPath}`);
+    } else {
+      console.error(`[CACHE-LOAD] Blob error:`, error);
     }
   }
   
@@ -1090,21 +1099,30 @@ export async function POST(request: NextRequest) {
 
     // Check cache first
     const cacheKey = getCacheKey(animalA, animalB, environment);
+    console.log(`[CACHE] Looking for book: ${cacheKey}`);
+    console.log(`[CACHE] BLOB_READ_WRITE_TOKEN present: ${!!process.env.BLOB_READ_WRITE_TOKEN}`);
+    
     let result = await loadCachedBook(cacheKey);
+    let cacheStatus = 'HIT';
     
     if (!result) {
+      cacheStatus = 'MISS';
+      console.log(`[CACHE] ${cacheStatus} - generating new book for ${animalA} vs ${animalB}`);
       // Generate new book
       result = await generateBook(animalA, animalB, environment);
       // Save to cache (JSON + PDF)
       await saveCachedBook(cacheKey, result);
       await saveCachedPDF(cacheKey, animalA, animalB, result); // Generate PDF alongside
+    } else {
+      console.log(`[CACHE] ${cacheStatus} - returning cached book for ${animalA} vs ${animalB}`);
     }
     
     if (mode === 'cyoa') {
       result.pages = await addCyoaChoices(result.pages, animalA, animalB);
     }
 
-    return NextResponse.json(result);
+    // Include cache status in response for debugging
+    return NextResponse.json({ ...result, _cacheStatus: cacheStatus, _cacheKey: cacheKey });
   } catch (error) {
     console.error('Book start error:', error);
     return NextResponse.json({ error: 'Failed to generate book' }, { status: 500 });
