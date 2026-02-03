@@ -114,6 +114,22 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
   }
 
+  // CHECK FOR EXISTING CACHED IMAGE FIRST
+  if (cacheKey) {
+    const blobPath = `fightingbooks/${cacheKey}.jpg`;
+    try {
+      const blobInfo = await head(blobPath);
+      console.log(`Image cache HIT: ${cacheKey} -> ${blobInfo.url}`);
+      return blobInfo.url;
+    } catch (error) {
+      if (!(error instanceof BlobNotFoundError)) {
+        console.error('Image cache check error:', error);
+      }
+      // Cache miss - proceed to generate
+      console.log(`Image cache MISS: ${cacheKey} - generating new image`);
+    }
+  }
+
   // Extract animal names from prompt and add their specific features
   let animalFeatures = '';
   for (const animal of Object.keys(ANIMAL_FEATURES)) {
@@ -554,7 +570,9 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
 
   // Use pre-generated educational images + generate only battle-specific images
-  const imgPrefix = `${animalA.toLowerCase().replace(/\s+/g, '-')}-vs-${animalB.toLowerCase().replace(/\s+/g, '-')}`;
+  // Sort animal names for consistent image cache keys (same as book cache)
+  const sortedNames = [animalA.toLowerCase().replace(/\s+/g, '-'), animalB.toLowerCase().replace(/\s+/g, '-')].sort();
+  const imgPrefix = `${sortedNames[0]}-vs-${sortedNames[1]}`;
   const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
   const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
   
