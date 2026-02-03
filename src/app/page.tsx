@@ -146,7 +146,76 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mode Selector removed for MVP - will add back when CYOA/Tournament are ready */}
+      {/* 3. Mode Selector */}
+      <section className="px-4 pb-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-[#1a1a2e] rounded-xl p-6 border-4 border-[#FFD700] shadow-2xl">
+            <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
+              🎮 CHOOSE YOUR MODE
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Classic Mode */}
+              <button
+                onClick={() => setGameMode('classic')}
+                className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                  gameMode === 'classic' 
+                    ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                    : 'border-green-600 hover:border-green-400'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
+              >
+                <div className="text-center">
+                  <div className="text-5xl mb-3">📖</div>
+                  <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
+                  <p className="text-white/80 text-sm mb-3">Watch the complete battle unfold</p>
+                  <div className="inline-block bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    FREE
+                  </div>
+                </div>
+                {gameMode === 'classic' && (
+                  <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                    <span className="text-black font-bold">✓</span>
+                  </div>
+                )}
+              </button>
+
+              {/* Adventure Mode */}
+              <button
+                onClick={() => setGameMode('adventure')}
+                className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                  gameMode === 'adventure' 
+                    ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                    : 'border-purple-600 hover:border-purple-400'
+                }`}
+                style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
+              >
+                <div className="text-center">
+                  <div className="text-5xl mb-3">🎭</div>
+                  <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
+                  <p className="text-white/80 text-sm mb-3">YOU decide what happens next!</p>
+                  <div className="inline-block bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    INTERACTIVE
+                  </div>
+                </div>
+                {gameMode === 'adventure' && (
+                  <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                    <span className="text-black font-bold">✓</span>
+                  </div>
+                )}
+              </button>
+            </div>
+            
+            {/* Mode description */}
+            <div className="mt-4 p-4 bg-black/30 rounded-lg">
+              <p className="text-white/90 text-sm text-center">
+                {gameMode === 'classic' 
+                  ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
+                  : '🎭 Make critical choices that shape the battle! Three key decisions determine who wins!'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 4. Fighter Selection - Street Fighter 2 Style */}
       <section className="px-4 pb-6">
