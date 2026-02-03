@@ -221,7 +221,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
                 animate={{ opacity: [1, 0.3, 1] }}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
-                ⚔️ AI is writing the epic battle ⚔️
+                ⚔️ Preparing the ultimate showdown ⚔️
               </motion.div>
             </motion.div>
           )}
