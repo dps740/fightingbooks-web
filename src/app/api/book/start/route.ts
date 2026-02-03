@@ -153,7 +153,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, natural history museum quality art, educational wildlife book style, dramatic lighting, detailed fur/scales/feathers texture, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, NEVER merge animals together, each animal is SEPARATE and DISTINCT, NO human weapons (no swords no guns no armor), NO anthropomorphism, NO human clothing on animals, NO fantasy elements, NO extra limbs or heads, NO conjoined animals, NO mutant features, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  const fullPrompt = `${prompt},${animalFeatures} STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting, detailed fur/scales/feathers texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, animals in NATURAL quadruped or species-appropriate poses only. FORBIDDEN - NEVER INCLUDE: NO human features whatsoever, NO human hands, NO human arms, NO bipedal standing poses, NO raised fists or celebration poses, NO victory poses, NO human-like expressions, NO anthropomorphism, NO human clothing on animals, NO human weapons (no swords no guns no armor), NO fantasy elements, NO extra limbs or heads, NO conjoined or merged animals, NO mutant features, NO cartoon style, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE. Animals must behave and pose like REAL WILD ANIMALS in nature.`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -613,7 +613,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
     generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
     generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
-    generateImage(`${battle.winner} powerful stance after battle, realistic animal behavior, dramatic lighting, wildlife photography`, `${imgPrefix}-victory`),
+    generateImage(`${battle.winner} standing dominant over defeated prey, natural animal posture on all fours, wild predator after successful hunt, nature documentary style, no human poses no celebration no raised limbs`, `${imgPrefix}-victory`),
   ]);
   console.log('Battle images generated');
   
@@ -976,103 +976,127 @@ async function generateBook(animalA: string, animalB: string, environment: strin
 
 // Generate CYOA choices using AI for all 3 gates
 async function generateCyoaGates(animalA: string, animalB: string, factsA: AnimalFacts, factsB: AnimalFacts): Promise<any[]> {
-  const gates = [
-    {
-      type: 'arena',
-      title: '⚔️ THE ARENA SHIFTS ⚔️',
-      intro: 'The battlefield trembles... Something is about to change!',
-    },
-    {
-      type: 'turning_point',
-      title: '⚡ THE TURNING POINT ⚡',
-      intro: 'A critical moment! The tide of battle can shift either way!',
-    },
-    {
-      type: 'final_moment',
-      title: '🔥 THE FINAL MOMENT 🔥',
-      intro: 'This is it! The decisive moment that will determine the winner!',
-    },
-  ];
-
-  const allGateChoices = [];
-
-  for (const gate of gates) {
-    const prompt = `Generate 3 dramatic choices for a ${gate.type} moment in a battle between ${animalA} and ${animalB}.
+  // Generate all 3 decision points with contextual, wild-themed titles in a single API call
+  const prompt = `Generate 3 dramatic decision moments for a wild encounter between ${animalA} and ${animalB}.
 
 Animal A (${animalA}):
 - Weapons: ${factsA.weapons.join(', ')}
 - Speed: ${factsA.speed}
-- Habitat: ${factsA.habitat}
+- Natural habitat: ${factsA.habitat}
 
 Animal B (${animalB}):
 - Weapons: ${factsB.weapons.join(', ')}
 - Speed: ${factsB.speed}
-- Habitat: ${factsB.habitat}
+- Natural habitat: ${factsB.habitat}
 
-Gate types:
-- "arena": Environmental/terrain changes that favor different abilities based on habitat or physical traits
-- "turning_point": Unexpected events that shift momentum based on speed, weapons, or tactics
-- "final_moment": Decisive actions that determine the winner based on their key strengths
+Create 3 unique decision points that happen during this wild encounter. Each decision point needs:
+1. A dramatic, contextual TITLE (2-4 words) specific to THIS battle - something like "The Riverbank", "Into the Shadows", "Claws Meet Fangs", "The Final Lunge", "Through the Brush"
+2. An intro sentence setting the scene (natural wild setting, NO arena/stadium references)
+3. Three choices the reader can make
 
-Each choice should:
-1. Be vivid and dramatic (1-2 sentences max)
-2. NOT mention "${animalA}" or "${animalB}" by name in the choice text itself
-3. Subtly favor one animal based on their REAL abilities and traits
-4. Feel natural to an animal battle
-5. Be written from a neutral observer perspective
+IMPORTANT RULES:
+- NO arena, stadium, or fighting ring references - this happens in the WILD
+- NO numbering like "Round 1" or "Decision 1 of 3"
+- Titles should be UNIQUE and SPECIFIC to what's happening in that moment
+- Each decision should flow naturally into the next
+- The setting should feel like a nature documentary, not a boxing match
 
-Return JSON array with EXACTLY 3 choices:
-[
-  {
-    "text": "The dramatic choice description (no animal names!)",
-    "icon": "single emoji that fits the choice",
-    "favors": "A" or "B" or "neutral",
-    "outcome": "What happens if chosen (2-3 sentences, dramatic but educational)"
-  }
-]
+Return JSON:
+{
+  "gates": [
+    {
+      "title": "DRAMATIC CONTEXTUAL TITLE",
+      "intro": "One sentence setting the wild scene (no arena references)",
+      "choices": [
+        {
+          "text": "The dramatic choice (1-2 sentences, no animal names)",
+          "icon": "single emoji",
+          "favors": "A" or "B" or "neutral",
+          "outcome": "What happens (2-3 sentences, dramatic but educational)"
+        },
+        { ... },
+        { ... }
+      ]
+    },
+    { ... },
+    { ... }
+  ]
+}
 
-IMPORTANT: Each choice must favor a DIFFERENT option (one favors A, one favors B, one neutral) for balance.`;
+IMPORTANT: Each gate's 3 choices must favor DIFFERENT options (one A, one B, one neutral) for balance.`;
 
-    try {
-      const response = await getOpenAI().chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
-        temperature: 0.8,
-      });
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      response_format: { type: 'json_object' },
+      temperature: 0.8,
+    });
 
-      const result = JSON.parse(response.choices[0].message.content || '{}');
-      const choices = result.choices || [];
+    const result = JSON.parse(response.choices[0].message.content || '{}');
+    const gates = result.gates || [];
+    
+    // Ensure we have exactly 3 gates with proper structure
+    const processedGates = [];
+    for (let i = 0; i < 3; i++) {
+      const gate = gates[i] || {};
+      const choices = gate.choices || [];
       
-      // Ensure we have exactly 3 choices
+      // Ensure 3 choices per gate
       while (choices.length < 3) {
         choices.push({
-          text: 'The battle intensifies!',
+          text: 'The encounter intensifies!',
           icon: '⚡',
           favors: 'neutral',
-          outcome: 'Both animals continue to fight with equal determination!',
+          outcome: 'Both animals hold their ground, neither giving an inch!',
         });
       }
-
-      allGateChoices.push({
-        ...gate,
+      
+      processedGates.push({
+        title: gate.title || ['The Encounter', 'The Chase', 'The Showdown'][i],
+        intro: gate.intro || 'The tension builds in the wild...',
         choices: choices.slice(0, 3),
-      });
-    } catch (error) {
-      console.error(`Error generating choices for ${gate.type}:`, error);
-      // Fallback choices
-      allGateChoices.push({
-        ...gate,
-        choices: [
-          { text: 'The terrain shifts to favor speed and agility!', icon: '💨', favors: 'A', outcome: `The faster animal gains an advantage!` },
-          { text: 'Heavy cover appears, favoring stealth and power!', icon: '🌿', favors: 'B', outcome: `The more powerful animal uses the cover!` },
-          { text: 'The battlefield remains neutral!', icon: '⚖️', favors: 'neutral', outcome: 'Both animals adapt to the conditions!' },
-        ],
+        gateNumber: i + 1, // Keep for internal tracking, but won't display to user
       });
     }
+    
+    return processedGates;
+  } catch (error) {
+    console.error('Error generating CYOA gates:', error);
+    // Fallback with wild-themed titles
+    return [
+      {
+        title: 'The Clearing',
+        intro: 'The two predators spot each other across an open clearing...',
+        gateNumber: 1,
+        choices: [
+          { text: 'A burst of speed across the open ground!', icon: '💨', favors: 'A', outcome: `The faster animal closes the distance in a flash!` },
+          { text: 'A slow, intimidating approach through the grass!', icon: '🌿', favors: 'B', outcome: `The larger animal uses its size to dominate the space!` },
+          { text: 'Both circle warily, testing each other!', icon: '🔄', favors: 'neutral', outcome: 'Neither commits yet, sizing up the opponent!' },
+        ],
+      },
+      {
+        title: 'The Strike',
+        intro: 'The first attack is launched...',
+        gateNumber: 2,
+        choices: [
+          { text: 'A powerful leap to gain higher ground!', icon: '🦁', favors: 'A', outcome: `Using agility to gain the advantage!` },
+          { text: 'Standing ground with a devastating counter!', icon: '🛡️', favors: 'B', outcome: `Raw power meets the charge head-on!` },
+          { text: 'A glancing blow - both animals regroup!', icon: '⚔️', favors: 'neutral', outcome: 'The first exchange ends in a draw!' },
+        ],
+      },
+      {
+        title: 'The Final Moment',
+        intro: 'One final clash will decide everything...',
+        gateNumber: 3,
+        choices: [
+          { text: 'An all-out assault holding nothing back!', icon: '🔥', favors: 'A', outcome: `Maximum aggression for the win!` },
+          { text: 'A patient, calculated finishing move!', icon: '🎯', favors: 'B', outcome: `Precision over power!` },
+          { text: 'Both animals give everything they have!', icon: '💥', favors: 'neutral', outcome: 'An epic clash of titans!' },
+        ],
+      },
+    ];
   }
-
-  return allGateChoices;
 }
 
 // Add CYOA choices - generates all 3 decision gates upfront

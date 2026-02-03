@@ -23,7 +23,7 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
   }
 
-  const fullPrompt = `${prompt}, detailed painted wildlife illustration, ANATOMICALLY ACCURATE animal anatomy, correct number of limbs, realistic proportions, no human features on animals, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  const fullPrompt = `${prompt}, STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO raised limbs, NO anthropomorphism, NO human clothing, NO fantasy elements, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE. Animals must behave like REAL WILD ANIMALS.`;
 
   try {
     const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       const loser = winner === animalA ? animalB : animalA;
       
       // Generate victory image
-      const victoryImage = await generateImage(`${winner} victorious, triumphant powerful stance after battle, realistic wildlife photography style`);
+      const victoryImage = await generateImage(`${winner} standing dominant over defeated opponent, natural animal posture on all fours, wild predator after successful hunt, nature documentary style, no human poses no celebration no raised limbs`);
       
       // Determine how decisive the victory was
       const scoreDiff = Math.abs(finalScoreA - finalScoreB);

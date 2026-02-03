@@ -397,8 +397,8 @@ function BookReader() {
                 </div>
 
                 {/* Decision header */}
-                <h2 className="cyoa-gate-title">⚔️ YOUR CHOICE ⚔️</h2>
-                <p className="cyoa-decision-number">Decision {page.gateNumber} of 3</p>
+                {/* Dynamic contextual title from AI */}
+                <h2 className="cyoa-gate-title">⚔️ {page.title} ⚔️</h2>
 
                 {/* Introduction text */}
                 <div className="cyoa-intro-box" dangerouslySetInnerHTML={{ __html: page.content }} />
