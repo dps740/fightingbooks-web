@@ -7,6 +7,13 @@ import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import VersusScreen from './VersusScreen';
 import { generatePdfClientSide, downloadPdf } from '@/lib/clientPdfGenerator';
 
+interface AnimalStats {
+  strength: number;
+  speed: number;
+  weapons: number;
+  defense: number;
+}
+
 interface BookPage {
   id: string;
   type: 'cover' | 'intro' | 'stats' | 'battle' | 'choice' | 'victory';
@@ -17,6 +24,10 @@ interface BookPage {
   gateNumber?: number;
   animalAPortrait?: string;
   animalBPortrait?: string;
+  stats?: {
+    animalA: AnimalStats;
+    animalB: AnimalStats;
+  };
 }
 
 interface Choice {

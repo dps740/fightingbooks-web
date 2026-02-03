@@ -5,6 +5,13 @@ import fs from 'fs';
 import { put, head, BlobNotFoundError } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
 
+interface AnimalStats {
+  strength: number;
+  speed: number;
+  weapons: number;
+  defense: number;
+}
+
 interface BookPage {
   id: string;
   type: string;
@@ -15,6 +22,10 @@ interface BookPage {
   gateNumber?: number;
   animalAPortrait?: string;
   animalBPortrait?: string;
+  stats?: {
+    animalA: AnimalStats;
+    animalB: AnimalStats;
+  };
 }
 
 interface AnimalFacts {
