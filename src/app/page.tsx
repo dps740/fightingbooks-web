@@ -464,8 +464,8 @@ export default function Home() {
       </section>
       )}
 
-      {/* FIGHT! Overlay - appears when both fighters selected AND overlay is open */}
-      {canGenerate && showFightOverlay && (
+      {/* FIGHT! Overlay - appears when both fighters selected AND overlay is open (single battle only) */}
+      {battleType === 'single' && canGenerate && showFightOverlay && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
           onClick={() => { if (!loading) { setShowFightOverlay(false); setAnimalA(''); setAnimalB(''); setSelectingFor('A'); } }}
