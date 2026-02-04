@@ -355,7 +355,7 @@ export default function Home() {
                 {gameMode === 'classic' ? '📖 Classic' : '🎭 Adventure'} mode • {tournamentFighters.length}/8 selected
               </p>
               <p className="text-white/50 text-sm mt-1">
-                Tap a fighter to select • Tap again or ✕ to remove
+                Tap to select • Tap slot or fighter again to remove
               </p>
             </div>
 
@@ -387,7 +387,10 @@ export default function Home() {
                     </div>
                     
                     {fighter ? (
-                      <>
+                      <button
+                        onClick={() => handleTournamentFighterSelect(fighter)}
+                        className="absolute inset-0 w-full h-full cursor-pointer hover:ring-2 hover:ring-red-500 transition-all"
+                      >
                         <img 
                           src={getImagePath(fighter)} 
                           alt={fighter} 
@@ -399,14 +402,7 @@ export default function Home() {
                             {fighter.toUpperCase()}
                           </p>
                         </div>
-                        {/* Remove button */}
-                        <button
-                          onClick={() => handleTournamentFighterSelect(fighter)}
-                          className="absolute top-1 right-1 bg-red-600 hover:bg-red-500 w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold z-10"
-                        >
-                          ✕
-                        </button>
-                      </>
+                      </button>
                     ) : (
                       <div className="flex items-center justify-center h-full">
                         <span className="text-white/40 text-3xl">?</span>
