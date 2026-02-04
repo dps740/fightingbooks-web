@@ -354,6 +354,9 @@ export default function Home() {
               <p className="text-white/70 mt-2">
                 {gameMode === 'classic' ? '📖 Classic' : '🎭 Adventure'} mode • {tournamentFighters.length}/8 selected
               </p>
+              <p className="text-white/50 text-sm mt-1">
+                Tap a fighter to select • Tap again or ✕ to remove
+              </p>
             </div>
 
             {/* 8 Fighter Slots - 2 rows of 4 */}

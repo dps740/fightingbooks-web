@@ -128,9 +128,10 @@ export default function BracketPage() {
   };
 
   const getMatchLabel = (matchNum: number): string => {
-    if (matchNum < 4) return `Match ${matchNum + 1}`;
+    if (matchNum < 4) return `Round 1 - Match ${matchNum + 1}`;
     if (matchNum < 6) return `Semi-Final ${matchNum - 3}`;
-    return 'THE FINAL';
+    if (matchNum === 6) return 'The Final';
+    return 'Tournament Complete';
   };
 
   if (!tournament) {
@@ -327,7 +328,7 @@ export default function BracketPage() {
 
         {/* Progress indicator */}
         <div className="mt-6 text-center text-white/60">
-          Match {Math.min(tournament.currentMatch + 1, 7)} of 7
+          {getMatchLabel(tournament.currentMatch)}
           {isComplete && ' - Tournament Complete!'}
         </div>
 
