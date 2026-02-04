@@ -122,7 +122,7 @@ export default function LoginPage() {
           {/* Forgot password link */}
           <div className="mt-4 text-center">
             <a 
-              href="/account/reset-password"
+              href="/forgot-password"
               className="text-sm text-purple-600 hover:underline"
             >
               Forgot your password?
