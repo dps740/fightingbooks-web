@@ -229,12 +229,7 @@ export default function Home() {
       
       {/* Header with Account Menu */}
       <header className="px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* Logo/Home link */}
-          <a href="/" className="font-bangers text-[#FFD700] text-xl hover:text-yellow-300 transition-colors" style={{ textShadow: '2px 2px 0 #000' }}>
-            WHO WOULD WIN?
-          </a>
-          
+        <div className="max-w-7xl mx-auto flex justify-end items-center">
           {/* Account Menu */}
           <AccountMenu 
             isAuthenticated={tierData.isAuthenticated}

@@ -15,8 +15,37 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FightingBooks - Epic Animal Battles for Kids",
-  description: "Create custom illustrated books where your favorite animals battle it out!",
+  title: "Who Would Win? - Create Epic Animal Battle Books",
+  description: "Create custom illustrated books where your favorite animals battle it out! Inspired by Jerry Pallotta's bestselling series. Generate AI-powered battle stories with Lions, Tigers, Sharks, Dinosaurs and more.",
+  keywords: ["who would win", "animal battles", "kids books", "AI book generator", "custom books", "animal fights", "educational books"],
+  authors: [{ name: "FightingBooks" }],
+  creator: "FightingBooks",
+  openGraph: {
+    title: "Who Would Win? - Create Epic Animal Battle Books",
+    description: "Create custom illustrated books where your favorite animals battle it out! Generate AI-powered battle stories instantly.",
+    url: "https://fightingbooks.vercel.app",
+    siteName: "FightingBooks",
+    locale: "en_US",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Who Would Win? - Epic Animal Battles",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Who Would Win? - Create Epic Animal Battle Books",
+    description: "Create custom illustrated books where your favorite animals battle it out!",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
