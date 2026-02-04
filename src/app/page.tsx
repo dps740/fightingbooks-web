@@ -204,7 +204,7 @@ export default function Home() {
 
       {/* Fighter Carousel */}
       <section className="py-6 px-4">
-        <div className="max-w-4xl mx-auto overflow-hidden rounded-xl">
+        <div className="max-w-7xl mx-auto overflow-hidden">
           <motion.div 
             className="flex gap-3"
             animate={{ x: [0, -2000] }}
