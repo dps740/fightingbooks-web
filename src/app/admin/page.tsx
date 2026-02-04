@@ -63,8 +63,8 @@ export default function AdminPage() {
       const response = await fetch('/api/admin/delete-book', {
         headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
       });
-      if (!response.ok) throw new Error('Failed to load cache');
       const data = await response.json();
+      if (!response.ok) throw new Error(data.details || data.error || 'Failed to load cache');
       setCacheData(data);
     } catch (err) {
       setCacheError(err instanceof Error ? err.message : 'Failed to load cache');
