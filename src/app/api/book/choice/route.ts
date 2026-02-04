@@ -23,7 +23,7 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
     return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
   }
 
-  const fullPrompt = `${prompt}, STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO raised limbs, NO anthropomorphism, NO human clothing, NO fantasy elements, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE. Animals must behave like REAL WILD ANIMALS.`;
+  const fullPrompt = `${prompt}, STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. CRITICAL: Each animal must be its own DISTINCT species - DO NOT merge or blend animal features. A lion has a mane but NO stripes. A tiger has stripes but NO mane. Keep species completely separate and anatomically accurate to their real-world appearance. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO raised limbs, NO anthropomorphism, NO human clothing, NO fantasy elements, NO hybrid animals, NO merged features between species, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE. Animals must behave like REAL WILD ANIMALS.`;
 
   try {
     const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
