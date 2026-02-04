@@ -440,25 +440,29 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           {animationDone && !bookReady && (
             <motion.div
               className="generating-indicator"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
             >
-              <motion.div 
-                className="generating-spinner"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              >
-                ⚔️
-              </motion.div>
-              <div className="generating-text">Preparing the battle...</div>
-              <motion.div 
-                className="generating-bar"
-                initial={{ width: 0 }}
-                animate={{ width: '100%' }}
-                transition={{ duration: 15, ease: 'linear' }}
-              />
+              <div className="generating-banner">
+                <motion.div 
+                  className="generating-spinner"
+                  animate={{ rotate: [0, 10, -10, 10, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.5 }}
+                >
+                  📖
+                </motion.div>
+                <div className="generating-text">CREATING YOUR BOOK!</div>
+                <div className="generating-bar">
+                  <motion.div 
+                    className="generating-bar-fill"
+                    initial={{ width: 0 }}
+                    animate={{ width: '100%' }}
+                    transition={{ duration: 20, ease: 'linear' }}
+                  />
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -812,41 +816,51 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
         /* Font import */
         @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
-        /* Generating indicator */
+        /* Generating indicator - Book style, centered */
         .generating-indicator {
           position: absolute;
-          bottom: 8%;
+          top: 50%;
           left: 50%;
-          transform: translateX(-50%);
+          transform: translate(-50%, -50%);
           z-index: 30;
           text-align: center;
-          background: rgba(0,0,0,0.85);
-          padding: 20px 40px;
-          border-radius: 16px;
-          border: 2px solid #ffd700;
-          box-shadow: 0 0 30px rgba(255,215,0,0.3);
-          min-width: 250px;
+        }
+
+        .generating-banner {
+          background: #ffeb3b;
+          padding: 20px 50px;
+          border: 4px solid #ff0000;
+          border-radius: 12px;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
 
         .generating-spinner {
-          font-size: 2.5rem;
+          font-size: 3rem;
           margin-bottom: 10px;
           display: inline-block;
         }
 
         .generating-text {
           font-family: 'Bangers', cursive, sans-serif;
-          font-size: 1.3rem;
-          color: #ffd700;
-          text-shadow: 2px 2px 0 #000;
-          margin-bottom: 12px;
+          font-size: 2rem;
+          color: #cc0000;
+          text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+          letter-spacing: 2px;
         }
 
         .generating-bar {
-          height: 4px;
-          background: linear-gradient(90deg, #ffd700, #ff6b00);
+          height: 8px;
+          background: #e0e0e0;
+          border-radius: 4px;
+          margin-top: 15px;
+          overflow: hidden;
+          border: 2px solid #cc0000;
+        }
+
+        .generating-bar-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #4caf50, #8bc34a);
           border-radius: 2px;
-          box-shadow: 0 0 10px rgba(255,215,0,0.5);
         }
       `}</style>
     </div>
