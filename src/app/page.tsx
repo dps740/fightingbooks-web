@@ -415,6 +415,32 @@ export default function Home() {
               <p className="text-white/50 text-sm mt-1">
                 Tap to select • Tap slot or fighter again to remove
               </p>
+              
+              {/* Tier Info Banner */}
+              {!tierData.isAuthenticated && (
+                <div className="mt-3 bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-lg p-3 border border-blue-500/50 max-w-xl mx-auto">
+                  <p className="text-white text-sm">
+                    🎁 <a href="/signup" className="text-yellow-400 font-bold hover:underline">Sign up FREE</a> to unlock 8 animals!
+                    <span className="text-white/70 ml-2">Or upgrade for all 47.</span>
+                  </p>
+                </div>
+              )}
+              
+              {/* Tier Legend */}
+              <div className="mt-3 flex flex-wrap justify-center gap-3 text-sm">
+                <span className="flex items-center gap-1 text-white/80">
+                  <span className="w-3 h-3 rounded-full bg-green-500"></span> Free (8)
+                </span>
+                <span className="flex items-center gap-1 text-white/80">
+                  <span className="w-3 h-3 rounded-full bg-blue-500"></span> Real $9.99 (30)
+                </span>
+                <span className="flex items-center gap-1 text-white/80">
+                  <span className="w-3 h-3 rounded-full bg-purple-500"></span> Ultimate $19.99 (47)
+                </span>
+                <span className="flex items-center gap-1 text-white/60">
+                  🔒 = Locked
+                </span>
+              </div>
             </div>
 
             {/* 8 Fighter Slots - single row, compact */}
@@ -539,6 +565,32 @@ export default function Home() {
             <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
               ⚔️ PLAYER SELECT
             </h2>
+            
+            {/* Tier Info Banner */}
+            {!tierData.isAuthenticated && (
+              <div className="mt-3 bg-gradient-to-r from-blue-900/80 to-purple-900/80 rounded-lg p-3 border border-blue-500/50 max-w-xl mx-auto">
+                <p className="text-white text-sm">
+                  🎁 <a href="/signup" className="text-yellow-400 font-bold hover:underline">Sign up FREE</a> to unlock 8 animals!
+                  <span className="text-white/70 ml-2">Or upgrade for all 47.</span>
+                </p>
+              </div>
+            )}
+            
+            {/* Tier Legend */}
+            <div className="mt-3 flex flex-wrap justify-center gap-3 text-sm">
+              <span className="flex items-center gap-1 text-white/80">
+                <span className="w-3 h-3 rounded-full bg-green-500"></span> Free (8)
+              </span>
+              <span className="flex items-center gap-1 text-white/80">
+                <span className="w-3 h-3 rounded-full bg-blue-500"></span> Real $9.99 (30)
+              </span>
+              <span className="flex items-center gap-1 text-white/80">
+                <span className="w-3 h-3 rounded-full bg-purple-500"></span> Ultimate $19.99 (47)
+              </span>
+              <span className="flex items-center gap-1 text-white/60">
+                🔒 = Locked
+              </span>
+            </div>
           </div>
 
           {/* Side-by-Side on tablet+, stacked on mobile */}
