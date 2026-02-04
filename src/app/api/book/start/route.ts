@@ -1114,7 +1114,91 @@ The order MUST be: A-favoring, B-favoring, neutral for every gate.`;
   }
 }
 
-// Add CYOA choices - generates all 3 decision gates upfront
+// CYOA Cache Version - bump to invalidate cached gates when generation logic changes
+const CYOA_CACHE_VERSION = 'v1';
+
+// Generate a cache key for CYOA gates (consistent ordering)
+function getCyoaCacheKey(animalA: string, animalB: string): string {
+  const sorted = [animalA.toLowerCase().replace(/\s+/g, '-'), animalB.toLowerCase().replace(/\s+/g, '-')].sort();
+  return `${sorted[0]}-vs-${sorted[1]}`;
+}
+
+// Load cached CYOA gates from Vercel Blob
+async function loadCachedCyoaGates(cacheKey: string): Promise<{ gates: any[] } | null> {
+  const blobPath = `fightingbooks/cyoa/${cacheKey}/gates-${CYOA_CACHE_VERSION}.json`;
+  console.log(`[CYOA-CACHE] Checking blob: ${blobPath}`);
+  
+  try {
+    const blobInfo = await head(blobPath);
+    const response = await fetch(blobInfo.url);
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`[CYOA-CACHE] Gates found for ${cacheKey}`);
+      return data;
+    }
+  } catch (error) {
+    if (!(error instanceof BlobNotFoundError)) {
+      console.error(`[CYOA-CACHE] Error loading gates:`, error);
+    }
+  }
+  
+  return null;
+}
+
+// Save CYOA gates to Vercel Blob
+async function saveCachedCyoaGates(cacheKey: string, data: { animalA: string; animalB: string; createdAt: string; gates: any[] }): Promise<void> {
+  const blobPath = `fightingbooks/cyoa/${cacheKey}/gates-${CYOA_CACHE_VERSION}.json`;
+  
+  try {
+    const blob = await put(blobPath, JSON.stringify(data), {
+      access: 'public',
+      contentType: 'application/json',
+    });
+    console.log(`[CYOA-CACHE] Gates saved to: ${blob.url}`);
+  } catch (error) {
+    console.error(`[CYOA-CACHE] Error saving gates:`, error);
+  }
+}
+
+// Add CYOA choices from cached gates (skips generation)
+async function addCyoaChoicesFromCachedGates(pages: BookPage[], animalA: string, animalB: string, cachedData: { gates: any[] }): Promise<BookPage[]> {
+  const statsIndex = pages.findIndex(p => p.type === 'stats');
+  if (statsIndex === -1) return pages;
+
+  const gates = cachedData.gates;
+
+  // Get animal portraits for VS header
+  const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
+  const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
+  const portraitA = `/fighters/${nameA}.jpg`;
+  const portraitB = `/fighters/${nameB}.jpg`;
+
+  // Generate battle scene image (also cached via generateImage's internal cache)
+  const imgPrefix = `${nameA}-vs-${nameB}`;
+  const battleBg = await generateImage(
+    `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield`,
+    `${imgPrefix}-cyoa-bg`
+  );
+
+  // Insert the 3 decision gates after stats
+  const beforeStats = pages.slice(0, statsIndex + 1);
+  
+  const decisionPages: BookPage[] = gates.map((gate, index) => ({
+    id: `decision-${index + 1}`,
+    type: 'choice',
+    title: gate.title,
+    content: `<p class="decision-intro">${gate.intro}</p>`,
+    imageUrl: battleBg,
+    choices: gate.choices,
+    gateNumber: index + 1,
+    animalAPortrait: portraitA,
+    animalBPortrait: portraitB,
+  }));
+
+  return [...beforeStats, ...decisionPages];
+}
+
+// Add CYOA choices - generates all 3 decision gates upfront (legacy, used when no cache)
 async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: string, factsA: AnimalFacts, factsB: AnimalFacts): Promise<BookPage[]> {
   const statsIndex = pages.findIndex(p => p.type === 'stats');
   if (statsIndex === -1) return pages;
@@ -1300,15 +1384,37 @@ export async function POST(request: NextRequest) {
       console.log(`[CACHE] ${cacheStatus} - returning cached book for ${animalA} vs ${animalB}`);
     }
     
-    // For CYOA mode, we need the facts to generate intelligent choices
+    // For CYOA mode, check for cached gates or generate new ones
     if (mode === 'cyoa') {
-      // Generate facts if not cached (needed for choice generation)
-      const [factsA, factsB] = await Promise.all([
-        generateAnimalFacts(animalA),
-        generateAnimalFacts(animalB),
-      ]);
+      const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
       
-      result.pages = await addCyoaChoices(result.pages, animalA, animalB, factsA, factsB);
+      // Try to load cached gates
+      let cachedGates = forceRegenerate ? null : await loadCachedCyoaGates(cyoaCacheKey);
+      
+      if (cachedGates) {
+        console.log(`[CYOA-CACHE] Gates HIT for ${cyoaCacheKey}`);
+        result.pages = await addCyoaChoicesFromCachedGates(result.pages, animalA, animalB, cachedGates);
+      } else {
+        console.log(`[CYOA-CACHE] Gates MISS for ${cyoaCacheKey} - generating new gates`);
+        // Generate facts (needed for choice generation)
+        const [factsA, factsB] = await Promise.all([
+          generateAnimalFacts(animalA),
+          generateAnimalFacts(animalB),
+        ]);
+        
+        // Generate gates and add to pages
+        const gates = await generateCyoaGates(animalA, animalB, factsA, factsB);
+        
+        // Cache the gates
+        await saveCachedCyoaGates(cyoaCacheKey, {
+          animalA,
+          animalB,
+          createdAt: new Date().toISOString(),
+          gates,
+        });
+        
+        result.pages = await addCyoaChoicesFromCachedGates(result.pages, animalA, animalB, { gates });
+      }
     }
 
     // Include cache status in response for debugging

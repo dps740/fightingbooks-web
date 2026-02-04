@@ -53,6 +53,7 @@ function BookReader() {
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
   const [cyoaScore, setCyoaScore] = useState({ A: 0, B: 0 });
+  const [cyoaPath, setCyoaPath] = useState(''); // Tracks choices: '' → 'A' → 'A-B' → 'A-B-N'
   const [showChoiceOverlay, setShowChoiceOverlay] = useState(false);
   const [selectedChoiceText, setSelectedChoiceText] = useState('');
 
@@ -127,6 +128,7 @@ function BookReader() {
           choiceFavors: choice.favors || 'neutral',
           choiceOutcome: choice.outcome || 'The battle continues!',
           currentScore: cyoaScore,
+          currentPath: cyoaPath, // Send current path for caching
           allPages: pages,
           taleOfTheTape,
         }),
@@ -134,9 +136,12 @@ function BookReader() {
       const data = await response.json();
       
       if (data.pages) {
-        // Update score
+        // Update score and path
         if (data.score) {
           setCyoaScore(data.score);
+        }
+        if (data.newPath) {
+          setCyoaPath(data.newPath);
         }
         
         // Insert new pages right AFTER current page (not at end)
