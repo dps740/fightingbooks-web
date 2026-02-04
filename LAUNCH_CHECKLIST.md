@@ -14,6 +14,15 @@
 - [ ] Enable Vercel Analytics (Project Settings → Analytics → Enable)
 - [ ] Review env vars in Vercel dashboard (all 11 should be set)
 
+## Post Custom Domain Setup (David)
+
+- [ ] Submit to Google Search Console (after domain is live)
+  1. Go to: https://search.google.com/search-console
+  2. Add property → enter your custom domain
+  3. Verify ownership (HTML tag or DNS method)
+  4. Submit sitemap: `https://[yourdomain]/sitemap.xml`
+  - **Wait until custom domain is configured before doing this**
+
 ## Pre-Go-Live (Scout) ✅
 
 - [x] Meta descriptions for all pages

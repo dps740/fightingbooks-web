@@ -20,7 +20,7 @@ const BLOG_SLUGS = [
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://fightingbooks.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fightingbooks.vercel.app';
   
   const staticPages = [
     {

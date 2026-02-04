@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Who Would Win? - Create Epic Animal Battle Books",
     description: "Create custom illustrated books where your favorite animals battle it out! Generate AI-powered battle stories instantly.",
-    url: "https://fightingbooks.vercel.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://fightingbooks.vercel.app",
     siteName: "FightingBooks",
     locale: "en_US",
     type: "website",
