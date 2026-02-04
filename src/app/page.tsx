@@ -359,8 +359,8 @@ export default function Home() {
               </p>
             </div>
 
-            {/* 8 Fighter Slots - 2 rows of 4 */}
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            {/* 8 Fighter Slots - single row, compact */}
+            <div className="grid grid-cols-8 gap-2 mb-4">
               {[...Array(8)].map((_, index) => {
                 const fighter = tournamentFighters[index];
                 const matchLabels = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B'];
@@ -369,10 +369,10 @@ export default function Home() {
                     key={index}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`relative aspect-square rounded-xl border-4 overflow-hidden transition-all ${
+                    transition={{ delay: index * 0.03 }}
+                    className={`relative aspect-square rounded-lg border-2 overflow-hidden transition-all ${
                       fighter 
-                        ? 'border-[#FFD700] shadow-[0_0_20px_rgba(255,215,0,0.4)]' 
+                        ? 'border-[#FFD700] shadow-[0_0_15px_rgba(255,215,0,0.4)]' 
                         : 'border-white/30 border-dashed'
                     }`}
                     style={{ 
@@ -382,7 +382,7 @@ export default function Home() {
                     }}
                   >
                     {/* Match label */}
-                    <div className="absolute top-1 left-1 bg-black/60 px-2 py-0.5 rounded text-xs font-bold text-[#FFD700] z-10">
+                    <div className="absolute top-0.5 left-0.5 bg-black/70 px-1 py-0.5 rounded text-[10px] font-bold text-[#FFD700] z-10">
                       {matchLabels[index]}
                     </div>
                     
@@ -397,43 +397,20 @@ export default function Home() {
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-2">
-                          <p className="font-bangers text-white text-sm text-center truncate" style={{ textShadow: '2px 2px 0 #000' }}>
+                        <div className="absolute bottom-0 left-0 right-0 p-1">
+                          <p className="font-bangers text-white text-[10px] text-center truncate" style={{ textShadow: '1px 1px 0 #000' }}>
                             {fighter.toUpperCase()}
                           </p>
                         </div>
                       </button>
                     ) : (
                       <div className="flex items-center justify-center h-full">
-                        <span className="text-white/40 text-3xl">?</span>
+                        <span className="text-white/40 text-xl">?</span>
                       </div>
                     )}
                   </motion.div>
                 );
               })}
-            </div>
-
-            {/* Bracket Preview */}
-            <div className="bg-black/30 rounded-xl p-4 mb-6">
-              <div className="flex justify-center items-center gap-2 text-white/60 text-sm">
-                <span>{tournamentFighters[0] || '?'}</span>
-                <span className="text-[#FFD700]">vs</span>
-                <span>{tournamentFighters[1] || '?'}</span>
-                <span className="mx-2">•</span>
-                <span>{tournamentFighters[2] || '?'}</span>
-                <span className="text-[#FFD700]">vs</span>
-                <span>{tournamentFighters[3] || '?'}</span>
-                <span className="mx-2">→</span>
-                <span className="text-[#FFD700]">SEMI</span>
-                <span className="mx-2">→</span>
-                <span>{tournamentFighters[4] || '?'}</span>
-                <span className="text-[#FFD700]">vs</span>
-                <span>{tournamentFighters[5] || '?'}</span>
-                <span className="mx-2">•</span>
-                <span>{tournamentFighters[6] || '?'}</span>
-                <span className="text-[#FFD700]">vs</span>
-                <span>{tournamentFighters[7] || '?'}</span>
-              </div>
             </div>
 
             {/* Character Grid */}
