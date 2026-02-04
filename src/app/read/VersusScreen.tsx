@@ -440,28 +440,19 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           {animationDone && !bookReady && (
             <motion.div
               className="generating-indicator"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="generating-banner">
+              <div className="generating-text">CREATING YOUR BOOK!</div>
+              <div className="generating-bar">
                 <motion.div 
-                  className="generating-spinner"
-                  animate={{ rotate: [0, 10, -10, 10, 0] }}
-                  transition={{ repeat: Infinity, duration: 0.5 }}
-                >
-                  📖
-                </motion.div>
-                <div className="generating-text">CREATING YOUR BOOK!</div>
-                <div className="generating-bar">
-                  <motion.div 
-                    className="generating-bar-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: '100%' }}
-                    transition={{ duration: 20, ease: 'linear' }}
-                  />
-                </div>
+                  className="generating-bar-fill"
+                  initial={{ width: 0 }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 20, ease: 'linear' }}
+                />
               </div>
             </motion.div>
           )}
@@ -816,51 +807,38 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
         /* Font import */
         @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
-        /* Generating indicator - Book style, centered */
+        /* Generating indicator - Bottom center, clean text */
         .generating-indicator {
           position: absolute;
-          top: 50%;
+          bottom: 8%;
           left: 50%;
-          transform: translate(-50%, -50%);
+          transform: translateX(-50%);
           z-index: 30;
           text-align: center;
-        }
-
-        .generating-banner {
-          background: #ffeb3b;
-          padding: 20px 50px;
-          border: 4px solid #ff0000;
-          border-radius: 12px;
-          box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-
-        .generating-spinner {
-          font-size: 3rem;
-          margin-bottom: 10px;
-          display: inline-block;
+          width: 300px;
         }
 
         .generating-text {
-          font-family: 'Bangers', cursive, sans-serif;
-          font-size: 2rem;
-          color: #cc0000;
-          text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-          letter-spacing: 2px;
+          font-family: 'Anton', sans-serif;
+          font-size: 1.5rem;
+          color: #ffffff;
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+          margin-bottom: 12px;
         }
 
         .generating-bar {
-          height: 8px;
-          background: #e0e0e0;
-          border-radius: 4px;
-          margin-top: 15px;
+          height: 6px;
+          background: rgba(255,255,255,0.3);
+          border-radius: 3px;
           overflow: hidden;
-          border: 2px solid #cc0000;
         }
 
         .generating-bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #4caf50, #8bc34a);
-          border-radius: 2px;
+          background: linear-gradient(90deg, #ffffff, #e0e0e0);
+          border-radius: 3px;
         }
       `}</style>
     </div>
