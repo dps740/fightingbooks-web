@@ -28,20 +28,20 @@ export async function POST(request: NextRequest) {
     const deleted: string[] = [];
     const errors: string[] = [];
 
-    // Delete book JSON
+    // Delete book JSON (stored in cache/)
     try {
-      await del(`fightingbooks/books/${cacheKey}.json`);
-      deleted.push(`books/${cacheKey}.json`);
+      await del(`fightingbooks/cache/${cacheKey}.json`);
+      deleted.push(`cache/${cacheKey}.json`);
     } catch (e) {
-      errors.push(`books/${cacheKey}.json: ${e instanceof Error ? e.message : 'not found'}`);
+      errors.push(`cache/${cacheKey}.json: ${e instanceof Error ? e.message : 'not found'}`);
     }
 
-    // Delete book PDF
+    // Delete book PDF (stored in cache/)
     try {
-      await del(`fightingbooks/pdfs/${cacheKey}.pdf`);
-      deleted.push(`pdfs/${cacheKey}.pdf`);
+      await del(`fightingbooks/cache/${cacheKey}.pdf`);
+      deleted.push(`cache/${cacheKey}.pdf`);
     } catch (e) {
-      errors.push(`pdfs/${cacheKey}.pdf: ${e instanceof Error ? e.message : 'not found'}`);
+      errors.push(`cache/${cacheKey}.pdf: ${e instanceof Error ? e.message : 'not found'}`);
     }
 
     // Optionally delete all images for this matchup
@@ -81,23 +81,26 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const books = await list({ prefix: 'fightingbooks/books/' });
-    const pdfs = await list({ prefix: 'fightingbooks/pdfs/' });
+    const cacheList = await list({ prefix: 'fightingbooks/cache/' });
+    
+    // Separate JSON (books) and PDFs
+    const books = cacheList.blobs.filter(b => b.pathname.endsWith('.json'));
+    const pdfs = cacheList.blobs.filter(b => b.pathname.endsWith('.pdf'));
 
     return NextResponse.json({
-      books: books.blobs.map(b => ({
-        name: b.pathname.replace('fightingbooks/books/', '').replace('.json', ''),
+      books: books.map(b => ({
+        name: b.pathname.replace('fightingbooks/cache/', '').replace('.json', ''),
         size: b.size,
         uploaded: b.uploadedAt,
       })),
-      pdfs: pdfs.blobs.map(b => ({
-        name: b.pathname.replace('fightingbooks/pdfs/', '').replace('.pdf', ''),
+      pdfs: pdfs.map(b => ({
+        name: b.pathname.replace('fightingbooks/cache/', '').replace('.pdf', ''),
         size: b.size,
         uploaded: b.uploadedAt,
       })),
       counts: {
-        books: books.blobs.length,
-        pdfs: pdfs.blobs.length,
+        books: books.length,
+        pdfs: pdfs.length,
       },
     });
   } catch (error) {
