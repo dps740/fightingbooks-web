@@ -417,21 +417,26 @@ function BookReader() {
                 {/* Choice cards */}
                 {!generatingChoice && !showChoiceOverlay && page.choices && (
                   <div className="cyoa-choices-grid">
-                    {page.choices.map((c, index) => (
-                      <motion.button
-                        key={index}
-                        onClick={() => handleChoice(c, index)}
-                        className="cyoa-choice-card"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <span className="choice-card-icon">{c.emoji}</span>
-                        <p className="choice-card-text">{c.text}</p>
-                      </motion.button>
-                    ))}
+                    {page.choices.map((c, index) => {
+                      const isSelected = choicesMade.includes(c.id);
+                      return (
+                        <motion.button
+                          key={index}
+                          onClick={() => !isSelected && handleChoice(c, index)}
+                          className={`cyoa-choice-card ${isSelected ? 'choice-selected' : ''}`}
+                          whileHover={!isSelected ? { scale: 1.05 } : {}}
+                          whileTap={!isSelected ? { scale: 0.95 } : {}}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          disabled={isSelected}
+                        >
+                          <span className="choice-card-icon">{c.emoji}</span>
+                          <p className="choice-card-text">{c.text}</p>
+                          {isSelected && <span className="choice-selected-badge">✓ YOUR CHOICE</span>}
+                        </motion.button>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -1534,6 +1539,34 @@ function BookReader() {
           transform: scale(1.05);
           box-shadow: 0 0 30px rgba(255, 200, 0, 0.5);
           border-color: gold;
+        }
+        
+        .cyoa-choice-card.choice-selected {
+          border-color: #ff3333;
+          box-shadow: 0 0 25px rgba(255, 50, 50, 0.7), 0 0 50px rgba(255, 50, 50, 0.4);
+          cursor: default;
+          position: relative;
+        }
+        
+        .cyoa-choice-card.choice-selected:hover {
+          transform: none;
+          box-shadow: 0 0 25px rgba(255, 50, 50, 0.7), 0 0 50px rgba(255, 50, 50, 0.4);
+          border-color: #ff3333;
+        }
+        
+        .choice-selected-badge {
+          position: absolute;
+          bottom: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #ff3333;
+          color: white;
+          font-size: 0.7rem;
+          font-weight: bold;
+          padding: 4px 12px;
+          border-radius: 12px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
         
         .choice-card-icon {
