@@ -266,35 +266,44 @@ function BookReader() {
                 
                 {/* Tournament Winner Selection */}
                 {searchParams.get('tournament') === 'true' && (
-                  <div className="tournament-winner-section">
-                    <h3 className="tournament-winner-title">🏆 Who Won This Battle?</h3>
-                    <div className="tournament-winner-buttons">
+                  <div className="tournament-decision-section">
+                    <div className="decision-banner">YOU DECIDE!</div>
+                    <p className="decision-question">Who should advance to the next round?</p>
+                    <div className="decision-fighters">
                       <button 
                         onClick={() => {
                           const tournamentState = JSON.parse(localStorage.getItem('tournament') || '{}');
                           tournamentState.lastWinner = animalA;
                           localStorage.setItem('tournament', JSON.stringify(tournamentState));
-                          router.push('/tournament');
+                          router.push('/tournament/bracket');
                         }}
-                        className="tournament-winner-btn winner-a"
+                        className="decision-fighter-btn"
                       >
-                        <span className="winner-emoji">🦁</span>
-                        <span className="winner-name">{animalA}</span>
+                        <img 
+                          src={`/fighters/${animalA?.toLowerCase().replace(/ /g, '-')}.jpg`} 
+                          alt={animalA || ''} 
+                          className="decision-fighter-img"
+                        />
+                        <span className="decision-fighter-name">{animalA?.toUpperCase()}</span>
                       </button>
+                      <div className="decision-or">OR</div>
                       <button 
                         onClick={() => {
                           const tournamentState = JSON.parse(localStorage.getItem('tournament') || '{}');
                           tournamentState.lastWinner = animalB;
                           localStorage.setItem('tournament', JSON.stringify(tournamentState));
-                          router.push('/tournament');
+                          router.push('/tournament/bracket');
                         }}
-                        className="tournament-winner-btn winner-b"
+                        className="decision-fighter-btn"
                       >
-                        <span className="winner-emoji">🐅</span>
-                        <span className="winner-name">{animalB}</span>
+                        <img 
+                          src={`/fighters/${animalB?.toLowerCase().replace(/ /g, '-')}.jpg`} 
+                          alt={animalB || ''} 
+                          className="decision-fighter-img"
+                        />
+                        <span className="decision-fighter-name">{animalB?.toUpperCase()}</span>
                       </button>
                     </div>
-                    <p className="tournament-winner-note">Click the winner to continue the tournament!</p>
                   </div>
                 )}
                 
@@ -682,42 +691,53 @@ function BookReader() {
           padding: 0 !important;
         }
         
-        /* Tournament Winner Selection */
-        .tournament-winner-section {
+        /* Tournament Decision Selection - Book Style */
+        .tournament-decision-section {
           position: relative;
           z-index: 2;
           margin-top: 20px;
-          padding: 20px;
-          background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+          padding: 25px;
+          background: linear-gradient(135deg, #f5f5dc 0%, #fff8e1 100%);
           border-radius: 12px;
           border: 4px solid #ff5722;
           box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
-        .tournament-winner-title {
+        .decision-banner {
           font-family: 'Bangers', cursive;
-          font-size: 2em;
-          color: #c62828;
-          margin-bottom: 20px;
+          font-size: 2.5em;
+          color: #ff0000;
+          background: #ffeb3b;
+          padding: 8px 30px;
+          border: 4px solid #ff0000;
+          border-radius: 8px;
+          text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+          letter-spacing: 3px;
           text-align: center;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-          letter-spacing: 2px;
+          margin: 0 auto 15px;
+          display: inline-block;
+          width: 100%;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .tournament-winner-buttons {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          flex-wrap: wrap;
-          margin-bottom: 15px;
-        }
-        .tournament-winner-btn {
-          flex: 1;
-          min-width: 150px;
-          padding: 20px;
-          font-size: 1.2em;
+        .decision-question {
           font-family: 'Comic Neue', cursive;
+          font-size: 1.3em;
+          color: #333;
+          text-align: center;
+          margin-bottom: 20px;
           font-weight: bold;
-          border: 4px solid #fff;
+        }
+        .decision-fighters {
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .decision-fighter-btn {
+          background: white;
+          border: 4px solid #333;
           border-radius: 12px;
+          padding: 15px;
           cursor: pointer;
           transition: all 0.2s;
           box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -725,32 +745,30 @@ function BookReader() {
           flex-direction: column;
           align-items: center;
           gap: 10px;
+          min-width: 140px;
         }
-        .winner-a {
-          background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-          color: white;
-        }
-        .winner-b {
-          background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
-          color: white;
-        }
-        .tournament-winner-btn:hover {
+        .decision-fighter-btn:hover {
           transform: translateY(-4px) scale(1.05);
           box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+          border-color: #ff5722;
         }
-        .winner-emoji {
-          font-size: 2.5em;
+        .decision-fighter-img {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 3px solid #333;
         }
-        .winner-name {
-          font-size: 1.3em;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .tournament-winner-note {
-          text-align: center;
-          font-size: 0.95em;
+        .decision-fighter-name {
+          font-family: 'Bangers', cursive;
+          font-size: 1.2em;
           color: #333;
-          font-weight: bold;
-          font-style: italic;
+          letter-spacing: 1px;
+        }
+        .decision-or {
+          font-family: 'Bangers', cursive;
+          font-size: 1.5em;
+          color: #666;
         }
         
         /* Download Section */
