@@ -989,33 +989,48 @@ Animal B (${animalB}):
 - Speed: ${factsB.speed}
 - Natural habitat: ${factsB.habitat}
 
-Create 3 unique decision points that happen during this wild encounter. Each decision point needs:
-1. A dramatic, contextual TITLE (2-4 words) specific to THIS battle - something like "The Riverbank", "Into the Shadows", "Claws Meet Fangs", "The Final Lunge", "Through the Brush"
-2. An intro sentence setting the scene (natural wild setting, NO arena/stadium references)
-3. Three choices the reader can make
+Create 3 unique decision points that happen during this wild 1v1 encounter (ONE ${animalA} vs ONE ${animalB}).
 
-IMPORTANT RULES:
+Each decision point needs:
+1. A dramatic, contextual TITLE (2-4 words) specific to THIS battle
+2. An intro sentence setting the scene (natural wild setting, NO arena/stadium references)
+3. THREE choices in this EXACT order:
+   - Choice 1 (LEFT): Favors ${animalA} (red corner) - describe what THE ${animalA.toUpperCase()} does
+   - Choice 2 (RIGHT): Favors ${animalB} (blue corner) - describe what THE ${animalB.toUpperCase()} does
+   - Choice 3 (CENTER): Neutral - both animals act, neither has advantage
+
+CRITICAL RULES:
+- This is a 1v1 battle - ONE animal on each side, NO teamwork, NO "one distracts while the other attacks"
+- ALWAYS name the specific animal in each choice (say "The ${animalA}" or "The ${animalB}", never "the predator" or "one of them")
 - NO arena, stadium, or fighting ring references - this happens in the WILD
-- NO numbering like "Round 1" or "Decision 1 of 3"
 - Titles should be UNIQUE and SPECIFIC to what's happening in that moment
-- Each decision should flow naturally into the next
-- The setting should feel like a nature documentary, not a boxing match
+- The setting should feel like a nature documentary
 
 Return JSON:
 {
   "gates": [
     {
       "title": "DRAMATIC CONTEXTUAL TITLE",
-      "intro": "One sentence setting the wild scene (no arena references)",
+      "intro": "One sentence setting the wild scene",
       "choices": [
         {
-          "text": "The dramatic choice (1-2 sentences, no animal names)",
+          "text": "What THE ${animalA.toUpperCase()} does (1-2 sentences, NAME the animal)",
           "icon": "single emoji",
-          "favors": "A" or "B" or "neutral",
-          "outcome": "What happens (2-3 sentences, dramatic but educational)"
+          "favors": "A",
+          "outcome": "What happens when ${animalA} gains advantage (2-3 sentences)"
         },
-        { ... },
-        { ... }
+        {
+          "text": "What THE ${animalB.toUpperCase()} does (1-2 sentences, NAME the animal)",
+          "icon": "single emoji", 
+          "favors": "B",
+          "outcome": "What happens when ${animalB} gains advantage (2-3 sentences)"
+        },
+        {
+          "text": "Neutral action involving BOTH animals by name",
+          "icon": "single emoji",
+          "favors": "neutral",
+          "outcome": "What happens in the standoff (2-3 sentences)"
+        }
       ]
     },
     { ... },
@@ -1023,7 +1038,7 @@ Return JSON:
   ]
 }
 
-IMPORTANT: Each gate's 3 choices must favor DIFFERENT options (one A, one B, one neutral) for balance.`;
+The order MUST be: A-favoring, B-favoring, neutral for every gate.`;
 
   try {
     const response = await getOpenAI().chat.completions.create({
