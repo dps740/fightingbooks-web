@@ -7,12 +7,25 @@ const CACHE_SECRET = 'fightingbooks-admin-2026';
 
 const PAGE_OPTIONS = [
   { id: 'cover', label: '📕 Cover' },
-  { id: 'battle-1', label: '⚔️ Battle 1 - Confrontation' },
-  { id: 'battle-2', label: '⚔️ Battle 2 - First Strike' },
-  { id: 'battle-3', label: '⚔️ Battle 3 - Counter Attack' },
-  { id: 'battle-4', label: '⚔️ Battle 4 - Intense Combat' },
-  { id: 'battle-5', label: '⚔️ Battle 5 - Decisive Moment' },
+  { id: 'battle-1', label: '⚔️ Battle 1' },
+  { id: 'battle-2', label: '⚔️ Battle 2' },
+  { id: 'battle-3', label: '⚔️ Battle 3' },
+  { id: 'battle-4', label: '⚔️ Battle 4' },
+  { id: 'battle-5', label: '⚔️ Battle 5' },
   { id: 'victory', label: '🏆 Victory' },
+];
+
+// All 27 possible CYOA paths
+const ALL_PATHS = [
+  'A-A-A', 'A-A-B', 'A-A-N',
+  'A-B-A', 'A-B-B', 'A-B-N',
+  'A-N-A', 'A-N-B', 'A-N-N',
+  'B-A-A', 'B-A-B', 'B-A-N',
+  'B-B-A', 'B-B-B', 'B-B-N',
+  'B-N-A', 'B-N-B', 'B-N-N',
+  'N-A-A', 'N-A-B', 'N-A-N',
+  'N-B-A', 'N-B-B', 'N-B-N',
+  'N-N-A', 'N-N-B', 'N-N-N',
 ];
 
 interface CachedBook {
@@ -21,7 +34,28 @@ interface CachedBook {
   uploaded: string;
 }
 
-// Parse book name to get animal names
+interface CyoaMatchup {
+  key: string;
+  animalA: string;
+  animalB: string;
+  hasGates: boolean;
+  paths: { path: string; url: string; size: number; uploaded: string }[];
+  pathCount: number;
+  totalPaths: number;
+}
+
+interface CacheData {
+  books: CachedBook[];
+  pdfs: CachedBook[];
+  counts: { books: number; pdfs: number };
+}
+
+interface CyoaData {
+  matchups: CyoaMatchup[];
+  totalMatchups: number;
+  totalPaths: number;
+}
+
 function parseBookName(name: string): { animalA: string; animalB: string } | null {
   const parts = name.replace('-neutral', '').split('-vs-');
   if (parts.length !== 2) return null;
@@ -31,29 +65,23 @@ function parseBookName(name: string): { animalA: string; animalB: string } | nul
   };
 }
 
-interface CacheData {
-  books: CachedBook[];
-  pdfs: CachedBook[];
-  counts: { books: number; pdfs: number };
-}
-
 export default function AdminPage() {
-  const [animalA, setAnimalA] = useState('');
-  const [animalB, setAnimalB] = useState('');
-  const [selectedPage, setSelectedPage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState('');
-  
   // Cache management state
   const [cacheData, setCacheData] = useState<CacheData | null>(null);
   const [cacheLoading, setCacheLoading] = useState(false);
   const [cacheError, setCacheError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'images' | 'cache'>('cache');
+  const [activeTab, setActiveTab] = useState<'books' | 'cyoa'>('books');
   const [expandedBook, setExpandedBook] = useState<string | null>(null);
   const [regenLoading, setRegenLoading] = useState<string | null>(null);
   const [regenResult, setRegenResult] = useState<{bookName: string; pageId: string; success: boolean; message: string} | null>(null);
+  
+  // CYOA state
+  const [cyoaData, setCyoaData] = useState<CyoaData | null>(null);
+  const [cyoaLoading, setCyoaLoading] = useState(false);
+  const [cyoaError, setCyoaError] = useState('');
+  const [expandedMatchup, setExpandedMatchup] = useState<string | null>(null);
+  const [cyoaDeleteLoading, setCyoaDeleteLoading] = useState<string | null>(null);
 
   // Load cached books
   const loadCache = async () => {
@@ -72,9 +100,25 @@ export default function AdminPage() {
     setCacheLoading(false);
   };
 
+  // Load CYOA cache
+  const loadCyoa = async () => {
+    setCyoaLoading(true);
+    setCyoaError('');
+    try {
+      const response = await fetch('/api/admin/cyoa-cache', {
+        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to load CYOA cache');
+      setCyoaData(data);
+    } catch (err) {
+      setCyoaError(err instanceof Error ? err.message : 'Failed to load CYOA cache');
+    }
+    setCyoaLoading(false);
+  };
+
   // Delete a cached book
   const deleteBook = async (bookName: string, deleteImages: boolean = false) => {
-    // Parse book name: "lion-vs-tiger-neutral" -> animalA: "lion", animalB: "tiger"
     const parts = bookName.replace('-neutral', '').split('-vs-');
     if (parts.length !== 2) {
       setCacheError('Invalid book name format');
@@ -92,17 +136,11 @@ export default function AdminPage() {
           'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          animalA: a,
-          animalB: b,
-          deleteImages,
-        }),
+        body: JSON.stringify({ animalA: a, animalB: b, deleteImages }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to delete');
-      
-      // Reload cache
       await loadCache();
     } catch (err) {
       setCacheError(err instanceof Error ? err.message : 'Failed to delete book');
@@ -110,7 +148,31 @@ export default function AdminPage() {
     setDeleteLoading(null);
   };
 
-  // Regenerate image for a book from cache view
+  // Delete CYOA cache for a matchup
+  const deleteCyoa = async (matchupKey: string, pathOnly: boolean = false) => {
+    setCyoaDeleteLoading(matchupKey);
+    setCyoaError('');
+
+    try {
+      const response = await fetch('/api/admin/cyoa-cache', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${CACHE_SECRET}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ matchupKey, pathOnly }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to delete');
+      await loadCyoa();
+    } catch (err) {
+      setCyoaError(err instanceof Error ? err.message : 'Failed to delete CYOA cache');
+    }
+    setCyoaDeleteLoading(null);
+  };
+
+  // Regenerate image for a book
   const regenerateImageForBook = async (bookName: string, pageId: string) => {
     const animals = parseBookName(bookName);
     if (!animals) return;
@@ -149,62 +211,12 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (activeTab === 'cache') {
+    if (activeTab === 'books') {
       loadCache();
+    } else if (activeTab === 'cyoa') {
+      loadCyoa();
     }
   }, [activeTab]);
-
-  const regenerateImage = async () => {
-    if (!animalA || !animalB || !selectedPage) {
-      setError('Please fill in both animals and select a page');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    setResult(null);
-
-    try {
-      const response = await fetch('/api/admin/regenerate-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          animalA,
-          animalB,
-          pageId: selectedPage,
-          adminKey: ADMIN_KEY,
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        setError(data.error || 'Failed to regenerate');
-      } else {
-        setResult(data);
-      }
-    } catch (err) {
-      setError('Network error - please try again');
-    }
-
-    setLoading(false);
-  };
-
-  const regenerateAll = async () => {
-    if (!animalA || !animalB) {
-      setError('Please fill in both animals');
-      return;
-    }
-    window.open(`/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&regenerate=true`, '_blank');
-  };
-
-  const viewBook = () => {
-    if (!animalA || !animalB) {
-      setError('Please fill in both animals');
-      return;
-    }
-    window.open(`/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}`, '_blank');
-  };
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -233,160 +245,39 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">🔧 FightingBooks Admin</h1>
-        <p className="text-gray-400 mb-6">Manage cached books and regenerate images</p>
+        <p className="text-gray-400 mb-6">Manage cached books and CYOA paths</p>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-8">
           <button
-            onClick={() => setActiveTab('images')}
+            onClick={() => setActiveTab('books')}
             className={`px-6 py-3 rounded-lg font-medium transition ${
-              activeTab === 'images'
+              activeTab === 'books'
                 ? 'bg-yellow-600 text-black'
                 : 'bg-gray-800 hover:bg-gray-700'
             }`}
           >
-            🎨 Image Regeneration
+            📚 Standard Books
           </button>
           <button
-            onClick={() => setActiveTab('cache')}
+            onClick={() => setActiveTab('cyoa')}
             className={`px-6 py-3 rounded-lg font-medium transition ${
-              activeTab === 'cache'
+              activeTab === 'cyoa'
                 ? 'bg-yellow-600 text-black'
                 : 'bg-gray-800 hover:bg-gray-700'
             }`}
           >
-            📚 Cache Management
+            🎮 CYOA Paths
           </button>
         </div>
 
-        {/* Image Regeneration Tab */}
-        {activeTab === 'images' && (
-          <>
-            {/* Animal Inputs */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium mb-2">Animal A</label>
-                <input
-                  type="text"
-                  value={animalA}
-                  onChange={(e) => setAnimalA(e.target.value)}
-                  placeholder="e.g., Lion"
-                  className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:border-yellow-500 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Animal B</label>
-                <input
-                  type="text"
-                  value={animalB}
-                  onChange={(e) => setAnimalB(e.target.value)}
-                  placeholder="e.g., Tiger"
-                  className="w-full px-4 py-2 rounded bg-gray-800 border border-gray-700 focus:border-yellow-500 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex gap-3 mb-8">
-              <button
-                onClick={viewBook}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition"
-              >
-                👁️ View Book
-              </button>
-              <button
-                onClick={regenerateAll}
-                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded font-medium transition"
-              >
-                🔄 Regenerate ALL Images
-              </button>
-            </div>
-
-            {/* Single Image Regeneration */}
-            <div className="bg-gray-800 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-bold mb-4">Regenerate Single Image</h2>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Select Page</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {PAGE_OPTIONS.map((page) => (
-                    <button
-                      key={page.id}
-                      onClick={() => setSelectedPage(page.id)}
-                      className={`px-4 py-3 rounded text-left transition ${
-                        selectedPage === page.id
-                          ? 'bg-yellow-600 text-black font-bold'
-                          : 'bg-gray-700 hover:bg-gray-600'
-                      }`}
-                    >
-                      {page.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={regenerateImage}
-                disabled={loading || !selectedPage}
-                className={`w-full py-3 rounded font-bold text-lg transition ${
-                  loading || !selectedPage
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700'
-                }`}
-              >
-                {loading ? '⏳ Regenerating...' : `🎨 Regenerate ${selectedPage || 'Selected'} Image`}
-              </button>
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-6">
-                <p className="text-red-300">❌ {error}</p>
-              </div>
-            )}
-
-            {/* Success Result */}
-            {result && (
-              <div className="bg-green-900/50 border border-green-500 rounded-lg p-4 mb-6">
-                <p className="text-green-300 font-bold mb-4">✅ {result.message}</p>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-400 mb-2">Old Image:</p>
-                    <img 
-                      src={result.oldImageUrl} 
-                      alt="Old" 
-                      className="w-full rounded border border-gray-600"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400 mb-2">New Image:</p>
-                    <img 
-                      src={result.newImageUrl} 
-                      alt="New" 
-                      className="w-full rounded border border-green-500"
-                    />
-                  </div>
-                </div>
-                
-                <button
-                  onClick={viewBook}
-                  className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition"
-                >
-                  👁️ View Updated Book
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Cache Management Tab */}
-        {activeTab === 'cache' && (
+        {/* Standard Books Tab */}
+        {activeTab === 'books' && (
           <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">📚 Cached Books</h2>
+              <h2 className="text-xl font-bold">📚 Cached Standard Books</h2>
               <button
                 onClick={loadCache}
                 disabled={cacheLoading}
@@ -414,7 +305,6 @@ export default function AdminPage() {
                   <div className="space-y-3">
                     {cacheData.books.map((book) => (
                       <div key={book.name} className="bg-gray-700 rounded-lg overflow-hidden">
-                        {/* Main row */}
                         <div className="flex items-center justify-between p-4">
                           <div className="flex-1 cursor-pointer" onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}>
                             <p className="font-medium text-lg">{formatBookName(book.name)}</p>
@@ -455,6 +345,7 @@ export default function AdminPage() {
                               onClick={() => deleteBook(book.name, false)}
                               disabled={deleteLoading === book.name}
                               className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition disabled:opacity-50"
+                              title="Delete book (keep images)"
                             >
                               {deleteLoading === book.name ? '⏳' : '🗑️'}
                             </button>
@@ -510,7 +401,7 @@ export default function AdminPage() {
                                 }}
                                 className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition"
                               >
-                                🔄 Regenerate ALL Images
+                                🔄 Regenerate ALL Images (opens new tab)
                               </button>
                             </div>
                           </div>
@@ -521,9 +412,149 @@ export default function AdminPage() {
                 )}
               </>
             )}
+          </div>
+        )}
 
-            {!cacheData && !cacheLoading && !cacheError && (
-              <p className="text-gray-500 text-center py-8">Click Refresh to load cached books</p>
+        {/* CYOA Paths Tab */}
+        {activeTab === 'cyoa' && (
+          <div className="bg-gray-800 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold">🎮 CYOA Path Coverage</h2>
+              <button
+                onClick={loadCyoa}
+                disabled={cyoaLoading}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition disabled:opacity-50"
+              >
+                {cyoaLoading ? '⏳ Loading...' : '🔄 Refresh'}
+              </button>
+            </div>
+
+            {cyoaError && (
+              <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-4">
+                <p className="text-red-300">❌ {cyoaError}</p>
+              </div>
+            )}
+
+            {cyoaData && (
+              <>
+                <div className="mb-4 text-gray-400">
+                  {cyoaData.totalMatchups} matchups with CYOA data • {cyoaData.totalPaths} total paths cached
+                </div>
+
+                {cyoaData.matchups.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No CYOA data cached yet. Play through some CYOA books to start building the cache!</p>
+                ) : (
+                  <div className="space-y-4">
+                    {cyoaData.matchups.map((matchup) => (
+                      <div key={matchup.key} className="bg-gray-700 rounded-lg overflow-hidden">
+                        <div 
+                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-650"
+                          onClick={() => setExpandedMatchup(expandedMatchup === matchup.key ? null : matchup.key)}
+                        >
+                          <div className="flex-1">
+                            <p className="font-medium text-lg">
+                              {matchup.animalA} vs {matchup.animalB}
+                            </p>
+                            <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
+                              <span className={matchup.hasGates ? 'text-green-400' : 'text-red-400'}>
+                                {matchup.hasGates ? '✅ Gates' : '❌ No gates'}
+                              </span>
+                              <span>
+                                📊 {matchup.pathCount}/27 paths ({Math.round(matchup.pathCount / 27 * 100)}%)
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Progress bar */}
+                          <div className="w-32 mr-4">
+                            <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full transition-all ${
+                                  matchup.pathCount === 27 ? 'bg-green-500' : 
+                                  matchup.pathCount > 13 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${(matchup.pathCount / 27) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/read?a=${matchup.animalA}&b=${matchup.animalB}&mode=cyoa`, '_blank');
+                              }}
+                              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition"
+                            >
+                              ▶️ Play
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm(`Delete ALL CYOA cache for ${matchup.animalA} vs ${matchup.animalB}?`)) {
+                                  deleteCyoa(matchup.key, false);
+                                }
+                              }}
+                              disabled={cyoaDeleteLoading === matchup.key}
+                              className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition disabled:opacity-50"
+                              title="Delete all CYOA cache"
+                            >
+                              {cyoaDeleteLoading === matchup.key ? '⏳' : '🗑️'}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Expanded path grid */}
+                        {expandedMatchup === matchup.key && (
+                          <div className="border-t border-gray-600 p-4 bg-gray-800">
+                            <p className="text-sm text-gray-400 mb-3">Path coverage (27 possible paths):</p>
+                            <div className="grid grid-cols-9 gap-1">
+                              {ALL_PATHS.map((path) => {
+                                const cached = matchup.paths.find(p => p.path === path);
+                                return (
+                                  <div
+                                    key={path}
+                                    className={`px-2 py-1 text-xs text-center rounded ${
+                                      cached 
+                                        ? 'bg-green-600 text-white' 
+                                        : 'bg-gray-600 text-gray-400'
+                                    }`}
+                                    title={cached ? `Cached ${formatDate(cached.uploaded)}` : 'Not cached'}
+                                  >
+                                    {path}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            
+                            <div className="mt-4 flex gap-2">
+                              <button
+                                onClick={() => {
+                                  if (confirm(`Delete only PATHS (keep gates) for ${matchup.animalA} vs ${matchup.animalB}?`)) {
+                                    deleteCyoa(matchup.key, true);
+                                  }
+                                }}
+                                disabled={cyoaDeleteLoading === matchup.key}
+                                className="px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition disabled:opacity-50"
+                              >
+                                🔄 Reset Paths Only
+                              </button>
+                            </div>
+                            
+                            <p className="text-xs text-gray-500 mt-3">
+                              Legend: A = favors {matchup.animalA}, B = favors {matchup.animalB}, N = neutral
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+
+            {!cyoaData && !cyoaLoading && !cyoaError && (
+              <p className="text-gray-500 text-center py-8">Click Refresh to load CYOA cache data</p>
             )}
           </div>
         )}
@@ -531,13 +562,13 @@ export default function AdminPage() {
         {/* Instructions */}
         <div className="text-gray-500 text-sm mt-8">
           <h3 className="font-bold mb-2">How it works:</h3>
-          <ol className="list-decimal list-inside space-y-1">
-            <li><strong>Image Regeneration:</strong> Fix bad images in existing books</li>
-            <li><strong>Cache Management:</strong> View all cached books, delete ones with issues</li>
-            <li>🗑️ Delete removes book JSON + PDF (keeps images)</li>
-            <li>💥 Delete + Images removes everything for that matchup</li>
-            <li>Deleted books regenerate fresh on next visit</li>
-          </ol>
+          <ul className="list-disc list-inside space-y-1">
+            <li><strong>Standard Books:</strong> Cached JSON + PDF for each matchup</li>
+            <li><strong>CYOA Paths:</strong> 27 possible paths per matchup (3 choices × 3 gates)</li>
+            <li>Paths fill in as users play - each unique path is cached on first playthrough</li>
+            <li>Green = cached, Gray = not yet generated</li>
+            <li>Delete gates to regenerate choices; delete paths to regenerate outcomes</li>
+          </ul>
         </div>
       </div>
     </div>
