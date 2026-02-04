@@ -198,6 +198,31 @@ Fun to play with: [link]
 
 ---
 
+## r/childrensbooks
+
+### Title:
+Made a custom "Who Would Win?" book generator for kids who've run out of Jerry Pallotta matchups
+
+### Body:
+My kids are huge fans of Jerry Pallotta's "Who Would Win?" series — we own almost all 35 books at this point.
+
+The problem: they keep asking for matchups Jerry hasn't written. "What about Gorilla vs. Grizzly Bear?" "Hippo vs. Crocodile?"
+
+So I built a tool that generates custom battle books in the same educational style:
+
+- Pick any two animals
+- Get real researched facts about each (size, diet, habitat, abilities)
+- Read an illustrated "tale of the tape" comparison
+- See who would win based on actual biology
+
+It's meant to complement the real books, not replace them — we still buy every new one Jerry releases. But this fills the gap for the hundreds of matchups that don't exist yet.
+
+Free to try with popular animals. Thought other families with "Who Would Win?" obsessed kids might find it useful!
+
+[link]
+
+---
+
 ## Posting Guidelines
 
 ### Timing
@@ -220,7 +245,10 @@ Fun to play with: [link]
 ### Order of Posting
 1. r/SideProject (friendly audience, good for testing)
 2. r/daddit (engaged community, relevant)
-3. r/Parenting (bigger audience, more scrutiny)
-4. r/Teachers (specific use case)
-5. r/homeschool (passionate audience)
-6. r/InternetIsBeautiful (viral potential)
+3. r/childrensbooks (directly relevant, passionate fans)
+4. r/Parenting (bigger audience, more scrutiny)
+5. r/Mommit (family resource angle)
+6. r/Teachers (specific use case)
+7. r/homeschool (passionate audience)
+8. r/books (fan tribute angle)
+9. r/InternetIsBeautiful (viral potential, save for last)
