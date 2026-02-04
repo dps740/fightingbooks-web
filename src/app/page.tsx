@@ -196,15 +196,15 @@ export default function Home() {
               </h1>
             </div>
           </motion.div>
-          <p className="text-xl font-bold text-[#FFD700] mt-4" style={{ textShadow: '2px 2px 4px #000' }}>
+          <p className="text-xl font-bold text-[#FFD700] mt-4 mb-2" style={{ textShadow: '2px 2px 4px #000' }}>
             Create your own match ups with {FIGHTERS.length} animals to choose from
           </p>
         </div>
       </section>
 
       {/* Fighter Carousel */}
-      <section className="py-4 overflow-hidden">
-        <div className="relative">
+      <section className="py-6 px-4">
+        <div className="max-w-4xl mx-auto overflow-hidden rounded-xl">
           <motion.div 
             className="flex gap-3"
             animate={{ x: [0, -2000] }}
@@ -229,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* 3. Two-Step Mode Selector */}
-      <section className="px-4 pb-4">
+      <section className="px-4 pt-2 pb-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-[#1a1a2e] rounded-xl p-6 border-4 border-[#FFD700] shadow-2xl">
             
