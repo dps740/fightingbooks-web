@@ -9,7 +9,7 @@
 | Tier | Price | Animals | Static Matchups | CYOA Access |
 |------|-------|---------|-----------------|-------------|
 | **Unregistered** | $0 | 2 (Lion, Tiger) | 1 (Lion vs Tiger) | ❌ None |
-| **Free (registered)** | $0 | 8 | 28 combinations | Lion vs Tiger only |
+| **Free (registered)** | $0 | 8 (row 1) | 28 combinations | Lion vs Tiger only |
 | **Tier 2 (Real)** | $9.99 | 30 (all real) | 435 combinations | All real matchups |
 | **Tier 3 (Ultimate)** | $19.99 | 47 (all) | 1,081 combinations | All matchups |
 
@@ -17,11 +17,11 @@
 
 ## Animal Categories
 
-### Free Tier Animals (8)
+### Free Tier Animals (8) - First row of selector grid
 ```javascript
 const FREE_ANIMALS = [
-  'Lion', 'Tiger', 'Grizzly Bear', 'Great White Shark',
-  'Gorilla', 'Elephant', 'Crocodile', 'Wolf'
+  'Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear', 
+  'Gorilla', 'Great White Shark', 'Orca', 'Crocodile'
 ];
 ```
 
@@ -134,7 +134,10 @@ Add access check:
 ## UI Changes
 
 ### Homepage (`page.tsx`)
-1. Add lock icon 🔒 on animals outside user's tier
+1. **Unobtrusive lock overlay** on animals outside user's tier:
+   - Small lock icon in corner (not covering the art)
+   - Slight opacity reduction (0.7) so art still visible
+   - NO dark overlay blocking the cool portraits
 2. Clicking locked animal shows upgrade modal
 3. CYOA mode shows lock if not accessible
 4. Add "Upgrade" button in header for free users
