@@ -445,7 +445,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="generating-text">CREATING YOUR BOOK!</div>
+              <div className="generating-text">CREATING YOUR BOOK</div>
               <div className="generating-bar">
                 <motion.div 
                   className="generating-bar-fill"
@@ -815,7 +815,8 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           transform: translateX(-50%);
           z-index: 30;
           text-align: center;
-          width: 300px;
+          width: auto;
+          min-width: 320px;
         }
 
         .generating-text {
@@ -826,6 +827,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           letter-spacing: 3px;
           text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
           margin-bottom: 12px;
+          white-space: nowrap;
         }
 
         .generating-bar {
