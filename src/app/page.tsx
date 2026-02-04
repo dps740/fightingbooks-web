@@ -8,6 +8,7 @@ import { WHO_WOULD_WIN_BOOKS } from '@/data/who-would-win-books';
 import { useTier, isAnimalLocked, isCyoaLocked } from '@/lib/useTier';
 import UpgradeModal from '@/components/UpgradeModal';
 import TierInfoPopover from '@/components/TierInfoPopover';
+import AccountMenu from '@/components/AccountMenu';
 import { UserTier } from '@/lib/tierAccess';
 
 // All fighters with AI-generated portraits (39 total + 1 custom slot = 40 = 5x8 grid)
@@ -226,6 +227,24 @@ export default function Home() {
   return (
     <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
       
+      {/* Header with Account Menu */}
+      <header className="px-4 py-3">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* Logo/Home link */}
+          <a href="/" className="font-bangers text-[#FFD700] text-xl hover:text-yellow-300 transition-colors" style={{ textShadow: '2px 2px 0 #000' }}>
+            WHO WOULD WIN?
+          </a>
+          
+          {/* Account Menu */}
+          <AccountMenu 
+            isAuthenticated={tierData.isAuthenticated}
+            email={tierData.email}
+            tier={tierData.tier}
+            onUpgrade={() => setShowUpgradeModal(true)}
+          />
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto text-center">
