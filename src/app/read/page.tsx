@@ -139,11 +139,13 @@ function BookReader() {
           setCyoaScore(data.score);
         }
         
-        // Add new pages and advance
-        setPages([...pages, ...data.pages]);
+        // Insert new pages right AFTER current page (not at end)
+        const newPages = [...pages];
+        newPages.splice(currentPage + 1, 0, ...data.pages);
+        setPages(newPages);
         setChoicesMade([...choicesMade, choice.id]);
         
-        // Auto-advance to the outcome page
+        // Auto-advance to the outcome page (which is now right after current)
         setTimeout(() => {
           goToPage(currentPage + 1);
           setGeneratingChoice(false);
