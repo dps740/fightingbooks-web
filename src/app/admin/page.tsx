@@ -82,6 +82,9 @@ export default function AdminPage() {
   const [cyoaError, setCyoaError] = useState('');
   const [expandedMatchup, setExpandedMatchup] = useState<string | null>(null);
   const [cyoaDeleteLoading, setCyoaDeleteLoading] = useState<string | null>(null);
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [cyoaImageLoading, setCyoaImageLoading] = useState<string | null>(null);
+  const [cyoaImageResult, setCyoaImageResult] = useState<{success: boolean; message: string} | null>(null);
 
   // Load cached books
   const loadCache = async () => {
@@ -149,8 +152,8 @@ export default function AdminPage() {
   };
 
   // Delete CYOA cache for a matchup
-  const deleteCyoa = async (matchupKey: string, pathOnly: boolean = false) => {
-    setCyoaDeleteLoading(matchupKey);
+  const deleteCyoa = async (matchupKey: string, pathOnly: boolean = false, gatesOnly: boolean = false, specificPath?: string) => {
+    setCyoaDeleteLoading(specificPath || matchupKey);
     setCyoaError('');
 
     try {
@@ -160,16 +163,46 @@ export default function AdminPage() {
           'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ matchupKey, pathOnly }),
+        body: JSON.stringify({ matchupKey, pathOnly, gatesOnly, specificPath }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to delete');
+      setSelectedPath(null);
       await loadCyoa();
     } catch (err) {
       setCyoaError(err instanceof Error ? err.message : 'Failed to delete CYOA cache');
     }
     setCyoaDeleteLoading(null);
+  };
+
+  // Regenerate a specific CYOA image
+  const regenerateCyoaImage = async (matchupKey: string, pathKey: string, imageId: string) => {
+    setCyoaImageLoading(`${pathKey}-${imageId}`);
+    setCyoaImageResult(null);
+
+    try {
+      const response = await fetch('/api/admin/cyoa-cache', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${CACHE_SECRET}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ matchupKey, path: pathKey, imageId }),
+      });
+
+      const data = await response.json();
+      setCyoaImageResult({
+        success: response.ok,
+        message: response.ok ? `Regenerated ${imageId}!` : (data.error || 'Failed'),
+      });
+    } catch (err) {
+      setCyoaImageResult({
+        success: false,
+        message: err instanceof Error ? err.message : 'Network error',
+      });
+    }
+    setCyoaImageLoading(null);
   };
 
   // Regenerate image for a book
@@ -507,27 +540,79 @@ export default function AdminPage() {
                         {/* Expanded path grid */}
                         {expandedMatchup === matchup.key && (
                           <div className="border-t border-gray-600 p-4 bg-gray-800">
-                            <p className="text-sm text-gray-400 mb-3">Path coverage (27 possible paths):</p>
+                            <p className="text-sm text-gray-400 mb-3">Click a cached path to manage it:</p>
                             <div className="grid grid-cols-9 gap-1">
                               {ALL_PATHS.map((path) => {
                                 const cached = matchup.paths.find(p => p.path === path);
+                                const isSelected = selectedPath === `${matchup.key}-${path}`;
                                 return (
-                                  <div
+                                  <button
                                     key={path}
-                                    className={`px-2 py-1 text-xs text-center rounded ${
-                                      cached 
-                                        ? 'bg-green-600 text-white' 
-                                        : 'bg-gray-600 text-gray-400'
+                                    onClick={() => cached && setSelectedPath(isSelected ? null : `${matchup.key}-${path}`)}
+                                    disabled={!cached}
+                                    className={`px-2 py-1 text-xs text-center rounded transition ${
+                                      isSelected
+                                        ? 'bg-yellow-500 text-black ring-2 ring-yellow-300'
+                                        : cached 
+                                          ? 'bg-green-600 text-white hover:bg-green-500 cursor-pointer' 
+                                          : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                     }`}
-                                    title={cached ? `Cached ${formatDate(cached.uploaded)}` : 'Not cached'}
+                                    title={cached ? `Click to manage path ${path}` : 'Not cached'}
                                   >
                                     {path}
-                                  </div>
+                                  </button>
                                 );
                               })}
                             </div>
+
+                            {/* Selected path actions */}
+                            {selectedPath?.startsWith(matchup.key) && (
+                              <div className="mt-4 p-3 bg-gray-700 rounded-lg">
+                                <p className="text-sm font-medium mb-3">
+                                  🎯 Managing path: <span className="text-yellow-400">{selectedPath.replace(`${matchup.key}-`, '')}</span>
+                                </p>
+                                
+                                {/* Regenerate images */}
+                                <p className="text-xs text-gray-400 mb-2">Regenerate specific image:</p>
+                                <div className="flex gap-2 flex-wrap mb-3">
+                                  {['outcome-1', 'outcome-2', 'outcome-3', 'victory'].map((imageId) => (
+                                    <button
+                                      key={imageId}
+                                      onClick={() => regenerateCyoaImage(matchup.key, selectedPath.replace(`${matchup.key}-`, ''), imageId)}
+                                      disabled={cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}`}
+                                      className={`px-3 py-1 rounded text-xs transition ${
+                                        cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}`
+                                          ? 'bg-yellow-600 text-black'
+                                          : 'bg-blue-600 hover:bg-blue-500'
+                                      }`}
+                                    >
+                                      {cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}` ? '⏳' : `🎨 ${imageId}`}
+                                    </button>
+                                  ))}
+                                </div>
+
+                                {cyoaImageResult && (
+                                  <p className={`text-xs mb-3 ${cyoaImageResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                                    {cyoaImageResult.success ? '✅' : '❌'} {cyoaImageResult.message}
+                                  </p>
+                                )}
+
+                                {/* Delete this path */}
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Delete path ${selectedPath.replace(`${matchup.key}-`, '')}?`)) {
+                                      deleteCyoa(matchup.key, false, false, selectedPath.replace(`${matchup.key}-`, ''));
+                                    }
+                                  }}
+                                  disabled={cyoaDeleteLoading === selectedPath.replace(`${matchup.key}-`, '')}
+                                  className="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-xs transition disabled:opacity-50"
+                                >
+                                  {cyoaDeleteLoading === selectedPath.replace(`${matchup.key}-`, '') ? '⏳' : '🗑️ Delete This Path'}
+                                </button>
+                              </div>
+                            )}
                             
-                            <div className="mt-4 flex gap-2">
+                            <div className="mt-4 flex gap-2 flex-wrap">
                               <button
                                 onClick={() => {
                                   if (confirm(`Delete only PATHS (keep gates) for ${matchup.animalA} vs ${matchup.animalB}?`)) {
@@ -537,7 +622,18 @@ export default function AdminPage() {
                                 disabled={cyoaDeleteLoading === matchup.key}
                                 className="px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition disabled:opacity-50"
                               >
-                                🔄 Reset Paths Only
+                                🔄 Reset All Paths
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm(`Delete only GATES (keep paths) for ${matchup.animalA} vs ${matchup.animalB}? This will regenerate decision choices.`)) {
+                                    deleteCyoa(matchup.key, false, true);
+                                  }
+                                }}
+                                disabled={cyoaDeleteLoading === matchup.key || !matchup.hasGates}
+                                className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition disabled:opacity-50"
+                              >
+                                🎲 Reset Gates Only
                               </button>
                             </div>
                             
