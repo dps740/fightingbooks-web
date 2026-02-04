@@ -809,14 +809,15 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
 
         /* Generating indicator - Bottom center, clean text */
         .generating-indicator {
-          position: absolute;
+          position: fixed;
           bottom: 8%;
-          left: 50%;
-          transform: translateX(-50%);
+          left: 0;
+          right: 0;
           z-index: 30;
-          text-align: center;
-          width: auto;
-          min-width: 320px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
         }
 
         .generating-text {
