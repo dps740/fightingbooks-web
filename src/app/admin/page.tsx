@@ -21,6 +21,16 @@ interface CachedBook {
   uploaded: string;
 }
 
+// Parse book name to get animal names
+function parseBookName(name: string): { animalA: string; animalB: string } | null {
+  const parts = name.replace('-neutral', '').split('-vs-');
+  if (parts.length !== 2) return null;
+  return {
+    animalA: parts[0].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+    animalB: parts[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+  };
+}
+
 interface CacheData {
   books: CachedBook[];
   pdfs: CachedBook[];
@@ -40,7 +50,10 @@ export default function AdminPage() {
   const [cacheLoading, setCacheLoading] = useState(false);
   const [cacheError, setCacheError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'images' | 'cache'>('images');
+  const [activeTab, setActiveTab] = useState<'images' | 'cache'>('cache');
+  const [expandedBook, setExpandedBook] = useState<string | null>(null);
+  const [regenLoading, setRegenLoading] = useState<string | null>(null);
+  const [regenResult, setRegenResult] = useState<{bookName: string; pageId: string; success: boolean; message: string} | null>(null);
 
   // Load cached books
   const loadCache = async () => {
@@ -95,6 +108,44 @@ export default function AdminPage() {
       setCacheError(err instanceof Error ? err.message : 'Failed to delete book');
     }
     setDeleteLoading(null);
+  };
+
+  // Regenerate image for a book from cache view
+  const regenerateImageForBook = async (bookName: string, pageId: string) => {
+    const animals = parseBookName(bookName);
+    if (!animals) return;
+
+    setRegenLoading(`${bookName}-${pageId}`);
+    setRegenResult(null);
+
+    try {
+      const response = await fetch('/api/admin/regenerate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          animalA: animals.animalA,
+          animalB: animals.animalB,
+          pageId,
+          adminKey: ADMIN_KEY,
+        }),
+      });
+
+      const data = await response.json();
+      setRegenResult({
+        bookName,
+        pageId,
+        success: response.ok,
+        message: response.ok ? 'Image regenerated!' : (data.error || 'Failed'),
+      });
+    } catch (err) {
+      setRegenResult({
+        bookName,
+        pageId,
+        success: false,
+        message: 'Network error',
+      });
+    }
+    setRegenLoading(null);
   };
 
   useEffect(() => {
@@ -362,59 +413,108 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-3">
                     {cacheData.books.map((book) => (
-                      <div
-                        key={book.name}
-                        className="flex items-center justify-between bg-gray-700 rounded-lg p-4"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium text-lg">{formatBookName(book.name)}</p>
-                          <p className="text-sm text-gray-400">
-                            {formatSize(book.size)} • {formatDate(book.uploaded)}
-                          </p>
+                      <div key={book.name} className="bg-gray-700 rounded-lg overflow-hidden">
+                        {/* Main row */}
+                        <div className="flex items-center justify-between p-4">
+                          <div className="flex-1 cursor-pointer" onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}>
+                            <p className="font-medium text-lg">{formatBookName(book.name)}</p>
+                            <p className="text-sm text-gray-400">
+                              {formatSize(book.size)} • {formatDate(book.uploaded)}
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}
+                              className={`px-3 py-2 rounded text-sm transition ${expandedBook === book.name ? 'bg-yellow-600 text-black' : 'bg-gray-600 hover:bg-gray-500'}`}
+                            >
+                              🎨 Images
+                            </button>
+                            <button
+                              onClick={() => {
+                                const parts = book.name.replace('-neutral', '').split('-vs-');
+                                if (parts.length === 2) {
+                                  window.open(`/read?a=${parts[0]}&b=${parts[1]}`, '_blank');
+                                }
+                              }}
+                              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition"
+                            >
+                              👁️ View
+                            </button>
+                            <button
+                              onClick={() => {
+                                const parts = book.name.replace('-neutral', '').split('-vs-');
+                                if (parts.length === 2) {
+                                  window.open(`/read?a=${parts[0]}&b=${parts[1]}&mode=cyoa`, '_blank');
+                                }
+                              }}
+                              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition"
+                            >
+                              🎮 CYOA
+                            </button>
+                            <button
+                              onClick={() => deleteBook(book.name, false)}
+                              disabled={deleteLoading === book.name}
+                              className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition disabled:opacity-50"
+                            >
+                              {deleteLoading === book.name ? '⏳' : '🗑️'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Delete ${formatBookName(book.name)} AND all its images?`)) {
+                                  deleteBook(book.name, true);
+                                }
+                              }}
+                              disabled={deleteLoading === book.name}
+                              className="px-3 py-2 bg-red-800 hover:bg-red-900 rounded text-sm transition disabled:opacity-50"
+                              title="Delete book + all images"
+                            >
+                              💥
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              const parts = book.name.replace('-neutral', '').split('-vs-');
-                              if (parts.length === 2) {
-                                window.open(`/read?a=${parts[0]}&b=${parts[1]}`, '_blank');
-                              }
-                            }}
-                            className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition"
-                          >
-                            👁️ View
-                          </button>
-                          <button
-                            onClick={() => {
-                              const parts = book.name.replace('-neutral', '').split('-vs-');
-                              if (parts.length === 2) {
-                                window.open(`/read?a=${parts[0]}&b=${parts[1]}&mode=cyoa`, '_blank');
-                              }
-                            }}
-                            className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition"
-                          >
-                            🎮 CYOA
-                          </button>
-                          <button
-                            onClick={() => deleteBook(book.name, false)}
-                            disabled={deleteLoading === book.name}
-                            className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-sm transition disabled:opacity-50"
-                          >
-                            {deleteLoading === book.name ? '⏳' : '🗑️'} Delete
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (confirm(`Delete ${formatBookName(book.name)} AND all its images?`)) {
-                                deleteBook(book.name, true);
-                              }
-                            }}
-                            disabled={deleteLoading === book.name}
-                            className="px-3 py-2 bg-red-800 hover:bg-red-900 rounded text-sm transition disabled:opacity-50"
-                            title="Delete book + all images"
-                          >
-                            💥
-                          </button>
-                        </div>
+
+                        {/* Expanded image regeneration panel */}
+                        {expandedBook === book.name && (
+                          <div className="border-t border-gray-600 p-4 bg-gray-800">
+                            <p className="text-sm text-gray-400 mb-3">🎨 Regenerate individual images:</p>
+                            <div className="grid grid-cols-4 gap-2">
+                              {PAGE_OPTIONS.map((page) => (
+                                <button
+                                  key={page.id}
+                                  onClick={() => regenerateImageForBook(book.name, page.id)}
+                                  disabled={regenLoading === `${book.name}-${page.id}`}
+                                  className={`px-3 py-2 rounded text-sm transition ${
+                                    regenLoading === `${book.name}-${page.id}`
+                                      ? 'bg-yellow-600 text-black'
+                                      : regenResult?.bookName === book.name && regenResult?.pageId === page.id
+                                        ? regenResult.success ? 'bg-green-600' : 'bg-red-600'
+                                        : 'bg-gray-600 hover:bg-gray-500'
+                                  }`}
+                                >
+                                  {regenLoading === `${book.name}-${page.id}` ? '⏳' : page.label}
+                                </button>
+                              ))}
+                            </div>
+                            {regenResult?.bookName === book.name && (
+                              <p className={`mt-2 text-sm ${regenResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                                {regenResult.success ? '✅' : '❌'} {regenResult.message} ({regenResult.pageId})
+                              </p>
+                            )}
+                            <div className="mt-3 pt-3 border-t border-gray-700">
+                              <button
+                                onClick={() => {
+                                  const parts = book.name.replace('-neutral', '').split('-vs-');
+                                  if (parts.length === 2) {
+                                    window.open(`/read?a=${parts[0]}&b=${parts[1]}&regenerate=true`, '_blank');
+                                  }
+                                }}
+                                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm transition"
+                              >
+                                🔄 Regenerate ALL Images
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
