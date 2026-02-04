@@ -83,6 +83,30 @@ function BookReader() {
         body: JSON.stringify({ animalA, animalB, mode, environment, forceRegenerate }),
       });
       const data = await response.json();
+      
+      // Handle error responses from the API
+      if (!response.ok) {
+        if (data.code === 'SIGNUP_REQUIRED') {
+          // CYOA mode requires signup - redirect to signup page
+          router.push(`/signup?redirect=/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&mode=${mode}&message=signup_for_adventure`);
+          return;
+        } else if (data.code === 'TIER_REQUIRED' || data.code === 'CYOA_TIER_REQUIRED') {
+          // Show tier upgrade message
+          setPages([{ 
+            id: 'tier-required', 
+            type: 'cover', 
+            title: 'Upgrade Required', 
+            content: `<p style="font-size: 1.2em; margin-bottom: 20px;">${data.message}</p><p><a href="/account" style="color: #d4af37; text-decoration: underline;">Upgrade your account</a> to access this content!</p>` 
+          }]);
+          setLoading(false);
+          return;
+        }
+        // Generic error
+        setPages([{ id: 'error', type: 'cover', title: 'Error', content: `<p>${data.message || 'Failed to load book.'}</p>` }]);
+        setLoading(false);
+        return;
+      }
+      
       if (data.pages?.length > 0) {
         setPages(data.pages);
       } else {

@@ -1,16 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Mail, Lock, Sparkles, ArrowLeft, Check } from 'lucide-react';
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [mode, setMode] = useState<'signup' | 'login'>('signup');
+  
+  // Get redirect URL and message from query params
+  const redirectUrl = searchParams.get('redirect');
+  const message = searchParams.get('message');
+  const isAdventureSignup = message === 'signup_for_adventure';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,8 +37,12 @@ export default function SignupPage() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect to original page if provided, otherwise dashboard
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -53,6 +63,17 @@ export default function SignupPage() {
             Back to generator
           </button>
 
+          {/* Adventure Mode Banner */}
+          {isAdventureSignup && mode === 'signup' && (
+            <div className="bg-gradient-to-r from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4 mb-6">
+              <h3 className="font-bold text-amber-800 mb-1">🎮 Adventure Mode Awaits!</h3>
+              <p className="text-amber-700 text-sm">
+                Create a free account to play Choose Your Own Adventure battles!
+                Your choices affect the outcome.
+              </p>
+            </div>
+          )}
+
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -60,7 +81,7 @@ export default function SignupPage() {
             </h1>
             <p className="text-gray-500">
               {mode === 'signup' 
-                ? 'Start creating unlimited battle books!' 
+                ? (isAdventureSignup ? 'Sign up to unlock Adventure mode!' : 'Start creating unlimited battle books!')
                 : 'Sign in to continue creating books'}
             </p>
           </div>
@@ -175,5 +196,20 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <div className="text-center">
+          <span className="animate-spin text-4xl">⏳</span>
+          <p className="mt-4 text-gray-500">Loading...</p>
+        </div>
+      </main>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }
