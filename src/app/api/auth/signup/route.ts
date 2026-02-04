@@ -37,12 +37,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create user' }, { status: 400 });
     }
 
-    // Create user profile with 1 free book
+    // Create user profile with tier: 'free' and 1 free book
     const { error: profileError } = await supabase
       .from('profiles')
       .insert({
         id: authData.user.id,
         email: authData.user.email,
+        tier: 'free',
         free_books_remaining: 1,
         books_created: 0,
       });

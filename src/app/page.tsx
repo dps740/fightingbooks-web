@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
 import { WHO_WOULD_WIN_BOOKS } from '@/data/who-would-win-books';
+import { useTier, isAnimalLocked, isCyoaLocked } from '@/lib/useTier';
+import UpgradeModal from '@/components/UpgradeModal';
+import { UserTier } from '@/lib/tierAccess';
 
 // All fighters with AI-generated portraits (39 total + 1 custom slot = 40 = 5x8 grid)
 const FIGHTERS = [
@@ -73,6 +76,31 @@ export default function Home() {
   // Tournament state
   const [tournamentFighters, setTournamentFighters] = useState<string[]>([]);
   const [showTournamentOverlay, setShowTournamentOverlay] = useState(false);
+  
+  // Tier & Upgrade state
+  const tierData = useTier();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [lockedAnimalClicked, setLockedAnimalClicked] = useState<string | undefined>();
+  
+  // Handle upgrade checkout
+  const handleUpgrade = async (tier: UserTier) => {
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tier }),
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || 'Checkout failed');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Checkout failed. Please try again.');
+    }
+  };
 
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
@@ -99,6 +127,13 @@ export default function Home() {
   
   // Handle tournament fighter selection
   const handleTournamentFighterSelect = (fighterName: string) => {
+    // Check if animal is locked
+    if (isAnimalLocked(tierData.tier, fighterName)) {
+      setLockedAnimalClicked(fighterName);
+      setShowUpgradeModal(true);
+      return;
+    }
+    
     if (tournamentFighters.includes(fighterName)) {
       // Deselect - remove from array
       setTournamentFighters(tournamentFighters.filter(f => f !== fighterName));
@@ -148,6 +183,13 @@ export default function Home() {
   const getImagePath = (name: string) => `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
 
   const handleFighterSelect = (fighterName: string) => {
+    // Check if animal is locked
+    if (isAnimalLocked(tierData.tier, fighterName)) {
+      setLockedAnimalClicked(fighterName);
+      setShowUpgradeModal(true);
+      return;
+    }
+    
     if (selectingFor === 'A') {
       setAnimalA(fighterName);
       if (!animalB) {
@@ -434,14 +476,17 @@ export default function Home() {
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                 {FIGHTERS.map((fighter, i) => {
                   const isSelected = tournamentFighters.includes(fighter.name);
+                  const isLocked = isAnimalLocked(tierData.tier, fighter.name);
                   return (
                     <button
                       key={i}
                       onClick={() => handleTournamentFighterSelect(fighter.name)}
-                      disabled={!isSelected && tournamentFighters.length >= 8}
+                      disabled={!isSelected && tournamentFighters.length >= 8 && !isLocked}
                       className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all ${
                         isSelected
                           ? 'border-[#FFD700] ring-2 ring-[#FFD700] opacity-50 grayscale'
+                          : isLocked
+                          ? 'border-gray-600 opacity-70 hover:border-yellow-500 hover:opacity-100 cursor-pointer'
                           : tournamentFighters.length >= 8
                           ? 'border-gray-600 opacity-30 cursor-not-allowed'
                           : 'border-gray-600 hover:border-white hover:scale-110 hover:z-10'
@@ -456,6 +501,12 @@ export default function Home() {
                       {isSelected && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                           <span className="text-[#FFD700] text-2xl font-bold">✓</span>
+                        </div>
+                      )}
+                      {/* Lock icon for locked animals */}
+                      {isLocked && !isSelected && (
+                        <div className="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
+                          <span className="text-yellow-400 text-sm">🔒</span>
                         </div>
                       )}
                     </button>
@@ -574,29 +625,41 @@ export default function Home() {
           {/* Character Grid - BOTTOM */}
           <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-              {FIGHTERS.map((fighter, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleFighterSelect(fighter.name)}
-                  className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all hover:scale-110 hover:z-10 ${
-                    (animalA === fighter.name || animalB === fighter.name)
-                      ? 'border-yellow-400 ring-2 ring-yellow-400'
-                      : 'border-gray-600 hover:border-white'
-                  }`}
-                >
-                  <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
-                    <p className="font-bangers text-white text-xs text-center truncate">
-                      {fighter.name.toUpperCase()}
-                    </p>
-                  </div>
-                  {(animalA === fighter.name || animalB === fighter.name) && (
-                    <div className="absolute top-1 right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <span className="text-black font-bold text-sm">✓</span>
+              {FIGHTERS.map((fighter, i) => {
+                const isLocked = isAnimalLocked(tierData.tier, fighter.name);
+                const isSelected = animalA === fighter.name || animalB === fighter.name;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleFighterSelect(fighter.name)}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all hover:scale-110 hover:z-10 ${
+                      isSelected
+                        ? 'border-yellow-400 ring-2 ring-yellow-400'
+                        : isLocked
+                        ? 'border-gray-600 opacity-70 hover:border-yellow-500 hover:opacity-100'
+                        : 'border-gray-600 hover:border-white'
+                    }`}
+                  >
+                    <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
+                      <p className="font-bangers text-white text-xs text-center truncate">
+                        {fighter.name.toUpperCase()}
+                      </p>
                     </div>
-                  )}
-                </button>
-              ))}
+                    {isSelected && (
+                      <div className="absolute top-1 right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span className="text-black font-bold text-sm">✓</span>
+                      </div>
+                    )}
+                    {/* Lock icon for locked animals */}
+                    {isLocked && !isSelected && (
+                      <div className="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
+                        <span className="text-yellow-400 text-sm">🔒</span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
               
               {/* Use Your Imagination - Coming Soon */}
               <div
@@ -851,6 +914,16 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        lockedAnimal={lockedAnimalClicked}
+        currentTier={tierData.tier}
+        upgradeOptions={tierData.canUpgradeTo}
+        onUpgrade={handleUpgrade}
+      />
 
       {/* 9. Footer */}
       <footer className="py-6 bg-[#0d1f0d] text-center">

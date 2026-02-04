@@ -35,32 +35,78 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabase();
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId;
-    const credits = parseInt(session.metadata?.credits || '0');
+    const purchaseType = session.metadata?.purchaseType;
 
+    // Handle tier purchase
+    if (purchaseType === 'tier_upgrade' && userId) {
+      const tier = session.metadata?.tier;
+
+      if (tier && (tier === 'tier2' || tier === 'tier3')) {
+        // Update user's tier
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            tier: tier,
+            tier_purchased_at: new Date().toISOString(),
+            stripe_payment_id: session.payment_intent as string,
+          })
+          .eq('id', userId);
+
+        if (updateError) {
+          console.error('Error updating user tier:', updateError);
+        } else {
+          console.log(`Upgraded user ${userId} to ${tier}`);
+        }
+
+        // Record purchase in purchases table
+        const { error: purchaseError } = await supabase
+          .from('purchases')
+          .insert({
+            user_id: userId,
+            tier: tier,
+            amount_cents: session.amount_total || 0,
+            stripe_session_id: session.id,
+            stripe_payment_intent: session.payment_intent as string,
+          });
+
+        if (purchaseError) {
+          console.error('Error recording purchase:', purchaseError);
+        }
+      }
+    }
+
+    // Handle legacy credit purchase (for backwards compatibility)
+    const credits = parseInt(session.metadata?.credits || '0');
     if (userId && credits > 0) {
-      // Add credits to user
+      // Legacy: Add credits to user
       const { data: user } = await supabase
-        .from('users')
+        .from('profiles')
         .select('credits')
         .eq('id', userId)
         .single();
 
-      await supabase
-        .from('users')
-        .update({ credits: (user?.credits || 0) + credits })
-        .eq('id', userId);
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ credits: (user.credits || 0) + credits })
+          .eq('id', userId);
 
-      // Record payment
-      await supabase
-        .from('payments')
-        .insert({
-          user_id: userId,
-          amount: session.amount_total,
-          credits: credits,
-          stripe_session_id: session.id,
-        });
+        // Record payment in legacy payments table (if it exists)
+        try {
+          await supabase
+            .from('payments')
+            .insert({
+              user_id: userId,
+              amount: session.amount_total,
+              credits: credits,
+              stripe_session_id: session.id,
+            });
+        } catch (e) {
+          // payments table might not exist, ignore
+        }
 
-      console.log(`Added ${credits} credits to user ${userId}`);
+        console.log(`Added ${credits} credits to user ${userId}`);
+      }
     }
   }
 
