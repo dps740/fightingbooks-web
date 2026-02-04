@@ -435,30 +435,30 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           </div>
         )}
 
-        {/* Loading indicator - shows after stats if book not ready */}
-        <AnimatePresence>
-          {animationDone && !bookReady && (
-            <motion.div
-              className="generating-indicator"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="generating-text">CREATING YOUR BOOK</div>
-              <div className="generating-bar">
-                <motion.div 
-                  className="generating-bar-fill"
-                  initial={{ width: 0 }}
-                  animate={{ width: '100%' }}
-                  transition={{ duration: 20, ease: 'linear' }}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
       </motion.div>
+
+      {/* Loading indicator - shows after stats if book not ready */}
+      <AnimatePresence>
+        {animationDone && !bookReady && (
+          <motion.div
+            className="generating-indicator"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="generating-text">CREATING YOUR BOOK</div>
+            <div className="generating-bar">
+              <motion.div 
+                className="generating-bar-fill"
+                initial={{ width: 0 }}
+                animate={{ width: '100%' }}
+                transition={{ duration: 20, ease: 'linear' }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .versus-screen {
