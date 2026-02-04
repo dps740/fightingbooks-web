@@ -183,19 +183,12 @@ export default function Home() {
   return (
     <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
       
-      {/* 1. Navigation */}
-      <nav className="py-4 px-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <span className="text-[#FFD700] font-bangers text-xl">🥊 FightingBooks</span>
-          <a href="/blog" className="text-white hover:text-[#FFD700] font-bold transition-colors px-4 py-2 rounded-lg hover:bg-white/10">
-            📚 Battle Guides
-          </a>
-        </div>
-      </nav>
-
-      {/* 2. Hero Section */}
-      <section className="py-6 px-4">
+      {/* Hero Section */}
+      <section className="py-8 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <p className="text-white/80 text-lg mb-4">
+            Inspired by Jerry Pallotta's bestselling series
+          </p>
           <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="inline-block bg-[#FFD700] px-4 sm:px-10 py-3 sm:py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]">
               <h1 className="font-bangers text-2xl sm:text-4xl md:text-5xl text-[#CC0000]" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '2px' }}>
@@ -203,12 +196,35 @@ export default function Home() {
               </h1>
             </div>
           </motion.div>
-          <p className="text-xl font-bold text-[#FFD700] mt-3" style={{ textShadow: '2px 2px 4px #000' }}>
-            Create Your Own Battle Book!
+          <p className="text-xl font-bold text-[#FFD700] mt-4" style={{ textShadow: '2px 2px 4px #000' }}>
+            Create your own match ups with {FIGHTERS.length} animals to choose from
           </p>
-          <p className="text-white/80 mt-2 text-lg">
-            Inspired by Jerry Pallotta's bestselling series
-          </p>
+        </div>
+      </section>
+
+      {/* Fighter Carousel */}
+      <section className="py-4 overflow-hidden">
+        <div className="relative">
+          <motion.div 
+            className="flex gap-3"
+            animate={{ x: [0, -2000] }}
+            transition={{ 
+              x: { repeat: Infinity, duration: 30, ease: "linear" }
+            }}
+          >
+            {[...FIGHTERS, ...FIGHTERS].map((fighter, i) => (
+              <div 
+                key={`${fighter.name}-${i}`}
+                className="flex-shrink-0 w-20 h-20 rounded-full overflow-hidden border-3 border-[#FFD700]/50 shadow-lg"
+              >
+                <img 
+                  src={getImagePath(fighter.name)} 
+                  alt={fighter.name} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
@@ -226,7 +242,7 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
               >
                 <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
-                  ⚔️ CHOOSE YOUR BATTLE
+                  Choose your style
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {/* Single Battle */}
