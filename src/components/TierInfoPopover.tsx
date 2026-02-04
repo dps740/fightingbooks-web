@@ -59,6 +59,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier = 'unregi
                     <div className="p-3 text-xs">
                       {/* Big number */}
                       <div className="text-center mb-3">
+                        <div className="text-white/60 uppercase tracking-wide text-[10px]">All Combinations</div>
                         <div className="font-bangers text-3xl text-white">28</div>
                         <div className="text-white/60 uppercase tracking-wide text-[10px]">Unique Books</div>
                       </div>
@@ -105,6 +106,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier = 'unregi
                     <div className="p-3 text-xs">
                       {/* Big number */}
                       <div className="text-center mb-3">
+                        <div className="text-white/60 uppercase tracking-wide text-[10px]">All Combinations</div>
                         <div className="font-bangers text-3xl text-white">435</div>
                         <div className="text-white/60 uppercase tracking-wide text-[10px]">Unique Books</div>
                       </div>
@@ -151,6 +153,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier = 'unregi
                     <div className="p-3 text-xs">
                       {/* Big number */}
                       <div className="text-center mb-3">
+                        <div className="text-white/60 uppercase tracking-wide text-[10px]">All Combinations</div>
                         <div className="font-bangers text-3xl text-white">1,081</div>
                         <div className="text-white/60 uppercase tracking-wide text-[10px]">Unique Books</div>
                       </div>
