@@ -51,9 +51,9 @@ export async function GET() {
       });
     }
 
-    // Get user's tier from profile
+    // Get user's tier from users table
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('users')
       .select('tier')
       .eq('id', user.id)
       .single();

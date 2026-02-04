@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       if (tier && (tier === 'tier2' || tier === 'tier3')) {
         // Update user's tier
         const { error: updateError } = await supabase
-          .from('profiles')
+          .from('users')
           .update({
             tier: tier,
             tier_purchased_at: new Date().toISOString(),
@@ -80,14 +80,14 @@ export async function POST(request: NextRequest) {
     if (userId && credits > 0) {
       // Legacy: Add credits to user
       const { data: user } = await supabase
-        .from('profiles')
+        .from('users')
         .select('credits')
         .eq('id', userId)
         .single();
 
       if (user) {
         await supabase
-          .from('profiles')
+          .from('users')
           .update({ credits: (user.credits || 0) + credits })
           .eq('id', userId);
 

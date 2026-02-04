@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Check user's current tier - don't let them buy same or lower
     const { data: profile } = await supabase
-      .from('profiles')
+      .from('users')
       .select('tier')
       .eq('id', user.id)
       .single();
