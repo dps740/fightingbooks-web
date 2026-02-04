@@ -5,10 +5,22 @@ Commercial web app for generating custom animal battle books for kids.
 ## Features
 
 - 🎨 Pick any two animals for an epic illustrated battle
-- 📖 AI-generated 15-page picture book
+- 📖 AI-generated 15-page picture book with educational facts
+- 🎮 **CYOA Mode** - Choose Your Own Adventure with 27 unique paths per matchup
+- 🗄️ **Smart Caching** - Books and CYOA paths cached in Vercel Blob for instant replay
+- 🔧 **Admin Panel** - Manage cache, regenerate images, view CYOA path coverage
 - 💰 First book free, $1 per additional book
 - 👤 User accounts with book history
 - 💳 Stripe payments
+
+## CYOA (Choose Your Own Adventure)
+
+Each CYOA book has 3 decision gates with 3 choices each, creating 27 possible story paths:
+- Choices: **A** (favors animal A), **B** (favors animal B), **N** (neutral)
+- Paths like `A-B-N`, `B-A-A`, etc. are cached after first playthrough
+- Same choices = same outcomes (consistent experience)
+
+**Admin Panel:** `/admin` → CYOA Paths tab shows path coverage per matchup
 
 ## Tech Stack
 
