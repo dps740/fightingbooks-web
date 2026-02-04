@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const ADMIN_KEY = 'fightingbooks-admin-2024';
 const CACHE_SECRET = 'fightingbooks-admin-2026';
+const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
 
 const PAGE_OPTIONS = [
   { id: 'cover', label: '📕 Cover' },
@@ -66,6 +68,12 @@ function parseBookName(name: string): { animalA: string; animalB: string } | nul
 }
 
 export default function AdminPage() {
+  const router = useRouter();
+  
+  // Admin auth state
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
   // Cache management state
   const [cacheData, setCacheData] = useState<CacheData | null>(null);
   const [cacheLoading, setCacheLoading] = useState(false);
@@ -78,6 +86,40 @@ export default function AdminPage() {
   
   // CYOA state
   const [cyoaData, setCyoaData] = useState<CyoaData | null>(null);
+
+  // Check admin auth on mount
+  useEffect(() => {
+    async function checkAdmin() {
+      try {
+        const response = await fetch('/api/user/tier');
+        const data = await response.json();
+        
+        if (data.isAuthenticated && data.email && ADMIN_EMAILS.includes(data.email.toLowerCase())) {
+          setIsAdmin(true);
+        } else {
+          router.push('/');
+        }
+      } catch {
+        router.push('/');
+      }
+      setAuthChecking(false);
+    }
+    checkAdmin();
+  }, [router]);
+
+  // Show loading while checking auth
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-xl">Checking access...</div>
+      </div>
+    );
+  }
+
+  // Don't render if not admin (will redirect)
+  if (!isAdmin) {
+    return null;
+  }
   const [cyoaLoading, setCyoaLoading] = useState(false);
   const [cyoaError, setCyoaError] = useState('');
   const [expandedMatchup, setExpandedMatchup] = useState<string | null>(null);

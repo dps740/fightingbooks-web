@@ -68,21 +68,24 @@ export default function SignupPage() {
           {/* Pricing info for signup */}
           {mode === 'signup' && (
             <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 mb-6">
-              <h3 className="font-bold text-purple-800 mb-2">💰 Simple Pricing</h3>
+              <h3 className="font-bold text-purple-800 mb-2">🎁 Free Account Includes</h3>
               <ul className="text-purple-700 text-sm space-y-1">
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-500" />
-                  First book FREE (no account needed)
+                  8 popular animals (28 matchups)
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-500" />
-                  $1 per additional book
+                  Unlimited book generation
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-500" />
-                  Access your book history anytime
+                  PDF downloads
                 </li>
               </ul>
+              <p className="text-purple-600 text-xs mt-2">
+                Upgrade anytime: Real Animals $9.99 • Ultimate $19.99
+              </p>
             </div>
           )}
 
