@@ -12,10 +12,10 @@ interface AccountMenuProps {
 }
 
 const tierBadges: Record<UserTier, { label: string; shortLabel: string; bg: string; border: string }> = {
-  unregistered: { label: 'Account: GUEST', shortLabel: 'GUEST', bg: 'bg-gray-700', border: 'border-gray-500' },
-  free: { label: 'Account: FREE', shortLabel: 'FREE', bg: 'bg-green-800', border: 'border-green-500' },
-  tier2: { label: 'Account: REAL', shortLabel: 'REAL', bg: 'bg-blue-800', border: 'border-blue-500' },
-  tier3: { label: 'Account: ULTIMATE', shortLabel: 'ULTIMATE', bg: 'bg-purple-800', border: 'border-purple-500' },
+  unregistered: { label: 'Account Type: GUEST', shortLabel: 'GUEST', bg: 'bg-gray-700', border: 'border-gray-500' },
+  free: { label: 'Account Type: FREE', shortLabel: 'FREE', bg: 'bg-green-800', border: 'border-green-500' },
+  tier2: { label: 'Account Type: REAL', shortLabel: 'REAL', bg: 'bg-blue-800', border: 'border-blue-500' },
+  tier3: { label: 'Account Type: ULTIMATE', shortLabel: 'ULTIMATE', bg: 'bg-purple-800', border: 'border-purple-500' },
 };
 
 export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }: AccountMenuProps) {
