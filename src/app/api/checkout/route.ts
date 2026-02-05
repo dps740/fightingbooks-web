@@ -132,8 +132,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
-    console.error('Checkout error:', error);
-    return NextResponse.json({ error: 'Checkout failed' }, { status: 500 });
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('Checkout error:', errMsg, error);
+    return NextResponse.json({ error: `Checkout failed: ${errMsg}` }, { status: 500 });
   }
 }
