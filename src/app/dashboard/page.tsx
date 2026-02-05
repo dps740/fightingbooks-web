@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState('Loading...');
@@ -38,11 +38,19 @@ export default function DashboardPage() {
   }, [router, searchParams]);
 
   return (
+    <div className="text-center">
+      <div className="text-[#FFD700] text-2xl animate-pulse font-bangers">{status}</div>
+    </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
     <main className="min-h-screen flex items-center justify-center font-comic"
       style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
-      <div className="text-center">
-        <div className="text-[#FFD700] text-2xl animate-pulse font-bangers">{status}</div>
-      </div>
+      <Suspense fallback={<div className="text-[#FFD700] text-2xl animate-pulse font-bangers">Loading...</div>}>
+        <DashboardContent />
+      </Suspense>
     </main>
   );
 }
