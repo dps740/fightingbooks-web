@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     maxHeight: 350,
     marginBottom: 20,
     borderRadius: 8,
+    objectFit: 'contain',
   },
   coverTitle: {
     fontSize: 36,
@@ -106,6 +107,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     alignSelf: 'center',
     borderRadius: 8,
+    objectFit: 'contain',
   },
   
   // Fact boxes
@@ -196,6 +198,7 @@ const styles = StyleSheet.create({
     maxHeight: 280,
     marginVertical: 15,
     borderRadius: 8,
+    objectFit: 'contain',
   },
   victoryText: {
     fontSize: 14,
