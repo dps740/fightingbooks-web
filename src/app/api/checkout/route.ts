@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?success=true&tier=${tier}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?success=true&tier=${tier}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?canceled=true`,
       metadata: {
         userId: user.id,
