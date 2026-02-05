@@ -114,22 +114,6 @@ export default function AdminPage() {
     checkAdmin();
   }, [router]);
 
-  // Show loading while checking auth
-  if (authChecking) {
-    return (
-      <div 
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}
-      >
-        <div className="text-[#FFD700] text-2xl font-bangers animate-pulse">Checking access...</div>
-      </div>
-    );
-  }
-
-  // Don't render if not admin (will redirect)
-  if (!isAdmin) {
-    return null;
-  }
   // Load cached books
   const loadCache = async () => {
     setCacheLoading(true);
@@ -319,6 +303,23 @@ export default function AdminPage() {
       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
   };
+
+  // Show loading while checking auth
+  if (authChecking) {
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}
+      >
+        <div className="text-[#FFD700] text-2xl font-bangers animate-pulse">Checking access...</div>
+      </div>
+    );
+  }
+
+  // Don't render if not admin (will redirect)
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div 
