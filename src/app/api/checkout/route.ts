@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const tierConfig = TIER_CONFIG[tier];
+    let tierConfig = TIER_CONFIG[tier];
 
     // Get user from session
     const cookieStore = await cookies();
@@ -87,6 +87,18 @@ export async function POST(request: NextRequest) {
         { error: 'You already have the Real Animals Pack!' },
         { status: 400 }
       );
+    }
+
+    // Calculate upgrade pricing — credit what they already paid
+    if (currentTier === 'tier2' && tier === 'tier3') {
+      const alreadyPaid = TIER_CONFIG.tier2.amount; // 999 cents
+      const upgradeAmount = tierConfig.amount - alreadyPaid; // 1000 cents ($10.00)
+      tierConfig = {
+        ...tierConfig,
+        amount: upgradeAmount,
+        name: 'Ultimate Pack (Upgrade from Pro)',
+        priceEnvKey: '', // Force inline pricing for upgrades
+      };
     }
 
     // Create Stripe checkout session
