@@ -74,40 +74,6 @@ export async function POST(request: NextRequest) {
         }
       }
     }
-
-    // Handle legacy credit purchase (for backwards compatibility)
-    const credits = parseInt(session.metadata?.credits || '0');
-    if (userId && credits > 0) {
-      // Legacy: Add credits to user
-      const { data: user } = await supabase
-        .from('users')
-        .select('credits')
-        .eq('id', userId)
-        .single();
-
-      if (user) {
-        await supabase
-          .from('users')
-          .update({ credits: (user.credits || 0) + credits })
-          .eq('id', userId);
-
-        // Record payment in legacy payments table (if it exists)
-        try {
-          await supabase
-            .from('payments')
-            .insert({
-              user_id: userId,
-              amount: session.amount_total,
-              credits: credits,
-              stripe_session_id: session.id,
-            });
-        } catch (e) {
-          // payments table might not exist, ignore
-        }
-
-        console.log(`Added ${credits} credits to user ${userId}`);
-      }
-    }
   }
 
   return NextResponse.json({ received: true });

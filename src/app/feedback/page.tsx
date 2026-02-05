@@ -41,13 +41,16 @@ export default function FeedbackPage() {
   };
 
   return (
-    <main className="min-h-screen p-4 md:p-8 flex items-center justify-center">
+    <main 
+      className="min-h-screen p-4 md:p-8 flex items-center justify-center font-comic"
+      style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}
+    >
       <div className="max-w-md w-full">
-        <div className="bg-white/95 backdrop-blur rounded-3xl shadow-2xl p-8">
+        <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-3xl shadow-2xl p-8">
           {/* Back button */}
           <button
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6"
+            className="flex items-center gap-2 text-white/70 hover:text-[#FFD700] mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to generator
@@ -55,13 +58,17 @@ export default function FeedbackPage() {
 
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+              style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}>
+              <MessageSquare className="w-8 h-8 text-[#FFD700]" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <h1 
+              className="text-3xl font-bangers text-[#FFD700] mb-2"
+              style={{ textShadow: '2px 2px 0 #000' }}
+            >
               Send Feedback
             </h1>
-            <p className="text-gray-500">
+            <p className="text-white/70">
               Help us make FightingBooks better!
             </p>
           </div>
@@ -69,14 +76,14 @@ export default function FeedbackPage() {
           {/* Success message */}
           {success ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-500" />
+              <div className="w-16 h-16 bg-green-900/50 border-2 border-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-400" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800 mb-2">Thank you!</h2>
-              <p className="text-gray-500 mb-6">Your feedback has been received.</p>
+              <h2 className="text-xl font-bangers text-[#FFD700] mb-2">Thank you!</h2>
+              <p className="text-white/70 mb-6">Your feedback has been received.</p>
               <button
                 onClick={() => { setSuccess(false); setMessage(''); }}
-                className="text-purple-600 font-medium hover:underline"
+                className="text-[#FFD700] font-bold hover:underline"
               >
                 Send more feedback
               </button>
@@ -85,7 +92,7 @@ export default function FeedbackPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Feedback type */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-white/80 mb-2">
                   What type of feedback?
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -98,14 +105,10 @@ export default function FeedbackPage() {
                       key={type.value}
                       type="button"
                       onClick={() => setFeedbackType(type.value as typeof feedbackType)}
-                      className={`py-2 px-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                      className={`py-2 px-3 rounded-xl border-2 text-sm font-bangers transition-all ${
                         feedbackType === type.value
-                          ? type.value === 'bug' 
-                            ? 'border-red-500 bg-red-50 text-red-700'
-                            : type.value === 'feature'
-                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                            : 'border-purple-500 bg-purple-50 text-purple-700'
-                          : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                          ? 'border-[#FFD700] bg-[#FFD700]/20 text-[#FFD700]'
+                          : 'border-white/20 text-white/60 hover:border-white/40'
                       }`}
                     >
                       {type.label}
@@ -116,13 +119,13 @@ export default function FeedbackPage() {
 
               {/* Message */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-white/80 mb-1">
                   Your feedback
                 </label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none resize-none"
+                  className="w-full p-4 bg-[#0d0d1a] border-2 border-[#FFD700]/30 rounded-xl focus:border-[#FFD700] focus:outline-none resize-none text-white placeholder:text-white/30"
                   placeholder={
                     feedbackType === 'bug'
                       ? "What went wrong? Please include steps to reproduce..."
@@ -137,23 +140,23 @@ export default function FeedbackPage() {
 
               {/* Email (optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email <span className="text-gray-400">(optional)</span>
+                <label className="block text-sm font-medium text-white/80 mb-1">
+                  Email <span className="text-white/40">(optional)</span>
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none"
+                  className="w-full p-3 bg-[#0d0d1a] border-2 border-[#FFD700]/30 rounded-xl focus:border-[#FFD700] focus:outline-none text-white placeholder:text-white/30"
                   placeholder="your@email.com"
                 />
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-white/40 mt-1">
                   Include if you&apos;d like us to follow up
                 </p>
               </div>
 
               {error && (
-                <div className="bg-red-100 text-red-600 p-3 rounded-xl text-sm">
+                <div className="bg-red-900/50 border border-red-500/50 text-red-200 p-3 rounded-xl text-sm">
                   {error}
                 </div>
               )}
@@ -161,7 +164,8 @@ export default function FeedbackPage() {
               <button
                 type="submit"
                 disabled={loading || !message.trim()}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50"
+                className="w-full text-white py-3 rounded-xl font-bangers text-xl flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 transition-opacity"
+                style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}
               >
                 {loading ? (
                   <span className="animate-spin">⏳</span>

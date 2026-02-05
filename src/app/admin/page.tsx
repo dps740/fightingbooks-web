@@ -86,6 +86,13 @@ export default function AdminPage() {
   
   // CYOA state
   const [cyoaData, setCyoaData] = useState<CyoaData | null>(null);
+  const [cyoaLoading, setCyoaLoading] = useState(false);
+  const [cyoaError, setCyoaError] = useState('');
+  const [expandedMatchup, setExpandedMatchup] = useState<string | null>(null);
+  const [cyoaDeleteLoading, setCyoaDeleteLoading] = useState<string | null>(null);
+  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [cyoaImageLoading, setCyoaImageLoading] = useState<string | null>(null);
+  const [cyoaImageResult, setCyoaImageResult] = useState<{success: boolean; message: string} | null>(null);
 
   // Check admin auth on mount
   useEffect(() => {
@@ -120,14 +127,6 @@ export default function AdminPage() {
   if (!isAdmin) {
     return null;
   }
-  const [cyoaLoading, setCyoaLoading] = useState(false);
-  const [cyoaError, setCyoaError] = useState('');
-  const [expandedMatchup, setExpandedMatchup] = useState<string | null>(null);
-  const [cyoaDeleteLoading, setCyoaDeleteLoading] = useState<string | null>(null);
-  const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  const [cyoaImageLoading, setCyoaImageLoading] = useState<string | null>(null);
-  const [cyoaImageResult, setCyoaImageResult] = useState<{success: boolean; message: string} | null>(null);
-
   // Load cached books
   const loadCache = async () => {
     setCacheLoading(true);
@@ -319,29 +318,37 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div 
+      className="min-h-screen text-white p-8 font-comic"
+      style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}
+    >
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">🔧 FightingBooks Admin</h1>
-        <p className="text-gray-400 mb-6">Manage cached books and CYOA paths</p>
+        <h1 
+          className="text-4xl font-bangers text-[#FFD700] mb-2"
+          style={{ textShadow: '2px 2px 0 #000' }}
+        >
+          🔧 FightingBooks Admin
+        </h1>
+        <p className="text-white/70 mb-6">Manage cached books and CYOA paths</p>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab('books')}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
+            className={`px-6 py-3 rounded-lg font-bangers text-lg transition-all border-2 ${
               activeTab === 'books'
-                ? 'bg-yellow-600 text-black'
-                : 'bg-gray-800 hover:bg-gray-700'
+                ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                : 'bg-[#1a1a2e] border-[#FFD700]/30 hover:border-[#FFD700]/50 text-white'
             }`}
           >
             📚 Standard Books
           </button>
           <button
             onClick={() => setActiveTab('cyoa')}
-            className={`px-6 py-3 rounded-lg font-medium transition ${
+            className={`px-6 py-3 rounded-lg font-bangers text-lg transition-all border-2 ${
               activeTab === 'cyoa'
-                ? 'bg-yellow-600 text-black'
-                : 'bg-gray-800 hover:bg-gray-700'
+                ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                : 'bg-[#1a1a2e] border-[#FFD700]/30 hover:border-[#FFD700]/50 text-white'
             }`}
           >
             🎮 CYOA Paths
@@ -350,36 +357,37 @@ export default function AdminPage() {
 
         {/* Standard Books Tab */}
         {activeTab === 'books' && (
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">📚 Cached Standard Books</h2>
+              <h2 className="text-2xl font-bangers text-[#FFD700]">📚 Cached Standard Books</h2>
               <button
                 onClick={loadCache}
                 disabled={cacheLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition disabled:opacity-50"
+                className="px-4 py-2 rounded font-bangers transition disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)', color: 'white' }}
               >
                 {cacheLoading ? '⏳ Loading...' : '🔄 Refresh'}
               </button>
             </div>
 
             {cacheError && (
-              <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-4">
+              <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-4 mb-4">
                 <p className="text-red-300">❌ {cacheError}</p>
               </div>
             )}
 
             {cacheData && (
               <>
-                <div className="mb-4 text-gray-400">
+                <div className="mb-4 text-white/70">
                   Total: {cacheData.counts.books} books, {cacheData.counts.pdfs} PDFs
                 </div>
 
                 {cacheData.books.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No cached books found</p>
+                  <p className="text-white/50 text-center py-8">No cached books found</p>
                 ) : (
                   <div className="space-y-3">
                     {cacheData.books.map((book) => (
-                      <div key={book.name} className="bg-gray-700 rounded-lg overflow-hidden">
+                      <div key={book.name} className="bg-[#0d0d1a] border-2 border-[#FFD700]/30 rounded-lg overflow-hidden">
                         <div className="flex items-center justify-between p-4">
                           <div className="flex-1 cursor-pointer" onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}>
                             <p className="font-medium text-lg">{formatBookName(book.name)}</p>
