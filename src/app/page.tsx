@@ -192,6 +192,18 @@ export default function Home() {
       return;
     }
     
+    // Deselect if clicking an already-selected fighter
+    if (fighterName === animalA) {
+      setAnimalA('');
+      setSelectingFor('A');
+      return;
+    }
+    if (fighterName === animalB) {
+      setAnimalB('');
+      setSelectingFor('B');
+      return;
+    }
+
     if (selectingFor === 'A') {
       setAnimalA(fighterName);
       if (!animalB) {
