@@ -47,7 +47,7 @@ function BookReader() {
   const [currentPage, setCurrentPage] = useState(0);
   const [direction, setDirection] = useState(0);
   const [generatingChoice, setGeneratingChoice] = useState(false);
-  const [choicesMade, setChoicesMade] = useState<string[]>([]);
+  const [choicesMade, setChoicesMade] = useState<Map<number, number>>(new Map()); // Map of gateNumber → choiceIndex
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
@@ -120,6 +120,12 @@ function BookReader() {
 
   const handleChoice = async (choice: Choice, choiceIndex: number) => {
     const currentPageData = pages[currentPage];
+    const gateNumber = currentPageData.gateNumber || 1;
+    
+    // Track which choice was made for this specific gate
+    const newChoicesMade = new Map(choicesMade);
+    newChoicesMade.set(gateNumber, choiceIndex);
+    setChoicesMade(newChoicesMade);
     
     // Show overlay with chosen text
     setSelectedChoiceText(choice.text);
@@ -172,7 +178,6 @@ function BookReader() {
         const newPages = [...pages];
         newPages.splice(currentPage + 1, 0, ...data.pages);
         setPages(newPages);
-        setChoicesMade([...choicesMade, choice.id]);
         
         // Auto-advance to the outcome page (which is now right after current)
         setTimeout(() => {
@@ -447,7 +452,8 @@ function BookReader() {
                 {!generatingChoice && !showChoiceOverlay && page.choices && (
                   <div className="cyoa-choices-grid">
                     {page.choices.map((c, index) => {
-                      const isSelected = choicesMade.includes(c.id);
+                      const gateNumber = page.gateNumber || 1;
+                      const isSelected = choicesMade.get(gateNumber) === index;
                       return (
                         <motion.button
                           key={index}
@@ -482,17 +488,29 @@ function BookReader() {
                   </motion.div>
                 )}
 
-                {/* Generating next scene */}
+                {/* Generating next scene - Prominent animated loading */}
                 {generatingChoice && !showChoiceOverlay && (
-                  <div className="generating">
-                    <motion.span
+                  <motion.div
+                    className="cyoa-loading-overlay"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <motion.div
+                      className="loading-spinner"
                       animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1 }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
                     >
-                      ⏳
-                    </motion.span>
-                    <p>Creating the outcome...</p>
-                  </div>
+                      ⚔️
+                    </motion.div>
+                    <motion.p
+                      className="loading-text"
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                    >
+                      The battle unfolds...
+                    </motion.p>
+                  </motion.div>
                 )}
               </div>
             )}
@@ -1629,6 +1647,43 @@ function BookReader() {
           text-align: center;
           box-shadow: 0 8px 30px rgba(212, 175, 55, 0.5);
           max-width: 500px;
+        }
+        
+        .cyoa-loading-overlay {
+          position: relative;
+          z-index: 3;
+          background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.98) 100%);
+          border: 4px solid #d4af37;
+          border-radius: 20px;
+          padding: 60px 40px;
+          text-align: center;
+          box-shadow: 
+            0 0 40px rgba(212, 175, 55, 0.6),
+            0 0 80px rgba(212, 175, 55, 0.3),
+            inset 0 0 60px rgba(212, 175, 55, 0.1);
+          max-width: 500px;
+          min-height: 250px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 30px;
+        }
+        
+        .loading-spinner {
+          font-size: 5rem;
+          filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8));
+        }
+        
+        .loading-text {
+          font-family: 'Bangers', cursive;
+          font-size: 2em;
+          color: #d4af37;
+          text-shadow: 
+            0 0 10px rgba(212, 175, 55, 0.8),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+          letter-spacing: 2px;
+          margin: 0;
         }
         
         .overlay-label {
