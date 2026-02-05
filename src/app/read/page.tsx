@@ -178,12 +178,15 @@ function BookReader() {
         const newPages = [...pages];
         newPages.splice(currentPage + 1, 0, ...data.pages);
         setPages(newPages);
+        setGeneratingChoice(false);
         
-        // Auto-advance to the outcome page (which is now right after current)
-        setTimeout(() => {
-          goToPage(currentPage + 1);
-          setGeneratingChoice(false);
-        }, 300);
+        // Auto-advance to the outcome page after state has settled
+        // Use requestAnimationFrame to ensure React has rendered the new pages
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            goToPage(currentPage + 1);
+          });
+        });
       }
     } catch (error) {
       console.error(error);
