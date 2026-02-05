@@ -117,8 +117,11 @@ export default function AdminPage() {
   // Show loading while checking auth
   if (authChecking) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Checking access...</div>
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}
+      >
+        <div className="text-[#FFD700] text-2xl font-bangers animate-pulse">Checking access...</div>
       </div>
     );
   }
@@ -390,15 +393,15 @@ export default function AdminPage() {
                       <div key={book.name} className="bg-[#0d0d1a] border-2 border-[#FFD700]/30 rounded-lg overflow-hidden">
                         <div className="flex items-center justify-between p-4">
                           <div className="flex-1 cursor-pointer" onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}>
-                            <p className="font-medium text-lg">{formatBookName(book.name)}</p>
-                            <p className="text-sm text-gray-400">
+                            <p className="font-bangers text-lg text-[#FFD700]">{formatBookName(book.name)}</p>
+                            <p className="text-sm text-white/60">
                               {formatSize(book.size)} • {formatDate(book.uploaded)}
                             </p>
                           </div>
                           <div className="flex gap-2">
                             <button
                               onClick={() => setExpandedBook(expandedBook === book.name ? null : book.name)}
-                              className={`px-3 py-2 rounded text-sm transition ${expandedBook === book.name ? 'bg-yellow-600 text-black' : 'bg-gray-600 hover:bg-gray-500'}`}
+                              className={`px-3 py-2 rounded text-sm transition border-2 ${expandedBook === book.name ? 'bg-[#FFD700] text-black border-[#FFD700]' : 'bg-[#1a1a2e] border-[#FFD700]/50 hover:border-[#FFD700]'}`}
                             >
                               🎨 Images
                             </button>
@@ -409,7 +412,8 @@ export default function AdminPage() {
                                   window.open(`/read?a=${parts[0]}&b=${parts[1]}`, '_blank');
                                 }
                               }}
-                              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition"
+                              className="px-3 py-2 rounded text-sm transition"
+                              style={{ background: 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)' }}
                             >
                               👁️ View
                             </button>
@@ -420,7 +424,8 @@ export default function AdminPage() {
                                   window.open(`/read?a=${parts[0]}&b=${parts[1]}&mode=cyoa`, '_blank');
                                 }
                               }}
-                              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition"
+                              className="px-3 py-2 rounded text-sm transition"
+                              style={{ background: 'linear-gradient(135deg, #5a1e3d 0%, #7a2d4d 100%)' }}
                             >
                               🎮 CYOA
                             </button>
@@ -449,20 +454,20 @@ export default function AdminPage() {
 
                         {/* Expanded image regeneration panel */}
                         {expandedBook === book.name && (
-                          <div className="border-t border-gray-600 p-4 bg-gray-800">
-                            <p className="text-sm text-gray-400 mb-3">🎨 Regenerate individual images:</p>
+                          <div className="border-t border-[#FFD700]/30 p-4 bg-[#0a0a15]">
+                            <p className="text-sm text-white/70 mb-3">🎨 Regenerate individual images:</p>
                             <div className="grid grid-cols-4 gap-2">
                               {PAGE_OPTIONS.map((page) => (
                                 <button
                                   key={page.id}
                                   onClick={() => regenerateImageForBook(book.name, page.id)}
                                   disabled={regenLoading === `${book.name}-${page.id}`}
-                                  className={`px-3 py-2 rounded text-sm transition ${
+                                  className={`px-3 py-2 rounded text-sm transition border-2 ${
                                     regenLoading === `${book.name}-${page.id}`
-                                      ? 'bg-yellow-600 text-black'
+                                      ? 'bg-[#FFD700] text-black border-[#FFD700]'
                                       : regenResult?.bookName === book.name && regenResult?.pageId === page.id
-                                        ? regenResult.success ? 'bg-green-600' : 'bg-red-600'
-                                        : 'bg-gray-600 hover:bg-gray-500'
+                                        ? regenResult.success ? 'bg-green-600 border-green-500' : 'bg-red-600 border-red-500'
+                                        : 'bg-[#1a1a2e] border-[#FFD700]/30 hover:border-[#FFD700]/50'
                                   }`}
                                 >
                                   {regenLoading === `${book.name}-${page.id}` ? '⏳' : page.label}
@@ -474,7 +479,7 @@ export default function AdminPage() {
                                 {regenResult.success ? '✅' : '❌'} {regenResult.message} ({regenResult.pageId})
                               </p>
                             )}
-                            <div className="mt-3 pt-3 border-t border-gray-700">
+                            <div className="mt-3 pt-3 border-t border-[#FFD700]/20">
                               <button
                                 onClick={() => {
                                   const parts = book.name.replace('-neutral', '').split('-vs-');
@@ -500,45 +505,46 @@ export default function AdminPage() {
 
         {/* CYOA Paths Tab */}
         {activeTab === 'cyoa' && (
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold">🎮 CYOA Path Coverage</h2>
+              <h2 className="text-2xl font-bangers text-[#FFD700]">🎮 CYOA Path Coverage</h2>
               <button
                 onClick={loadCyoa}
                 disabled={cyoaLoading}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition disabled:opacity-50"
+                className="px-4 py-2 rounded font-bangers transition disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)', color: 'white' }}
               >
                 {cyoaLoading ? '⏳ Loading...' : '🔄 Refresh'}
               </button>
             </div>
 
             {cyoaError && (
-              <div className="bg-red-900/50 border border-red-500 rounded-lg p-4 mb-4">
+              <div className="bg-red-900/50 border-2 border-red-500 rounded-lg p-4 mb-4">
                 <p className="text-red-300">❌ {cyoaError}</p>
               </div>
             )}
 
             {cyoaData && (
               <>
-                <div className="mb-4 text-gray-400">
+                <div className="mb-4 text-white/70">
                   {cyoaData.totalMatchups} matchups with CYOA data • {cyoaData.totalPaths} total paths cached
                 </div>
 
                 {cyoaData.matchups.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">No CYOA data cached yet. Play through some CYOA books to start building the cache!</p>
+                  <p className="text-white/50 text-center py-8">No CYOA data cached yet. Play through some CYOA books to start building the cache!</p>
                 ) : (
                   <div className="space-y-4">
                     {cyoaData.matchups.map((matchup) => (
-                      <div key={matchup.key} className="bg-gray-700 rounded-lg overflow-hidden">
+                      <div key={matchup.key} className="bg-[#0d0d1a] border-2 border-[#FFD700]/30 rounded-lg overflow-hidden">
                         <div 
-                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-650"
+                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-[#1a1a2e]"
                           onClick={() => setExpandedMatchup(expandedMatchup === matchup.key ? null : matchup.key)}
                         >
                           <div className="flex-1">
-                            <p className="font-medium text-lg">
+                            <p className="font-bangers text-lg text-[#FFD700]">
                               {matchup.animalA} vs {matchup.animalB}
                             </p>
-                            <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
+                            <div className="flex items-center gap-3 text-sm text-white/60 mt-1">
                               <span className={matchup.hasGates ? 'text-green-400' : 'text-red-400'}>
                                 {matchup.hasGates ? '✅ Gates' : '❌ No gates'}
                               </span>
@@ -550,7 +556,7 @@ export default function AdminPage() {
                           
                           {/* Progress bar */}
                           <div className="w-32 mr-4">
-                            <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                            <div className="h-2 bg-[#1a1a2e] border border-[#FFD700]/30 rounded-full overflow-hidden">
                               <div 
                                 className={`h-full transition-all ${
                                   matchup.pathCount === 27 ? 'bg-green-500' : 
@@ -567,7 +573,8 @@ export default function AdminPage() {
                                 e.stopPropagation();
                                 window.open(`/read?a=${matchup.animalA}&b=${matchup.animalB}&mode=cyoa`, '_blank');
                               }}
-                              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition"
+                              className="px-3 py-2 rounded text-sm transition"
+                              style={{ background: 'linear-gradient(135deg, #5a1e3d 0%, #7a2d4d 100%)' }}
                             >
                               ▶️ Play
                             </button>
@@ -589,8 +596,8 @@ export default function AdminPage() {
 
                         {/* Expanded path grid */}
                         {expandedMatchup === matchup.key && (
-                          <div className="border-t border-gray-600 p-4 bg-gray-800">
-                            <p className="text-sm text-gray-400 mb-3">Click a cached path to manage it:</p>
+                          <div className="border-t border-[#FFD700]/30 p-4 bg-[#0a0a15]">
+                            <p className="text-sm text-white/70 mb-3">Click a cached path to manage it:</p>
                             <div className="grid grid-cols-9 gap-1">
                               {ALL_PATHS.map((path) => {
                                 const cached = matchup.paths.find(p => p.path === path);
@@ -600,12 +607,12 @@ export default function AdminPage() {
                                     key={path}
                                     onClick={() => cached && setSelectedPath(isSelected ? null : `${matchup.key}-${path}`)}
                                     disabled={!cached}
-                                    className={`px-2 py-1 text-xs text-center rounded transition ${
+                                    className={`px-2 py-1 text-xs text-center rounded transition border ${
                                       isSelected
-                                        ? 'bg-yellow-500 text-black ring-2 ring-yellow-300'
+                                        ? 'bg-[#FFD700] text-black border-[#FFD700] ring-2 ring-[#FFD700]'
                                         : cached 
-                                          ? 'bg-green-600 text-white hover:bg-green-500 cursor-pointer' 
-                                          : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                          ? 'bg-green-600 text-white hover:bg-green-500 cursor-pointer border-green-500' 
+                                          : 'bg-[#1a1a2e] text-white/30 cursor-not-allowed border-white/10'
                                     }`}
                                     title={cached ? `Click to manage path ${path}` : 'Not cached'}
                                   >
@@ -617,23 +624,23 @@ export default function AdminPage() {
 
                             {/* Selected path actions */}
                             {selectedPath?.startsWith(matchup.key) && (
-                              <div className="mt-4 p-3 bg-gray-700 rounded-lg">
+                              <div className="mt-4 p-3 bg-[#1a1a2e] border-2 border-[#FFD700]/30 rounded-lg">
                                 <p className="text-sm font-medium mb-3">
-                                  🎯 Managing path: <span className="text-yellow-400">{selectedPath.replace(`${matchup.key}-`, '')}</span>
+                                  🎯 Managing path: <span className="text-[#FFD700]">{selectedPath.replace(`${matchup.key}-`, '')}</span>
                                 </p>
                                 
                                 {/* Regenerate images */}
-                                <p className="text-xs text-gray-400 mb-2">Regenerate specific image:</p>
+                                <p className="text-xs text-white/60 mb-2">Regenerate specific image:</p>
                                 <div className="flex gap-2 flex-wrap mb-3">
                                   {['outcome-1', 'outcome-2', 'outcome-3', 'victory'].map((imageId) => (
                                     <button
                                       key={imageId}
                                       onClick={() => regenerateCyoaImage(matchup.key, selectedPath.replace(`${matchup.key}-`, ''), imageId)}
                                       disabled={cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}`}
-                                      className={`px-3 py-1 rounded text-xs transition ${
+                                      className={`px-3 py-1 rounded text-xs transition border-2 ${
                                         cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}`
-                                          ? 'bg-yellow-600 text-black'
-                                          : 'bg-blue-600 hover:bg-blue-500'
+                                          ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                                          : 'bg-[#1e5a3d] hover:bg-[#2d7a4d] border-green-600'
                                       }`}
                                     >
                                       {cyoaImageLoading === `${selectedPath.replace(`${matchup.key}-`, '')}-${imageId}` ? '⏳' : `🎨 ${imageId}`}
@@ -681,13 +688,14 @@ export default function AdminPage() {
                                   }
                                 }}
                                 disabled={cyoaDeleteLoading === matchup.key || !matchup.hasGates}
-                                className="px-3 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm transition disabled:opacity-50"
+                                className="px-3 py-2 rounded text-sm transition disabled:opacity-50"
+                                style={{ background: 'linear-gradient(135deg, #5a1e3d 0%, #7a2d4d 100%)' }}
                               >
                                 🎲 Reset Gates Only
                               </button>
                             </div>
                             
-                            <p className="text-xs text-gray-500 mt-3">
+                            <p className="text-xs text-white/50 mt-3">
                               Legend: A = favors {matchup.animalA}, B = favors {matchup.animalB}, N = neutral
                             </p>
                           </div>
@@ -700,19 +708,19 @@ export default function AdminPage() {
             )}
 
             {!cyoaData && !cyoaLoading && !cyoaError && (
-              <p className="text-gray-500 text-center py-8">Click Refresh to load CYOA cache data</p>
+              <p className="text-white/50 text-center py-8">Click Refresh to load CYOA cache data</p>
             )}
           </div>
         )}
 
         {/* Instructions */}
-        <div className="text-gray-500 text-sm mt-8">
-          <h3 className="font-bold mb-2">How it works:</h3>
-          <ul className="list-disc list-inside space-y-1">
-            <li><strong>Standard Books:</strong> Cached JSON + PDF for each matchup</li>
-            <li><strong>CYOA Paths:</strong> 27 possible paths per matchup (3 choices × 3 gates)</li>
+        <div className="text-white/60 text-sm mt-8 bg-[#1a1a2e] border-2 border-[#FFD700]/30 rounded-lg p-6">
+          <h3 className="font-bangers text-lg text-[#FFD700] mb-3">How it works:</h3>
+          <ul className="list-disc list-inside space-y-2">
+            <li><strong className="text-white/80">Standard Books:</strong> Cached JSON + PDF for each matchup</li>
+            <li><strong className="text-white/80">CYOA Paths:</strong> 27 possible paths per matchup (3 choices × 3 gates)</li>
             <li>Paths fill in as users play - each unique path is cached on first playthrough</li>
-            <li>Green = cached, Gray = not yet generated</li>
+            <li><span className="text-green-500">Green</span> = cached, <span className="text-white/30">Gray</span> = not yet generated</li>
             <li>Delete gates to regenerate choices; delete paths to regenerate outcomes</li>
           </ul>
         </div>
