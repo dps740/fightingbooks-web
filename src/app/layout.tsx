@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://whowouldwinbooks.com"),
   title: "Who Would Win? - Create Epic Animal Battle Books",
   description: "Create custom illustrated books where your favorite animals battle it out! Inspired by Jerry Pallotta's bestselling series. Generate AI-powered battle stories with Lions, Tigers, Sharks, Dinosaurs and more.",
   keywords: ["who would win", "animal battles", "kids books", "AI book generator", "custom books", "animal fights", "educational books"],
