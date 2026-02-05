@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?success=true&tier=${tier}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?canceled=true`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?success=true&tier=${tier}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?canceled=true`,
       metadata: {
         userId: user.id,
         tier: tier,
