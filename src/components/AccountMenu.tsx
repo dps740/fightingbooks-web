@@ -14,7 +14,7 @@ interface AccountMenuProps {
 const tierBadges: Record<UserTier, { label: string; shortLabel: string; bg: string; border: string }> = {
   unregistered: { label: 'Account Type: GUEST', shortLabel: 'GUEST', bg: 'bg-gray-600', border: 'border-gray-400' },
   free: { label: 'Account Type: FREE', shortLabel: 'FREE', bg: 'bg-emerald-700', border: 'border-emerald-400' },
-  tier2: { label: 'Account Type: REAL', shortLabel: 'REAL', bg: 'bg-blue-600', border: 'border-blue-400' },
+  tier2: { label: 'Account Type: PRO', shortLabel: 'PRO', bg: 'bg-blue-600', border: 'border-blue-400' },
   tier3: { label: 'Account Type: ULTIMATE', shortLabel: 'ULTIMATE', bg: 'bg-purple-600', border: 'border-purple-300' },
 };
 
