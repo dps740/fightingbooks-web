@@ -516,7 +516,7 @@ async function saveStatsToCache(key: string, stats: ComparativeStats): Promise<v
 }
 
 // Cache version - bump this to invalidate old cached stats when logic changes
-const STATS_CACHE_VERSION = 'v2';
+const STATS_CACHE_VERSION = 'v3';
 
 // Generate comparative stats for both animals in one call for better differentiation
 async function generateComparativeStats(animalA: string, animalB: string): Promise<ComparativeStats> {
@@ -524,6 +524,11 @@ async function generateComparativeStats(animalA: string, animalB: string): Promi
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
   const cacheKey = `${STATS_CACHE_VERSION}-${sorted[0]}-vs-${sorted[1]}`;
   const isReversed = sorted[0] !== animalA.toLowerCase();
+  
+  // sortedA/sortedB: animals in alphabetical order (matches cache key)
+  // We ALWAYS generate the prompt in sorted order so stats align with cache
+  const sortedA = isReversed ? animalB : animalA;
+  const sortedB = isReversed ? animalA : animalB;
   
   // Check in-memory cache first
   if (statsCache.has(cacheKey)) {
@@ -541,15 +546,17 @@ async function generateComparativeStats(animalA: string, animalB: string): Promi
     return isReversed ? swapStats(cached) : cached;
   }
   
-  console.log(`Stats cache miss: ${cacheKey} - calling API`);
+  console.log(`Stats cache miss: ${cacheKey} - calling API (sorted: ${sortedA} vs ${sortedB})`);
   
-  const prompt = `Compare ${animalA} vs ${animalB} for a "Who Would Win?" battle book.
+  // IMPORTANT: Prompt uses SORTED order so A/B in response matches cache key order.
+  // This prevents the bug where scores and notes disagree after a swap.
+  const prompt = `Compare ${sortedA} vs ${sortedB} for a "Who Would Win?" battle book.
 
 Rate each animal from 1-10 in these categories with REAL scientific facts.
 
 CRITICAL: The animal with the BETTER stat in the note MUST have the HIGHER score!
-- If ${animalA} has higher bite force → ${animalA} gets higher strength score
-- If ${animalB} is faster → ${animalB} gets higher speed score
+- If ${sortedA} has higher bite force → ${sortedA} gets higher strength score
+- If ${sortedB} is faster → ${sortedB} gets higher speed score
 - NEVER give a lower score to the animal with the better stat!
 
 STRENGTH (bite force PSI, lifting power):
@@ -567,14 +574,14 @@ DEFENSE (hide thickness, size, armor):
 
 Return JSON only:
 {
-  "strengthA": <number 1-10>,
-  "strengthB": <number 1-10>,
-  "speedA": <number 1-10>,
-  "speedB": <number 1-10>,
-  "weaponsA": <number 1-10>,
-  "weaponsB": <number 1-10>,
-  "defenseA": <number 1-10>,
-  "defenseB": <number 1-10>,
+  "strengthA": <number 1-10 for ${sortedA}>,
+  "strengthB": <number 1-10 for ${sortedB}>,
+  "speedA": <number 1-10 for ${sortedA}>,
+  "speedB": <number 1-10 for ${sortedB}>,
+  "weaponsA": <number 1-10 for ${sortedA}>,
+  "weaponsB": <number 1-10 for ${sortedB}>,
+  "defenseA": <number 1-10 for ${sortedA}>,
+  "defenseB": <number 1-10 for ${sortedB}>,
   "strengthNote": "Compare both animals' bite force/strength - winner of comparison MUST have higher score above",
   "speedNote": "Compare both animals' speed - faster animal MUST have higher score above",
   "weaponsNote": "Compare both animals' weapons - better armed animal MUST have higher score above",
@@ -591,6 +598,7 @@ Return JSON only:
     });
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
+    // Stats are in SORTED order (matching cache key)
     const stats: ComparativeStats = {
       strengthA: result.strengthA || 7,
       strengthB: result.strengthB || 7,
@@ -607,10 +615,11 @@ Return JSON only:
       keyAdvantage: result.keyAdvantage || '',
     };
     
-    // Save to both caches
+    // Save to both caches (stats are already in sorted/cache-key order)
     statsCache.set(cacheKey, stats);
     await saveStatsToCache(cacheKey, stats);
     
+    // Swap to caller's order if needed
     return isReversed ? swapStats(stats) : stats;
   } catch (error) {
     console.error('Comparative stats error:', error);
@@ -1361,7 +1370,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v7';
+const BOOK_CACHE_VERSION = 'v8';
 
 // Persistent cache using Vercel Blob (survives deployments)
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
