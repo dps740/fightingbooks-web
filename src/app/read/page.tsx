@@ -158,7 +158,15 @@ function BookReader() {
       }
       
       if (data.pages?.length > 0) {
-        setPages(data.pages);
+        let bookPages = data.pages;
+        // In CYOA mode, strip standard battle/victory pages
+        // They'll be replaced by CYOA choices + AI-generated outcomes
+        if (mode === 'cyoa') {
+          bookPages = bookPages.filter((p: BookPage) => 
+            p.type !== 'battle' && p.type !== 'victory'
+          );
+        }
+        setPages(bookPages);
         setLoadError(null);
         // Fire off CYOA gates in background if needed
         if (mode === 'cyoa') {
