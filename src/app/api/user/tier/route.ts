@@ -36,10 +36,38 @@ export async function GET() {
     }
 
     const supabase = getSupabase();
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    let { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+    // If access token expired, try refreshing with refresh token
+    if (authError || !user) {
+      const refreshToken = cookieStore.get('sb-refresh-token')?.value;
+      if (refreshToken) {
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+          refresh_token: refreshToken,
+        });
+        if (!refreshError && refreshData.session && refreshData.user) {
+          user = refreshData.user;
+          authError = null;
+          // Update cookies with new tokens
+          const response = NextResponse.json({}); // placeholder, will be replaced below
+          cookieStore.set('sb-access-token', refreshData.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 365,
+          });
+          cookieStore.set('sb-refresh-token', refreshData.session.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 365,
+          });
+        }
+      }
+    }
 
     if (authError || !user) {
-      // Invalid token, treat as unregistered
+      // Invalid token and no valid refresh, treat as unregistered
       const tier: UserTier = 'unregistered';
       return NextResponse.json({
         tier,

@@ -53,14 +53,20 @@ export async function POST(request: NextRequest) {
       // Don't fail signup if profile creation fails - user still created
     }
 
-    // Set session cookie if we have a session
+    // Set session cookies if we have a session
     if (authData.session) {
       const cookieStore = await cookies();
       cookieStore.set('sb-access-token', authData.session.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7,
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+      });
+      cookieStore.set('sb-refresh-token', authData.session.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 365, // 1 year
       });
     }
 

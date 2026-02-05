@@ -34,11 +34,41 @@ async function getUserTier(): Promise<{ tier: UserTier; userId: string | null }>
     }
 
     const supabase = getSupabase();
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    let { data: { user }, error } = await supabase.auth.getUser(token);
+
+    // If access token expired, try refreshing
+    if (error || !user) {
+      const refreshToken = cookieStore.get('sb-refresh-token')?.value;
+      if (refreshToken) {
+        const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession({
+          refresh_token: refreshToken,
+        });
+        if (!refreshError && refreshData.session && refreshData.user) {
+          user = refreshData.user;
+          error = null;
+          cookieStore.set('sb-access-token', refreshData.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 365,
+          });
+          cookieStore.set('sb-refresh-token', refreshData.session.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 365,
+          });
+        }
+      }
+    }
 
     if (error || !user) {
       return { tier: 'unregistered', userId: null };
     }
+
+    // Admin emails always get full access
+    const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
+    const isAdmin = user.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
     // Get tier from users table
     const { data: profile } = await supabase
@@ -48,7 +78,7 @@ async function getUserTier(): Promise<{ tier: UserTier; userId: string | null }>
       .single();
 
     return {
-      tier: (profile?.tier as UserTier) || 'free',
+      tier: isAdmin ? 'tier3' : (profile?.tier as UserTier) || 'free',
       userId: user.id,
     };
   } catch (error) {
