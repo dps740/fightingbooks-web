@@ -801,6 +801,16 @@ function BookReader() {
           letter-spacing: 2px;
           margin-bottom: 20px;
           box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+          text-align: center;
+          white-space: nowrap;
+        }
+        
+        @media (max-width: 480px) {
+          .cover-banner {
+            font-size: 1.8em;
+            padding: 10px 20px;
+            letter-spacing: 1px;
+          }
         }
         
         .cover-title {
