@@ -26,6 +26,28 @@ function getCyoaCacheKey(animalA: string, animalB: string): string {
   return `${sorted[0]}-vs-${sorted[1]}`;
 }
 
+// Load cached CYOA gates from Vercel Blob
+async function loadCachedGates(cacheKey: string): Promise<{ gates: any[] } | null> {
+  const blobPath = `fightingbooks/cyoa/${cacheKey}/gates-${CYOA_CACHE_VERSION}.json`;
+  console.log(`[CYOA-GATES] Checking blob: ${blobPath}`);
+  
+  try {
+    const blobInfo = await head(blobPath);
+    const response = await fetch(blobInfo.url);
+    if (response.ok) {
+      const data = await response.json();
+      console.log(`[CYOA-GATES] Gates cache HIT`);
+      return data;
+    }
+  } catch (error) {
+    if (!(error instanceof BlobNotFoundError)) {
+      console.error(`[CYOA-GATES] Error loading gates:`, error);
+    }
+  }
+  
+  return null;
+}
+
 // Load cached CYOA path outcome from Vercel Blob
 async function loadCachedOutcome(cacheKey: string, pathKey: string): Promise<any | null> {
   const blobPath = `fightingbooks/cyoa/${cacheKey}/path-${pathKey}-${CYOA_CACHE_VERSION}.json`;
@@ -46,6 +68,33 @@ async function loadCachedOutcome(cacheKey: string, pathKey: string): Promise<any
   }
   
   return null;
+}
+
+// Create next gate page for progressive reveal
+async function createNextGatePage(animalA: string, animalB: string, gate: any, gateNumber: number): Promise<any> {
+  const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
+  const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
+  const portraitA = `/fighters/${nameA}.jpg`;
+  const portraitB = `/fighters/${nameB}.jpg`;
+  const imgPrefix = `${nameA}-vs-${nameB}`;
+  
+  // Use cached battle background (was generated during initial load)
+  const battleBg = await generateImage(
+    `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield`,
+    `${imgPrefix}-cyoa-bg`
+  );
+  
+  return {
+    id: `decision-${gateNumber}`,
+    type: 'choice',
+    title: gate.title,
+    content: `<p class="decision-intro">${gate.intro}</p>`,
+    imageUrl: battleBg,
+    choices: gate.choices,
+    gateNumber,
+    animalAPortrait: portraitA,
+    animalBPortrait: portraitB,
+  };
 }
 
 // Save CYOA path outcome to Vercel Blob
@@ -172,11 +221,22 @@ export async function POST(request: NextRequest) {
     const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
     const cachedOutcome = await loadCachedOutcome(cyoaCacheKey, newPath);
     
-    if (cachedOutcome) {
+    // Load cached gates for progressive reveal
+    let cachedGates = await loadCachedGates(cyoaCacheKey);
+    
+    if (cachedOutcome && cachedGates) {
       // Return cached outcome with computed score
       console.log(`[CYOA-OUTCOME] Returning cached outcome for path ${newPath}`);
+      
+      // PROGRESSIVE REVEAL: Add next gate if not at final gate
+      let pages = cachedOutcome.pages;
+      if (gateNumber < 3 && cachedGates.gates[gateNumber]) {
+        const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1);
+        pages = [...pages, nextGate];
+      }
+      
       return NextResponse.json({
-        pages: cachedOutcome.pages,
+        pages,
         score: newScore,
         newPath,
         isComplete: gateNumber === 3,
@@ -187,6 +247,11 @@ export async function POST(request: NextRequest) {
     // Generate new outcome
     console.log(`[CYOA-OUTCOME] Generating new outcome for path ${newPath}`);
     const pages = [];
+    
+    // Load gates if not already loaded (needed for progressive reveal)
+    if (!cachedGates) {
+      cachedGates = await loadCachedGates(cyoaCacheKey);
+    }
 
     // Add outcome page
     const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
@@ -270,7 +335,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Cache the outcome
+    // Cache the outcome (just the outcome pages, not the next gate)
     await saveCachedOutcome(cyoaCacheKey, newPath, {
       path: newPath,
       animalA,
@@ -278,6 +343,12 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
       pages,
     });
+
+    // PROGRESSIVE REVEAL: Add next gate if not at final gate
+    if (gateNumber < 3 && cachedGates && cachedGates.gates[gateNumber]) {
+      const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1);
+      pages.push(nextGate);
+    }
 
     // Return new pages and updated score
     return NextResponse.json({ 

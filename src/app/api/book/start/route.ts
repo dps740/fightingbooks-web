@@ -1242,7 +1242,47 @@ async function saveCachedCyoaGates(cacheKey: string, data: { animalA: string; an
   }
 }
 
-// Add CYOA choices from cached gates (skips generation)
+// Add ONLY the first CYOA gate (progressive reveal)
+async function addFirstCyoaGate(pages: BookPage[], animalA: string, animalB: string, cachedData: { gates: any[] }): Promise<BookPage[]> {
+  const statsIndex = pages.findIndex(p => p.type === 'stats');
+  if (statsIndex === -1) return pages;
+
+  const gates = cachedData.gates;
+  if (gates.length === 0) return pages;
+
+  // Get animal portraits for VS header
+  const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
+  const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
+  const portraitA = `/fighters/${nameA}.jpg`;
+  const portraitB = `/fighters/${nameB}.jpg`;
+
+  // Generate battle scene image (also cached via generateImage's internal cache)
+  const imgPrefix = `${nameA}-vs-${nameB}`;
+  const battleBg = await generateImage(
+    `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield`,
+    `${imgPrefix}-cyoa-bg`
+  );
+
+  // Insert ONLY gate 1 after stats
+  const beforeStats = pages.slice(0, statsIndex + 1);
+  
+  const firstGate = gates[0];
+  const firstDecisionPage: BookPage = {
+    id: `decision-1`,
+    type: 'choice',
+    title: firstGate.title,
+    content: `<p class="decision-intro">${firstGate.intro}</p>`,
+    imageUrl: battleBg,
+    choices: firstGate.choices,
+    gateNumber: 1,
+    animalAPortrait: portraitA,
+    animalBPortrait: portraitB,
+  };
+
+  return [...beforeStats, firstDecisionPage];
+}
+
+// Legacy function - kept for reference but no longer used
 async function addCyoaChoicesFromCachedGates(pages: BookPage[], animalA: string, animalB: string, cachedData: { gates: any[] }): Promise<BookPage[]> {
   const statsIndex = pages.findIndex(p => p.type === 'stats');
   if (statsIndex === -1) return pages;
@@ -1540,6 +1580,7 @@ export async function POST(request: NextRequest) {
     }
     
     // For CYOA mode, check for cached gates or generate new ones
+    // PROGRESSIVE REVEAL: Only add gate 1 on initial load
     if (mode === 'cyoa') {
       const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
       
@@ -1548,7 +1589,8 @@ export async function POST(request: NextRequest) {
       
       if (cachedGates) {
         console.log(`[CYOA-CACHE] Gates HIT for ${cyoaCacheKey}`);
-        result.pages = await addCyoaChoicesFromCachedGates(result.pages, animalA, animalB, cachedGates);
+        // Only add the FIRST gate on initial load
+        result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, cachedGates);
       } else {
         console.log(`[CYOA-CACHE] Gates MISS for ${cyoaCacheKey} - generating new gates`);
         // Generate facts (needed for choice generation)
@@ -1568,7 +1610,8 @@ export async function POST(request: NextRequest) {
           gates,
         });
         
-        result.pages = await addCyoaChoicesFromCachedGates(result.pages, animalA, animalB, { gates });
+        // Only add the FIRST gate on initial load
+        result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, { gates });
       }
     }
 
