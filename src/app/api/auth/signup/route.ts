@@ -23,17 +23,22 @@ export async function POST(request: NextRequest) {
     
     const supabase = getSupabase();
 
-    // Create user in Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+    // Create user with admin API (auto-confirms email, skips unreliable SMTP)
+    const { data: adminData, error: adminError } = await supabase.auth.admin.createUser({
       email,
       password,
+      email_confirm: true,
     });
 
-    if (authError) {
-      return NextResponse.json({ error: authError.message }, { status: 400 });
+    if (adminError) {
+      // Handle "already registered" gracefully
+      if (adminError.message?.includes('already been registered')) {
+        return NextResponse.json({ error: 'An account with this email already exists. Try signing in instead.' }, { status: 400 });
+      }
+      return NextResponse.json({ error: adminError.message }, { status: 400 });
     }
 
-    if (!authData.user) {
+    if (!adminData.user) {
       return NextResponse.json({ error: 'Failed to create user' }, { status: 400 });
     }
 
@@ -41,37 +46,48 @@ export async function POST(request: NextRequest) {
     const { error: profileError } = await supabase
       .from('users')
       .insert({
-        id: authData.user.id,
-        email: authData.user.email,
+        id: adminData.user.id,
+        email: adminData.user.email,
         tier: 'free',
       });
 
     if (profileError) {
       console.error('Profile creation error:', profileError);
-      // Don't fail signup if profile creation fails - user still created
     }
 
-    // Set session cookies if we have a session
-    if (authData.session) {
-      const cookieStore = await cookies();
-      cookieStore.set('sb-access-token', authData.session.access_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 365, // 1 year
-      });
-      cookieStore.set('sb-refresh-token', authData.session.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 365, // 1 year
+    // Now sign in to get a session (admin.createUser doesn't return a session)
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError || !signInData.session) {
+      // User created but couldn't auto-login — they'll need to sign in manually
+      return NextResponse.json({ 
+        success: true, 
+        user: { id: adminData.user.id, email: adminData.user.email },
+        needsLogin: true,
       });
     }
+
+    // Set session cookies
+    const cookieStore = await cookies();
+    cookieStore.set('sb-access-token', signInData.session.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    cookieStore.set('sb-refresh-token', signInData.session.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 365,
+    });
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: authData.user.id, email: authData.user.email },
-      needsConfirmation: !authData.session // If no session, email needs confirmation
+      user: { id: adminData.user.id, email: adminData.user.email },
     });
   } catch (error) {
     console.error('Signup error:', error);
