@@ -11,11 +11,11 @@ interface AccountMenuProps {
   onUpgrade: () => void;
 }
 
-const tierBadges: Record<UserTier, { label: string; bg: string; border: string }> = {
-  unregistered: { label: 'GUEST', bg: 'bg-gray-700', border: 'border-gray-500' },
-  free: { label: 'FREE', bg: 'bg-green-800', border: 'border-green-500' },
-  tier2: { label: 'REAL', bg: 'bg-blue-800', border: 'border-blue-500' },
-  tier3: { label: 'ULTIMATE', bg: 'bg-purple-800', border: 'border-purple-500' },
+const tierBadges: Record<UserTier, { label: string; shortLabel: string; bg: string; border: string }> = {
+  unregistered: { label: 'Level: GUEST', shortLabel: 'GUEST', bg: 'bg-gray-700', border: 'border-gray-500' },
+  free: { label: 'Level: FREE', shortLabel: 'FREE', bg: 'bg-green-800', border: 'border-green-500' },
+  tier2: { label: 'Level: REAL', shortLabel: 'REAL', bg: 'bg-blue-800', border: 'border-blue-500' },
+  tier3: { label: 'Level: ULTIMATE', shortLabel: 'ULTIMATE', bg: 'bg-purple-800', border: 'border-purple-500' },
 };
 
 export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }: AccountMenuProps) {
@@ -63,8 +63,7 @@ export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }:
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 ${badge.border} ${badge.bg} hover:brightness-110 transition-all`}
       >
-        <span className="text-white/70 text-xs hidden sm:inline">Level:</span>
-        <span className="font-bangers text-white text-sm">{badge.label}</span>
+        <span className="font-bangers text-white text-sm tracking-wide">{badge.label}</span>
         <svg
           className={`w-4 h-4 text-white/70 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -89,7 +88,7 @@ export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }:
             <div className="px-4 py-3 border-b border-white/10">
               <div className="text-white/60 text-xs truncate">{email}</div>
               <div className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bangers ${badge.bg} text-white`}>
-                {badge.label}
+                {badge.shortLabel}
               </div>
             </div>
 
