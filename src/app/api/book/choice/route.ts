@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, head, BlobNotFoundError } from '@vercel/blob';
+import OpenAI from 'openai';
 
-// CYOA Cache Version - must match start/route.ts
-const CYOA_CACHE_VERSION = 'v1';
+// CYOA Cache Version - bump to invalidate when narrative logic changes
+const CYOA_CACHE_VERSION = 'v2';
+
+// Lazy init OpenAI to avoid build-time errors
+function getOpenAI() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 interface ChoiceRequest {
   animalA: string;
@@ -195,10 +201,88 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
   }
 }
 
+// Generate a flowing narrative outcome using OpenAI, building on previous events
+async function generateNarrative(
+  animalA: string,
+  animalB: string,
+  gateNumber: number,
+  choiceText: string,
+  choiceFavors: string,
+  choiceHint: string,
+  previousOutcomes: string[],
+  isFinal: boolean,
+  winner?: string,
+): Promise<string> {
+  const storyContext = previousOutcomes.length > 0
+    ? `STORY SO FAR:\n${previousOutcomes.map((o, i) => `Scene ${i + 1}: ${o}`).join('\n')}\n\n`
+    : '';
+
+  const sceneInstruction = isFinal
+    ? `Write the FINAL CLIMACTIC scene (3-4 sentences). The ${winner} wins this fight. End decisively — show the winning blow and the ${winner === animalA ? animalB : animalA} backing down or being defeated.`
+    : `Write the next scene (2-3 sentences). This is scene ${gateNumber} of 3. Build tension — the fight isn't over yet. End on a moment that sets up the next decision.`;
+
+  const favorText = choiceFavors === 'A'
+    ? `This moment favors the ${animalA}.`
+    : choiceFavors === 'B'
+    ? `This moment favors the ${animalB}.`
+    : `Neither animal gains a clear advantage.`;
+
+  const prompt = `You are narrating a "Who Would Win?" children's book battle between a ${animalA} and a ${animalB}.
+
+${storyContext}THE READER CHOSE: ${choiceText}
+${favorText}
+
+${sceneInstruction}
+
+RULES:
+- Continue DIRECTLY from where the story left off — do NOT reset the scene or re-introduce the animals
+- Use the animals' REAL abilities (claws, teeth, speed, armor, etc.)
+- Exciting but age-appropriate (no gore, no death descriptions)
+- Use CAPS for emphasis on exciting words
+- Short, punchy sentences kids love
+- Reference the specific choice the reader made
+- The hint for this outcome is: "${choiceHint}" — use it as inspiration but write fresh text that flows from the story
+
+Return ONLY the narrative text, no JSON, no quotes.`;
+
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.8,
+      max_tokens: 200,
+    });
+
+    return response.choices[0].message.content?.trim() || choiceHint;
+  } catch (error) {
+    console.error('Narrative generation error:', error);
+    return choiceHint; // Fallback to pre-generated hint
+  }
+}
+
+// Extract previous CYOA outcome texts from allPages
+function extractPreviousOutcomes(allPages: any[]): string[] {
+  const outcomes: string[] = [];
+  for (const page of allPages) {
+    if (page.id?.startsWith('outcome-')) {
+      // Strip HTML tags to get plain text
+      const text = (page.content || '').replace(/<[^>]+>/g, '').trim();
+      if (text) outcomes.push(text);
+    }
+  }
+  return outcomes;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: ChoiceRequest = await request.json();
     const { animalA, animalB, choiceFavors, choiceOutcome, currentScore, gateNumber, allPages, currentPath = '' } = body;
+    // choiceOutcome is now used as a HINT — the AI generates the actual flowing narrative
+
+    // Find the choice text from the allPages (the choice button the user clicked)
+    const choiceText = body.allPages
+      ?.find((p: any) => p.type === 'choice' && p.gateNumber === gateNumber)
+      ?.choices?.[body.choiceIndex]?.text || choiceOutcome;
 
     // Build the new path by appending the choice (A, B, or N for neutral)
     const choiceCode = choiceFavors === 'A' ? 'A' : choiceFavors === 'B' ? 'B' : 'N';
@@ -244,8 +328,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate new outcome
-    console.log(`[CYOA-OUTCOME] Generating new outcome for path ${newPath}`);
+    // Generate new outcome with flowing narrative
+    console.log(`[CYOA-OUTCOME] Generating new narrative for path ${newPath}`);
     const pages = [];
     
     // Load gates if not already loaded (needed for progressive reveal)
@@ -253,12 +337,41 @@ export async function POST(request: NextRequest) {
       cachedGates = await loadCachedGates(cyoaCacheKey);
     }
 
-    // Add outcome page
+    // Extract previous outcomes for narrative context
+    const previousOutcomes = extractPreviousOutcomes(allPages);
+
+    // Determine winner early if this is the final gate
+    let winner: string | undefined;
+    if (gateNumber === 3) {
+      let baseScoreA = 50;
+      let baseScoreB = 50;
+      if (body.taleOfTheTape) {
+        const statsA = body.taleOfTheTape.animalA;
+        const statsB = body.taleOfTheTape.animalB;
+        baseScoreA = (statsA.strength + statsA.speed + statsA.weapons + statsA.defense) / 4;
+        baseScoreB = (statsB.strength + statsB.speed + statsB.weapons + statsB.defense) / 4;
+      }
+      const choiceSwingA = newScore.A * 5;
+      const choiceSwingB = newScore.B * 5;
+      const finalScoreA = baseScoreA + choiceSwingA;
+      const finalScoreB = baseScoreB + choiceSwingB;
+      winner = finalScoreA > finalScoreB ? animalA : finalScoreB > finalScoreA ? animalB : (Math.random() > 0.5 ? animalA : animalB);
+      console.log(`Final scores - ${animalA}: ${finalScoreA} vs ${animalB}: ${finalScoreB} → Winner: ${winner}`);
+    }
+
+    // Generate flowing narrative via OpenAI
+    const narrativeText = await generateNarrative(
+      animalA, animalB, gateNumber,
+      choiceText, choiceFavors, choiceOutcome,
+      previousOutcomes, gateNumber === 3, winner,
+    );
+
+    // Generate outcome image
     const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
     const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
     const imgPrefix = `${nameA}-vs-${nameB}`;
     const outcomeImage = await generateImage(
-      `${animalA} and ${animalB} battling, dramatic action scene, ${choiceOutcome}`,
+      `${animalA} and ${animalB} battling, dramatic action scene, ${narrativeText.slice(0, 80)}`,
       `${imgPrefix}-outcome-${newPath}`
     );
     
@@ -266,47 +379,23 @@ export async function POST(request: NextRequest) {
       id: `outcome-${gateNumber}`,
       type: 'battle',
       title: '',
-      content: `<p class="outcome-text">${choiceOutcome}</p>`,
+      content: `<p class="outcome-text">${narrativeText}</p>`,
       imageUrl: outcomeImage,
     });
 
-    // If this was the 3rd decision, determine winner using Tale of the Tape + choices
-    if (gateNumber === 3) {
-      // Calculate base strength from Tale of the Tape (if available)
-      let baseScoreA = 50; // Default baseline
-      let baseScoreB = 50;
-      
-      if (body.taleOfTheTape) {
-        const statsA = body.taleOfTheTape.animalA;
-        const statsB = body.taleOfTheTape.animalB;
-        // Average of stats gives base "power level" (0-100 scale)
-        baseScoreA = (statsA.strength + statsA.speed + statsA.weapons + statsA.defense) / 4;
-        baseScoreB = (statsB.strength + statsB.speed + statsB.weapons + statsB.defense) / 4;
-      }
-      
-      // User choices can swing the battle (each point = 5% swing)
-      // Max user score is 6 (1+2+3), so max swing is 30%
-      const choiceSwingA = newScore.A * 5;
-      const choiceSwingB = newScore.B * 5;
-      
-      // Final battle score
-      const finalScoreA = baseScoreA + choiceSwingA;
-      const finalScoreB = baseScoreB + choiceSwingB;
-      
-      console.log(`Final battle scores - ${animalA}: ${finalScoreA} (base ${baseScoreA} + choices ${choiceSwingA}) vs ${animalB}: ${finalScoreB} (base ${baseScoreB} + choices ${choiceSwingB})`);
-      
-      // Determine winner
-      const winner = finalScoreA > finalScoreB ? animalA : finalScoreB > finalScoreA ? animalB : (Math.random() > 0.5 ? animalA : animalB);
+    // If final gate, add victory page
+    if (gateNumber === 3 && winner) {
       const loser = winner === animalA ? animalB : animalA;
       
-      // Generate victory image
       const victoryImage = await generateImage(
-        `${winner} proud and defiant`,
+        `${winner} proud and defiant after battle`,
         `${imgPrefix}-victory-${newPath}`
       );
       
-      // Determine how decisive the victory was
-      const scoreDiff = Math.abs(finalScoreA - finalScoreB);
+      const scoreDiff = Math.abs(
+        ((body.taleOfTheTape?.animalA ? (body.taleOfTheTape.animalA.strength + body.taleOfTheTape.animalA.speed + body.taleOfTheTape.animalA.weapons + body.taleOfTheTape.animalA.defense) / 4 : 50) + newScore.A * 5) -
+        ((body.taleOfTheTape?.animalB ? (body.taleOfTheTape.animalB.strength + body.taleOfTheTape.animalB.speed + body.taleOfTheTape.animalB.weapons + body.taleOfTheTape.animalB.defense) / 4 : 50) + newScore.B * 5)
+      );
       const victoryType = scoreDiff > 20 ? 'dominant' : scoreDiff > 10 ? 'hard-fought' : 'narrow';
       const victoryDesc = victoryType === 'dominant' 
         ? `${winner} dominated this battle from start to finish!`
