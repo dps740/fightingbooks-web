@@ -51,6 +51,10 @@ export async function GET() {
       });
     }
 
+    // Admin emails always get full access
+    const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
+    const isAdmin = user.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
+
     // Get user's tier from users table
     const { data: profile } = await supabase
       .from('users')
@@ -58,8 +62,8 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
-    // Default to 'free' if no tier set or profile doesn't exist
-    const tier: UserTier = (profile?.tier as UserTier) || 'free';
+    // Admin gets tier3, otherwise default to 'free' if no tier set
+    const tier: UserTier = isAdmin ? 'tier3' : (profile?.tier as UserTier) || 'free';
     const tierInfo = getTierInfo(tier);
     const accessibleAnimals = getAccessibleAnimals(tier);
 
