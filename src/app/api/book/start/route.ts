@@ -1581,37 +1581,44 @@ export async function POST(request: NextRequest) {
     
     // For CYOA mode, check for cached gates or generate new ones
     // PROGRESSIVE REVEAL: Only add gate 1 on initial load
+    // Wrapped in try-catch so CYOA failure doesn't kill the whole request
     if (mode === 'cyoa') {
-      const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
-      
-      // Try to load cached gates
-      let cachedGates = forceRegenerate ? null : await loadCachedCyoaGates(cyoaCacheKey);
-      
-      if (cachedGates) {
-        console.log(`[CYOA-CACHE] Gates HIT for ${cyoaCacheKey}`);
-        // Only add the FIRST gate on initial load
-        result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, cachedGates);
-      } else {
-        console.log(`[CYOA-CACHE] Gates MISS for ${cyoaCacheKey} - generating new gates`);
-        // Generate facts (needed for choice generation)
-        const [factsA, factsB] = await Promise.all([
-          generateAnimalFacts(animalA),
-          generateAnimalFacts(animalB),
-        ]);
+      try {
+        const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
         
-        // Generate gates and add to pages
-        const gates = await generateCyoaGates(animalA, animalB, factsA, factsB);
+        // Try to load cached gates
+        let cachedGates = forceRegenerate ? null : await loadCachedCyoaGates(cyoaCacheKey);
         
-        // Cache the gates
-        await saveCachedCyoaGates(cyoaCacheKey, {
-          animalA,
-          animalB,
-          createdAt: new Date().toISOString(),
-          gates,
-        });
-        
-        // Only add the FIRST gate on initial load
-        result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, { gates });
+        if (cachedGates) {
+          console.log(`[CYOA-CACHE] Gates HIT for ${cyoaCacheKey}`);
+          // Only add the FIRST gate on initial load
+          result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, cachedGates);
+        } else {
+          console.log(`[CYOA-CACHE] Gates MISS for ${cyoaCacheKey} - generating new gates`);
+          // Generate facts (needed for choice generation)
+          const [factsA, factsB] = await Promise.all([
+            generateAnimalFacts(animalA),
+            generateAnimalFacts(animalB),
+          ]);
+          
+          // Generate gates and add to pages
+          const gates = await generateCyoaGates(animalA, animalB, factsA, factsB);
+          
+          // Cache the gates
+          await saveCachedCyoaGates(cyoaCacheKey, {
+            animalA,
+            animalB,
+            createdAt: new Date().toISOString(),
+            gates,
+          });
+          
+          // Only add the FIRST gate on initial load
+          result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, { gates });
+        }
+      } catch (cyoaError) {
+        // CYOA gate generation failed — return the standard book anyway
+        // The user gets the full book without adventure mode choices
+        console.error('CYOA gate generation failed, returning standard book:', cyoaError);
       }
     }
 
@@ -1619,6 +1626,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ...result, _cacheStatus: cacheStatus, _cacheKey: cacheKey });
   } catch (error) {
     console.error('Book start error:', error);
-    return NextResponse.json({ error: 'Failed to generate book' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to generate book', message: 'This matchup is taking longer than usual to create. Please try again — progress has been saved!' }, { status: 500 });
   }
 }

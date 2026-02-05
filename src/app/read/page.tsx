@@ -56,6 +56,9 @@ function BookReader() {
   const [cyoaPath, setCyoaPath] = useState(''); // Tracks choices: '' → 'A' → 'A-B' → 'A-B-N'
   const [showChoiceOverlay, setShowChoiceOverlay] = useState(false);
   const [selectedChoiceText, setSelectedChoiceText] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const MAX_AUTO_RETRIES = 2;
 
   const animalA = searchParams.get('a') || 'Lion';
   const animalB = searchParams.get('b') || 'Tiger';
@@ -75,7 +78,13 @@ function BookReader() {
     loadBook(); 
   }, [animalA, animalB, mode, environment]);
 
-  const loadBook = async () => {
+  const loadBook = async (attempt = 0) => {
+    setLoadError(null);
+    if (attempt > 0) {
+      setLoading(true);
+      setPages([]);
+    }
+    
     try {
       const response = await fetch('/api/book/start', {
         method: 'POST',
@@ -101,21 +110,52 @@ function BookReader() {
           setLoading(false);
           return;
         }
-        // Generic error
-        setPages([{ id: 'error', type: 'cover', title: 'Error', content: `<p>${data.message || 'Failed to load book.'}</p>` }]);
+        // Server error — auto-retry (partial cache may help on retry)
+        if (attempt < MAX_AUTO_RETRIES) {
+          console.log(`Book generation failed (attempt ${attempt + 1}), retrying...`);
+          setRetryCount(attempt + 1);
+          await new Promise(r => setTimeout(r, 2000));
+          return loadBook(attempt + 1);
+        }
+        // All retries exhausted
+        setLoadError(data.message || 'Failed to generate book');
         setLoading(false);
         return;
       }
       
       if (data.pages?.length > 0) {
         setPages(data.pages);
+        setLoadError(null);
       } else {
-        setPages([{ id: 'error', type: 'cover', title: 'Error', content: '<p>Failed to load book.</p>' }]);
+        // Empty response — auto-retry
+        if (attempt < MAX_AUTO_RETRIES) {
+          console.log(`Empty book response (attempt ${attempt + 1}), retrying...`);
+          setRetryCount(attempt + 1);
+          await new Promise(r => setTimeout(r, 2000));
+          return loadBook(attempt + 1);
+        }
+        setLoadError('Book generation timed out');
       }
     } catch (error) {
-      setPages([{ id: 'error', type: 'cover', title: 'Error', content: '<p>Failed to load book.</p>' }]);
+      // Network/timeout error — auto-retry
+      if (attempt < MAX_AUTO_RETRIES) {
+        console.log(`Book fetch error (attempt ${attempt + 1}), retrying...`);
+        setRetryCount(attempt + 1);
+        await new Promise(r => setTimeout(r, 2000));
+        return loadBook(attempt + 1);
+      }
+      setLoadError('Connection error — please check your internet and try again');
     }
     setLoading(false);
+  };
+
+  const handleRetry = () => {
+    setRetryCount(0);
+    setLoadError(null);
+    setLoading(true);
+    setPages([]);
+    setShowVersusScreen(false); // Skip VS screen on retry
+    loadBook(0);
   };
 
   const handleChoice = async (choice: Choice, choiceIndex: number) => {
@@ -226,6 +266,46 @@ function BookReader() {
     );
   }
 
+  // Error state with retry button
+  if (loadError && pages.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#1a1a2e] to-[#16213e] flex items-center justify-center font-comic">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="text-8xl mb-6">⚡</div>
+          <h2 className="text-white text-3xl font-bold mb-4" style={{ fontFamily: "'Bangers', cursive", letterSpacing: '2px' }}>
+            Book Generation Timed Out
+          </h2>
+          <p className="text-white/70 text-lg mb-2">
+            New matchups take a moment to create for the first time.
+          </p>
+          <p className="text-white/50 text-base mb-8">
+            Good news — progress was saved! Retrying should be much faster.
+          </p>
+          <button
+            onClick={handleRetry}
+            className="px-8 py-4 text-xl font-bold text-white rounded-full cursor-pointer transition-all hover:scale-105"
+            style={{
+              fontFamily: "'Bangers', cursive",
+              letterSpacing: '2px',
+              background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)',
+              border: 'none',
+              boxShadow: '0 4px 15px rgba(255, 87, 34, 0.4)',
+            }}
+          >
+            🔄 Try Again
+          </button>
+          <button
+            onClick={() => router.push('/')}
+            className="block mx-auto mt-4 text-white/50 hover:text-white/80 transition-colors bg-transparent border-none cursor-pointer text-base"
+            style={{ fontFamily: "'Comic Neue', cursive" }}
+          >
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Only show loading if VS is done but book data isn't ready yet
   if (pages.length === 0) {
     return (
@@ -233,7 +313,11 @@ function BookReader() {
         <div className="text-center">
           <motion.div animate={{ rotateY: [0, 360] }} transition={{ repeat: Infinity, duration: 2 }} className="text-9xl mb-8">📖</motion.div>
           <p className="text-white text-3xl font-bold">Creating your battle book...</p>
-          <p className="text-white/70 text-xl mt-2">This takes about 30 seconds</p>
+          <p className="text-white/70 text-xl mt-2">
+            {retryCount > 0 
+              ? `Almost there — finishing up (attempt ${retryCount + 1})...` 
+              : 'This takes about 30 seconds'}
+          </p>
         </div>
       </div>
     );
