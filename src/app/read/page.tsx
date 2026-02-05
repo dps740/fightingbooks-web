@@ -58,6 +58,8 @@ function BookReader() {
   const [selectedChoiceText, setSelectedChoiceText] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [cyoaGatesLoading, setCyoaGatesLoading] = useState(false);
+  const [cyoaGatesReady, setCyoaGatesReady] = useState(false);
   const MAX_AUTO_RETRIES = 2;
 
   const animalA = searchParams.get('a') || 'Lion';
@@ -78,6 +80,40 @@ function BookReader() {
     loadBook(); 
   }, [animalA, animalB, mode, environment]);
 
+  // Load CYOA gates separately once the standard book is loaded
+  const loadCyoaGates = async () => {
+    if (mode !== 'cyoa' || cyoaGatesReady || cyoaGatesLoading) return;
+    setCyoaGatesLoading(true);
+    console.log('[CYOA] Loading gates in background...');
+    
+    try {
+      const response = await fetch('/api/book/gates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ animalA, animalB, forceRegenerate }),
+      });
+      const data = await response.json();
+      
+      if (response.ok && data.gatePage) {
+        // Insert gate page after stats page
+        setPages(prev => {
+          const statsIndex = prev.findIndex(p => p.type === 'stats');
+          if (statsIndex === -1) return [...prev, data.gatePage];
+          const newPages = [...prev];
+          newPages.splice(statsIndex + 1, 0, data.gatePage);
+          return newPages;
+        });
+        setCyoaGatesReady(true);
+        console.log('[CYOA] Gate 1 injected after stats page');
+      } else {
+        console.error('[CYOA] Gates load failed:', data.error);
+      }
+    } catch (error) {
+      console.error('[CYOA] Gates fetch error:', error);
+    }
+    setCyoaGatesLoading(false);
+  };
+
   const loadBook = async (attempt = 0) => {
     setLoadError(null);
     if (attempt > 0) {
@@ -86,6 +122,7 @@ function BookReader() {
     }
     
     try {
+      // Always request standard mode — CYOA gates load separately
       const response = await fetch('/api/book/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,11 +133,9 @@ function BookReader() {
       // Handle error responses from the API
       if (!response.ok) {
         if (data.code === 'SIGNUP_REQUIRED') {
-          // CYOA mode requires signup - redirect to signup page
           router.push(`/signup?redirect=/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&mode=${mode}&message=signup_for_adventure`);
           return;
         } else if (data.code === 'TIER_REQUIRED' || data.code === 'CYOA_TIER_REQUIRED') {
-          // Show tier upgrade message
           setPages([{ 
             id: 'tier-required', 
             type: 'cover', 
@@ -117,7 +152,6 @@ function BookReader() {
           await new Promise(r => setTimeout(r, 2000));
           return loadBook(attempt + 1);
         }
-        // All retries exhausted
         setLoadError(data.message || 'Failed to generate book');
         setLoading(false);
         return;
@@ -126,8 +160,12 @@ function BookReader() {
       if (data.pages?.length > 0) {
         setPages(data.pages);
         setLoadError(null);
+        // Fire off CYOA gates in background if needed
+        if (mode === 'cyoa') {
+          // Small delay so book renders first, then gates load
+          setTimeout(() => loadCyoaGates(), 100);
+        }
       } else {
-        // Empty response — auto-retry
         if (attempt < MAX_AUTO_RETRIES) {
           console.log(`Empty book response (attempt ${attempt + 1}), retrying...`);
           setRetryCount(attempt + 1);
@@ -137,7 +175,6 @@ function BookReader() {
         setLoadError('Book generation timed out');
       }
     } catch (error) {
-      // Network/timeout error — auto-retry
       if (attempt < MAX_AUTO_RETRIES) {
         console.log(`Book fetch error (attempt ${attempt + 1}), retrying...`);
         setRetryCount(attempt + 1);
@@ -154,7 +191,9 @@ function BookReader() {
     setLoadError(null);
     setLoading(true);
     setPages([]);
-    setShowVersusScreen(false); // Skip VS screen on retry
+    setCyoaGatesReady(false);
+    setCyoaGatesLoading(false);
+    setShowVersusScreen(false);
     loadBook(0);
   };
 

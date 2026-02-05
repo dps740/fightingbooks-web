@@ -1588,48 +1588,8 @@ export async function POST(request: NextRequest) {
       console.log(`[CACHE] ${cacheStatus} - returning cached book for ${animalA} vs ${animalB}`);
     }
     
-    // For CYOA mode, check for cached gates or generate new ones
-    // PROGRESSIVE REVEAL: Only add gate 1 on initial load
-    // Wrapped in try-catch so CYOA failure doesn't kill the whole request
-    if (mode === 'cyoa') {
-      try {
-        const cyoaCacheKey = getCyoaCacheKey(animalA, animalB);
-        
-        // Try to load cached gates
-        let cachedGates = forceRegenerate ? null : await loadCachedCyoaGates(cyoaCacheKey);
-        
-        if (cachedGates) {
-          console.log(`[CYOA-CACHE] Gates HIT for ${cyoaCacheKey}`);
-          // Only add the FIRST gate on initial load
-          result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, cachedGates);
-        } else {
-          console.log(`[CYOA-CACHE] Gates MISS for ${cyoaCacheKey} - generating new gates`);
-          // Generate facts (needed for choice generation)
-          const [factsA, factsB] = await Promise.all([
-            generateAnimalFacts(animalA),
-            generateAnimalFacts(animalB),
-          ]);
-          
-          // Generate gates and add to pages
-          const gates = await generateCyoaGates(animalA, animalB, factsA, factsB);
-          
-          // Cache the gates
-          await saveCachedCyoaGates(cyoaCacheKey, {
-            animalA,
-            animalB,
-            createdAt: new Date().toISOString(),
-            gates,
-          });
-          
-          // Only add the FIRST gate on initial load
-          result.pages = await addFirstCyoaGate(result.pages, animalA, animalB, { gates });
-        }
-      } catch (cyoaError) {
-        // CYOA gate generation failed — return the standard book anyway
-        // The user gets the full book without adventure mode choices
-        console.error('CYOA gate generation failed, returning standard book:', cyoaError);
-      }
-    }
+    // CYOA gates are now loaded separately via /api/book/gates
+    // This keeps the initial book load fast and under the 60s timeout
 
     // Include cache status in response for debugging
     return NextResponse.json({ ...result, _cacheStatus: cacheStatus, _cacheKey: cacheKey });
