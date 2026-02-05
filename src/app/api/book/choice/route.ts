@@ -77,7 +77,8 @@ async function loadCachedOutcome(cacheKey: string, pathKey: string): Promise<any
 }
 
 // Create next gate page for progressive reveal
-async function createNextGatePage(animalA: string, animalB: string, gate: any, gateNumber: number): Promise<any> {
+// introOverride: dynamic bridge text from the AI that flows from the previous outcome
+async function createNextGatePage(animalA: string, animalB: string, gate: any, gateNumber: number, introOverride?: string): Promise<any> {
   const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
   const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
   const portraitA = `/fighters/${nameA}.jpg`;
@@ -90,11 +91,14 @@ async function createNextGatePage(animalA: string, animalB: string, gate: any, g
     `${imgPrefix}-cyoa-bg`
   );
   
+  // Use dynamic bridge intro if available, otherwise fall back to pre-generated
+  const introText = introOverride || gate.intro;
+  
   return {
     id: `decision-${gateNumber}`,
     type: 'choice',
     title: gate.title,
-    content: `<p class="decision-intro">${gate.intro}</p>`,
+    content: `<p class="decision-intro">${introText}</p>`,
     imageUrl: battleBg,
     choices: gate.choices,
     gateNumber,
@@ -202,6 +206,7 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
 }
 
 // Generate a flowing narrative outcome using OpenAI, building on previous events
+// Returns { outcome, nextIntro } — outcome is the scene text, nextIntro bridges to the next decision
 async function generateNarrative(
   animalA: string,
   animalB: string,
@@ -212,20 +217,37 @@ async function generateNarrative(
   previousOutcomes: string[],
   isFinal: boolean,
   winner?: string,
-): Promise<string> {
+  nextGateChoices?: any[], // The choices for the next gate (so the bridge can set them up)
+): Promise<{ outcome: string; nextIntro: string }> {
   const storyContext = previousOutcomes.length > 0
     ? `STORY SO FAR:\n${previousOutcomes.map((o, i) => `Scene ${i + 1}: ${o}`).join('\n')}\n\n`
     : '';
-
-  const sceneInstruction = isFinal
-    ? `Write the FINAL CLIMACTIC scene (3-4 sentences). The ${winner} wins this fight. End decisively — show the winning blow and the ${winner === animalA ? animalB : animalA} backing down or being defeated.`
-    : `Write the next scene (2-3 sentences). This is scene ${gateNumber} of 3. Build tension — the fight isn't over yet. End on a moment that sets up the next decision.`;
 
   const favorText = choiceFavors === 'A'
     ? `This moment favors the ${animalA}.`
     : choiceFavors === 'B'
     ? `This moment favors the ${animalB}.`
     : `Neither animal gains a clear advantage.`;
+
+  // Build next-gate context so the bridge sets up the upcoming choices
+  let nextGateContext = '';
+  if (!isFinal && nextGateChoices && nextGateChoices.length > 0) {
+    nextGateContext = `\nThe NEXT decision the reader will face involves these options:\n${nextGateChoices.map((c: any) => `- ${c.text}`).join('\n')}\nThe bridge sentence should naturally lead into this decision moment.\n`;
+  }
+
+  const sceneInstruction = isFinal
+    ? `Write the FINAL CLIMACTIC scene (3-4 sentences). The ${winner} wins this fight. End decisively — show the winning blow and the ${winner === animalA ? animalB : animalA} backing down or being defeated.`
+    : `Write the next scene (2-3 sentences) AND a bridge sentence.
+This is scene ${gateNumber} of 3. Build tension — the fight isn't over yet.
+${nextGateContext}`;
+
+  const formatInstruction = isFinal
+    ? `Return ONLY the narrative text, no JSON, no quotes.`
+    : `Return JSON only:
+{
+  "outcome": "The scene narrative (2-3 exciting sentences describing what happens)",
+  "nextIntro": "One bridge sentence that flows from the outcome into the next decision moment. Should feel like a cliffhanger or turning point, NOT a scene reset."
+}`;
 
   const prompt = `You are narrating a "Who Would Win?" children's book battle between a ${animalA} and a ${animalB}.
 
@@ -243,20 +265,37 @@ RULES:
 - Reference the specific choice the reader made
 - The hint for this outcome is: "${choiceHint}" — use it as inspiration but write fresh text that flows from the story
 
-Return ONLY the narrative text, no JSON, no quotes.`;
+${formatInstruction}`;
 
   try {
-    const response = await getOpenAI().chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.8,
-      max_tokens: 200,
-    });
-
-    return response.choices[0].message.content?.trim() || choiceHint;
+    if (isFinal) {
+      const response = await getOpenAI().chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.8,
+        max_tokens: 250,
+      });
+      return {
+        outcome: response.choices[0].message.content?.trim() || choiceHint,
+        nextIntro: '',
+      };
+    } else {
+      const response = await getOpenAI().chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
+        temperature: 0.8,
+        max_tokens: 300,
+      });
+      const result = JSON.parse(response.choices[0].message.content || '{}');
+      return {
+        outcome: result.outcome || choiceHint,
+        nextIntro: result.nextIntro || 'The battle reaches a turning point...',
+      };
+    }
   } catch (error) {
     console.error('Narrative generation error:', error);
-    return choiceHint; // Fallback to pre-generated hint
+    return { outcome: choiceHint, nextIntro: 'The fight continues...' };
   }
 }
 
@@ -313,9 +352,10 @@ export async function POST(request: NextRequest) {
       console.log(`[CYOA-OUTCOME] Returning cached outcome for path ${newPath}`);
       
       // PROGRESSIVE REVEAL: Add next gate if not at final gate
+      // Use cached nextIntro (bridge text) so narrative flows
       let pages = cachedOutcome.pages;
       if (gateNumber < 3 && cachedGates.gates[gateNumber]) {
-        const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1);
+        const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1, cachedOutcome.nextIntro);
         pages = [...pages, nextGate];
       }
       
@@ -359,11 +399,17 @@ export async function POST(request: NextRequest) {
       console.log(`Final scores - ${animalA}: ${finalScoreA} vs ${animalB}: ${finalScoreB} → Winner: ${winner}`);
     }
 
+    // Get next gate's choices so the AI can write a bridge that sets them up
+    const nextGateChoices = (!winner && cachedGates && cachedGates.gates[gateNumber])
+      ? cachedGates.gates[gateNumber].choices
+      : undefined;
+
     // Generate flowing narrative via OpenAI
-    const narrativeText = await generateNarrative(
+    const { outcome: narrativeText, nextIntro } = await generateNarrative(
       animalA, animalB, gateNumber,
       choiceText, choiceFavors, choiceOutcome,
       previousOutcomes, gateNumber === 3, winner,
+      nextGateChoices,
     );
 
     // Generate outcome image
@@ -424,18 +470,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Cache the outcome (just the outcome pages, not the next gate)
+    // Cache the outcome (includes nextIntro for coherent replays)
     await saveCachedOutcome(cyoaCacheKey, newPath, {
       path: newPath,
       animalA,
       animalB,
       createdAt: new Date().toISOString(),
+      nextIntro, // Save bridge text so cached replays also flow
       pages,
     });
 
-    // PROGRESSIVE REVEAL: Add next gate if not at final gate
+    // PROGRESSIVE REVEAL: Add next gate with dynamic bridge intro
     if (gateNumber < 3 && cachedGates && cachedGates.gates[gateNumber]) {
-      const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1);
+      const nextGate = await createNextGatePage(animalA, animalB, cachedGates.gates[gateNumber], gateNumber + 1, nextIntro);
       pages.push(nextGate);
     }
 
