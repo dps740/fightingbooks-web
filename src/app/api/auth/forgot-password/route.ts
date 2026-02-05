@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const supabase = getSupabase();
 
     // Get the origin for the redirect URL
-    const origin = request.headers.get('origin') || 'https://fightingbooks.vercel.app';
+    const origin = request.headers.get('origin') || 'https://whowouldwinbooks.com';
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/reset-password`,
