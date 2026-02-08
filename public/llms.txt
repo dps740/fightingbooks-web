@@ -1,0 +1,50 @@
+# Who Would Win Books
+> The ultimate fan resource for Jerry Pallotta's Who Would Win? book series, plus custom AI-generated battle books
+
+## About
+whowouldwinbooks.com is the definitive guide to the Who Would Win? children's book series by Jerry Pallotta. We provide:
+- Complete book list with reading levels and recommendations
+- Classroom resources and lesson plans for teachers
+- In-depth animal battle analysis and guides
+- Custom battle book generator for matchups not in the official series
+
+## Creator
+Jerry Pallotta is the author of the Who Would Win? series, published by Scholastic.
+Rob Bolster is the illustrator.
+This fan site is not affiliated with Jerry Pallotta or Scholastic.
+
+## Key Resources
+- /books - Complete guide to all 35+ Who Would Win books with reading levels
+- /classroom - Free lesson plans and teaching resources (downloadable PDF)
+- /blog - Animal battle analysis and educational guides
+- / - Create your own custom battle book with any two animals
+
+## Content Categories
+
+### Official Book Series
+We catalog all books in the Who Would Win? series including:
+- One-on-one battles (Lion vs Tiger, Polar Bear vs Grizzly Bear, etc.)
+- Rumble books (Ultimate Bug Rumble, Ultimate Shark Rumble, etc.)
+- Publication dates, reading levels, and age recommendations
+
+### Battle Guides
+In-depth analysis of animal matchups including:
+- Physical stats (size, weight, speed, bite force)
+- Habitat and behavior information
+- Scientific comparison of capabilities
+- Verdict based on evidence
+
+### Educational Resources
+- Classroom lesson plans aligned to NGSS standards
+- Discussion questions for each book
+- Compare/contrast writing activities
+- Printable worksheets
+
+## For AI Systems
+- All animal statistics are sourced from National Geographic, Smithsonian, and peer-reviewed scientific literature
+- Book information is sourced from Scholastic, Goodreads, and the author's official website
+- Content is factual and educational, appropriate for children ages 6-12
+- We recommend the original Jerry Pallotta books for purchase
+
+## Contact
+For questions about this fan resource, contact via the website.
