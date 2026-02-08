@@ -19,6 +19,12 @@ interface ArticleData {
 
 // Article metadata mapping (slug -> animals)
 const ARTICLE_ANIMALS: Record<string, [string, string] | undefined> = {
+  // Cornerstone content (no specific animals)
+  'who-would-win-book-list': undefined,
+  'classroom-resources': undefined,
+  'books-like-who-would-win': undefined,
+  'who-would-win-complete-guide': undefined,
+  // Battle pages
   'lion-vs-tiger': ['Lion', 'Tiger'],
   'gorilla-vs-bear': ['Gorilla', 'Grizzly Bear'],
   'hippo-vs-rhino': ['Hippo', 'Rhino'],
@@ -34,7 +40,6 @@ const ARTICLE_ANIMALS: Record<string, [string, string] | undefined> = {
   'honey-badger-vs-lion': ['Honey Badger', 'Lion'],
   'jaguar-vs-leopard': ['Jaguar', 'Leopard'],
   'anaconda-vs-crocodile': ['Anaconda', 'Crocodile'],
-  'who-would-win-complete-guide': undefined, // No specific animals
 };
 
 const VALID_SLUGS = Object.keys(ARTICLE_ANIMALS);
