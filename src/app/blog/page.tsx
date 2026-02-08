@@ -21,6 +21,32 @@ interface Article {
 }
 
 const articles: Article[] = [
+  // === CORNERSTONE CONTENT ===
+  {
+    slug: 'who-would-win-book-list',
+    title: 'Complete Who Would Win Book List (2026) - All 35+ Books',
+    description: 'The definitive guide to Jerry Pallotta\'s Who Would Win? series. Complete list with reading levels, age recommendations, and reading order.',
+    animals: ['📚 Book Guide'],
+    readTime: '15 min',
+    searchVolume: '8k/mo searches'
+  },
+  {
+    slug: 'classroom-resources',
+    title: 'Who Would Win Classroom Resources - Free Lesson Plans',
+    description: 'Free downloadable lesson plans, discussion questions, and worksheets for the Who Would Win? book series. NGSS-aligned for grades 1-4.',
+    animals: ['📝 Teaching'],
+    readTime: '10 min',
+    searchVolume: '2k/mo searches'
+  },
+  {
+    slug: 'books-like-who-would-win',
+    title: 'Books Like Who Would Win - 15 Similar Series (2026)',
+    description: 'Finished all the Who Would Win books? Here are 15 similar series about animal battles that kids ages 6-12 will love.',
+    animals: ['📖 Alternatives'],
+    readTime: '12 min',
+    searchVolume: '1k/mo searches'
+  },
+  // === GUIDES ===
   {
     slug: 'who-would-win-complete-guide',
     title: 'Who Would Win? The Complete Guide to Animal Battles',
