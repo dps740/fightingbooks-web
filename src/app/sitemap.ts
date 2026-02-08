@@ -1,27 +1,23 @@
-import { MetadataRoute } from 'next';
-
-const BLOG_SLUGS = [
-  'lion-vs-tiger',
-  'gorilla-vs-bear',
-  'hippo-vs-rhino',
-  'polar-bear-vs-grizzly-bear',
-  'tiger-vs-bear',
-  'crocodile-vs-shark',
-  'hippo-vs-crocodile',
-  'gorilla-vs-lion',
-  'elephant-vs-rhino',
-  'orca-vs-great-white-shark',
-  'wolf-vs-lion',
-  'komodo-dragon-vs-king-cobra',
-  'honey-badger-vs-lion',
-  'jaguar-vs-leopard',
-  'anaconda-vs-crocodile',
-  'who-would-win-complete-guide',
-];
+import { MetadataRoute } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://fightingbooks.vercel.app'
   
+  // Get all blog articles
+  const articlesDir = path.join(process.cwd(), 'content', 'articles')
+  let articleSlugs: string[] = []
+  
+  try {
+    const files = fs.readdirSync(articlesDir)
+    articleSlugs = files
+      .filter(file => file.endsWith('.md'))
+      .map(file => file.replace('.md', ''))
+  } catch (error) {
+    console.error('Could not read articles directory:', error)
+  }
+
   const staticPages = [
     {
       url: baseUrl,
@@ -35,14 +31,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
-  ];
+  ]
 
-  const blogPages = BLOG_SLUGS.map((slug) => ({
+  const blogPages = articleSlugs.map(slug => ({
     url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
-  }));
+  }))
 
-  return [...staticPages, ...blogPages];
+  return [...staticPages, ...blogPages]
 }
