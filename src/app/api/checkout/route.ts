@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
-import { UserTier, getTierInfo } from '@/lib/tierAccess';
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -15,33 +14,17 @@ function getSupabase() {
   );
 }
 
-// Tier pricing configuration
-const TIER_CONFIG: Record<string, { priceEnvKey: string; amount: number; name: string }> = {
-  tier2: {
-    priceEnvKey: 'STRIPE_PRICE_TIER2',
-    amount: 999, // $9.99 in cents
-    name: 'Real Animals Pack',
-  },
-  tier3: {
-    priceEnvKey: 'STRIPE_PRICE_TIER3',
-    amount: 1999, // $19.99 in cents
-    name: 'Ultimate Pack',
-  },
-};
-
 export async function POST(request: NextRequest) {
   try {
     const { tier } = await request.json();
 
-    // Validate tier
-    if (!tier || !TIER_CONFIG[tier]) {
+    // v2: single paid tier at $3.99
+    if (tier !== 'paid') {
       return NextResponse.json(
-        { error: 'Invalid tier. Must be tier2 or tier3.' },
+        { error: 'Invalid tier.' },
         { status: 400 }
       );
     }
-
-    let tierConfig = TIER_CONFIG[tier];
 
     // Get user from session
     const cookieStore = await cookies();
@@ -58,7 +41,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    // Check user's current tier - don't let them buy same or lower
+    // Check user's current tier
     const { data: profile } = await supabase
       .from('users')
       .select('tier')
@@ -67,79 +50,39 @@ export async function POST(request: NextRequest) {
 
     const currentTier = profile?.tier || 'free';
 
-    // Prevent downgrade or same purchase
-    if (currentTier === tier) {
+    // Already paid (including legacy tiers)
+    if (currentTier === 'paid' || currentTier === 'tier2' || currentTier === 'tier3') {
       return NextResponse.json(
-        { error: 'You already have this tier!' },
+        { error: 'You already have Full Access!' },
         { status: 400 }
       );
     }
 
-    if (currentTier === 'tier3') {
-      return NextResponse.json(
-        { error: 'You already have the Ultimate Pack!' },
-        { status: 400 }
-      );
-    }
-
-    if (currentTier === 'tier2' && tier === 'tier2') {
-      return NextResponse.json(
-        { error: 'You already have the Real Animals Pack!' },
-        { status: 400 }
-      );
-    }
-
-    // Calculate upgrade pricing — credit what they already paid
-    if (currentTier === 'tier2' && tier === 'tier3') {
-      const alreadyPaid = TIER_CONFIG.tier2.amount; // 999 cents
-      const upgradeAmount = tierConfig.amount - alreadyPaid; // 1000 cents ($10.00)
-      tierConfig = {
-        ...tierConfig,
-        amount: upgradeAmount,
-        name: 'Ultimate Pack (Upgrade from Pro)',
-        priceEnvKey: '', // Force inline pricing for upgrades
-      };
-    }
-
-    // Create Stripe checkout session
+    // Create Stripe checkout session — $3.99 one-time
     const stripe = getStripe();
-    const tierInfo = getTierInfo(tier as UserTier);
 
-    // Use Stripe Price ID if configured, otherwise use one-time price
-    const priceId = process.env[tierConfig.priceEnvKey];
-
-    let lineItems: Stripe.Checkout.SessionCreateParams.LineItem[];
-
-    if (priceId) {
-      // Use pre-configured Stripe price
-      lineItems = [{ price: priceId, quantity: 1 }];
-    } else {
-      // Create one-time price (fallback)
-      lineItems = [
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
         {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: tierConfig.name,
-              description: `Unlock ${tierInfo.animals} animals for FightingBooks`,
+              name: 'FightingBooks Full Access',
+              description: 'All 47 animals, Adventure mode, Tournaments — forever!',
             },
-            unit_amount: tierConfig.amount,
+            unit_amount: 399, // $3.99 in cents
           },
           quantity: 1,
         },
-      ];
-    }
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: lineItems,
+      ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?success=true&tier=${tier}&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?success=true&tier=paid&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com'}/dashboard?canceled=true`,
       metadata: {
         userId: user.id,
-        tier: tier,
-        purchaseType: 'tier_upgrade',
+        tier: 'paid',
+        purchaseType: 'full_access',
       },
     });
 

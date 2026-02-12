@@ -9,10 +9,12 @@ import { createClient } from '@supabase/supabase-js';
 import {
   UserTier,
   canAccessMatchup,
+  canAccessAnimal,
   canAccessCyoa,
   getRequiredTier,
   getTierInfo,
   getUpgradeOptions,
+  normalizeTier,
 } from '@/lib/tierAccess';
 
 // Supabase client for auth
@@ -78,7 +80,7 @@ async function getUserTier(): Promise<{ tier: UserTier; userId: string | null }>
       .single();
 
     return {
-      tier: isAdmin ? 'tier3' : (profile?.tier as UserTier) || 'free',
+      tier: isAdmin ? 'paid' : ((['tier2','tier3','paid'].includes(profile?.tier)) ? 'paid' : (profile?.tier as UserTier) || 'free'),
       userId: user.id,
     };
   } catch (error) {
@@ -1495,27 +1497,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
     }
 
-    // === TIER ACCESS CONTROL ===
+    // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();
 
     // Check if user can access this matchup
     if (!canAccessMatchup(tier, animalA, animalB)) {
-      const requiredTierA = getRequiredTier(animalA);
-      const requiredTierB = getRequiredTier(animalB);
-      const requiredTier = requiredTierA === 'tier3' || requiredTierB === 'tier3' ? 'tier3' : 'tier2';
-      const tierInfo = getTierInfo(requiredTier);
       const upgradeOptions = getUpgradeOptions(tier);
-
       return NextResponse.json(
         {
           error: 'Tier access required',
           code: 'TIER_REQUIRED',
-          message: `This matchup requires the ${tierInfo.name} tier.`,
+          message: 'This matchup requires Full Access ($3.99).',
           lockedAnimals: [
-            !canAccessMatchup(tier, animalA, animalA) ? animalA : null,
-            !canAccessMatchup(tier, animalB, animalB) ? animalB : null,
+            !canAccessAnimal(tier, animalA) ? animalA : null,
+            !canAccessAnimal(tier, animalB) ? animalB : null,
           ].filter(Boolean),
-          requiredTier,
+          requiredTier: 'paid',
           currentTier: tier,
           upgradeOptions,
         },
@@ -1523,33 +1520,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if CYOA mode is accessible for this matchup
-    if (mode === 'cyoa' && !canAccessCyoa(tier, animalA, animalB)) {
-      const tierInfo = getTierInfo(tier === 'free' ? 'tier2' : 'tier3');
+    // Check if CYOA mode is accessible (paid only)
+    if (mode === 'cyoa' && !canAccessCyoa(tier)) {
       const upgradeOptions = getUpgradeOptions(tier);
 
-      // If unregistered, prompt to sign up
       if (tier === 'unregistered') {
         return NextResponse.json(
           {
             error: 'Sign up required',
             code: 'SIGNUP_REQUIRED',
-            message: 'Create a free account to access Adventure mode!',
+            message: 'Create a free account, then unlock Adventure mode with Full Access ($3.99)!',
             currentTier: tier,
-          },
-          { status: 403 }
-        );
-      }
-
-      // If free tier, only Lion vs Tiger CYOA allowed
-      if (tier === 'free') {
-        return NextResponse.json(
-          {
-            error: 'Tier access required for Adventure mode',
-            code: 'CYOA_TIER_REQUIRED',
-            message: `Adventure mode for this matchup requires the ${tierInfo.name} tier. Free users can play Lion vs Tiger in Adventure mode.`,
-            currentTier: tier,
-            upgradeOptions,
           },
           { status: 403 }
         );
@@ -1557,9 +1538,9 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          error: 'Tier access required for Adventure mode',
+          error: 'Adventure mode requires Full Access',
           code: 'CYOA_TIER_REQUIRED',
-          message: `Adventure mode for this matchup requires the Ultimate tier.`,
+          message: 'Adventure mode requires Full Access ($3.99). Unlock all 47 animals, tournaments, and Adventure mode!',
           currentTier: tier,
           upgradeOptions,
         },

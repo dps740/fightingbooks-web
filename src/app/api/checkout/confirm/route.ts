@@ -37,11 +37,14 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabase();
 
+    // Normalize tier (legacy tier2/tier3 → paid)
+    const normalizedTier = (tier === 'tier2' || tier === 'tier3' || tier === 'paid') ? 'paid' : tier;
+
     // Update user's tier
     const { error: updateError } = await supabase
       .from('users')
       .update({
-        tier: tier,
+        tier: normalizedTier,
         tier_purchased_at: new Date().toISOString(),
         stripe_payment_id: session.payment_intent as string,
       })

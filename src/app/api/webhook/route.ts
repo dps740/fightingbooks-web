@@ -37,16 +37,19 @@ export async function POST(request: NextRequest) {
     const userId = session.metadata?.userId;
     const purchaseType = session.metadata?.purchaseType;
 
-    // Handle tier purchase
-    if (purchaseType === 'tier_upgrade' && userId) {
+    // Handle tier purchase (both legacy tier_upgrade and new full_access)
+    if ((purchaseType === 'tier_upgrade' || purchaseType === 'full_access') && userId) {
       const tier = session.metadata?.tier;
 
-      if (tier && (tier === 'tier2' || tier === 'tier3')) {
+      if (tier) {
+        // Normalize: any purchase goes to 'paid'
+        const normalizedTier = (tier === 'tier2' || tier === 'tier3' || tier === 'paid') ? 'paid' : tier;
+
         // Update user's tier
         const { error: updateError } = await supabase
           .from('users')
           .update({
-            tier: tier,
+            tier: normalizedTier,
             tier_purchased_at: new Date().toISOString(),
             stripe_payment_id: session.payment_intent as string,
           })
@@ -55,15 +58,15 @@ export async function POST(request: NextRequest) {
         if (updateError) {
           console.error('Error updating user tier:', updateError);
         } else {
-          console.log(`Upgraded user ${userId} to ${tier}`);
+          console.log(`Upgraded user ${userId} to ${normalizedTier}`);
         }
 
-        // Record purchase in purchases table
+        // Record purchase
         const { error: purchaseError } = await supabase
           .from('purchases')
           .insert({
             user_id: userId,
-            tier: tier,
+            tier: normalizedTier,
             amount_cents: session.amount_total || 0,
             stripe_session_id: session.id,
             stripe_payment_intent: session.payment_intent as string,

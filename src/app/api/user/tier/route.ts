@@ -7,7 +7,8 @@ import {
   getUpgradeOptions,
   getTierInfo,
   canAccessCyoa,
-  FREE_ANIMALS,
+  canAccessTournament,
+  normalizeTier,
 } from '@/lib/tierAccess';
 
 function getSupabase() {
@@ -29,7 +30,8 @@ export async function GET() {
         tier,
         ...getTierInfo(tier),
         animals: getAccessibleAnimals(tier),
-        cyoaMatchups: [], // No CYOA for unregistered
+        cyoaAccess: canAccessCyoa(tier),
+        tournamentAccess: canAccessTournament(tier),
         canUpgradeTo: getUpgradeOptions(tier),
         isAuthenticated: false,
       });
@@ -48,8 +50,6 @@ export async function GET() {
         if (!refreshError && refreshData.session && refreshData.user) {
           user = refreshData.user;
           authError = null;
-          // Update cookies with new tokens
-          const response = NextResponse.json({}); // placeholder, will be replaced below
           cookieStore.set('sb-access-token', refreshData.session.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -67,13 +67,13 @@ export async function GET() {
     }
 
     if (authError || !user) {
-      // Invalid token and no valid refresh, treat as unregistered
       const tier: UserTier = 'unregistered';
       return NextResponse.json({
         tier,
         ...getTierInfo(tier),
         animals: getAccessibleAnimals(tier),
-        cyoaMatchups: [],
+        cyoaAccess: canAccessCyoa(tier),
+        tournamentAccess: canAccessTournament(tier),
         canUpgradeTo: getUpgradeOptions(tier),
         isAuthenticated: false,
       });
@@ -90,29 +90,18 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
-    // Admin gets tier3, otherwise default to 'free' if no tier set
-    const tier: UserTier = isAdmin ? 'tier3' : (profile?.tier as UserTier) || 'free';
+    // Normalize legacy tier values (tier2/tier3 → paid)
+    const rawTier = isAdmin ? 'paid' : (profile?.tier || 'free');
+    const tier: UserTier = normalizeTier(rawTier);
     const tierInfo = getTierInfo(tier);
     const accessibleAnimals = getAccessibleAnimals(tier);
-
-    // Build list of accessible CYOA matchups
-    // For efficiency, we describe this as rules rather than enumerating all combinations
-    let cyoaAccess: string;
-    if (tier === 'free') {
-      cyoaAccess = 'lion-vs-tiger';
-    } else if (tier === 'tier2') {
-      cyoaAccess = 'all-real';
-    } else if (tier === 'tier3') {
-      cyoaAccess = 'all';
-    } else {
-      cyoaAccess = 'none';
-    }
 
     return NextResponse.json({
       tier,
       ...tierInfo,
       animals: accessibleAnimals,
-      cyoaAccess,
+      cyoaAccess: canAccessCyoa(tier),
+      tournamentAccess: canAccessTournament(tier),
       canUpgradeTo: getUpgradeOptions(tier),
       isAuthenticated: true,
       email: user.email,

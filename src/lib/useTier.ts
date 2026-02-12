@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserTier, getAccessibleAnimals, FREE_ANIMALS, REAL_ANIMALS } from './tierAccess';
+import { UserTier, getAccessibleAnimals, FREE_ANIMALS, canAccessCyoa, canAccessTournament } from './tierAccess';
 
 interface TierData {
   tier: UserTier;
@@ -9,7 +9,8 @@ interface TierData {
   animals: string[];
   badge: string;
   isAuthenticated: boolean;
-  cyoaAccess: string;
+  cyoaAccess: boolean;
+  tournamentAccess: boolean;
   canUpgradeTo: Array<{ tier: UserTier; name: string; price: string; animals: number }>;
   email?: string;
   loading: boolean;
@@ -24,7 +25,8 @@ export function useTier(): TierData {
     animals: ['Lion', 'Tiger'],
     badge: '🎫',
     isAuthenticated: false,
-    cyoaAccess: 'none',
+    cyoaAccess: false,
+    tournamentAccess: false,
     canUpgradeTo: [],
     loading: true,
     error: null,
@@ -42,7 +44,6 @@ export function useTier(): TierData {
             error: null,
           });
         } else {
-          // API error, default to unregistered
           setData(prev => ({
             ...prev,
             loading: false,
@@ -50,7 +51,6 @@ export function useTier(): TierData {
           }));
         }
       } catch (error) {
-        // Network error, default to unregistered
         setData(prev => ({
           ...prev,
           loading: false,
@@ -74,34 +74,15 @@ export function isAnimalLocked(tier: UserTier, animalName: string): boolean {
 // Get lock reason for an animal
 export function getLockReason(tier: UserTier, animalName: string): string | null {
   if (!isAnimalLocked(tier, animalName)) return null;
-
-  if (FREE_ANIMALS.includes(animalName)) {
-    return null; // Free animals are never locked
-  }
-
-  if (REAL_ANIMALS.includes(animalName)) {
-    return 'Unlock with Real Animals Pack ($9.99)';
-  }
-
-  // Dinosaur or Fantasy
-  return 'Unlock with Ultimate Pack ($19.99)';
+  return 'Unlock all 47 animals for $3.99';
 }
 
-// Check if CYOA is locked for a matchup (client-side)
-export function isCyoaLocked(tier: UserTier, animalA: string, animalB: string): boolean {
-  if (tier === 'unregistered') return true;
-  if (tier === 'tier3') return false;
+// Check if CYOA is locked (client-side)
+export function isCyoaLocked(tier: UserTier): boolean {
+  return !canAccessCyoa(tier);
+}
 
-  // Free tier: only Lion vs Tiger
-  if (tier === 'free') {
-    const pair = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
-    return !(pair[0] === 'lion' && pair[1] === 'tiger');
-  }
-
-  // Tier 2: only real animals
-  if (tier === 'tier2') {
-    return !REAL_ANIMALS.includes(animalA) || !REAL_ANIMALS.includes(animalB);
-  }
-
-  return false;
+// Check if Tournament is locked (client-side)
+export function isTournamentLocked(tier: UserTier): boolean {
+  return !canAccessTournament(tier);
 }
