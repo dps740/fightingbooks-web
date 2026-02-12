@@ -9,7 +9,7 @@ export interface WhoWouldWinBook {
   asin: string;
 }
 
-export const AFFILIATE_TAG = 'fightingbooks-20'; // TODO: Replace with real tag
+export const AFFILIATE_TAG = 'whowouldwinbo-20';
 
 // Local cover image path
 const localCover = (asin: string) => `/covers/${asin}.jpg`;
