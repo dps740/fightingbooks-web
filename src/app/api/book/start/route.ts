@@ -301,8 +301,33 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
   return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
 }
 
-// Generate animal facts using GPT-4o-mini
+// Load pre-verified animal facts from static JSON (avoids LLM hallucination at runtime)
+let _cachedStaticFacts: Record<string, AnimalFacts> | null = null;
+function loadStaticFacts(): Record<string, AnimalFacts> {
+  if (_cachedStaticFacts) return _cachedStaticFacts;
+  try {
+    const factsPath = path.join(process.cwd(), 'data', 'animal-facts.json');
+    const data = JSON.parse(fs.readFileSync(factsPath, 'utf-8'));
+    _cachedStaticFacts = data;
+    console.log(`[FACTS] Loaded ${Object.keys(data).length} pre-verified animal facts`);
+    return data;
+  } catch (e) {
+    console.error('[FACTS] Could not load static facts:', e);
+    return {};
+  }
+}
+
+// Generate animal facts — uses static pre-verified data first, falls back to LLM
 async function generateAnimalFacts(animalName: string): Promise<AnimalFacts> {
+  // Check static facts first
+  const staticFacts = loadStaticFacts();
+  const key = animalName.toLowerCase().replace(/\s+/g, '-');
+  if (staticFacts[key]) {
+    console.log(`[FACTS] Using pre-verified facts for: ${animalName}`);
+    return staticFacts[key];
+  }
+  console.log(`[FACTS] No static facts for "${animalName}" (key: ${key}), falling back to LLM`);
+
   const prompt = `Generate educational facts about a ${animalName} for a children's "Who Would Win?" style book by Jerry Pallotta.
 
 CRITICAL: Use REAL, ACCURATE measurements for ${animalName}!

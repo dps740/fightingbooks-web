@@ -1,0 +1,1835 @@
+{
+  "alligator": {
+    "name": "American Alligator",
+    "scientific_name": "Alligator mississippiensis",
+    "habitat": "Swamps, rivers, and lakes in the southeastern USA",
+    "size": "Up to 13 feet long! That's about the length of a SCHOOL BUS!",
+    "diet": "Carnivorous! They eat fish, birds, and even deer! BIG appetite!",
+    "weapons": [
+      "Powerful jaws with a bite force of 2,125 PSI",
+      "Sharp teeth",
+      "Long tail for swimming"
+    ],
+    "defenses": [
+      "Tough, armored skin",
+      "Camouflage in water",
+      "Can hold breath for over an hour"
+    ],
+    "speed": "Can run up to 20 mph on land! That's as fast as a speeding bicycle!",
+    "fun_facts": [
+      "An alligator's heart can keep beating even after it's dead!",
+      "They can live for over 70 years!",
+      "Their eyes can see well underwater!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "School Bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 13 feet long \u2014 about as long as a car! (13 feet)"
+      },
+      {
+        "item": "Person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "WEIGHT: 1,000 pounds vs. 150 pounds"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "anaconda": {
+    "name": "Green Anaconda",
+    "scientific_name": "Eunectes murinus",
+    "habitat": "Swamps and rivers in South America",
+    "size": "Up to 30 feet long! That's longer than a SCHOOL BUS!",
+    "diet": "Carnivore! They eat fish, birds, and even CAPYBARAS!",
+    "weapons": [
+      "Powerful muscles (30 feet long)",
+      "Camouflage",
+      "Strong jaws"
+    ],
+    "defenses": [
+      "Camouflage in water",
+      "Size and strength",
+      "Ability to hold breath for up to 10 minutes"
+    ],
+    "speed": "Can swim at 1.5 mph, like a slow jog!",
+    "fun_facts": [
+      "Can weigh over 500 pounds! That's like a small car!",
+      "They can swallow prey whole!",
+      "They can stay underwater for long periods!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 25 feet long \u2014 longer than a car but shorter than a school bus! (25 feet)"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Can be 5 times longer than you!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "ankylosaurus": {
+    "name": "Ankylosaurus",
+    "scientific_name": "Ankylosaurus magniventris",
+    "habitat": "FORESTS and PLAINS of the Late Cretaceous period",
+    "size": "AN KYLOSAURUS was about 26 feet long!",
+    "diet": "HERBIVORE! It munched on LOW GROWING PLANTS and FERN.",
+    "weapons": [
+      "CLUBBED TAIL (up to 3 feet long)",
+      "SPINY BACK",
+      "THICK ARMOR"
+    ],
+    "defenses": [
+      "HARD, ARMOR-PLATED SKIN",
+      "LOW CENTER OF GRAVITY",
+      "SWINGING TAIL SWING"
+    ],
+    "speed": "TOP SPEED of 8 mph! That's like a SLOW RUNNING KID!",
+    "fun_facts": [
+      "AN KYLOSAURUS could weigh as much as 6 TONNES! That's like 3 CARS!",
+      "It had a BONE-HEADED HEAD for protection!",
+      "Its armor was like a living TANK!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 26 feet long \u2014 longer than a car but shorter than a school bus! (26 feet)"
+      },
+      {
+        "item": "car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighing up to 6 tons is like 3 SEDANS!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "basilisk": {
+    "name": "Basilisk",
+    "scientific_name": "Mythological creature",
+    "habitat": "Dark forests and caves",
+    "size": "Up to 10 feet long! That's like 2 school buses lined up!",
+    "diet": "Carnivorous! It eats small animals and birds, using its deadly gaze to hunt!",
+    "weapons": [
+      "Deadly gaze (can turn creatures to stone)",
+      "Sharp claws (up to 6 inches long)",
+      "Venomous bite"
+    ],
+    "defenses": [
+      "Gaze (turns enemies to stone)",
+      "Scales (very tough and protective)",
+      "Speed (can escape quickly)"
+    ],
+    "speed": "Can sprint up to 30 mph! That's as fast as a cheetah!",
+    "fun_facts": [
+      "Basilisks are known as the 'King of Serpents'!",
+      "They can live for hundreds of years!",
+      "Their gaze is so powerful, it can kill just by looking!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "10 feet long is about 1/3 of a school bus!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "10 feet long is almost 2 people stacked on top of each other!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "black-panther": {
+    "name": "Black Panther",
+    "scientific_name": "Panthera pardus",
+    "habitat": "Rainforests, savannas, and grasslands in Africa and Asia",
+    "size": "4 to 6 feet long (1.2 to 1.8 meters) PLUS about as long as a sedan!",
+    "diet": "Carnivore! They eat deer, monkeys, and birds. They are great hunters!",
+    "weapons": [
+      "Powerful jaws (up to 1 foot long)",
+      "Sharp claws (up to 2 inches long)",
+      "Stealthy approach"
+    ],
+    "defenses": [
+      "Camouflage in the shadows",
+      "Agile movements",
+      "Climbing trees to escape"
+    ],
+    "speed": "Top speed of 35 mph, FASTER than a running human!",
+    "fun_facts": [
+      "A BLACK PANTHER is actually a LEOPARD with dark fur!",
+      "They can leap up to 20 feet in a single jump!",
+      "Their night vision is SIX TIMES better than humans!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 7 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "human",
+        "emoji": "\ud83d\udc64",
+        "comparison": "About the same WEIGHT as a large dog, around 100 to 200 pounds!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "brachiosaurus": {
+    "name": "Brachiosaurus",
+    "scientific_name": "Brachiosaurus altithorax",
+    "habitat": "Forests and floodplains",
+    "size": "85 feet long and 40 feet tall!",
+    "diet": "Herbivore! Brachiosaurus loved to munch on TREES and LEAVES high up in the canopy.",
+    "weapons": [
+      "Long neck (up to 30 feet)",
+      "Strong legs",
+      "Massive body"
+    ],
+    "defenses": [
+      "Size! It's hard to attack something so BIG!",
+      "High reach to escape predators",
+      "Fast for its size!"
+    ],
+    "speed": "Top speed of 10 miles per hour! That's like running as fast as a person on a bike!",
+    "fun_facts": [
+      "Brachiosaurus had longer front legs than back legs, making it stand tall!",
+      "It could eat up to 880 pounds of plants a day!",
+      "Its name means 'ARM LIZARD' because of its long arms!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 85 feet long \u2014 almost as long as a basketball court! (85 feet)"
+      },
+      {
+        "item": "weight of a car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "WEIGHT: About 62 tons, which is like 15 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "cape-buffalo": {
+    "name": "Cape Buffalo",
+    "scientific_name": "Syncerus caffer",
+    "habitat": "Grasslands and savannas of Africa",
+    "size": "Up to 11.5 feet long! That's like 1/3 of a school bus! They stand about 5.5 feet tall at the shoulder.!",
+    "diet": "Herbivore! They munch on grass and leaves. They need to eat a LOT to stay strong!",
+    "weapons": [
+      "Horns up to 3.5 feet long!",
+      "Powerful legs",
+      "Thick skin"
+    ],
+    "defenses": [
+      "Massive horns for protection",
+      "Herd behavior for safety",
+      "Can charge at high speeds!"
+    ],
+    "speed": "Can run up to 30 mph! That's as fast as a cheetah for short bursts!",
+    "fun_facts": [
+      "A Cape Buffalo can weigh as much as a small car\u2014up to 2,000 pounds!",
+      "They are known as 'Black Death' because they are so tough!",
+      "Cape Buffalos have a strong social bond and live in herds."
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 11 feet long \u2014 about as long as a small car! (11 feet)"
+      },
+      {
+        "item": "sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "As heavy as a small car in WEIGHT"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "cassowary": {
+    "name": "Cassowary",
+    "scientific_name": "Casuarius",
+    "habitat": "Tropical rainforests of New Guinea, nearby islands, and northern Australia.",
+    "size": "Up to 6 feet tall! That's as tall as a door!",
+    "diet": "Fruits, seeds, and small animals. They LOVE berries!",
+    "weapons": [
+      "Powerful legs with claws up to 5 inches long",
+      "Sharp beak",
+      "Heavy body for charging"
+    ],
+    "defenses": [
+      "Thick skin",
+      "Fast runner",
+      "Can kick with incredible force!"
+    ],
+    "speed": "Can run up to 30 miles per hour! That's faster than a cheetah for short bursts!",
+    "fun_facts": [
+      "Their blue skin is SUPER unique!",
+      "They can jump up to 5 feet high!",
+      "Cassowaries are known as the 'world's most dangerous bird'!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 6 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "About the same height as a tall person (6 feet)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "cerberus": {
+    "name": "Cerberus",
+    "scientific_name": "Mythological creature",
+    "habitat": "The Underworld, guarding the gates of Hades",
+    "size": "About 30 feet long! That's almost as long as a school bus!",
+    "diet": "Carnivore! Cerberus eats anything that tries to escape the Underworld!",
+    "weapons": [
+      "Three fierce heads, each about 3 feet wide",
+      "Sharp claws",
+      "Poisonous breath"
+    ],
+    "defenses": [
+      "Thick, tough fur",
+      "Fearsome growl",
+      "Ability to intimidate with three heads"
+    ],
+    "speed": "Can run up to 25 miles per hour! That's as fast as a cheetah!",
+    "fun_facts": [
+      "Each head can bite at the same time! That's THREE bites!",
+      "Cerberus is often depicted with a serpent for a tail!",
+      "He can scare off even the bravest heroes!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "30 feet long, almost as long as a school bus!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Each head is about the size of a person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "cheetah": {
+    "name": "Cheetah",
+    "scientific_name": "Acinonyx jubatus",
+    "habitat": "Savannas and grasslands of Africa",
+    "size": "Up to 4.5 feet tall at the shoulder and 3.5 to 4.5 feet long. That's about the length of a small sedan!",
+    "diet": "Carnivorous! They eat small to medium-sized animals like gazelles and impalas. They need to eat every day to stay strong!",
+    "weapons": [
+      "Sharp claws (up to 2 inches long)",
+      "Powerful jaws",
+      "Speedy legs"
+    ],
+    "defenses": [
+      "Incredible speed",
+      "Camouflage in tall grass",
+      "Quick turns to escape"
+    ],
+    "speed": "Top speed of 60 to 70 mph! That's faster than a school bus on the highway!",
+    "fun_facts": [
+      "Cheetahs can accelerate from 0 to 60 mph in just 3 seconds!",
+      "They have distinctive black tear marks under their eyes to reduce glare from the sun.",
+      "Cheetahs can only maintain their top speed for about 20-30 seconds!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 7.5 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Weight: 110 to 140 pounds, similar to a tall person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 10,
+    "weapons_score": 8,
+    "defense_score": 6
+  },
+  "chimera": {
+    "name": "Chimera",
+    "scientific_name": "Mythological creature",
+    "habitat": "Mountains of Lycia, ancient Greece",
+    "size": "About 10 feet long! That's like 2 school buses stacked end to end!",
+    "diet": "Carnivorous! It eats anything from goats to humans!",
+    "weapons": [
+      "Fire-breathing (up to 1,000 degrees Fahrenheit)",
+      "Sharp claws (about 1 foot long)",
+      "Fangs (up to 6 inches long)"
+    ],
+    "defenses": [
+      "Scaly hide (as tough as a dragon's)",
+      "Ability to breathe fire",
+      "Can roar to scare off enemies"
+    ],
+    "speed": "Can run up to 30 miles per hour! That's as fast as a cheetah!",
+    "fun_facts": [
+      "It has the head of a lion, the body of a goat, and a tail that ends with a snake!",
+      "Chimeras are often considered a symbol of chaos!",
+      "They can breathe fire, just like dragons!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "2 school buses long (70 feet total)"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "About 2 people tall (12 feet total)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "crocodile": {
+    "name": "Saltwater Crocodile",
+    "scientific_name": "Crocodylus porosus",
+    "habitat": "Coastal areas, rivers, and swamps",
+    "size": "Up to 23 feet long!",
+    "diet": "Carnivore! They eat fish, birds, and even large mammals!",
+    "weapons": [
+      "Powerful jaws with a bite force of 3,700 pounds!",
+      "Sharp teeth",
+      "Long tail"
+    ],
+    "defenses": [
+      "Tough, armored skin",
+      "Camouflage in water",
+      "Fast swimmer"
+    ],
+    "speed": "Can swim up to 20 mph! That's as fast as a running dog!",
+    "fun_facts": [
+      "They can hold their breath for over an hour!",
+      "Saltwater crocodiles are the largest reptiles on Earth!",
+      "They can live for over 70 years!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 20 feet long \u2014 longer than a car but shorter than a school bus! (20 feet)"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Weighs up to 2,200 pounds, that's like 4 average-sized people!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "dragon": {
+    "name": "Fire-Breathing Dragon",
+    "scientific_name": "Draco Ignis",
+    "habitat": "Mountains and caves",
+    "size": "30 feet long (about the length of a school bus!)",
+    "diet": "Carnivorous! They feast on large animals like deer and even other dragons!",
+    "weapons": [
+      "Fire Breath (up to 1,000\u00b0F)",
+      "Sharp Claws (2 feet long)",
+      "Tail Swipe (5 feet wide)"
+    ],
+    "defenses": [
+      "Thick Scales (up to 1 inch thick)",
+      "Flight (can soar high in the sky)",
+      "Camouflage (blends into rocky terrain)"
+    ],
+    "speed": "Top speed of 60 mph (as fast as a cheetah!)",
+    "fun_facts": [
+      "A dragon's wingspan can reach 60 feet\u2014WIDER than a school bus!",
+      "Some legends say they can live for over 1,000 years!",
+      "They can carry up to 1,000 pounds in flight!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "30 feet long, the same length as a school bus!"
+      },
+      {
+        "item": "elephant",
+        "emoji": "\ud83d\udc18",
+        "comparison": "Weighs around 1,500 pounds, similar to a large elephant!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "eagle": {
+    "name": "Bald Eagle",
+    "scientific_name": "Haliaeetus leucocephalus",
+    "habitat": "Near large bodies of open water with abundant food supply and old-growth trees for nesting.",
+    "size": "Wingspan of up to 7.5 feet! That's longer than a sedan (15 feet) laid on its side!",
+    "diet": "Carnivorous! They primarily eat fish, but will also hunt small mammals and birds.",
+    "weapons": [
+      "Sharp talons (up to 2.5 inches long)",
+      "Strong beak",
+      "Keen eyesight"
+    ],
+    "defenses": [
+      "Powerful flight",
+      "Camouflage in trees",
+      "Nesting high up to avoid predators"
+    ],
+    "speed": "Can dive at speeds of 30-40 mph! That's as fast as a car on the highway!",
+    "fun_facts": [
+      "Their nest can be as big as a small car!",
+      "Bald Eagles can live up to 30 years in the wild!",
+      "They can see four to five times better than humans."
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 3.5 feet long \u2014 about as long as a baseball bat!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Height is about 1/2 the height of an average person (5.5-6 feet)!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "elephant": {
+    "name": "African Elephant",
+    "scientific_name": "Loxodonta africana",
+    "habitat": "Savannas, forests, and grasslands in Africa",
+    "size": "Up to 13 feet tall at the shoulder and 24 feet long! That's as long as TWO SCHOOL BUSES!",
+    "diet": "Herbivore! They eat grass, leaves, fruits, and bark. An adult can consume up to 300 POUNDS of food a day!",
+    "weapons": [
+      "Tusks, up to 10 feet long!",
+      "Trunk",
+      "Massive body"
+    ],
+    "defenses": [
+      "Thick skin",
+      "Size",
+      "Intelligence"
+    ],
+    "speed": "Can run up to 25 mph! That's as fast as a running horse!",
+    "fun_facts": [
+      "An elephant's trunk has over 40,000 muscles!",
+      "Elephants can communicate using infrasound, which is below human hearing!",
+      "They can live up to 70 years!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "School Bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 22 feet long \u2014 longer than a car but shorter than a school bus! (22 feet)"
+      },
+      {
+        "item": "Car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "WEIGHT: An adult elephant can weigh as much as 6 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "gorilla": {
+    "name": "Gorilla",
+    "scientific_name": "Gorilla gorilla",
+    "habitat": "Tropical forests in Africa",
+    "size": "Up to 6 feet tall and 12 feet long when standing on all fours! That's as tall as a door!",
+    "diet": "Herbivore! Gorillas eat leaves, stems, fruit, and flowers. They munch on over 100 different types of plants!",
+    "weapons": [
+      "Strong arms with a reach of 8 feet",
+      "Powerful jaws",
+      "Intimidating chest thump"
+    ],
+    "defenses": [
+      "Massive size",
+      "Thick fur",
+      "Intelligent social behavior"
+    ],
+    "speed": "Can run up to 20 miles per hour! That's as fast as a speeding car in a school zone!",
+    "fun_facts": [
+      "A male gorilla can weigh up to 400 pounds! That's like carrying a small child!",
+      "Gorillas are 98% genetically similar to humans!",
+      "They can communicate using over 25 different sounds!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 5.5 feet long \u2014 about as long as a bathtub!"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "A gorilla can be over 1 foot taller than an average person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "great-white-shark": {
+    "name": "Great White Shark",
+    "scientific_name": "Carcharodon carcharias",
+    "habitat": "Oceans worldwide, especially in coastal waters",
+    "size": "Up to 20 feet long!",
+    "diet": "Carnivorous! They eat seals, fish, and even other sharks!",
+    "weapons": [
+      "Jaws with 300 sharp teeth, each up to 3 inches long!",
+      "Powerful tail",
+      "Speedy body"
+    ],
+    "defenses": [
+      "Tough skin",
+      "Camouflage",
+      "Ability to sense blood from miles away"
+    ],
+    "speed": "Can swim up to 25 miles per hour! That's faster than a speeding car!",
+    "fun_facts": [
+      "Their bite is stronger than a T-Rex's!",
+      "Great Whites can detect a drop of blood in 25 gallons of water!",
+      "They can leap out of the water like a dolphin!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 20 feet long \u2014 longer than a car but shorter than a school bus! (20 feet)"
+      },
+      {
+        "item": "weight of a car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Can weigh over 2,400 pounds, heavier than a sedan!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "griffin": {
+    "name": "Griffin",
+    "scientific_name": "Mythological creature",
+    "habitat": "Mountains and ancient ruins",
+    "size": "About 13 feet long and 6 feet tall at the shoulder! That's like a small car!",
+    "diet": "Carnivorous! They love to eat fish, deer, and even horses!",
+    "weapons": [
+      "Sharp claws (up to 6 inches long)",
+      "Powerful beak",
+      "Talons for gripping"
+    ],
+    "defenses": [
+      "Strong wings for flight",
+      "Thick feathers for protection",
+      "Intimidating roar"
+    ],
+    "speed": "Can fly up to 30 miles per hour! That's as fast as a speeding car!",
+    "fun_facts": [
+      "A Griffin has the body of a lion and the head and wings of an eagle!",
+      "They are known as guardians of treasures!",
+      "Griffins are symbols of strength and courage!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "About 1/3 the length of a school bus!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "As tall as a person standing on their tiptoes!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "grizzly-bear": {
+    "name": "Grizzly Bear",
+    "scientific_name": "Ursus arctos horribilis",
+    "habitat": "Forests, mountains, and national parks in North America",
+    "size": "Up to 8 feet long! That's as long as a SCHOOL BUS!",
+    "diet": "Omnivorous! They eat berries, fish, and even small mammals!",
+    "weapons": [
+      "Powerful claws (up to 4 inches long)",
+      "Strong jaws",
+      "Massive body weight"
+    ],
+    "defenses": [
+      "Thick fur",
+      "Intimidating size",
+      "Fast reflexes"
+    ],
+    "speed": "Can run up to 30 mph! That's faster than a CHEETAH for short bursts!",
+    "fun_facts": [
+      "A Grizzly's sense of smell is 7 times better than a bloodhound!",
+      "They can weigh up to 1,500 pounds, as heavy as a small CAR!",
+      "Grizzlies can hibernate for up to 7 months!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "School Bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 8 feet long \u2014 about as long as a small car! (8 feet)"
+      },
+      {
+        "item": "Sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weight: 1,500 pounds = as heavy as a small CAR!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "hippo": {
+    "name": "Common Hippopotamus",
+    "scientific_name": "Hippopotamus amphibius",
+    "habitat": "Rivers and lakes in Africa",
+    "size": "Up to 16.5 feet long!",
+    "diet": "Herbivore! They eat grass, munching up to 150 pounds a night!",
+    "weapons": [
+      "Massive jaws with 20-inch teeth",
+      "Thick skin",
+      "Powerful legs"
+    ],
+    "defenses": [
+      "Heavy skin (up to 2 inches thick)",
+      "Aggressive behavior",
+      "Can hold breath underwater for 5 minutes"
+    ],
+    "speed": "Can run up to 19 mph! That's faster than most kids can sprint!",
+    "fun_facts": [
+      "Hippos are the third largest land mammals!",
+      "They can open their mouths 150 degrees wide!",
+      "Hippos spend most of the day in water to keep cool!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 16 feet long \u2014 about as long as a car! (16 feet)"
+      },
+      {
+        "item": "car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighs up to 4,000 pounds, that's like 2 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "honey-badger": {
+    "name": "Honey Badger",
+    "scientific_name": "Mellivora capensis",
+    "habitat": "Savannas, forests, and grasslands in Africa and Asia",
+    "size": "About 30 inches long (2.5 feet) - That's like a medium-sized dog!",
+    "diet": "Carnivorous! They eat snakes, insects, and even honey. They LOVE honey!",
+    "weapons": [
+      "Sharp claws (up to 1 inch long)",
+      "Strong teeth",
+      "Tough skin"
+    ],
+    "defenses": [
+      "Thick skin",
+      "Fearless attitude",
+      "Ability to play dead"
+    ],
+    "speed": "Can run up to 19 miles per hour - That's as fast as a fast jogger!",
+    "fun_facts": [
+      "Honey badgers are known to chase away lions!",
+      "They can survive snake bites!",
+      "They're called the 'most fearless animal' in the world!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "School bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 2.5 feet long \u2014 about as long as a baseball bat!"
+      },
+      {
+        "item": "Person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "1/3 the HEIGHT of a person (5.5-6 feet)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "hydra": {
+    "name": "Hydra",
+    "scientific_name": "Mythological creature",
+    "habitat": "Swamps and lakes in ancient Greece",
+    "size": "Up to 30 feet long! That's like 1.5 school buses!",
+    "diet": "Carnivorous! The Hydra loves to eat livestock and heroes who dare to challenge it!",
+    "weapons": [
+      "Fierce Fangs (up to 1 foot long)",
+      "Poisonous Breath",
+      "Regenerating Heads"
+    ],
+    "defenses": [
+      "Regeneration (grows two heads for every one cut off)",
+      "Thick Scales",
+      "Venomous Blood"
+    ],
+    "speed": "Can swim quickly at 10 mph! That's as fast as a running dog!",
+    "fun_facts": [
+      "The Hydra has multiple heads\u2014sometimes up to 9!",
+      "It was defeated by Hercules in a legendary battle!",
+      "Its breath is so toxic, it can kill just by being near it!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "30 feet long is like 1.5 school buses!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "30 feet long is 5 times the height of an average person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "hyena": {
+    "name": "Spotted Hyena",
+    "scientific_name": "Crocuta crocuta",
+    "habitat": "Savannas, grasslands, and woodlands in Africa",
+    "size": "Up to 4.5 feet tall at the shoulder and 5.5 to 6.5 feet long! That's about as long as a small sedan!",
+    "diet": "Carnivorous! They eat meat, including wildebeest, zebras, and even leftovers from other predators!",
+    "weapons": [
+      "Powerful jaws with a bite force of 1,100 PSI!",
+      "Sharp claws",
+      "Strong legs for running"
+    ],
+    "defenses": [
+      "Thick skin",
+      "Pack behavior for safety",
+      "Intimidating laugh to scare off threats"
+    ],
+    "speed": "Can run up to 37 miles per hour! That's faster than a speeding car in a school zone!",
+    "fun_facts": [
+      "A group of hyenas is called a 'clan'\u2014it can have up to 80 members!",
+      "Hyenas are more closely related to cats than dogs!",
+      "They can eat bones\u2014nothing goes to waste!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 5 feet long \u2014 about as long as a bathtub!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "About as tall as a person standing on their tiptoes!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "jaguar": {
+    "name": "Jaguar",
+    "scientific_name": "Panthera onca",
+    "habitat": "Rainforests, swamps, and grasslands in Central and South America",
+    "size": "Up to 6 feet long! That's as long as a school bus is tall!",
+    "diet": "Carnivore! Jaguars love to eat deer, capybaras, and even caimans!",
+    "weapons": [
+      "Powerful jaws with a bite force of 1,500 PSI",
+      "Sharp claws",
+      "Stealthy approach"
+    ],
+    "defenses": [
+      "Camouflage in the jungle",
+      "Strong muscles",
+      "Quick reflexes"
+    ],
+    "speed": "Can run up to 50 miles per hour! That's faster than a speeding car in a school zone!",
+    "fun_facts": [
+      "Jaguars are the third largest big cat in the world!",
+      "They can swim really well and love water!",
+      "Their spots are called rosettes and help them blend in!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 6 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "A jaguar can weigh up to 250 pounds, which is like 2 average-sized kids!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "king-cobra": {
+    "name": "King Cobra",
+    "scientific_name": "Ophiophagus hannah",
+    "habitat": "Tropical forests and grasslands in Southeast Asia",
+    "size": "Up to 18 feet long! That's as long as a SCHOOL BUS!",
+    "diet": "Eats other snakes, including venomous ones! They can consume prey up to 1/3 of their body length.",
+    "weapons": [
+      "Venomous bite (up to 1.5 inches long)",
+      "Muscular body",
+      "Intimidating hood"
+    ],
+    "defenses": [
+      "Powerful venom",
+      "Camouflage in the forest",
+      "Can stand tall and spread hood"
+    ],
+    "speed": "Can slither at speeds of 3 miles per hour! That's as fast as a walking person!",
+    "fun_facts": [
+      "Their venom can kill an elephant!",
+      "They can live up to 20 years in the wild!",
+      "King Cobras are the longest venomous snakes in the world!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 18 feet long \u2014 about as long as a car! (18 feet)"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "WEIGHT: Up to 20 pounds, like a small dog!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "komodo-dragon": {
+    "name": "Komodo Dragon",
+    "scientific_name": "Varanus komodoensis",
+    "habitat": "Tropical islands in Indonesia",
+    "size": "Up to 10 feet long! That's as long as a SCHOOL BUS!",
+    "diet": "Carnivorous! They eat deer, birds, and even smaller Komodo dragons!",
+    "weapons": [
+      "Powerful jaws with 60 sharp teeth (up to 1 inch long)",
+      "Long, forked tongue",
+      "Strong claws (up to 4 inches long)"
+    ],
+    "defenses": [
+      "Tough, scaly skin",
+      "Camouflage to blend in",
+      "Fast reflexes to escape danger"
+    ],
+    "speed": "Can run up to 13 miles per hour! That's as fast as a speedy SEDAN!",
+    "fun_facts": [
+      "Their saliva contains bacteria that can infect prey!",
+      "They can eat up to 80% of their body weight in one meal!",
+      "They can sense rotting meat from miles away!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 10 feet long \u2014 about as long as a small car! (10 feet)"
+      },
+      {
+        "item": "weight of a small child",
+        "emoji": "\ud83d\udc76",
+        "comparison": "Can weigh around 150 pounds, like a SMALL CHILD!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "kraken": {
+    "name": "Kraken",
+    "scientific_name": "Mythological creature",
+    "habitat": "Deep ocean waters",
+    "size": "Up to 100 feet long! That's like THREE SCHOOL BUSES!",
+    "diet": "Carnivorous! It eats large fish, whales, and even ships!",
+    "weapons": [
+      "Tentacles up to 30 feet long",
+      "Beak like a giant parrot",
+      "Ink cloud for escape"
+    ],
+    "defenses": [
+      "Massive size",
+      "Camouflage against the ocean floor",
+      "Ability to create whirlpools"
+    ],
+    "speed": "Can swim at speeds of 25 mph! That's faster than a speeding car!",
+    "fun_facts": [
+      "The Kraken is BIGGER than most dinosaurs!",
+      "Some legends say it can pull down entire ships!",
+      "It can live for hundreds of years!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "100 feet long is like 3 school buses!"
+      },
+      {
+        "item": "whale",
+        "emoji": "\ud83d\udc0b",
+        "comparison": "Weighs as much as 10 elephants!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "leopard": {
+    "name": "Leopard",
+    "scientific_name": "Panthera pardus",
+    "habitat": "Savannas, forests, and grasslands",
+    "size": "LEOPARDS CAN BE UP TO 6.25 FEET LONG! THAT'S LIKE A SMALL SCHOOL BUS! They weigh between 66 to 176 pounds, which is about as heavy as a large dog!",
+    "diet": "LEOPARDS ARE CARNIVORES! They eat deer, antelope, and even monkeys! They are skilled hunters!",
+    "weapons": [
+      "POWERFUL JAWS (UP TO 2 INCHES LONG)",
+      "SHARP CLAWS",
+      "AGILE BODY"
+    ],
+    "defenses": [
+      "SPOTTED FUR FOR CAMOUFLAGE",
+      "STRONG MUSCLES",
+      "CLIMBING ABILITY TO ESCAPE"
+    ],
+    "speed": "LEOPARDS CAN RUN UP TO 36 MPH! THAT'S FASTER THAN A CHEETAH OVER SHORT DISTANCES!",
+    "fun_facts": [
+      "LEOPARDS CAN JUMP 10 FEET HIGH! THAT'S LIKE JUMPING OVER A CAR!",
+      "THEY ARE GREAT SWIMMERS!",
+      "LEOPARDS OFTEN DRAG THEIR PREY UP INTO TREES TO KEEP IT SAFE!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 6.25 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "large dog",
+        "emoji": "\ud83d\udc15",
+        "comparison": "WEIGHING UP TO 176 POUNDS IS LIKE A LARGE DOG!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "lion": {
+    "name": "Lion",
+    "scientific_name": "Panthera leo",
+    "habitat": "Grasslands, savannas, and open woodlands in Africa and India",
+    "size": "Adult male lions can weigh up to 420 pounds and measure about 8 to 10 feet long from nose to tail! That's as long as a school bus!",
+    "diet": "Lions are carnivores! They eat large animals like zebras, wildebeests, and buffalo. They hunt in groups called prides!",
+    "weapons": [
+      "Powerful jaws with a bite force of 650 PSI",
+      "Sharp claws up to 1.5 inches long",
+      "Strong legs for pouncing"
+    ],
+    "defenses": [
+      "Thick mane to protect their necks",
+      "Group living for safety in numbers",
+      "Roaring to scare off intruders"
+    ],
+    "speed": "Lions can run up to 50 miles per hour for short bursts! That's as fast as a speeding car in a neighborhood!",
+    "fun_facts": [
+      "A lion's roar can be heard up to 5 miles away!",
+      "Lions sleep for about 20 hours a day!",
+      "A group of lions is called a pride!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 9 feet long \u2014 about as long as a small car! (9 feet)"
+      },
+      {
+        "item": "adult human",
+        "emoji": "\ud83d\udc64",
+        "comparison": "weighs as much as 2 to 3 adult humans"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "manticore": {
+    "name": "Manticore",
+    "scientific_name": "Mythological creature",
+    "habitat": "Ancient Persia and surrounding areas",
+    "size": "About 10 feet long! That's like 2 school buses lined up!",
+    "diet": "Carnivorous! They feast on humans, livestock, and anything they can catch!",
+    "weapons": [
+      "Tail with venomous spikes (up to 3 feet long)",
+      "Sharp claws",
+      "Fangs"
+    ],
+    "defenses": [
+      "Thick, lion-like hide",
+      "Speedy agility",
+      "Ability to mimic sounds to confuse prey"
+    ],
+    "speed": "Can run up to 30 mph! That's as fast as a cheetah!",
+    "fun_facts": [
+      "Manticore means 'man-eater' in Persian!",
+      "They have the body of a lion, a human head, and a scorpion tail!",
+      "They can shoot their tail spikes like arrows!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "10 feet long is about 1/3 of a school bus!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "10 feet long is about 2 times the height of an average person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "moose": {
+    "name": "Moose",
+    "scientific_name": "Alces alces",
+    "habitat": "Forests and wetlands in North America and parts of Europe and Asia",
+    "size": "6 to 7.5 feet tall at the shoulder! That's as tall as a DOORWAY!",
+    "diet": "Herbivore! Moose LOVE to munch on leaves, twigs, and aquatic plants.",
+    "weapons": [
+      "Antlers up to 6 feet wide!",
+      "Strong legs",
+      "Kicking power"
+    ],
+    "defenses": [
+      "Massive size",
+      "Thick skin",
+      "Fast swimmer"
+    ],
+    "speed": "Can run up to 35 mph! That's as fast as a speeding CAR!",
+    "fun_facts": [
+      "Moose can dive 20 feet underwater to eat plants!",
+      "Their antlers can weigh as much as 100 pounds!",
+      "Moose have a special flap of skin called a 'bell' under their throat."
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 10 feet long \u2014 about as long as a small car! (10 feet)"
+      },
+      {
+        "item": "adult human",
+        "emoji": "\ud83d\udc64",
+        "comparison": "A moose is about 1.5 times taller than an adult human!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "octopus": {
+    "name": "Common Octopus",
+    "scientific_name": "Octopus vulgaris",
+    "habitat": "Oceans and seas around the world",
+    "size": "Up to 3.5 feet long! That's about the length of a SCHOOL BUS! (35 feet)!",
+    "diet": "Carnivorous! They eat crabs, fish, and mollusks. They use their beaks to CRACK open shells!",
+    "weapons": [
+      "Beak (1 inch)",
+      "Ink cloud",
+      "Camouflage"
+    ],
+    "defenses": [
+      "Ink cloud to escape",
+      "Camouflage to hide",
+      "Regeneration of lost arms"
+    ],
+    "speed": "Can swim up to 25 miles per hour! That's like running faster than a cheetah for a short burst!",
+    "fun_facts": [
+      "An octopus has THREE HEARTS!",
+      "They can squeeze through ANY opening bigger than their beak!",
+      "Octopuses have blue blood!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 5 feet long \u2014 about as long as a bathtub!"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "3.5 feet long vs. 5.5-6 feet tall"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "orca": {
+    "name": "Orca",
+    "scientific_name": "Orcinus orca",
+    "habitat": "Oceans worldwide, especially in colder waters",
+    "size": "Up to 32 feet long!",
+    "diet": "Carnivorous! They eat fish, seals, and even whales! Orcas are TOP PREDATORS!",
+    "weapons": [
+      "Powerful jaws with 40-56 teeth, each up to 4 inches long",
+      "Speedy swimming",
+      "Echolocation to find prey"
+    ],
+    "defenses": [
+      "Strong social groups called pods",
+      "Camouflage with black and white coloring",
+      "Intelligence to outsmart predators"
+    ],
+    "speed": "Can swim up to 34.5 mph! That's faster than a cheetah on land!",
+    "fun_facts": [
+      "Orcas are actually dolphins!",
+      "They can dive over 1,000 feet deep!",
+      "Orcas have unique calls like a fingerprint!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 26 feet long \u2014 longer than a car but shorter than a school bus! (26 feet)"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Weighs up to 12,000 pounds, that's like 2 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "phoenix": {
+    "name": "Phoenix",
+    "scientific_name": "Mythological creature",
+    "habitat": "Fiery mountains and mystical realms",
+    "size": "About 15 feet long! That's as long as a SEDAN!",
+    "diet": "Phoenixes are said to feed on sunlight and fire! They absorb energy from flames.",
+    "weapons": [
+      "Fiery talons (1 foot long)",
+      "Blazing beak",
+      "Fire breath"
+    ],
+    "defenses": [
+      "Immortality (reborn from ashes)",
+      "Brilliant flames",
+      "Healing powers"
+    ],
+    "speed": "Can fly up to 100 mph! That's faster than a CAR on the highway!",
+    "fun_facts": [
+      "A Phoenix can live for hundreds of years!",
+      "When it dies, it bursts into flames and is reborn!",
+      "Its feathers can glow like the sun!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: 15 feet is almost half the length of a school bus!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "WEIGHT: A Phoenix could weigh as much as 200 pounds, like a large dog!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "polar-bear": {
+    "name": "Polar Bear",
+    "scientific_name": "Ursus maritimus",
+    "habitat": "Arctic regions, mainly on sea ice",
+    "size": "Up to 10 feet long!",
+    "diet": "Carnivorous! They eat seals, fish, and sometimes even birds.",
+    "weapons": [
+      "Powerful jaws with a bite force of 1,200 PSI",
+      "Sharp claws up to 2 inches long",
+      "Strong legs for powerful swimming"
+    ],
+    "defenses": [
+      "Thick layer of blubber",
+      "White fur for camouflage",
+      "Excellent swimmer to escape threats"
+    ],
+    "speed": "Can run up to 25 miles per hour! That's as fast as a car in a school zone!",
+    "fun_facts": [
+      "Their fur isn't white; it's actually transparent!",
+      "Polar bears can overheat in warm weather!",
+      "They have a great sense of smell, detecting seals nearly a mile away!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 9 feet long \u2014 about as long as a small car! (9 feet)"
+      },
+      {
+        "item": "weight of a sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighs up to 1,500 pounds, like a small car!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "pteranodon": {
+    "name": "Pteranodon",
+    "scientific_name": "Pteranodon longiceps",
+    "habitat": "Coastal areas and open skies",
+    "size": "Wingspan of up to 33 feet! That's longer than a SCHOOL BUS!",
+    "diet": "Fish and squid! Pteranodon was a skilled fisherman, diving to catch its meals.",
+    "weapons": [
+      "Beak (up to 3 feet long)",
+      "Wings",
+      "Claws"
+    ],
+    "defenses": [
+      "Flying high in the sky",
+      "Speedy escape",
+      "Camouflage against the sky"
+    ],
+    "speed": "Can soar at speeds of 25 mph! That's as fast as a RUNNING DOG!",
+    "fun_facts": [
+      "Pteranodon had a crest on its head that could be over 2 feet tall!",
+      "It lived during the Late Cretaceous period, around 70 million years ago!",
+      "Pteranodon is NOT a dinosaur, but a flying reptile!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 20 feet long \u2014 longer than a car but shorter than a school bus! (20 feet)"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Beak length of 3 feet, as long as a TALL PERSON!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "python": {
+    "name": "Green Python",
+    "scientific_name": "Morelia viridis",
+    "habitat": "Tropical rainforests of New Guinea and Australia",
+    "size": "Up to 13 feet long!",
+    "diet": "Carnivore! They eat small mammals and birds, using their powerful constriction to catch prey.",
+    "weapons": [
+      "Strong muscles for constriction (up to 1 foot in diameter)",
+      "Sharp teeth",
+      "Camouflage"
+    ],
+    "defenses": [
+      "Camouflage against predators",
+      "Ability to climb trees",
+      "Silent movement"
+    ],
+    "speed": "Can strike at speeds of 3 mph! That's like running as fast as a slow jogger!",
+    "fun_facts": [
+      "Their scales can be bright green, making them look like leaves!",
+      "They can live up to 20 years in captivity!",
+      "They are excellent climbers, spending most of their time in trees."
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 20 feet long \u2014 longer than a car but shorter than a school bus! (20 feet)"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "13 feet is more than 2 people stacked on top of each other!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "rhino": {
+    "name": "White Rhino",
+    "scientific_name": "Ceratotherium simum",
+    "habitat": "Grasslands and savannas in Africa",
+    "size": "Up to 13 feet long!",
+    "diet": "Herbivore! They munch on grass and leaves, using their wide mouths to graze.",
+    "weapons": [
+      "HORN: Up to 3 feet long!",
+      "THICK SKIN",
+      "POWERFUL LEGS"
+    ],
+    "defenses": [
+      "HARD SKIN",
+      "SPEED: Can run fast!",
+      "AGGRESSIVE BEHAVIOR"
+    ],
+    "speed": "Top speed of 30 mph! That's like running as fast as a cheetah for short bursts!",
+    "fun_facts": [
+      "A White Rhino can weigh up to 2,300 kg! That's like 3 cars!",
+      "They have poor eyesight but a great sense of smell!",
+      "Rhinos can live up to 40 years in the wild!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 13 feet long \u2014 about as long as a car! (13 feet)"
+      },
+      {
+        "item": "sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighs as much as 3 sedans! (2,300 kg)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "spinosaurus": {
+    "name": "Spinosaurus",
+    "scientific_name": "Spinosaurus aegypticus",
+    "habitat": "Rivers and wetlands of North Africa",
+    "size": "Up to 50-59 feet long! That's like TWO SCHOOL BUSES!",
+    "diet": "Carnivore! It ate fish and possibly other dinosaurs. Think of it as a giant, hungry crocodile!",
+    "weapons": [
+      "TEETH up to 12 inches long!",
+      "POWERFUL claws",
+      "HUGE sail on its back"
+    ],
+    "defenses": [
+      "Massive size",
+      "Strong tail",
+      "Quick swimmer"
+    ],
+    "speed": "Could run up to 12 miles per hour! That's like running as fast as a cheetah for short bursts!",
+    "fun_facts": [
+      "Its sail could be over 6 feet tall! That's taller than a person!",
+      "Spinosaurus might have been the largest carnivorous dinosaur!",
+      "It had a long, crocodile-like snout for catching fish."
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 50 feet long \u2014 longer than a school bus! (50 feet)"
+      },
+      {
+        "item": "weight of a car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "WEIGHT: Estimated 7-20 tons, like 2-3 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "stegosaurus": {
+    "name": "Stegosaurus",
+    "scientific_name": "Stegosaurus ungulatus",
+    "habitat": "Dry, open woodlands and plains",
+    "size": "About 30 feet long!",
+    "diet": "Herbivore! It munches on plants, leaves, and ferns.",
+    "weapons": [
+      "Tail spikes (up to 2 feet long)",
+      "Plates on back",
+      "Strong legs"
+    ],
+    "defenses": [
+      "Armored plates",
+      "Spiked tail",
+      "Intimidating size"
+    ],
+    "speed": "Can run up to 5 miles per hour! That's like a slow jog!",
+    "fun_facts": [
+      "Its plates could be as tall as a person!",
+      "Stegosaurus had a tiny brain for its size!",
+      "Its tail spikes were called a 'thagomizer'!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 30 feet long \u2014 about as long as a school bus! (30 feet)"
+      },
+      {
+        "item": "weight of a car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighed about as much as 2 cars (around 5 tons)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "tiger": {
+    "name": "Tiger",
+    "scientific_name": "Panthera tigris",
+    "habitat": "Tropical forests, grasslands, and swamps in Asia",
+    "size": "Up to 10 feet long including the tail! That's as long as a SCHOOL BUS!",
+    "diet": "Carnivore! Tigers eat deer, wild boar, and even buffalo. They need a LOT of meat!",
+    "weapons": [
+      "Powerful jaws with a bite force of 1,000 PSI",
+      "Sharp claws up to 3 inches long",
+      "Strong legs for pouncing"
+    ],
+    "defenses": [
+      "Camouflage in the jungle",
+      "Strong muscles for quick escapes",
+      "Silent stalker - they can sneak up on prey!"
+    ],
+    "speed": "Can run up to 30 miles per hour! That's as fast as a speeding CAR!",
+    "fun_facts": [
+      "A tiger's roar can be heard up to 2 miles away!",
+      "They are excellent swimmers and love water!",
+      "Each tiger has a unique stripe pattern, just like fingerprints!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 10 feet long \u2014 about as long as a small car! (10 feet)"
+      },
+      {
+        "item": "average person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Weighs between 220 to 660 pounds! That's like 2 to 3 people!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "triceratops": {
+    "name": "Triceratops",
+    "scientific_name": "Triceratops horridus",
+    "habitat": "Open plains and forests in North America",
+    "size": "30 feet long!",
+    "diet": "Herbivore! Triceratops loved munching on tough plants and shrubs.",
+    "weapons": [
+      "Horns up to 3 feet long!",
+      "Beak for biting",
+      "Heavy body for charging"
+    ],
+    "defenses": [
+      "Three powerful horns",
+      "Large bony frill",
+      "Can charge at predators!"
+    ],
+    "speed": "Top speed of 20 mph! That's like running as fast as a cheetah for a short burst!",
+    "fun_facts": [
+      "Triceratops weighed about 12 tons! That's like 3 elephants!",
+      "They had a beak like a parrot!",
+      "Some had frills with unique patterns!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 30 feet long \u2014 about as long as a school bus! (30 feet)"
+      },
+      {
+        "item": "elephant",
+        "emoji": "\ud83d\udc18",
+        "comparison": "Weighed around 12 tons! That's like 3 elephants!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "tyrannosaurus-rex": {
+    "name": "Tyrannosaurus Rex",
+    "scientific_name": "Tyrannosaurus rex",
+    "habitat": "Forests and plains of North America",
+    "size": "40 feet long! Stands 12 feet tall at the hips!",
+    "diet": "Carnivore! It eats large prey like Triceratops and Edmontosaurus. BIG MEALS!",
+    "weapons": [
+      "Powerful jaws with 12-inch teeth",
+      "Strong legs for running",
+      "Sharp claws on its tiny arms"
+    ],
+    "defenses": [
+      "Massive size to scare off predators",
+      "Thick skull for protection",
+      "Incredible sense of smell to detect danger"
+    ],
+    "speed": "Top speed of 20 mph! That's like running as fast as a cheetah for short bursts!",
+    "fun_facts": [
+      "Its bite force is the strongest of any land animal ever! WOW!",
+      "T. rex lived around 68 to 66 million years ago!",
+      "It had excellent vision, possibly better than an eagle!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 40 feet long \u2014 longer than a school bus! (40 feet)"
+      },
+      {
+        "item": "weight of a car",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Weighed about 9 tons, like 2 cars!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "velociraptor": {
+    "name": "Velociraptor",
+    "scientific_name": "Velociraptor mongoliensis",
+    "habitat": "Dry, open areas like deserts and plains",
+    "size": "About 6.5 feet long! That's like a small car! (A sedan is ~15 feet)!",
+    "diet": "Carnivore! They eat meat, hunting small dinosaurs and other animals.",
+    "weapons": [
+      "Clawed toes (up to 3 inches long)",
+      "Sharp teeth",
+      "Speed and agility"
+    ],
+    "defenses": [
+      "Fast runner",
+      "Pack hunter",
+      "Quick reflexes"
+    ],
+    "speed": "Top speed of 24 mph! That's faster than a human sprinter!",
+    "fun_facts": [
+      "They were about the size of a turkey!",
+      "Velociraptors had feathers!",
+      "They may have hunted in packs!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 6 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
+      },
+      {
+        "item": "person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "6.5 feet is about the same height as a tall person!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "walrus": {
+    "name": "Walrus",
+    "scientific_name": "Odobenus rosmarus",
+    "habitat": "Arctic and sub-Arctic regions",
+    "size": "Up to 12 feet long!",
+    "diet": "Walruses are mostly carnivores. They LOVE clams, mollusks, and other sea creatures!",
+    "weapons": [
+      "Tusks up to 3 feet long!",
+      "Strong flippers",
+      "Massive body weight"
+    ],
+    "defenses": [
+      "Thick blubber",
+      "Tough skin",
+      "Can dive deep to escape"
+    ],
+    "speed": "Can swim up to 35 mph! That's like a speeding car on the highway!",
+    "fun_facts": [
+      "A walrus can weigh as much as a small car!",
+      "They can hold their breath for up to 30 minutes!",
+      "Walruses can be very social and gather in large groups!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "school bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 12 feet long \u2014 about as long as a car! (12 feet)"
+      },
+      {
+        "item": "sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "Can weigh up to 2,000 pounds, that's like 4 sedans!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "wolf": {
+    "name": "Gray Wolf",
+    "scientific_name": "Canis lupus",
+    "habitat": "Forests, tundras, and grasslands",
+    "size": "Up to 6.5 feet long (including tail) - ABOUT AS LONG AS A SCHOOL BUS!",
+    "diet": "Carnivorous! They eat deer, elk, and smaller animals. They hunt in PACKS!",
+    "weapons": [
+      "Powerful jaws (up to 1,500 PSI)",
+      "Sharp claws",
+      "Keen sense of smell"
+    ],
+    "defenses": [
+      "Pack mentality for safety",
+      "Camouflage in their environment",
+      "Speed to escape predators"
+    ],
+    "speed": "Can run up to 40 mph - FASTER THAN A SPRINTING HUMAN!",
+    "fun_facts": [
+      "Wolves can howl up to 6 miles away!",
+      "A wolf's sense of smell is 100 times better than a human's!",
+      "They can travel over 30 miles in a day!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "Sedan",
+        "emoji": "\ud83d\ude97",
+        "comparison": "LENGTH: About 5 feet long \u2014 about as long as a bathtub!"
+      },
+      {
+        "item": "Human",
+        "emoji": "\ud83d\udc64",
+        "comparison": "Weight: 50-110 pounds, similar to a child!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  },
+  "wolverine": {
+    "name": "Wolverine",
+    "scientific_name": "Gulo gulo",
+    "habitat": "Cold forests and tundras of North America and Eurasia",
+    "size": "26 to 34 inches long (about the length of a small dog) and 24 inches tall at the shoulder!",
+    "diet": "Carnivorous! Wolverines eat small mammals, birds, and even carrion. They are known to take down prey larger than themselves!",
+    "weapons": [
+      "Powerful jaws (up to 1.5 inches long)",
+      "Sharp claws",
+      "Strong teeth"
+    ],
+    "defenses": [
+      "Thick fur for insulation",
+      "Fierce temperament",
+      "Incredible climbing ability"
+    ],
+    "speed": "Top speed of 30 miles per hour (as fast as a running human!)",
+    "fun_facts": [
+      "Wolverines can weigh up to 25-30 pounds (like a large dog)!",
+      "They can travel over 15 miles in a day searching for food!",
+      "Wolverines are known for their strength and can take down prey much larger than themselves!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "School bus",
+        "emoji": "\ud83d\ude8c",
+        "comparison": "LENGTH: About 3.5 feet long \u2014 about as long as a baseball bat!"
+      },
+      {
+        "item": "Person",
+        "emoji": "\ud83d\udc64",
+        "comparison": "About half the height of a person (5.5-6 feet)"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 6,
+    "weapons_score": 8,
+    "defense_score": 5
+  }
+}
