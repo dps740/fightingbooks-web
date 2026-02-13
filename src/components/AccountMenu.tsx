@@ -14,7 +14,8 @@ interface AccountMenuProps {
 const tierBadges: Record<UserTier, { label: string; shortLabel: string; bg: string; border: string }> = {
   unregistered: { label: 'Account Type: GUEST', shortLabel: 'GUEST', bg: 'bg-gray-600', border: 'border-gray-400' },
   free: { label: 'Account Type: FREE', shortLabel: 'FREE', bg: 'bg-emerald-700', border: 'border-emerald-400' },
-  paid: { label: 'Account Type: FULL ACCESS', shortLabel: '👑 FULL', bg: 'bg-purple-600', border: 'border-[#FFD700]' },
+  member: { label: 'Account Type: MEMBER', shortLabel: '🥊 MEMBER', bg: 'bg-green-700', border: 'border-green-400' },
+  ultimate: { label: 'Account Type: ULTIMATE', shortLabel: '👑 ULTIMATE', bg: 'bg-purple-600', border: 'border-[#FFD700]' },
 };
 
 export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }: AccountMenuProps) {
@@ -94,7 +95,7 @@ export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }:
             {/* Menu Items */}
             <div className="py-2">
               {/* Upgrade - only show if not Ultimate */}
-              {tier !== 'paid' && (
+              {tier !== 'member' && tier !== 'ultimate' && (
                 <button
                   onClick={() => { setIsOpen(false); onUpgrade(); }}
                   className="w-full px-4 py-2 text-left text-[#FFD700] hover:bg-white/10 transition-colors flex items-center gap-2 font-bold"

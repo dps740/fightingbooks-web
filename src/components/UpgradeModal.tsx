@@ -9,13 +9,14 @@ interface UpgradeOption {
   name: string;
   price: string;
   animals: number;
+  recurring?: boolean;
 }
 
 interface UpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
   lockedAnimal?: string;
-  lockedFeature?: string; // 'cyoa' | 'tournament' | null
+  lockedFeature?: string; // 'cyoa' | 'tournament' | 'create_own' | null
   currentTier: UserTier;
   upgradeOptions: UpgradeOption[];
   onUpgrade: (tier: UserTier) => void;
@@ -52,7 +53,6 @@ export default function UpgradeModal({
       const data = await response.json();
       if (response.ok && data.success) {
         setPromoSuccess(true);
-        // Reload page after brief success message
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setPromoError(data.error || 'Invalid code');
@@ -64,21 +64,41 @@ export default function UpgradeModal({
     }
   };
 
-  const benefits = [
-    '👑 ALL 47 Animals (real, dinosaurs, fantasy)',
-    '🎭 Choose Your Own Adventure mode',
-    '🏆 Tournament bracket mode',
-    '⚔️ 1,081 battle combinations',
+  // Determine if the locked content needs member or ultimate
+  const needsUltimate = lockedFeature === 'cyoa' || lockedFeature === 'create_own' ||
+    (lockedAnimal && !['Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear', 'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
+      'Elephant', 'Hippo', 'Rhino', 'Hammerhead Shark', 'King Cobra', 'Anaconda', 'Wolf', 'Jaguar',
+      'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel', 'Moose', 'Cape Buffalo', 'Great Horned Owl', 'Python',
+      'Alligator', 'Mandrill', 'Cheetah', 'Hyena', 'Walrus', 'Octopus'].includes(lockedAnimal));
+
+  const headerText = lockedAnimal
+    ? needsUltimate
+      ? `${lockedAnimal} requires Ultimate!`
+      : `${lockedAnimal} requires Member access`
+    : lockedFeature === 'cyoa'
+    ? 'Adventure mode requires Ultimate!'
+    : lockedFeature === 'tournament'
+    ? 'Tournament mode requires Member access'
+    : lockedFeature === 'create_own'
+    ? 'Create Your Own requires Ultimate!'
+    : 'Unlock more animals & features!';
+
+  const memberBenefits = [
+    '🥊 30 Real Animals (435 matchups!)',
+    '⚔️ Tournament bracket mode',
     '📥 PDF downloads',
+    '🆕 Future real animal additions',
   ];
 
-  const headerText = lockedAnimal 
-    ? `${lockedAnimal} requires Full Access`
-    : lockedFeature === 'cyoa'
-    ? 'Adventure mode requires Full Access'
-    : lockedFeature === 'tournament'
-    ? 'Tournament mode requires Full Access'
-    : 'Unlock everything!';
+  const ultimateBenefits = [
+    '👑 ALL 47+ Animals (real, dinos, fantasy)',
+    '🎭 Choose Your Own Adventure mode',
+    '⚔️ Tournament bracket mode',
+    '✨ Create Your Own animal matchups',
+    '🦖 Dinosaurs & 🐉 Fantasy creatures',
+    '📅 +2 new animals every month',
+    '📥 PDF downloads',
+  ];
 
   return (
     <AnimatePresence>
@@ -93,60 +113,108 @@ export default function UpgradeModal({
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1a] rounded-2xl p-6 max-w-md mx-4 border-4 border-[#FFD700] shadow-2xl"
+          className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1a] rounded-2xl p-6 max-w-lg mx-4 border-4 border-[#FFD700] shadow-2xl max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="text-center mb-6">
             <div className="text-5xl mb-3">🔓</div>
             <h2 className="font-bangers text-3xl text-[#FFD700]" style={{ textShadow: '2px 2px 0 #000' }}>
-              FULL ACCESS
+              UPGRADE
             </h2>
             <p className="text-white/80 mt-2">{headerText}</p>
           </div>
 
-          {/* Single upgrade option */}
-          <div className="rounded-xl p-5 border-2 border-[#FFD700] bg-gradient-to-r from-[#2a1a00]/50 to-[#1a1a00]/50 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="font-bangers text-2xl text-white">👑 Everything. Forever.</h3>
-                <p className="text-white/60 text-sm">One payment, full access</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bangers text-3xl text-[#FFD700]">$4.99</p>
-                <p className="text-white/50 text-xs">one-time</p>
-              </div>
-            </div>
+          {/* Tier options */}
+          <div className="space-y-4 mb-4">
+            {/* Member tier (show if not already member+) */}
+            {(currentTier === 'unregistered' || currentTier === 'free') && (
+              <div className={`rounded-xl p-5 border-2 ${needsUltimate ? 'border-white/20' : 'border-[#FFD700]'} bg-gradient-to-r from-[#1a2a00]/50 to-[#1a1a00]/50`}>
+                <div className="flex justify-between items-center mb-3">
+                  <div>
+                    <h3 className="font-bangers text-2xl text-white">🥊 Member</h3>
+                    <p className="text-white/60 text-sm">One payment, yours forever</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bangers text-3xl text-[#FFD700]">$4.99</p>
+                    <p className="text-white/50 text-xs">one-time</p>
+                  </div>
+                </div>
 
-            {/* Benefits */}
-            <ul className="space-y-2 mb-5">
-              {benefits.map((benefit, i) => (
-                <li key={i} className="text-white/80 text-sm flex items-center gap-2">
-                  <span className="text-green-400">✓</span>
-                  {benefit}
-                </li>
-              ))}
-            </ul>
+                <ul className="space-y-1.5 mb-4">
+                  {memberBenefits.map((benefit, i) => (
+                    <li key={i} className="text-white/80 text-sm flex items-center gap-2">
+                      <span className="text-green-400">✓</span>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
 
-            {currentTier === 'unregistered' ? (
-              <a
-                href="/signup?redirect=upgrade"
-                className="block w-full py-3 rounded-lg font-bangers text-xl text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-red-900 hover:scale-105 transition-all"
-              >
-                SIGN UP & UNLOCK — $4.99
-              </a>
-            ) : (
-              <button
-                onClick={() => onUpgrade('paid' as UserTier)}
-                className="w-full py-3 rounded-lg font-bangers text-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-red-900 hover:scale-105 transition-all"
-              >
-                UNLOCK NOW — $4.99
-              </button>
+                {currentTier === 'unregistered' ? (
+                  <a
+                    href="/signup?redirect=upgrade"
+                    className="block w-full py-3 rounded-lg font-bangers text-xl text-center bg-gradient-to-r from-green-400 to-emerald-500 text-black hover:scale-105 transition-all"
+                  >
+                    SIGN UP & GET MEMBER — $4.99
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => onUpgrade('member' as UserTier)}
+                    className="w-full py-3 rounded-lg font-bangers text-xl bg-gradient-to-r from-green-400 to-emerald-500 text-black hover:scale-105 transition-all"
+                  >
+                    GET MEMBER — $4.99
+                  </button>
+                )}
+              </div>
             )}
+
+            {/* Ultimate tier */}
+            <div className={`rounded-xl p-5 border-2 ${needsUltimate ? 'border-[#FFD700]' : 'border-purple-500/50'} bg-gradient-to-r from-[#2a1a3a]/50 to-[#1a0a2a]/50 relative`}>
+              {needsUltimate && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#FFD700] text-black font-bangers text-sm rounded-full">
+                  RECOMMENDED
+                </div>
+              )}
+              <div className="flex justify-between items-center mb-3">
+                <div>
+                  <h3 className="font-bangers text-2xl text-white">👑 Ultimate</h3>
+                  <p className="text-white/60 text-sm">Everything, updated monthly</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bangers text-3xl text-purple-300">$4.99</p>
+                  <p className="text-white/50 text-xs">per month</p>
+                </div>
+              </div>
+
+              <ul className="space-y-1.5 mb-4">
+                {ultimateBenefits.map((benefit, i) => (
+                  <li key={i} className="text-white/80 text-sm flex items-center gap-2">
+                    <span className="text-purple-400">✓</span>
+                    {benefit}
+                  </li>
+                ))}
+              </ul>
+
+              {currentTier === 'unregistered' ? (
+                <a
+                  href="/signup?redirect=upgrade"
+                  className="block w-full py-3 rounded-lg font-bangers text-xl text-center bg-gradient-to-r from-purple-400 to-pink-500 text-white hover:scale-105 transition-all"
+                >
+                  SIGN UP & GO ULTIMATE — $4.99/mo
+                </a>
+              ) : (
+                <button
+                  onClick={() => onUpgrade('ultimate' as UserTier)}
+                  className="w-full py-3 rounded-lg font-bangers text-xl bg-gradient-to-r from-purple-400 to-pink-500 text-white hover:scale-105 transition-all"
+                >
+                  GO ULTIMATE — $4.99/mo
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Promo code section */}
-          {(currentTier === 'free' || (currentTier === 'unregistered' && isAuthenticated)) && (
+          {(currentTier === 'free' || currentTier === 'member' || (currentTier === 'unregistered' && isAuthenticated)) && (
             <div className="bg-white/5 rounded-lg p-4 mb-4">
               <p className="text-white/60 text-sm mb-2">Have a promo code?</p>
               {promoSuccess ? (
@@ -178,7 +246,7 @@ export default function UpgradeModal({
           {currentTier === 'unregistered' && (
             <div className="p-3 bg-blue-900/30 rounded-lg border border-blue-500/30 text-center mb-4">
               <p className="text-white/80 text-sm">
-                🎁 <span className="font-bold">Create a FREE account</span> to unlock 8 animals and classic battles!
+                🎁 <span className="font-bold">Create a FREE account</span> to unlock 8 animals and tournament mode!
               </p>
               <a
                 href="/signup"

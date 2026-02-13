@@ -655,7 +655,7 @@ function BookReader() {
       </div>
 
       {/* Sticky Upgrade CTA — only for non-paid users */}
-      {tierData.tier !== 'paid' && !tierData.loading && (
+      {tierData.tier !== 'member' && tierData.tier !== 'ultimate' && !tierData.loading && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-[#1a1a2e] via-[#2d1a4e] to-[#1a1a2e] border-t-2 border-[#FFD700] py-3 px-4 flex items-center justify-between">
           <p className="text-white text-sm">
             🔥 <span className="font-bold text-[#FFD700]">Want more?</span> Unlock all 47 animals, Adventure mode & Tournaments!

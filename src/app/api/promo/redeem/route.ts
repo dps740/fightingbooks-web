@@ -58,8 +58,8 @@ export async function POST(request: Request) {
       .eq('id', user.id)
       .single();
 
-    if (profile?.tier === 'paid' || profile?.tier === 'tier2' || profile?.tier === 'tier3') {
-      return NextResponse.json({ error: 'You already have Full Access!' }, { status: 400 });
+    if (profile?.tier === 'paid' || profile?.tier === 'tier2' || profile?.tier === 'tier3' || profile?.tier === 'member' || profile?.tier === 'ultimate') {
+      return NextResponse.json({ error: 'You already have Member access or higher!' }, { status: 400 });
     }
 
     // Check if user already redeemed a code
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     const { error: updateError } = await supabase
       .from('users')
       .update({ 
-        tier: 'paid',
+        tier: 'member',
         tier_purchased_at: new Date().toISOString(),
       })
       .eq('id', user.id);

@@ -80,7 +80,7 @@ async function getUserTier(): Promise<{ tier: UserTier; userId: string | null }>
       .single();
 
     return {
-      tier: isAdmin ? 'paid' : ((['tier2','tier3','paid'].includes(profile?.tier)) ? 'paid' : (profile?.tier as UserTier) || 'free'),
+      tier: isAdmin ? 'ultimate' : normalizeTier(profile?.tier || 'free'),
       userId: user.id,
     };
   } catch (error) {
@@ -1588,7 +1588,7 @@ export async function POST(request: NextRequest) {
             !canAccessAnimal(tier, animalA) ? animalA : null,
             !canAccessAnimal(tier, animalB) ? animalB : null,
           ].filter(Boolean),
-          requiredTier: 'paid',
+          requiredTier: getRequiredTier(animalA) === 'ultimate' || getRequiredTier(animalB) === 'ultimate' ? 'ultimate' : 'member',
           currentTier: tier,
           upgradeOptions,
         },

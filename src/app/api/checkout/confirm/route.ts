@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabase();
 
-    // Normalize tier (legacy tier2/tier3 → paid)
-    const normalizedTier = (tier === 'tier2' || tier === 'tier3' || tier === 'paid') ? 'paid' : tier;
+    // Normalize tier (legacy tier2/tier3/paid → member)
+    const normalizedTier = (tier === 'tier2' || tier === 'tier3' || tier === 'paid') ? 'member' : tier;
 
     // Update user's tier
     const { error: updateError } = await supabase

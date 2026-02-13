@@ -1,14 +1,16 @@
 // User tier definitions and access control
-// v2 Tier Structure:
-// - unregistered: Lion vs Tiger only, classic only
-// - free (signup): 8 animals, classic only, no CYOA/tournament
-// - paid ($4.99 one-time): Everything — all 47 animals, all modes, CYOA, tournament
+// v3 Tier Structure:
+// - unregistered: 4 free sample books only (Lion vs Tiger, etc.), no login
+// - free (signup): 8 animals, standard + tournament mode
+// - member ($4.99 one-time): All 30 real animals, standard + tournament mode
+// - ultimate ($4.99/month): Everything — all 47+ animals, all modes, CYOA, create-your-own, +2 animals/month
 
-export type UserTier = 'unregistered' | 'free' | 'paid';
+export type UserTier = 'unregistered' | 'free' | 'member' | 'ultimate';
 
 // Legacy tier mapping (for existing DB records)
 export function normalizeTier(tier: string): UserTier {
-  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid') return 'paid';
+  if (tier === 'ultimate') return 'ultimate';
+  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member') return 'member';
   if (tier === 'free') return 'free';
   return 'unregistered';
 }
@@ -53,7 +55,9 @@ export function getAccessibleAnimals(tier: UserTier): string[] {
       return ['Lion', 'Tiger'];
     case 'free':
       return FREE_ANIMALS;
-    case 'paid':
+    case 'member':
+      return REAL_ANIMALS;
+    case 'ultimate':
       return ALL_ANIMALS;
     default:
       return FREE_ANIMALS;
@@ -71,15 +75,23 @@ export function canAccessMatchup(tier: UserTier, animalA: string, animalB: strin
   return canAccessAnimal(tier, animalA) && canAccessAnimal(tier, animalB);
 }
 
-// Check if CYOA mode is accessible
+// Check if CYOA mode is accessible (ultimate only)
 export function canAccessCyoa(tier: UserTier): boolean {
-  return tier === 'paid';
+  return tier === 'ultimate';
 }
 
-// Check if Tournament mode is accessible
+// Check if Tournament mode is accessible (member + ultimate)
 export function canAccessTournament(tier: UserTier): boolean {
-  return tier === 'paid';
+  return tier === 'member' || tier === 'ultimate';
 }
+
+// Check if Create Your Own is accessible (ultimate only)
+export function canAccessCreateOwn(tier: UserTier): boolean {
+  return tier === 'ultimate';
+}
+
+// Monthly generation limit for custom animals (ultimate tier)
+export const CUSTOM_ANIMAL_MONTHLY_LIMIT = 20;
 
 // Get the animal's category
 export function getAnimalCategory(animal: string): 'free' | 'real' | 'dinosaur' | 'fantasy' {
@@ -93,25 +105,42 @@ export function getAnimalCategory(animal: string): 'free' | 'real' | 'dinosaur' 
 // Get required tier to access an animal
 export function getRequiredTier(animal: string): UserTier {
   if (FREE_ANIMALS.includes(animal)) return 'free';
-  return 'paid';
+  if (REAL_ANIMALS.includes(animal)) return 'member';
+  return 'ultimate'; // dinos + fantasy
 }
 
 // Get upgrade options for a tier
-export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier; name: string; price: string; animals: number }> {
-  if (currentTier === 'paid') return [];
-  return [{ tier: 'paid', name: 'Full Access', price: '$4.99', animals: 47 }];
+export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier; name: string; price: string; animals: number; recurring?: boolean }> {
+  switch (currentTier) {
+    case 'unregistered':
+    case 'free':
+      return [
+        { tier: 'member', name: 'Member', price: '$4.99', animals: 30 },
+        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 47, recurring: true },
+      ];
+    case 'member':
+      return [
+        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 47, recurring: true },
+      ];
+    case 'ultimate':
+      return [];
+    default:
+      return [];
+  }
 }
 
 // Get tier display info
-export function getTierInfo(tier: UserTier): { name: string; animals: number; badge: string } {
+export function getTierInfo(tier: UserTier): { name: string; animals: number; badge: string; description: string } {
   switch (tier) {
     case 'unregistered':
-      return { name: 'Guest', animals: 2, badge: '🎫' };
+      return { name: 'Guest', animals: 2, badge: '🎫', description: '4 free sample books' };
     case 'free':
-      return { name: 'Free', animals: 8, badge: '⭐' };
-    case 'paid':
-      return { name: 'Full Access', animals: 47, badge: '👑' };
+      return { name: 'Free', animals: 8, badge: '⭐', description: '8 animals, standard mode' };
+    case 'member':
+      return { name: 'Member', animals: 30, badge: '🥊', description: '30 real animals + tournaments' };
+    case 'ultimate':
+      return { name: 'Ultimate', animals: 47, badge: '👑', description: 'Everything + CYOA + create your own' };
     default:
-      return { name: 'Free', animals: 8, badge: '⭐' };
+      return { name: 'Free', animals: 8, badge: '⭐', description: '8 animals, standard mode' };
   }
 }

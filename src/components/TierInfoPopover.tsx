@@ -10,7 +10,7 @@ interface TierInfoPopoverProps {
 export default function TierInfoPopover({ isAuthenticated, currentTier }: TierInfoPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const isPaid = currentTier === 'paid' || currentTier === 'tier2' || currentTier === 'tier3';
+  const isPaid = currentTier === 'paid' || currentTier === 'tier2' || currentTier === 'tier3' || currentTier === 'member' || currentTier === 'ultimate';
 
   return (
     <div className="relative inline-block">
