@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
               name: 'FightingBooks Full Access',
               description: 'All 47 animals, Adventure mode, Tournaments — forever!',
             },
-            unit_amount: 499, // $4.99 in cents
+            unit_amount: 399, // $3.99 in cents
           },
           quantity: 1,
         },
