@@ -224,6 +224,9 @@ function getAnimalFeatures(animalName: string): { include: string, avoid: string
   return ANIMAL_FEATURES[key] || { include: '', avoid: '' };
 }
 
+// Image model override (set by admin bypass for Dev-quality regeneration)
+let _imageModelOverride: { model: string; steps: number } | null = null;
+
 // Generate image using fal.ai Flux with retry logic
 async function generateImage(prompt: string, cacheKey?: string, retries = 2): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
@@ -268,7 +271,10 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
         await new Promise(r => setTimeout(r, 1000 * attempt)); // Backoff delay
       }
       
-      const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+      const modelEndpoint = _imageModelOverride?.model || 'fal-ai/flux/schnell';
+      const inferenceSteps = _imageModelOverride?.steps || 4;
+      
+      const response = await fetch(`https://fal.run/${modelEndpoint}`, {
         method: 'POST',
         headers: {
           'Authorization': `Key ${falKey}`,
@@ -277,7 +283,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
         body: JSON.stringify({
           prompt: fullPrompt,
           image_size: 'square_hd',
-          num_inference_steps: 4,
+          num_inference_steps: inferenceSteps,
         }),
       });
 
@@ -1551,7 +1557,7 @@ async function saveCachedPDF(cacheKey: string, animalA: string, animalB: string,
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { animalA, animalB, mode = 'standard', environment = 'neutral', forceRegenerate = false, adminSecret } = body;
+    const { animalA, animalB, mode = 'standard', environment = 'neutral', forceRegenerate = false, adminSecret, imageModel } = body;
 
     if (!animalA || !animalB) {
       return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
@@ -1559,6 +1565,13 @@ export async function POST(request: NextRequest) {
 
     // Admin bypass for automated regeneration (e.g., cache warming)
     const isAdminBypass = adminSecret === process.env.BLOB_READ_WRITE_TOKEN;
+    
+    // Allow admin to override image model (e.g., "dev" for Flux Dev quality)
+    if (isAdminBypass && imageModel === 'dev') {
+      _imageModelOverride = { model: 'fal-ai/flux/dev', steps: 28 };
+    } else {
+      _imageModelOverride = null;
+    }
 
     // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();
