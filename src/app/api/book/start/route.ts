@@ -185,6 +185,10 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
     include: 'tiger with ORANGE fur with BLACK STRIPES all over body, NO MANE, striped pattern from head to tail',
     avoid: 'NO mane, NO lion mane, NOT solid colored, NOT golden brown without stripes'
   },
+  'komodo dragon': {
+    include: 'komodo dragon LIZARD, large monitor lizard with rough grey-brown scaly skin, forked yellow tongue, four short sturdy legs with sharp claws, long muscular tail, NO WINGS',
+    avoid: 'NO wings, NO bat wings, NO flying, NOT a fantasy dragon, NOT a mythical dragon, NO fire breathing, NO spikes on back, this is a REAL LIZARD not a fantasy creature'
+  },
   'leopard': {
     include: 'leopard with ROSETTE SPOTS (ring-shaped spots with lighter centers), golden-yellow fur',
     avoid: 'NO stripes, NO mane, NOT solid colored'
