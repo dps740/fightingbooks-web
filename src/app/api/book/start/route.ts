@@ -217,8 +217,10 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     const blobPath = `fightingbooks/${cacheKey}.jpg`;
     try {
       const blobInfo = await head(blobPath);
-      console.log(`Image cache HIT: ${cacheKey} -> ${blobInfo.url}`);
-      return blobInfo.url;
+      // Add cache-busting param based on upload time to defeat browser/CDN caching
+      const cacheBust = blobInfo.uploadedAt ? `?v=${new Date(blobInfo.uploadedAt).getTime()}` : `?v=${Date.now()}`;
+      console.log(`Image cache HIT: ${cacheKey} -> ${blobInfo.url}${cacheBust}`);
+      return `${blobInfo.url}${cacheBust}`;
     } catch (error) {
       if (!(error instanceof BlobNotFoundError)) {
         console.error('Image cache check error:', error);

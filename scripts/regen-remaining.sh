@@ -23,11 +23,11 @@ a() {
   local slug="$1" name="$2" habitat="$3" action="$4" closeup="$5" secrets="$6"
   echo ""
   echo "=== $name ==="
-  gen "${slug}.jpg" "${name} portrait, powerful build, natural coloring and markings, natural habitat background, National Geographic wildlife photography, dramatic natural lighting, hyperrealistic, ABSOLUTELY NO TEXT OR WORDS"
-  gen "${slug}-habitat.jpg" "${name} ${habitat}, environmental wide shot showing full habitat, wildlife documentary photography, natural behavior, ABSOLUTELY NO TEXT OR WORDS"
-  gen "${slug}-action.jpg" "${name} ${action}, intense action moment, wildlife photography, NO WEAPONS NO HUMAN POSES, ABSOLUTELY NO TEXT OR WORDS"
-  gen "${slug}-closeup.jpg" "Extreme close-up of ${name} face, ${closeup}, every detail visible, shallow depth of field, intimate wildlife portrait, ABSOLUTELY NO TEXT OR WORDS"
-  gen "${slug}-secrets.jpg" "${name} ${secrets}, educational nature scene showing natural behavior, wildlife photography, ABSOLUTELY NO TEXT OR WORDS"
+  gen "${slug}.jpg" "${name} portrait, powerful build, natural coloring and markings, natural habitat background, professional wildlife photo, dramatic natural lighting, hyperrealistic, ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS NO SYMBOLS NO BRAND NAMES, clean image only"
+  gen "${slug}-habitat.jpg" "${name} ${habitat}, environmental wide shot showing full habitat, wildlife documentary photography, natural behavior, ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS NO SYMBOLS NO BRAND NAMES, clean image only"
+  gen "${slug}-action.jpg" "${name} ${action}, intense action moment, wildlife photography, NO WEAPONS NO HUMAN POSES, ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS NO SYMBOLS NO BRAND NAMES, clean image only"
+  gen "${slug}-closeup.jpg" "Extreme close-up of ${name} face, ${closeup}, every detail visible, shallow depth of field, intimate wildlife portrait, ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS NO SYMBOLS NO BRAND NAMES, clean image only"
+  gen "${slug}-secrets.jpg" "${name} ${secrets}, educational nature scene showing natural behavior, wildlife photography, ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS NO SYMBOLS NO BRAND NAMES, clean image only"
 }
 
 echo "=== Regenerating 39 remaining animals ==="
