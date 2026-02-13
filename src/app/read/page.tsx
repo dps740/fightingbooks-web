@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import VersusScreen from './VersusScreen';
 import { generatePdfClientSide, downloadPdf } from '@/lib/clientPdfGenerator';
+import { useTier } from '@/lib/useTier';
 
 interface AnimalStats {
   strength: number;
@@ -41,6 +42,7 @@ interface Choice {
 function BookReader() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const tierData = useTier();
   const [showVersusScreen, setShowVersusScreen] = useState(true);
   const [pages, setPages] = useState<BookPage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -651,6 +653,21 @@ function BookReader() {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Sticky Upgrade CTA — only for non-paid users */}
+      {tierData.tier !== 'paid' && !tierData.loading && (
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-[#1a1a2e] via-[#2d1a4e] to-[#1a1a2e] border-t-2 border-[#FFD700] py-3 px-4 flex items-center justify-between">
+          <p className="text-white text-sm">
+            🔥 <span className="font-bold text-[#FFD700]">Want more?</span> Unlock all 47 animals, Adventure mode & Tournaments!
+          </p>
+          <a
+            href="/#create"
+            className="flex-shrink-0 ml-4 px-4 py-2 bg-[#FFD700] text-black font-bangers rounded-lg hover:bg-yellow-300 transition-all text-sm"
+          >
+            👑 Full Access — $4.99
+          </a>
+        </div>
+      )}
 
       {/* Page Dots */}
       <div className="page-dots">

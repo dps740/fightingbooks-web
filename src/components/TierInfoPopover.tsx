@@ -41,7 +41,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier }: TierIn
             <div className="bg-white/5 rounded-lg p-3 border border-[#FFD700]/30">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-white font-bold">👑 Full Access</span>
-                <span className="font-bangers text-[#FFD700] text-xl">$3.99</span>
+                <span className="font-bangers text-[#FFD700] text-xl">$4.99</span>
               </div>
               <p className="text-white/60 text-xs">47 animals • Adventure • Tournaments • One-time</p>
             </div>
