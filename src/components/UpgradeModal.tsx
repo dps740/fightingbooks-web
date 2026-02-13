@@ -113,7 +113,7 @@ export default function UpgradeModal({
                 <p className="text-white/60 text-sm">One payment, full access</p>
               </div>
               <div className="text-right">
-                <p className="font-bangers text-3xl text-[#FFD700]">$3.99</p>
+                <p className="font-bangers text-3xl text-[#FFD700]">$4.99</p>
                 <p className="text-white/50 text-xs">one-time</p>
               </div>
             </div>
@@ -133,14 +133,14 @@ export default function UpgradeModal({
                 href="/signup?redirect=upgrade"
                 className="block w-full py-3 rounded-lg font-bangers text-xl text-center bg-gradient-to-r from-yellow-400 to-orange-500 text-red-900 hover:scale-105 transition-all"
               >
-                SIGN UP & UNLOCK — $3.99
+                SIGN UP & UNLOCK — $4.99
               </a>
             ) : (
               <button
                 onClick={() => onUpgrade('paid' as UserTier)}
                 className="w-full py-3 rounded-lg font-bangers text-xl bg-gradient-to-r from-yellow-400 to-orange-500 text-red-900 hover:scale-105 transition-all"
               >
-                UNLOCK NOW — $3.99
+                UNLOCK NOW — $4.99
               </button>
             )}
           </div>

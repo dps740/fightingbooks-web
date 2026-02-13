@@ -2,7 +2,7 @@
 // v2 Tier Structure:
 // - unregistered: Lion vs Tiger only, classic only
 // - free (signup): 8 animals, classic only, no CYOA/tournament
-// - paid ($3.99 one-time): Everything — all 47 animals, all modes, CYOA, tournament
+// - paid ($4.99 one-time): Everything — all 47 animals, all modes, CYOA, tournament
 
 export type UserTier = 'unregistered' | 'free' | 'paid';
 
@@ -99,7 +99,7 @@ export function getRequiredTier(animal: string): UserTier {
 // Get upgrade options for a tier
 export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier; name: string; price: string; animals: number }> {
   if (currentTier === 'paid') return [];
-  return [{ tier: 'paid', name: 'Full Access', price: '$3.99', animals: 47 }];
+  return [{ tier: 'paid', name: 'Full Access', price: '$4.99', animals: 47 }];
 }
 
 // Get tier display info

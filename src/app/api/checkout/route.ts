@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
   try {
     const { tier } = await request.json();
 
-    // v2: single paid tier at $3.99
+    // v2: single paid tier at $4.99
     if (tier !== 'paid') {
       return NextResponse.json(
         { error: 'Invalid tier.' },
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create Stripe checkout session — $3.99 one-time
+    // Create Stripe checkout session — $4.99 one-time
     const stripe = getStripe();
 
     const session = await stripe.checkout.sessions.create({
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
               name: 'FightingBooks Full Access',
               description: 'All 47 animals, Adventure mode, Tournaments — forever!',
             },
-            unit_amount: 399, // $3.99 in cents
+            unit_amount: 499, // $4.99 in cents
           },
           quantity: 1,
         },

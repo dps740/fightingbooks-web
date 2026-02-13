@@ -664,7 +664,7 @@ function BookReader() {
             href="/#create"
             className="flex-shrink-0 ml-4 px-4 py-2 bg-[#FFD700] text-black font-bangers rounded-lg hover:bg-yellow-300 transition-all text-sm"
           >
-            👑 Full Access — $3.99
+            👑 Full Access — $4.99
           </a>
         </div>
       )}

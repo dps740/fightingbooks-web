@@ -1507,7 +1507,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Tier access required',
           code: 'TIER_REQUIRED',
-          message: 'This matchup requires Full Access ($3.99).',
+          message: 'This matchup requires Full Access ($4.99).',
           lockedAnimals: [
             !canAccessAnimal(tier, animalA) ? animalA : null,
             !canAccessAnimal(tier, animalB) ? animalB : null,
@@ -1529,7 +1529,7 @@ export async function POST(request: NextRequest) {
           {
             error: 'Sign up required',
             code: 'SIGNUP_REQUIRED',
-            message: 'Create a free account, then unlock Adventure mode with Full Access ($3.99)!',
+            message: 'Create a free account, then unlock Adventure mode with Full Access ($4.99)!',
             currentTier: tier,
           },
           { status: 403 }
@@ -1540,7 +1540,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Adventure mode requires Full Access',
           code: 'CYOA_TIER_REQUIRED',
-          message: 'Adventure mode requires Full Access ($3.99). Unlock all 47 animals, tournaments, and Adventure mode!',
+          message: 'Adventure mode requires Full Access ($4.99). Unlock all 47 animals, tournaments, and Adventure mode!',
           currentTier: tier,
           upgradeOptions,
         },

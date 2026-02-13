@@ -74,7 +74,7 @@ export function isAnimalLocked(tier: UserTier, animalName: string): boolean {
 // Get lock reason for an animal
 export function getLockReason(tier: UserTier, animalName: string): string | null {
   if (!isAnimalLocked(tier, animalName)) return null;
-  return 'Unlock all 47 animals for $3.99';
+  return 'Unlock all 47 animals for $4.99';
 }
 
 // Check if CYOA is locked (client-side)
