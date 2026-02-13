@@ -37,7 +37,7 @@ const ARTICLE_ANIMALS: Record<string, [string, string] | undefined> = {
   'orca-vs-great-white-shark': ['Killer Whale', 'Great White Shark'],
   'wolf-vs-lion': ['Wolf', 'Lion'],
   'hammerhead-shark-vs-electric-eel': ['Hammerhead Shark', 'Electric Eel'],
-  'narwhal-vs-great-horned-owl': ['Narwhal', 'Great Horned Owl'],
+  'giant-panda-vs-great-horned-owl': ['Giant Panda', 'Great Horned Owl'],
   'jaguar-vs-leopard': ['Jaguar', 'Leopard'],
   'anaconda-vs-crocodile': ['Anaconda', 'Crocodile'],
 };

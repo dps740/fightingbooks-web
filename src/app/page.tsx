@@ -32,7 +32,7 @@ const FIGHTERS = [
   { name: 'Jaguar', category: 'real' },
   { name: 'Leopard', category: 'real' },
   { name: 'Eagle', category: 'real' },
-  { name: 'Narwhal', category: 'real' },
+  { name: 'Giant Panda', category: 'real' },
   { name: 'Electric Eel', category: 'real' },
   { name: 'Moose', category: 'real' },
   { name: 'Cape Buffalo', category: 'real' },

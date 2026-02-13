@@ -197,9 +197,9 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
     include: 'great horned owl with prominent feathered ear tufts, intense yellow eyes, barred brown and white plumage, large powerful talons, facial disc pattern',
     avoid: 'NO small owl species, must be LARGE and imposing, NOT a snowy owl, NOT white'
   },
-  'narwhal': {
-    include: 'narwhal whale with long straight spiral tusk protruding from head, mottled grey and white skin, Arctic ocean with ice, stocky cetacean body',
-    avoid: 'NOT a unicorn, NOT a dolphin, NOT fantasy, the tusk is a REAL modified tooth that spirals, Arctic setting'
+  'giant panda': {
+    include: 'giant panda bear with distinctive black and white fur, black eye patches around eyes, black ears, black legs and shoulders, white face and body, round stocky build, bamboo forest',
+    avoid: 'NOT a red panda, NOT a raccoon, NOT a regular bear, must show iconic BLACK AND WHITE coloring'
   },
   'mandrill': {
     include: 'mandrill primate with vivid bright blue ridged nose, red nostrils and lips, golden beard, olive-brown fur, colorful blue and purple rump, large canine fangs',

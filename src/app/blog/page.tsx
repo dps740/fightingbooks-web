@@ -144,10 +144,10 @@ const articles: Article[] = [
     searchVolume: '8k/mo searches'
   },
   {
-    slug: 'narwhal-vs-great-horned-owl',
-    title: 'Narwhal vs Great Horned Owl: Who Would Win?',
-    description: 'The unicorn of the sea versus the silent night hunter. Tusk versus talons in an unlikely cross-habitat clash!',
-    animals: ['🦄 Narwhal', '🦉 Owl'],
+    slug: 'giant-panda-vs-great-horned-owl',
+    title: 'Giant Panda vs Great Horned Owl: Who Would Win?',
+    description: 'The bamboo-crushing bear meets the silent night hunter. 330 pounds of hidden power versus razor-sharp talons from above!',
+    animals: ['🐼 Giant Panda', '🦉 Owl'],
     readTime: '9 min',
     searchVolume: '7k/mo searches'
   },

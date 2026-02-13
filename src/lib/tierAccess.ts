@@ -25,7 +25,7 @@ export const REAL_ANIMALS = [
   'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
   'Elephant', 'Hippo', 'Rhino', 'Hammerhead Shark',
   'King Cobra', 'Anaconda', 'Wolf', 'Jaguar',
-  'Leopard', 'Eagle', 'Narwhal', 'Electric Eel',
+  'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel',
   'Moose', 'Cape Buffalo', 'Great Horned Owl', 'Python',
   'Alligator', 'Mandrill', 'Cheetah', 'Hyena',
   'Walrus', 'Octopus'

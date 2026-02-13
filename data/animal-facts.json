@@ -1754,45 +1754,6 @@
     "weapons_score": 8,
     "defense_score": 6
   },
-  "narwhal": {
-    "name": "Narwhal",
-    "scientific_name": "Monodon monoceros",
-    "habitat": "Arctic waters of Canada, Greenland, Norway, and Russia \u2014 one of the few whales that lives in ice-covered seas year-round!",
-    "size": "Body up to 18 feet long PLUS a tusk up to 10 feet! Total length can be 28 FEET \u2014 almost as long as a school bus!",
-    "diet": "Arctic cod, halibut, shrimp, and squid \u2014 they dive over 5,000 feet deep to find food in pitch-black water!",
-    "weapons": [
-      "The tusk is actually a TOOTH that grows through the upper lip \u2014 up to 10 feet of spiraling ivory!",
-      "Males fence with their tusks like swords in jousting competitions for mates!",
-      "Can dive to 5,000+ feet deep and hold breath for 25 minutes \u2014 deeper than most military submarines!"
-    ],
-    "defenses": [
-      "Thick blubber layer up to 4 inches \u2014 insulates in -40\u00b0 Arctic water!",
-      "Travel in pods of 15-20 for safety, sometimes gathering in HUNDREDS",
-      "Can navigate under solid ice sheets, finding tiny breathing holes with echolocation!"
-    ],
-    "speed": "Cruise at 4 mph but can burst to 15 mph \u2014 not the fastest, but they have a 10-FOOT SWORD on their face!",
-    "fun_facts": [
-      "The tusk has 10 MILLION nerve endings \u2014 it's actually a giant sensory organ that detects temperature, pressure, and salt levels in the water!",
-      "They're called the UNICORNS of the sea \u2014 medieval Vikings sold narwhal tusks as \"unicorn horns\" for 10x their weight in gold!",
-      "Some narwhals grow TWO tusks! Only about 1 in 500 has this rare double-tusked mutation!"
-    ],
-    "size_comparisons": [
-      {
-        "item": "length",
-        "emoji": "\ud83d\udccf",
-        "comparison": "Up to 28 feet with tusk \u2014 almost as long as a school bus!"
-      },
-      {
-        "item": "weight",
-        "emoji": "\u2696\ufe0f",
-        "comparison": "Up to 3,500 lbs \u2014 as heavy as a small car!"
-      }
-    ],
-    "strength_score": 7,
-    "speed_score": 5,
-    "weapons_score": 8,
-    "defense_score": 7
-  },
   "mandrill": {
     "name": "Mandrill",
     "scientific_name": "Mandrillus sphinx",
@@ -1831,5 +1792,44 @@
     "speed_score": 7,
     "weapons_score": 8,
     "defense_score": 6
+  },
+  "giant-panda": {
+    "name": "Giant Panda",
+    "scientific_name": "Ailuropoda melanoleuca",
+    "habitat": "Misty mountain bamboo forests of central China \u2014 Sichuan, Shaanxi, and Gansu provinces, up to 11,000 feet elevation!",
+    "size": "Up to 6 feet long and 330 pounds \u2014 as heavy as an NFL lineman! Despite looking cuddly, they are POWERFUL bears!",
+    "diet": "Eats up to 84 POUNDS of bamboo every single day! That is like eating 330 hamburgers worth of bamboo! Spends 14 hours a day just EATING!",
+    "weapons": [
+      "Jaw muscles and teeth strong enough to CRUSH thick bamboo stalks \u2014 bite force of 292 PSI, stronger than most predators!",
+      "Sharp claws on powerful forearms for climbing and swiping \u2014 can climb 100-foot trees!",
+      "A special SIXTH FINGER (pseudo-thumb) made from a modified wrist bone \u2014 gives them incredible grip strength!"
+    ],
+    "defenses": [
+      "Massive stocky build with thick bones \u2014 much stronger than they look!",
+      "Excellent tree climbers \u2014 can escape up tall trees surprisingly fast for their size",
+      "Thick dense fur keeps them warm in freezing mountain temperatures down to -4\u00b0F!"
+    ],
+    "speed": "Can run up to 20 mph in short bursts \u2014 faster than most humans! Do NOT let the cute face fool you!",
+    "fun_facts": [
+      "They have a FAKE THUMB \u2014 a modified wrist bone that works like a sixth finger to grip bamboo! No other bear has this adaptation!",
+      "Baby pandas are born TINY \u2014 only 3.5 ounces, about the size of a stick of butter! That is 1/900th the size of their mother!",
+      "Their black and white coloring is actually CAMOUFLAGE \u2014 it helps them hide in shadowy, snow-patched bamboo forests where light and dark patches are everywhere!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "length",
+        "emoji": "\ud83d\udccf",
+        "comparison": "Up to 6 feet long \u2014 about as tall as a grown man lying down!"
+      },
+      {
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Up to 330 lbs \u2014 as heavy as an NFL linebacker!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 5,
+    "weapons_score": 7,
+    "defense_score": 7
   }
 }
