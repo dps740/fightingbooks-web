@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import path from 'path';
 import fs from 'fs';
-import { put, head, BlobNotFoundError } from '@vercel/blob';
+import { put, head, del, list, BlobNotFoundError } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
@@ -186,8 +186,8 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
     avoid: 'NO mane, NO lion mane, NOT solid colored, NOT golden brown without stripes'
   },
   'komodo dragon': {
-    include: 'komodo dragon LIZARD, large monitor lizard with rough grey-brown scaly skin, forked yellow tongue, four short sturdy legs with sharp claws, long muscular tail, NO WINGS',
-    avoid: 'NO wings, NO bat wings, NO flying, NOT a fantasy dragon, NOT a mythical dragon, NO fire breathing, NO spikes on back, this is a REAL LIZARD not a fantasy creature'
+    include: 'giant Indonesian monitor lizard, the worlds largest lizard species, massive heavy reptile with rough grey-brown pebbly scaled skin, completely flat smooth back, elongated flat wide skull with pointed snout, deeply forked yellow tongue, small dark beady eyes, thick muscular stocky legs with curved claws, low-slung sprawling gait close to ground',
+    avoid: 'NO wings, NO dorsal spines, NO spiny crest, NO iguana features, NO dewlap throat pouch, NOT a fantasy dragon, NOT a mythical dragon, NO fire, this is a REAL MONITOR LIZARD not a fantasy creature not an iguana'
   },
   'leopard': {
     include: 'leopard with ROSETTE SPOTS (ring-shaped spots with lighter centers), golden-yellow fur',
@@ -1572,6 +1572,29 @@ export async function POST(request: NextRequest) {
     console.log(`[CACHE] Looking for book: ${cacheKey} (forceRegenerate: ${forceRegenerate})`);
     console.log(`[CACHE] BLOB_READ_WRITE_TOKEN present: ${!!process.env.BLOB_READ_WRITE_TOKEN}`);
     
+    // When force regenerating, clear ALL cached assets (book JSON + battle images)
+    if (forceRegenerate) {
+      console.log(`[CACHE] Force regenerate — clearing all cached assets for ${cacheKey}`);
+      try {
+        // Clear book cache JSON
+        const bookCacheBlob = await list({ prefix: `fightingbooks/cache/${cacheKey}` });
+        for (const blob of bookCacheBlob.blobs) {
+          await del(blob.url);
+          console.log(`[CACHE] Deleted book cache: ${blob.pathname}`);
+        }
+        // Clear battle image blobs (sort names for consistent prefix)
+        const sortedNames = [animalA.toLowerCase().replace(/\s+/g, '-'), animalB.toLowerCase().replace(/\s+/g, '-')].sort();
+        const imgPrefix = `${sortedNames[0]}-vs-${sortedNames[1]}`;
+        const imgBlobs = await list({ prefix: `fightingbooks/${imgPrefix}` });
+        for (const blob of imgBlobs.blobs) {
+          await del(blob.url);
+          console.log(`[CACHE] Deleted battle image: ${blob.pathname}`);
+        }
+      } catch (e) {
+        console.error('[CACHE] Error clearing cached assets:', e);
+      }
+    }
+
     let result = forceRegenerate ? null : await loadCachedBook(cacheKey);
     let cacheStatus = 'HIT';
     
