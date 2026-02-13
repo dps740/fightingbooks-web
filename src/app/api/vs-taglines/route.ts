@@ -15,9 +15,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing fighter names' }, { status: 400 });
     }
 
+    // Use actual animal names as JSON keys to prevent LLM from swapping facts
     const prompt = `Generate dramatic fighter introductions for a "Who Would Win?" battle.
-
-Fighters: ${fighterA} vs ${fighterB}
 
 For each fighter, provide:
 1. A killer stat (real measurement - bite force PSI, speed MPH, weight LBS, claw/fang size inches)
@@ -26,23 +25,26 @@ For each fighter, provide:
 
 Style: ESPN boxing intro meets National Geographic. Punchy. Factual but hyped.
 
+CRITICAL RULES:
+- Use REAL measurements for these SPECIFIC animals. No made-up numbers.
+- "${fighterA}" stats MUST be about ${fighterA} (NOT about ${fighterB})
+- "${fighterB}" stats MUST be about ${fighterB} (NOT about ${fighterA})
+- Keep stats SHORT (number + unit only, e.g. "420 LBS" or "50 MPH" or "4-INCH CLAWS")
+- Taglines should be dramatic but grounded in the animal's real hunting style or habitat
+
 Return JSON only:
 {
-  "fighterA": {
-    "stat": "660 LBS",
-    "tagline": "Silent death from the jungle",
-    "special": "AMBUSH HUNTER"
+  "${fighterA}": {
+    "stat": "the stat for ${fighterA}",
+    "tagline": "tagline about ${fighterA}",
+    "special": "SPECIAL ABILITY OF ${fighterA}"
   },
-  "fighterB": {
-    "stat": "3,700 PSI BITE",  
-    "tagline": "Ancient armored predator",
-    "special": "DEATH ROLL"
+  "${fighterB}": {
+    "stat": "the stat for ${fighterB}",
+    "tagline": "tagline about ${fighterB}",
+    "special": "SPECIAL ABILITY OF ${fighterB}"
   }
-}
-
-CRITICAL: Use REAL measurements for these specific animals. No made-up numbers.
-Keep stats SHORT (number + unit only, e.g. "420 LBS" or "50 MPH" or "4-INCH CLAWS").
-Taglines should be dramatic but grounded in the animal's real hunting style or habitat.`;
+}`;
 
     const response = await getOpenAI().chat.completions.create({
       model: 'gpt-4o-mini',
@@ -53,9 +55,13 @@ Taglines should be dramatic but grounded in the animal's real hunting style or h
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
     
+    // Look up by animal name (primary) or fall back to fighterA/fighterB keys
+    const dataA = result[fighterA] || result.fighterA || { stat: '???', tagline: 'Ready to fight', special: 'WILD CARD' };
+    const dataB = result[fighterB] || result.fighterB || { stat: '???', tagline: 'Ready to fight', special: 'WILD CARD' };
+    
     return NextResponse.json({
-      fighterA: result.fighterA || { stat: '???', tagline: 'Ready to fight', special: 'WILD CARD' },
-      fighterB: result.fighterB || { stat: '???', tagline: 'Ready to fight', special: 'WILD CARD' },
+      fighterA: dataA,
+      fighterB: dataB,
     });
   } catch (error) {
     console.error('VS taglines error:', error);
