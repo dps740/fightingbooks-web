@@ -185,9 +185,25 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
     include: 'tiger with ORANGE fur with BLACK STRIPES all over body, NO MANE, striped pattern from head to tail',
     avoid: 'NO mane, NO lion mane, NOT solid colored, NOT golden brown without stripes'
   },
-  'komodo dragon': {
-    include: 'giant Indonesian monitor lizard, the worlds largest lizard species, massive heavy reptile with rough grey-brown pebbly scaled skin, completely flat smooth back, elongated flat wide skull with pointed snout, deeply forked yellow tongue, small dark beady eyes, thick muscular stocky legs with curved claws, low-slung sprawling gait close to ground',
-    avoid: 'NO wings, NO dorsal spines, NO spiny crest, NO iguana features, NO dewlap throat pouch, NOT a fantasy dragon, NOT a mythical dragon, NO fire, this is a REAL MONITOR LIZARD not a fantasy creature not an iguana'
+  'hammerhead shark': {
+    include: 'hammerhead shark with distinctive wide flat T-shaped head called cephalofoil, eyes on the far ends of the hammer, grey streamlined body, tropical ocean water',
+    avoid: 'NO normal shark head, NOT a regular shark, must show the distinctive wide hammer-shaped head clearly'
+  },
+  'electric eel': {
+    include: 'electric eel, long serpentine freshwater fish with smooth dark olive-brown skin, elongated body, small eyes, flat wide mouth, South American river habitat',
+    avoid: 'NOT a snake, NOT a moray eel, this is a freshwater FISH with a long body, NO scales visible'
+  },
+  'great horned owl': {
+    include: 'great horned owl with prominent feathered ear tufts, intense yellow eyes, barred brown and white plumage, large powerful talons, facial disc pattern',
+    avoid: 'NO small owl species, must be LARGE and imposing, NOT a snowy owl, NOT white'
+  },
+  'narwhal': {
+    include: 'narwhal whale with long straight spiral tusk protruding from head, mottled grey and white skin, Arctic ocean with ice, stocky cetacean body',
+    avoid: 'NOT a unicorn, NOT a dolphin, NOT fantasy, the tusk is a REAL modified tooth that spirals, Arctic setting'
+  },
+  'mandrill': {
+    include: 'mandrill primate with vivid bright blue ridged nose, red nostrils and lips, golden beard, olive-brown fur, colorful blue and purple rump, large canine fangs',
+    avoid: 'NOT a baboon, NOT a monkey without colors, must show the distinctive VIVID blue and red facial coloring'
   },
   'leopard': {
     include: 'leopard with ROSETTE SPOTS (ring-shaped spots with lighter centers), golden-yellow fur',

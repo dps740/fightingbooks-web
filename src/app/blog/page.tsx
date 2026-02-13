@@ -128,10 +128,10 @@ const articles: Article[] = [
     searchVolume: '10k/mo searches'
   },
   {
-    slug: 'komodo-dragon-vs-king-cobra',
-    title: 'Komodo Dragon vs King Cobra: Who Would Win?',
-    description: 'The world\'s largest lizard meets the world\'s deadliest snake. Venom versus venom in an epic reptilian showdown.',
-    animals: ['🦎 Komodo', '🐍 King Cobra'],
+    slug: 'hammerhead-shark-vs-electric-eel',
+    title: 'Hammerhead Shark vs Electric Eel: Who Would Win?',
+    description: 'The ocean\'s ultimate sensor meets the Amazon\'s living battery. Electroreception versus 860 volts of shocking power!',
+    animals: ['🦈 Hammerhead', '⚡ Electric Eel'],
     readTime: '9 min',
     searchVolume: '9k/mo searches'
   },
@@ -144,10 +144,10 @@ const articles: Article[] = [
     searchVolume: '8k/mo searches'
   },
   {
-    slug: 'honey-badger-vs-lion',
-    title: 'Honey Badger vs Lion: Who Would Win?',
-    description: 'When the internet\'s favorite fearless animal meets the King of Beasts. Does attitude beat overwhelming force?',
-    animals: ['🦡 Honey Badger', '🦁 Lion'],
+    slug: 'narwhal-vs-great-horned-owl',
+    title: 'Narwhal vs Great Horned Owl: Who Would Win?',
+    description: 'The unicorn of the sea versus the silent night hunter. Tusk versus talons in an unlikely cross-habitat clash!',
+    animals: ['🦄 Narwhal', '🦉 Owl'],
     readTime: '9 min',
     searchVolume: '7k/mo searches'
   },

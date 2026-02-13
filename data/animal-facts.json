@@ -155,45 +155,6 @@
     "weapons_score": 8,
     "defense_score": 5
   },
-  "black-panther": {
-    "name": "Black Panther",
-    "scientific_name": "Panthera pardus",
-    "habitat": "Rainforests, savannas, and grasslands in Africa and Asia",
-    "size": "4 to 6 feet long (1.2 to 1.8 meters) PLUS about as long as a sedan!",
-    "diet": "Carnivore! They eat deer, monkeys, and birds. They are great hunters!",
-    "weapons": [
-      "Powerful jaws (up to 1 foot long)",
-      "Sharp claws (up to 2 inches long)",
-      "Stealthy approach"
-    ],
-    "defenses": [
-      "Camouflage in the shadows",
-      "Agile movements",
-      "Climbing trees to escape"
-    ],
-    "speed": "Top speed of 35 mph, FASTER than a running human!",
-    "fun_facts": [
-      "A BLACK PANTHER is actually a LEOPARD with dark fur!",
-      "They can leap up to 20 feet in a single jump!",
-      "Their night vision is SIX TIMES better than humans!"
-    ],
-    "size_comparisons": [
-      {
-        "item": "school bus",
-        "emoji": "\ud83d\ude8c",
-        "comparison": "LENGTH: About 7 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
-      },
-      {
-        "item": "human",
-        "emoji": "\ud83d\udc64",
-        "comparison": "About the same WEIGHT as a large dog, around 100 to 200 pounds!"
-      }
-    ],
-    "strength_score": 7,
-    "speed_score": 6,
-    "weapons_score": 8,
-    "defense_score": 5
-  },
   "brachiosaurus": {
     "name": "Brachiosaurus",
     "scientific_name": "Brachiosaurus altithorax",
@@ -265,45 +226,6 @@
         "item": "sedan",
         "emoji": "\ud83d\ude97",
         "comparison": "As heavy as a small car in WEIGHT"
-      }
-    ],
-    "strength_score": 7,
-    "speed_score": 6,
-    "weapons_score": 8,
-    "defense_score": 5
-  },
-  "cassowary": {
-    "name": "Cassowary",
-    "scientific_name": "Casuarius",
-    "habitat": "Tropical rainforests of New Guinea, nearby islands, and northern Australia.",
-    "size": "Up to 6 feet tall! That's as tall as a door!",
-    "diet": "Fruits, seeds, and small animals. They LOVE berries!",
-    "weapons": [
-      "Powerful legs with claws up to 5 inches long",
-      "Sharp beak",
-      "Heavy body for charging"
-    ],
-    "defenses": [
-      "Thick skin",
-      "Fast runner",
-      "Can kick with incredible force!"
-    ],
-    "speed": "Can run up to 30 miles per hour! That's faster than a cheetah for short bursts!",
-    "fun_facts": [
-      "Their blue skin is SUPER unique!",
-      "They can jump up to 5 feet high!",
-      "Cassowaries are known as the 'world's most dangerous bird'!"
-    ],
-    "size_comparisons": [
-      {
-        "item": "school bus",
-        "emoji": "\ud83d\ude8c",
-        "comparison": "LENGTH: About 6 feet long \u2014 about as tall as a grown-up \u2014 or a door!"
-      },
-      {
-        "item": "person",
-        "emoji": "\ud83d\udc64",
-        "comparison": "About the same height as a tall person (6 feet)"
       }
     ],
     "strength_score": 7,
@@ -779,45 +701,6 @@
     "weapons_score": 8,
     "defense_score": 5
   },
-  "honey-badger": {
-    "name": "Honey Badger",
-    "scientific_name": "Mellivora capensis",
-    "habitat": "Savannas, forests, and grasslands in Africa and Asia",
-    "size": "About 30 inches long (2.5 feet) - That's like a medium-sized dog!",
-    "diet": "Carnivorous! They eat snakes, insects, and even honey. They LOVE honey!",
-    "weapons": [
-      "Sharp claws (up to 1 inch long)",
-      "Strong teeth",
-      "Tough skin"
-    ],
-    "defenses": [
-      "Thick skin",
-      "Fearless attitude",
-      "Ability to play dead"
-    ],
-    "speed": "Can run up to 19 miles per hour - That's as fast as a fast jogger!",
-    "fun_facts": [
-      "Honey badgers are known to chase away lions!",
-      "They can survive snake bites!",
-      "They're called the 'most fearless animal' in the world!"
-    ],
-    "size_comparisons": [
-      {
-        "item": "School bus",
-        "emoji": "\ud83d\ude8c",
-        "comparison": "LENGTH: About 2.5 feet long \u2014 about as long as a baseball bat!"
-      },
-      {
-        "item": "Person",
-        "emoji": "\ud83d\udc64",
-        "comparison": "1/3 the HEIGHT of a person (5.5-6 feet)"
-      }
-    ],
-    "strength_score": 7,
-    "speed_score": 6,
-    "weapons_score": 8,
-    "defense_score": 5
-  },
   "hydra": {
     "name": "Hydra",
     "scientific_name": "Mythological creature",
@@ -967,45 +850,6 @@
         "item": "average person",
         "emoji": "\ud83d\udc64",
         "comparison": "WEIGHT: Up to 20 pounds, like a small dog!"
-      }
-    ],
-    "strength_score": 7,
-    "speed_score": 6,
-    "weapons_score": 8,
-    "defense_score": 5
-  },
-  "komodo-dragon": {
-    "name": "Komodo Dragon",
-    "scientific_name": "Varanus komodoensis",
-    "habitat": "Tropical islands in Indonesia",
-    "size": "Up to 10 feet long! That's as long as a SCHOOL BUS!",
-    "diet": "Carnivorous! They eat deer, birds, and even smaller Komodo dragons!",
-    "weapons": [
-      "Powerful jaws with 60 sharp teeth (up to 1 inch long)",
-      "Long, forked tongue",
-      "Strong claws (up to 4 inches long)"
-    ],
-    "defenses": [
-      "Tough, scaly skin",
-      "Camouflage to blend in",
-      "Fast reflexes to escape danger"
-    ],
-    "speed": "Can run up to 13 miles per hour! That's as fast as a speedy SEDAN!",
-    "fun_facts": [
-      "Their saliva contains bacteria that can infect prey!",
-      "They can eat up to 80% of their body weight in one meal!",
-      "They can sense rotting meat from miles away!"
-    ],
-    "size_comparisons": [
-      {
-        "item": "school bus",
-        "emoji": "\ud83d\ude8c",
-        "comparison": "LENGTH: About 10 feet long \u2014 about as long as a small car! (10 feet)"
-      },
-      {
-        "item": "weight of a small child",
-        "emoji": "\ud83d\udc76",
-        "comparison": "Can weigh around 150 pounds, like a SMALL CHILD!"
       }
     ],
     "strength_score": 7,
@@ -1793,43 +1637,199 @@
     "weapons_score": 8,
     "defense_score": 5
   },
-  "wolverine": {
-    "name": "Wolverine",
-    "scientific_name": "Gulo gulo",
-    "habitat": "Cold forests and tundras of North America and Eurasia",
-    "size": "26 to 34 inches long (about the length of a small dog) and 24 inches tall at the shoulder!",
-    "diet": "Carnivorous! Wolverines eat small mammals, birds, and even carrion. They are known to take down prey larger than themselves!",
+  "hammerhead-shark": {
+    "name": "Hammerhead Shark",
+    "scientific_name": "Sphyrna mokarran",
+    "habitat": "Warm tropical and temperate oceans worldwide \u2014 from coral reefs to deep open water!",
+    "size": "Up to 20 FEET long \u2014 as long as a giraffe is tall! Weighs up to 1,000 pounds!",
+    "diet": "Stingrays are their FAVORITE meal! Also fish, octopus, squid, and even other sharks!",
     "weapons": [
-      "Powerful jaws (up to 1.5 inches long)",
-      "Sharp claws",
-      "Strong teeth"
+      "Wide hammer head PINS prey to the ocean floor \u2014 like using a spatula!",
+      "Rows of razor-sharp serrated teeth that constantly regrow",
+      "Incredible speed bursts up to 25 mph for ambush attacks"
     ],
     "defenses": [
-      "Thick fur for insulation",
-      "Fierce temperament",
-      "Incredible climbing ability"
+      "360-degree vision from eyes on each end of the hammer \u2014 NOTHING sneaks up!",
+      "Travels in massive schools of up to 500 sharks for safety in numbers",
+      "Thick tough skin covered in tiny tooth-like scales called denticles"
     ],
-    "speed": "Top speed of 30 miles per hour (as fast as a running human!)",
+    "speed": "25 mph in bursts \u2014 faster than most humans can run!",
     "fun_facts": [
-      "Wolverines can weigh up to 25-30 pounds (like a large dog)!",
-      "They can travel over 15 miles in a day searching for food!",
-      "Wolverines are known for their strength and can take down prey much larger than themselves!"
+      "Their hammer-shaped head has THOUSANDS of electrical sensors that detect heartbeats of hidden prey buried in sand!",
+      "Baby hammerheads are born with soft, flexible hammers that harden after birth so they don't hurt mom!",
+      "They get a SUNTAN! Hammerheads darken their skin by swimming in shallow water \u2014 the only sharks known to tan!"
     ],
     "size_comparisons": [
       {
-        "item": "School bus",
-        "emoji": "\ud83d\ude8c",
-        "comparison": "LENGTH: About 3.5 feet long \u2014 about as long as a baseball bat!"
+        "item": "length",
+        "emoji": "\ud83d\udccf",
+        "comparison": "Up to 20 feet long \u2014 as long as a full-size pickup truck!"
       },
       {
-        "item": "Person",
-        "emoji": "\ud83d\udc64",
-        "comparison": "About half the height of a person (5.5-6 feet)"
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Up to 1,000 lbs \u2014 as heavy as a grand piano!"
+      }
+    ],
+    "strength_score": 8,
+    "speed_score": 7,
+    "weapons_score": 8,
+    "defense_score": 7
+  },
+  "electric-eel": {
+    "name": "Electric Eel",
+    "scientific_name": "Electrophorus electricus",
+    "habitat": "Murky freshwater rivers and swamps of the Amazon and Orinoco basins in South America!",
+    "size": "Up to 8 FEET long and 44 pounds \u2014 as long as a couch! Despite the name, it's actually a FISH, not an eel!",
+    "diet": "Fish, amphibians, and small mammals \u2014 they SHOCK their prey unconscious, then swallow it whole!",
+    "weapons": [
+      "Can discharge up to 860 VOLTS \u2014 enough to stun a horse or knock a human unconscious!",
+      "Three separate electric organs make up 80% of their body \u2014 they're basically a living BATTERY!",
+      "Can pulse electricity to make hidden prey twitch, revealing their hiding spots \u2014 like sonar but with LIGHTNING!"
+    ],
+    "defenses": [
+      "Their own fat and skin insulate them from their own shocks!",
+      "Can breathe AIR \u2014 they surface every 10 minutes, so they can survive in oxygen-poor swamps",
+      "Thick mucus coating protects against parasites and infections"
+    ],
+    "speed": "Slow swimmers at about 3 mph \u2014 but who needs speed when you have ELECTRICITY?!",
+    "fun_facts": [
+      "They can remotely control other animals' MUSCLES with their electric pulses \u2014 literally like a remote control for fish!",
+      "Mother electric eels make a nest from THEIR OWN SPIT and guard the eggs fiercely \u2014 shocking any predator that comes close!",
+      "Scientists discovered TWO new species in 2019 \u2014 one can produce 860 volts, the most powerful bioelectricity of ANY animal on Earth!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "length",
+        "emoji": "\ud83d\udccf",
+        "comparison": "Up to 8 feet long \u2014 as long as a large sofa!"
+      },
+      {
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Up to 44 lbs \u2014 about as heavy as a medium-sized dog!"
+      }
+    ],
+    "strength_score": 5,
+    "speed_score": 3,
+    "weapons_score": 10,
+    "defense_score": 7
+  },
+  "great-horned-owl": {
+    "name": "Great Horned Owl",
+    "scientific_name": "Bubo virginianus",
+    "habitat": "Forests, deserts, swamps, and even cities across North and South America \u2014 the most widespread owl in the Americas!",
+    "size": "Wingspan up to 5 FEET \u2014 wider than most adults are tall! Body is 2 feet long, weighs up to 5.5 pounds!",
+    "diet": "EVERYTHING! Rabbits, skunks, cats, geese, even OTHER OWLS and hawks \u2014 the only animal that regularly eats skunks!",
+    "weapons": [
+      "Talons grip with 300 PSI of crushing force \u2014 same as a large dog's BITE!",
+      "Silent flight feathers with serrated edges eliminate ALL sound \u2014 prey never hears them coming!",
+      "Can rotate head up to 270 degrees \u2014 almost a full circle \u2014 spotting prey in near-total darkness!"
+    ],
+    "defenses": [
+      "Feathered \"horns\" (ear tufts) make them look like a cat or larger predator to scare off threats",
+      "Camouflage plumage blends perfectly with tree bark \u2014 nearly invisible during daytime roosting",
+      "Will fearlessly attack animals 3x their size including eagles, hawks, and even humans near their nest!"
+    ],
+    "speed": "Can dive at 40 mph and fly at 40 mph \u2014 as fast as a car in a neighborhood!",
+    "fun_facts": [
+      "Their eyes are so large they can't MOVE in their sockets \u2014 that's why they rotate their whole head! Each eye is as big as a human's!",
+      "They have NO sense of smell \u2014 that's why they're the only predator that regularly hunts SKUNKS!",
+      "They don't build nests \u2014 they STEAL them from hawks, crows, and squirrels! The ultimate home invader!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "wingspan",
+        "emoji": "\ud83d\udccf",
+        "comparison": "5-foot wingspan \u2014 wider than a twin bed!"
+      },
+      {
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Up to 5.5 lbs \u2014 about as heavy as a chihuahua, but with 5-foot wings!"
       }
     ],
     "strength_score": 7,
-    "speed_score": 6,
+    "speed_score": 8,
     "weapons_score": 8,
-    "defense_score": 5
+    "defense_score": 6
+  },
+  "narwhal": {
+    "name": "Narwhal",
+    "scientific_name": "Monodon monoceros",
+    "habitat": "Arctic waters of Canada, Greenland, Norway, and Russia \u2014 one of the few whales that lives in ice-covered seas year-round!",
+    "size": "Body up to 18 feet long PLUS a tusk up to 10 feet! Total length can be 28 FEET \u2014 almost as long as a school bus!",
+    "diet": "Arctic cod, halibut, shrimp, and squid \u2014 they dive over 5,000 feet deep to find food in pitch-black water!",
+    "weapons": [
+      "The tusk is actually a TOOTH that grows through the upper lip \u2014 up to 10 feet of spiraling ivory!",
+      "Males fence with their tusks like swords in jousting competitions for mates!",
+      "Can dive to 5,000+ feet deep and hold breath for 25 minutes \u2014 deeper than most military submarines!"
+    ],
+    "defenses": [
+      "Thick blubber layer up to 4 inches \u2014 insulates in -40\u00b0 Arctic water!",
+      "Travel in pods of 15-20 for safety, sometimes gathering in HUNDREDS",
+      "Can navigate under solid ice sheets, finding tiny breathing holes with echolocation!"
+    ],
+    "speed": "Cruise at 4 mph but can burst to 15 mph \u2014 not the fastest, but they have a 10-FOOT SWORD on their face!",
+    "fun_facts": [
+      "The tusk has 10 MILLION nerve endings \u2014 it's actually a giant sensory organ that detects temperature, pressure, and salt levels in the water!",
+      "They're called the UNICORNS of the sea \u2014 medieval Vikings sold narwhal tusks as \"unicorn horns\" for 10x their weight in gold!",
+      "Some narwhals grow TWO tusks! Only about 1 in 500 has this rare double-tusked mutation!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "length",
+        "emoji": "\ud83d\udccf",
+        "comparison": "Up to 28 feet with tusk \u2014 almost as long as a school bus!"
+      },
+      {
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Up to 3,500 lbs \u2014 as heavy as a small car!"
+      }
+    ],
+    "strength_score": 7,
+    "speed_score": 5,
+    "weapons_score": 8,
+    "defense_score": 7
+  },
+  "mandrill": {
+    "name": "Mandrill",
+    "scientific_name": "Mandrillus sphinx",
+    "habitat": "Dense tropical rainforests of Central Africa \u2014 Cameroon, Gabon, and the Congo! They live on the forest floor!",
+    "size": "Males are up to 3 feet tall and weigh 77 pounds \u2014 the LARGEST monkey in the world! Females are half the size!",
+    "diet": "Fruits, seeds, insects, and small animals \u2014 they eat over 100 different types of food! Will even hunt small antelope!",
+    "weapons": [
+      "Canine fangs up to 2.5 INCHES long \u2014 longer than a lion's relative to body size!",
+      "Incredibly powerful arms can tear bark off trees with bare hands!",
+      "Males flash their enormous fangs and vivid colors as a terrifying threat display!"
+    ],
+    "defenses": [
+      "Live in massive troops of up to 800 individuals \u2014 one of the LARGEST social groups of any primate!",
+      "Their vivid face colors signal dominance \u2014 the brighter the face, the more dangerous the mandrill!",
+      "Lightning-fast reflexes and incredible climbing ability to escape into the trees!"
+    ],
+    "speed": "Can run 25 mph through dense jungle \u2014 as fast as a professional sprinter!",
+    "fun_facts": [
+      "They have the MOST COLORFUL face of any mammal \u2014 bright blue ridged nose, red lips and nostrils, golden beard! The colors get MORE vivid when they're excited or angry!",
+      "Their blue coloring isn't from pigment \u2014 it's STRUCTURAL color from nano-sized fibers in the skin that reflect blue light, like a butterfly's wing!",
+      "They have special cheek pouches that can store an entire meal's worth of food \u2014 like built-in GROCERY BAGS in their face!"
+    ],
+    "size_comparisons": [
+      {
+        "item": "height",
+        "emoji": "\ud83d\udccf",
+        "comparison": "Up to 3 feet tall \u2014 about waist-high on an adult! The largest monkey on Earth!"
+      },
+      {
+        "item": "weight",
+        "emoji": "\u2696\ufe0f",
+        "comparison": "Males up to 77 lbs \u2014 as heavy as a 10-year-old kid!"
+      }
+    ],
+    "strength_score": 8,
+    "speed_score": 7,
+    "weapons_score": 8,
+    "defense_score": 6
   }
 }

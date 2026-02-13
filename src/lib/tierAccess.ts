@@ -23,11 +23,11 @@ export const FREE_ANIMALS = [
 export const REAL_ANIMALS = [
   'Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear',
   'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
-  'Elephant', 'Hippo', 'Rhino', 'Komodo Dragon',
+  'Elephant', 'Hippo', 'Rhino', 'Hammerhead Shark',
   'King Cobra', 'Anaconda', 'Wolf', 'Jaguar',
-  'Leopard', 'Eagle', 'Wolverine', 'Honey Badger',
-  'Moose', 'Cape Buffalo', 'Cassowary', 'Python',
-  'Alligator', 'Black Panther', 'Cheetah', 'Hyena',
+  'Leopard', 'Eagle', 'Narwhal', 'Electric Eel',
+  'Moose', 'Cape Buffalo', 'Great Horned Owl', 'Python',
+  'Alligator', 'Mandrill', 'Cheetah', 'Hyena',
   'Walrus', 'Octopus'
 ];
 
