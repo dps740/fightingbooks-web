@@ -86,8 +86,9 @@ async function createNextGatePage(animalA: string, animalB: string, gate: any, g
   const imgPrefix = `${nameA}-vs-${nameB}`;
   
   // Use cached battle background (was generated during initial load)
+  const battleNeg = 'ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS, NO human features NO fists NO hands NO weapons, ONLY these two animals no other creatures no duplicates, anatomically accurate';
   const battleBg = await generateImage(
-    `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield`,
+    `Exactly one ${animalA} and exactly one ${animalB} facing off in dramatic battle scene, dark dramatic lighting, two distinct animals in natural poses, realistic wildlife art, ${battleNeg}`,
     `${imgPrefix}-cyoa-bg`
   );
   
@@ -416,8 +417,9 @@ export async function POST(request: NextRequest) {
     const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
     const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
     const imgPrefix = `${nameA}-vs-${nameB}`;
+    const outcomeNeg = 'ABSOLUTELY NO TEXT NO WORDS NO LOGOS, NO human features NO fists NO hands NO weapons, ONLY these two animals no duplicates, anatomically accurate';
     const outcomeImage = await generateImage(
-      `${animalA} and ${animalB} battling, dramatic action scene, ${narrativeText.slice(0, 80)}`,
+      `Exactly one ${animalA} and exactly one ${animalB} in battle, ${narrativeText.slice(0, 80)}, realistic wildlife art, ${outcomeNeg}`,
       `${imgPrefix}-outcome-${newPath}`
     );
     
@@ -434,7 +436,7 @@ export async function POST(request: NextRequest) {
       const loser = winner === animalA ? animalB : animalA;
       
       const victoryImage = await generateImage(
-        `${winner} proud and defiant after battle`,
+        `Exactly one ${winner} standing proud after victory, natural dominant animal posture, nature documentary style, single animal only, ABSOLUTELY NO TEXT NO WORDS NO LOGOS, NO human features NO fists NO weapons, anatomically accurate`,
         `${imgPrefix}-victory-${newPath}`
       );
       

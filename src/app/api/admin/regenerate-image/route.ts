@@ -29,14 +29,15 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
 };
 
 // Image prompts for each page type
+const BATTLE_NEG = 'ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
 const IMAGE_PROMPTS: Record<string, (animalA: string, animalB: string) => string> = {
-  'cover': (a, b) => `${a} facing ${b} dramatically, epic showdown, wildlife art`,
-  'battle1': (a, b) => `${a} and ${b} facing off, tense confrontation, sizing each other up, dramatic standoff`,
-  'battle2': (a, b) => `${a} attacking ${b}, first strike, action shot, motion blur, intense combat`,
-  'battle3': (a, b) => `${b} counter-attacking ${a}, fierce battle, both animals fighting, dramatic action`,
-  'battle4': (a, b) => `${a} and ${b} locked in combat, intense struggle, close quarters battle, dynamic pose`,
-  'battle5': (a, b) => `${a} and ${b} final decisive moment, climactic battle scene, one gaining advantage`,
-  'victory': (a, b) => `victorious animal powerful stance after battle, realistic animal behavior, dramatic lighting, wildlife photography`,
+  'cover': (a, b) => `Exactly one ${a} on the left facing exactly one ${b} on the right, intense staredown before battle, dramatic lighting, two separate distinct animals in natural poses, realistic wildlife illustration, ${BATTLE_NEG}`,
+  'battle1': (a, b) => `Exactly one ${a} and exactly one ${b} circling each other cautiously, tense confrontation, sizing each other up in the wild, both in natural animal stances, realistic wildlife art, ${BATTLE_NEG}`,
+  'battle2': (a, b) => `Exactly one ${a} lunging to attack exactly one ${b}, first strike with natural weapons like teeth claws or horns, explosive action shot, realistic wildlife art, ${BATTLE_NEG}`,
+  'battle3': (a, b) => `Exactly one ${b} fighting back against exactly one ${a}, fierce counterattack using natural animal abilities, intense combat between these two animals only, realistic wildlife art, ${BATTLE_NEG}`,
+  'battle4': (a, b) => `Exactly one ${a} and exactly one ${b} locked in close combat, intense physical struggle using natural animal strength, dramatic dynamic pose, realistic wildlife art, ${BATTLE_NEG}`,
+  'battle5': (a, b) => `Exactly one ${a} and exactly one ${b} in the decisive final moment, one clearly gaining the advantage over the other, climactic battle scene, realistic wildlife art, ${BATTLE_NEG}`,
+  'victory': (a, b) => `Exactly one victorious wild animal standing proud after battle, natural dominant posture on all fours, surveying territory, nature documentary photography style, single animal only, ${BATTLE_NEG}`,
 };
 
 // Page ID to image key mapping

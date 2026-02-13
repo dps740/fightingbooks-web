@@ -699,14 +699,20 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   console.log('Using pre-generated educational images');
   
   // Generate only battle-specific images (7 total)
+  // IMPORTANT: Prompts must be specific to prevent AI hallucinations:
+  // - Always name EXACTLY which two animals (no extras)
+  // - Specify "ONLY these two animals, no other creatures"
+  // - Ban human features: no fists, no hands, no standing upright (unless natural), no weapons
+  // - Ban text/logos
+  const battleNeg = 'ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
   const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
-    generateImage(`${animalA} facing ${animalB} dramatically, epic showdown, wildlife art`, `${imgPrefix}-cover`),
-    generateImage(`${animalA} and ${animalB} facing off, tense confrontation, sizing each other up, dramatic standoff`, `${imgPrefix}-battle1`),
-    generateImage(`${animalA} attacking ${animalB}, first strike, action shot, motion blur, intense combat`, `${imgPrefix}-battle2`),
-    generateImage(`${animalB} counter-attacking ${animalA}, fierce battle, both animals fighting, dramatic action`, `${imgPrefix}-battle3`),
-    generateImage(`${animalA} and ${animalB} locked in combat, intense struggle, close quarters battle, dynamic pose`, `${imgPrefix}-battle4`),
-    generateImage(`${animalA} and ${animalB} final decisive moment, climactic battle scene, one gaining advantage`, `${imgPrefix}-battle5`),
-    generateImage(`${battle.winner} standing dominant over defeated prey, natural animal posture on all fours, wild predator after successful hunt, nature documentary style, no human poses no celebration no raised limbs`, `${imgPrefix}-victory`),
+    generateImage(`Exactly one ${animalA} on the left facing exactly one ${animalB} on the right, intense staredown before battle, dramatic lighting, two separate distinct animals in natural poses, realistic wildlife illustration, ${battleNeg}`, `${imgPrefix}-cover`),
+    generateImage(`Exactly one ${animalA} and exactly one ${animalB} circling each other cautiously, tense confrontation, sizing each other up in the wild, both in natural animal stances, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle1`),
+    generateImage(`Exactly one ${animalA} lunging to attack exactly one ${animalB}, first strike with natural weapons like teeth claws or horns, explosive action shot, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle2`),
+    generateImage(`Exactly one ${animalB} fighting back against exactly one ${animalA}, fierce counterattack using natural animal abilities, intense combat between these two animals only, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle3`),
+    generateImage(`Exactly one ${animalA} and exactly one ${animalB} locked in close combat, intense physical struggle using natural animal strength, dramatic dynamic pose, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle4`),
+    generateImage(`Exactly one ${animalA} and exactly one ${animalB} in the decisive final moment, one clearly gaining the advantage over the other, climactic battle scene, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle5`),
+    generateImage(`Exactly one ${battle.winner} standing proud after victory, natural dominant animal posture on all fours, surveying territory, nature documentary photography style, single animal only, ${battleNeg}`, `${imgPrefix}-victory`),
   ]);
   console.log('Battle images generated');
   
