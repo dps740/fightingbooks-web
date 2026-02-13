@@ -272,8 +272,8 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
         await new Promise(r => setTimeout(r, 1000 * attempt)); // Backoff delay
       }
       
-      const modelEndpoint = _imageModelOverride?.model || 'fal-ai/flux/schnell';
-      const inferenceSteps = _imageModelOverride?.steps || 4;
+      const modelEndpoint = _imageModelOverride?.model || 'fal-ai/flux/dev';
+      const inferenceSteps = _imageModelOverride?.steps || 28;
       
       const response = await fetch(`https://fal.run/${modelEndpoint}`, {
         method: 'POST',
@@ -1439,7 +1439,7 @@ async function addCyoaChoices(pages: BookPage[], animalA: string, animalB: strin
 }
 
 // Book cache version - bump to invalidate old cached books when image/content logic changes
-const BOOK_CACHE_VERSION = 'v8';
+const BOOK_CACHE_VERSION = 'v9';
 
 // Persistent cache using Vercel Blob (survives deployments)
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
@@ -1567,9 +1567,9 @@ export async function POST(request: NextRequest) {
     // Admin bypass for automated regeneration (e.g., cache warming)
     const isAdminBypass = adminSecret === process.env.BLOB_READ_WRITE_TOKEN;
     
-    // Allow admin to override image model (e.g., "dev" for Flux Dev quality)
-    if (isAdminBypass && imageModel === 'dev') {
-      _imageModelOverride = { model: 'fal-ai/flux/dev', steps: 28 };
+    // Allow admin to override image model (default is now Dev; use "schnell" for fast/cheap testing)
+    if (isAdminBypass && imageModel === 'schnell') {
+      _imageModelOverride = { model: 'fal-ai/flux/schnell', steps: 4 };
     } else {
       _imageModelOverride = null;
     }
