@@ -1551,17 +1551,20 @@ async function saveCachedPDF(cacheKey: string, animalA: string, animalB: string,
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { animalA, animalB, mode = 'standard', environment = 'neutral', forceRegenerate = false } = body;
+    const { animalA, animalB, mode = 'standard', environment = 'neutral', forceRegenerate = false, adminSecret } = body;
 
     if (!animalA || !animalB) {
       return NextResponse.json({ error: 'Missing animal names' }, { status: 400 });
     }
 
+    // Admin bypass for automated regeneration (e.g., cache warming)
+    const isAdminBypass = adminSecret === process.env.BLOB_READ_WRITE_TOKEN;
+
     // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();
 
-    // Check if user can access this matchup
-    if (!canAccessMatchup(tier, animalA, animalB)) {
+    // Check if user can access this matchup (skip for admin bypass)
+    if (!isAdminBypass && !canAccessMatchup(tier, animalA, animalB)) {
       const upgradeOptions = getUpgradeOptions(tier);
       return NextResponse.json(
         {
