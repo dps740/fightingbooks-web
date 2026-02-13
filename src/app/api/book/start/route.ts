@@ -701,20 +701,26 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   console.log('Using pre-generated educational images');
   
   // Generate only battle-specific images (7 total)
-  // IMPORTANT: Prompts must be specific to prevent AI hallucinations:
-  // - Always name EXACTLY which two animals (no extras)
-  // - Specify "ONLY these two animals, no other creatures"
-  // - Ban human features: no fists, no hands, no standing upright (unless natural), no weapons
-  // - Ban text/logos
-  const battleNeg = 'ABSOLUTELY NO TEXT NO WORDS NO LOGOS NO WATERMARKS, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
+  // Prompts are derived from the actual battle text for unique, story-matched scenes
+  // Style suffix ensures photorealistic quality and prevents text/logos
+  const BATTLE_STYLE = 'photorealistic wildlife photography, dramatic natural lighting, shallow depth of field, cinematic composition';
+  const BATTLE_NEG = 'ABSOLUTELY NO TEXT NO WORDS NO LETTERS NO LOGOS NO WATERMARKS NO SYMBOLS NO WRITING, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
+  
+  // Build image prompts from the actual battle scene text
+  const sceneToPrompt = (sceneText: string, sceneHint: string) => {
+    // Strip any HTML and truncate to keep prompt focused
+    const clean = sceneText.replace(/<[^>]*>/g, '').trim().slice(0, 200);
+    return `${clean}, ${animalA} and ${animalB}, ${sceneHint}, ${BATTLE_STYLE}, ${BATTLE_NEG}`;
+  };
+
   const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
-    generateImage(`Exactly one ${animalA} on the left facing exactly one ${animalB} on the right, intense staredown before battle, dramatic lighting, two separate distinct animals in natural poses, realistic wildlife illustration, ${battleNeg}`, `${imgPrefix}-cover`),
-    generateImage(`Exactly one ${animalA} and exactly one ${animalB} circling each other cautiously, tense confrontation, sizing each other up in the wild, both in natural animal stances, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle1`),
-    generateImage(`Exactly one ${animalA} lunging to attack exactly one ${animalB}, first strike with natural weapons like teeth claws or horns, explosive action shot, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle2`),
-    generateImage(`Exactly one ${animalB} fighting back against exactly one ${animalA}, fierce counterattack using natural animal abilities, intense combat between these two animals only, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle3`),
-    generateImage(`Exactly one ${animalA} and exactly one ${animalB} locked in close combat, intense physical struggle using natural animal strength, dramatic dynamic pose, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle4`),
-    generateImage(`Exactly one ${animalA} and exactly one ${animalB} in the decisive final moment, one clearly gaining the advantage over the other, climactic battle scene, realistic wildlife art, ${battleNeg}`, `${imgPrefix}-battle5`),
-    generateImage(`Exactly one ${battle.winner} standing proud after victory, natural dominant animal posture on all fours, surveying territory, nature documentary photography style, single animal only, ${battleNeg}`, `${imgPrefix}-victory`),
+    generateImage(`${animalA} on the left facing ${animalB} on the right, intense staredown before battle, two separate distinct animals in natural poses ready to fight, tense atmosphere, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-cover`),
+    generateImage(sceneToPrompt(battle.scenes[0], 'initial confrontation, sizing each other up'), `${imgPrefix}-battle1`),
+    generateImage(sceneToPrompt(battle.scenes[1], 'first strike, explosive action shot'), `${imgPrefix}-battle2`),
+    generateImage(sceneToPrompt(battle.scenes[2], 'fierce counterattack, intense combat'), `${imgPrefix}-battle3`),
+    generateImage(sceneToPrompt(battle.scenes[3], 'momentum shift, dramatic turning point'), `${imgPrefix}-battle4`),
+    generateImage(sceneToPrompt(battle.scenes[4], 'decisive finale, climactic battle moment'), `${imgPrefix}-battle5`),
+    generateImage(`${battle.winner} standing proud after victory, natural dominant animal posture, surveying territory, single animal only, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-victory`),
   ]);
   console.log('Battle images generated');
   
