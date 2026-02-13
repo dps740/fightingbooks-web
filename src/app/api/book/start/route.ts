@@ -565,7 +565,7 @@ async function saveStatsToCache(key: string, stats: ComparativeStats): Promise<v
 }
 
 // Cache version - bump this to invalidate old cached stats when logic changes
-const STATS_CACHE_VERSION = 'v3';
+const STATS_CACHE_VERSION = 'v4';
 
 // Generate comparative stats for both animals in one call for better differentiation
 async function generateComparativeStats(animalA: string, animalB: string): Promise<ComparativeStats> {
@@ -599,9 +599,10 @@ async function generateComparativeStats(animalA: string, animalB: string): Promi
   
   // IMPORTANT: Prompt uses SORTED order so A/B in response matches cache key order.
   // This prevents the bug where scores and notes disagree after a swap.
-  const prompt = `Compare ${sortedA} vs ${sortedB} for a "Who Would Win?" battle book.
+  const prompt = `Compare ${sortedA} vs ${sortedB} for a "Who Would Win?" battle book for KIDS ages 6-10.
 
 Rate each animal from 1-10 in these categories with REAL scientific facts.
+Write the notes in a FUN, EXCITING, kid-friendly style — SHORT punchy sentences, use CAPS for WOW moments, compare to things kids know (cars, bowling balls, school buses), and end each note with "🏆 Edge: [winner]!" or "🏆 Too close to call!" if tied.
 
 CRITICAL: The animal with the BETTER stat in the note MUST have the HIGHER score!
 - If ${sortedA} has higher bite force → ${sortedA} gets higher strength score
@@ -631,11 +632,11 @@ Return JSON only:
   "weaponsB": <number 1-10 for ${sortedB}>,
   "defenseA": <number 1-10 for ${sortedA}>,
   "defenseB": <number 1-10 for ${sortedB}>,
-  "strengthNote": "Compare both animals' bite force/strength - winner of comparison MUST have higher score above",
-  "speedNote": "Compare both animals' speed - faster animal MUST have higher score above",
-  "weaponsNote": "Compare both animals' weapons - better armed animal MUST have higher score above",
-  "defenseNote": "Compare both animals' defense - better defended MUST have higher score above",
-  "keyAdvantage": "One sentence: who has the main advantage and why"
+  "strengthNote": "SHORT and EXCITING! Use CAPS, real measurements, and fun comparisons kids understand. Example: 'The Tiger CRUSHES with 1,050 PSI — enough to crack a BOWLING BALL! The Lion hits 650 PSI. 🏆 Edge: Tiger!' Winner MUST have higher score.",
+  "speedNote": "SHORT and EXCITING! Use CAPS and fun comparisons. Example: 'The Cheetah hits 70 MPH — faster than a car on the HIGHWAY! The Lion maxes out at 50 MPH. 🏆 Edge: Cheetah!' Faster animal MUST have higher score.",
+  "weaponsNote": "SHORT and EXCITING! Use CAPS and measurements. Example: 'Tiger packs 4-INCH razor claws — as long as your FINGER! Lion has 3-inch claws. Both have bone-crushing jaws! 🏆 Edge: Tiger!' Better armed MUST have higher score.",
+  "defenseNote": "SHORT and EXCITING! Use CAPS and vivid descriptions. Example: 'The Crocodile has ARMOR-PLATED skin that can stop a bullet! The Shark relies on speed to dodge. 🏆 Edge: Croc!' Better defended MUST have higher score.",
+  "keyAdvantage": "One DRAMATIC sentence about the key matchup factor. Use CAPS for emphasis. Example: 'The Tiger has the EDGE in raw firepower, but the Lion fights in PRIDES — and backup changes EVERYTHING!'"
 }`;
 
   try {
