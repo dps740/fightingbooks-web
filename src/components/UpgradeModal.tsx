@@ -128,7 +128,7 @@ export default function UpgradeModal({
           {/* Tier options */}
           <div className="space-y-4 mb-4">
             {/* Member tier (show if not already member+) */}
-            {(currentTier === 'unregistered' || currentTier === 'free') && (
+            {currentTier === 'unregistered' && (
               <div className={`rounded-xl p-5 border-2 ${needsUltimate ? 'border-white/20' : 'border-[#FFD700]'} bg-gradient-to-r from-[#1a2a00]/50 to-[#1a1a00]/50`}>
                 <div className="flex justify-between items-center mb-3">
                   <div>
@@ -214,7 +214,7 @@ export default function UpgradeModal({
           </div>
 
           {/* Promo code section */}
-          {(currentTier === 'free' || currentTier === 'member' || (currentTier === 'unregistered' && isAuthenticated)) && (
+          {(currentTier === 'member' || (currentTier === 'unregistered' && isAuthenticated)) && (
             <div className="bg-white/5 rounded-lg p-4 mb-4">
               <p className="text-white/60 text-sm mb-2">Have a promo code?</p>
               {promoSuccess ? (
@@ -242,20 +242,7 @@ export default function UpgradeModal({
             </div>
           )}
 
-          {/* Sign up prompt for unregistered */}
-          {currentTier === 'unregistered' && (
-            <div className="p-3 bg-blue-900/30 rounded-lg border border-blue-500/30 text-center mb-4">
-              <p className="text-white/80 text-sm">
-                🎁 <span className="font-bold">Create a FREE account</span> to unlock 8 animals and tournament mode!
-              </p>
-              <a
-                href="/signup"
-                className="inline-block mt-2 px-6 py-2 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-400 transition-colors"
-              >
-                Sign Up Free
-              </a>
-            </div>
-          )}
+          {/* No free signup tier — guests go straight to Member or Ultimate */}
 
           {/* Close button */}
           <button

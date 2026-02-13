@@ -91,7 +91,7 @@ export async function GET() {
       .single();
 
     // Normalize legacy tier values (tier2/tier3/paid → member)
-    const rawTier = isAdmin ? 'ultimate' : (profile?.tier || 'free');
+    const rawTier = isAdmin ? 'ultimate' : (profile?.tier || 'unregistered');
     const tier: UserTier = normalizeTier(rawTier);
     const tierInfo = getTierInfo(tier);
     const accessibleAnimals = getAccessibleAnimals(tier);

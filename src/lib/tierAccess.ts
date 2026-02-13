@@ -1,24 +1,24 @@
 // User tier definitions and access control
-// v3 Tier Structure:
-// - unregistered: 4 free sample books only (Lion vs Tiger, etc.), no login
-// - free (signup): 8 animals, standard + tournament mode
+// v4 Tier Structure:
+// - unregistered: 4 free sample books only (pre-made, read-only, no login needed)
 // - member ($4.99 one-time): All 30 real animals, standard + tournament mode
 // - ultimate ($4.99/month): Everything — all 47+ animals, all modes, CYOA, create-your-own, +2 animals/month
 
-export type UserTier = 'unregistered' | 'free' | 'member' | 'ultimate';
+export type UserTier = 'unregistered' | 'member' | 'ultimate';
 
 // Legacy tier mapping (for existing DB records)
 export function normalizeTier(tier: string): UserTier {
   if (tier === 'ultimate') return 'ultimate';
-  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member') return 'member';
-  if (tier === 'free') return 'free';
+  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member' || tier === 'free') return 'member';
   return 'unregistered';
 }
 
-// Free tier animals (first row of selector grid)
-export const FREE_ANIMALS = [
-  'Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear',
-  'Gorilla', 'Great White Shark', 'Orca', 'Crocodile'
+// The 4 free sample matchups (pre-generated, available without login)
+export const FREE_SAMPLE_MATCHUPS = [
+  { animalA: 'Lion', animalB: 'Tiger' },
+  { animalA: 'Gorilla', animalB: 'Grizzly Bear' },
+  { animalA: 'Great White Shark', animalB: 'Orca' },
+  { animalA: 'Polar Bear', animalB: 'Crocodile' },
 ];
 
 // All real animals (30 total)
@@ -52,16 +52,22 @@ export const ALL_ANIMALS = [...REAL_ANIMALS, ...DINOSAUR_ANIMALS, ...FANTASY_ANI
 export function getAccessibleAnimals(tier: UserTier): string[] {
   switch (tier) {
     case 'unregistered':
-      return ['Lion', 'Tiger'];
-    case 'free':
-      return FREE_ANIMALS;
+      return []; // No animal selector access — only 4 pre-made sample books
     case 'member':
       return REAL_ANIMALS;
     case 'ultimate':
       return ALL_ANIMALS;
     default:
-      return FREE_ANIMALS;
+      return [];
   }
+}
+
+// Check if a matchup is a free sample (available to everyone)
+export function isFreeSampleMatchup(animalA: string, animalB: string): boolean {
+  return FREE_SAMPLE_MATCHUPS.some(m =>
+    (m.animalA === animalA && m.animalB === animalB) ||
+    (m.animalA === animalB && m.animalB === animalA)
+  );
 }
 
 // Check if an animal is accessible for a tier
@@ -94,8 +100,7 @@ export function canAccessCreateOwn(tier: UserTier): boolean {
 export const CUSTOM_ANIMAL_MONTHLY_LIMIT = 20;
 
 // Get the animal's category
-export function getAnimalCategory(animal: string): 'free' | 'real' | 'dinosaur' | 'fantasy' {
-  if (FREE_ANIMALS.includes(animal)) return 'free';
+export function getAnimalCategory(animal: string): 'real' | 'dinosaur' | 'fantasy' {
   if (REAL_ANIMALS.includes(animal)) return 'real';
   if (DINOSAUR_ANIMALS.includes(animal)) return 'dinosaur';
   if (FANTASY_ANIMALS.includes(animal)) return 'fantasy';
@@ -104,7 +109,6 @@ export function getAnimalCategory(animal: string): 'free' | 'real' | 'dinosaur' 
 
 // Get required tier to access an animal
 export function getRequiredTier(animal: string): UserTier {
-  if (FREE_ANIMALS.includes(animal)) return 'free';
   if (REAL_ANIMALS.includes(animal)) return 'member';
   return 'ultimate'; // dinos + fantasy
 }
@@ -113,7 +117,6 @@ export function getRequiredTier(animal: string): UserTier {
 export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier; name: string; price: string; animals: number; recurring?: boolean }> {
   switch (currentTier) {
     case 'unregistered':
-    case 'free':
       return [
         { tier: 'member', name: 'Member', price: '$4.99', animals: 30 },
         { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 47, recurring: true },
@@ -133,14 +136,12 @@ export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier
 export function getTierInfo(tier: UserTier): { name: string; animals: number; badge: string; description: string } {
   switch (tier) {
     case 'unregistered':
-      return { name: 'Guest', animals: 2, badge: '🎫', description: '4 free sample books' };
-    case 'free':
-      return { name: 'Free', animals: 8, badge: '⭐', description: '8 animals, standard mode' };
+      return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
     case 'member':
       return { name: 'Member', animals: 30, badge: '🥊', description: '30 real animals + tournaments' };
     case 'ultimate':
       return { name: 'Ultimate', animals: 47, badge: '👑', description: 'Everything + CYOA + create your own' };
     default:
-      return { name: 'Free', animals: 8, badge: '⭐', description: '8 animals, standard mode' };
+      return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
   }
 }

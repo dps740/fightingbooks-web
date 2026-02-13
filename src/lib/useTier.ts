@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserTier, getAccessibleAnimals, FREE_ANIMALS, canAccessCyoa, canAccessTournament } from './tierAccess';
+import { UserTier, getAccessibleAnimals, canAccessCyoa, canAccessTournament, getRequiredTier } from './tierAccess';
 
 interface TierData {
   tier: UserTier;
@@ -22,7 +22,7 @@ export function useTier(): TierData {
   const [data, setData] = useState<TierData>({
     tier: 'unregistered',
     name: 'Guest',
-    animals: ['Lion', 'Tiger'],
+    animals: [],
     badge: '🎫',
     isAuthenticated: false,
     cyoaAccess: false,
@@ -74,7 +74,9 @@ export function isAnimalLocked(tier: UserTier, animalName: string): boolean {
 // Get lock reason for an animal
 export function getLockReason(tier: UserTier, animalName: string): string | null {
   if (!isAnimalLocked(tier, animalName)) return null;
-  return 'Unlock all 47 animals for $4.99';
+  const required = getRequiredTier(animalName);
+  if (required === 'ultimate') return 'Requires Ultimate ($4.99/mo)';
+  return 'Requires Member ($4.99)';
 }
 
 // Check if CYOA is locked (client-side)

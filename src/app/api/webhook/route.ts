@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
         .in('tier', ['member', 'paid', 'tier2', 'tier3']);
 
       // If they previously purchased member, downgrade to member; otherwise downgrade to free
-      const downgradeTier = (purchases && purchases.length > 0) ? 'member' : 'free';
+      const downgradeTier = (purchases && purchases.length > 0) ? 'member' : 'unregistered';
 
       const { error: updateError } = await supabase
         .from('users')

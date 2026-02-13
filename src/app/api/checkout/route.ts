@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    const currentTier = profile?.tier || 'free';
+    const currentTier = profile?.tier || 'unregistered';
 
     // Already at or above requested tier
     if (tier === 'member' && (currentTier === 'member' || currentTier === 'paid' || currentTier === 'tier2' || currentTier === 'tier3' || currentTier === 'ultimate')) {

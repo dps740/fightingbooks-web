@@ -11,6 +11,7 @@ import {
   canAccessMatchup,
   canAccessAnimal,
   canAccessCyoa,
+  isFreeSampleMatchup,
   getRequiredTier,
   getTierInfo,
   getUpgradeOptions,
@@ -1576,8 +1577,8 @@ export async function POST(request: NextRequest) {
     // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();
 
-    // Check if user can access this matchup (skip for admin bypass)
-    if (!isAdminBypass && !canAccessMatchup(tier, animalA, animalB)) {
+    // Check if user can access this matchup (skip for admin bypass and free sample matchups)
+    if (!isAdminBypass && !isFreeSampleMatchup(animalA, animalB) && !canAccessMatchup(tier, animalA, animalB)) {
       const upgradeOptions = getUpgradeOptions(tier);
       return NextResponse.json(
         {
