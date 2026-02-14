@@ -120,8 +120,8 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
 }
@@ -145,31 +145,67 @@ body::after {
 
 /* VS impact lines — radial burst */
 @keyframes vs-pulse {
-  0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
-  50% { opacity: 0.6; transform: scale(1.15) rotate(3deg); }
+  0%, 100% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.85; transform: scale(1.2) rotate(5deg); }
 }
 
 .vs-impact-lines {
   position: absolute;
-  inset: -40px;
+  inset: -60px;
   background: conic-gradient(
     from 0deg,
-    transparent 0deg, rgba(255,215,0,0.15) 3deg, transparent 6deg,
-    transparent 30deg, rgba(255,215,0,0.15) 33deg, transparent 36deg,
-    transparent 60deg, rgba(255,215,0,0.15) 63deg, transparent 66deg,
-    transparent 90deg, rgba(255,215,0,0.15) 93deg, transparent 96deg,
-    transparent 120deg, rgba(255,215,0,0.15) 123deg, transparent 126deg,
-    transparent 150deg, rgba(255,215,0,0.15) 153deg, transparent 156deg,
-    transparent 180deg, rgba(255,215,0,0.15) 183deg, transparent 186deg,
-    transparent 210deg, rgba(255,215,0,0.15) 213deg, transparent 216deg,
-    transparent 240deg, rgba(255,215,0,0.15) 243deg, transparent 246deg,
-    transparent 270deg, rgba(255,215,0,0.15) 273deg, transparent 276deg,
-    transparent 300deg, rgba(255,215,0,0.15) 303deg, transparent 306deg,
-    transparent 330deg, rgba(255,215,0,0.15) 333deg, transparent 336deg,
+    transparent 0deg, rgba(255,215,0,0.35) 2deg, transparent 5deg,
+    transparent 15deg, rgba(255,215,0,0.35) 17deg, transparent 20deg,
+    transparent 30deg, rgba(255,215,0,0.35) 32deg, transparent 35deg,
+    transparent 45deg, rgba(255,215,0,0.35) 47deg, transparent 50deg,
+    transparent 60deg, rgba(255,215,0,0.35) 62deg, transparent 65deg,
+    transparent 75deg, rgba(255,215,0,0.35) 77deg, transparent 80deg,
+    transparent 90deg, rgba(255,215,0,0.35) 92deg, transparent 95deg,
+    transparent 105deg, rgba(255,215,0,0.35) 107deg, transparent 110deg,
+    transparent 120deg, rgba(255,215,0,0.35) 122deg, transparent 125deg,
+    transparent 135deg, rgba(255,215,0,0.35) 137deg, transparent 140deg,
+    transparent 150deg, rgba(255,215,0,0.35) 152deg, transparent 155deg,
+    transparent 165deg, rgba(255,215,0,0.35) 167deg, transparent 170deg,
+    transparent 180deg, rgba(255,215,0,0.35) 182deg, transparent 185deg,
+    transparent 195deg, rgba(255,215,0,0.35) 197deg, transparent 200deg,
+    transparent 210deg, rgba(255,215,0,0.35) 212deg, transparent 215deg,
+    transparent 225deg, rgba(255,215,0,0.35) 227deg, transparent 230deg,
+    transparent 240deg, rgba(255,215,0,0.35) 242deg, transparent 245deg,
+    transparent 255deg, rgba(255,215,0,0.35) 257deg, transparent 260deg,
+    transparent 270deg, rgba(255,215,0,0.35) 272deg, transparent 275deg,
+    transparent 285deg, rgba(255,215,0,0.35) 287deg, transparent 290deg,
+    transparent 300deg, rgba(255,215,0,0.35) 302deg, transparent 305deg,
+    transparent 315deg, rgba(255,215,0,0.35) 317deg, transparent 320deg,
+    transparent 330deg, rgba(255,215,0,0.35) 332deg, transparent 335deg,
+    transparent 345deg, rgba(255,215,0,0.35) 347deg, transparent 350deg,
     transparent 360deg
   );
   border-radius: 50%;
-  animation: vs-pulse 3s ease-in-out infinite;
+  animation: vs-pulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Halftone dot pattern for section backgrounds */
+.halftone-bg {
+  background-image: radial-gradient(circle, rgba(255,215,0,0.07) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+/* Speed lines for hero section */
+@keyframes speed-line-left {
+  0% { transform: translateX(100%) scaleX(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(-100%) scaleX(1); opacity: 0; }
+}
+@keyframes speed-line-right {
+  0% { transform: translateX(-100%) scaleX(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateX(100%) scaleX(1); opacity: 0; }
+}
+.speed-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
   pointer-events: none;
 }
 

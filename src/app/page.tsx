@@ -73,16 +73,26 @@ const CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; count: 
   { key: 'fantasy', label: 'Fantasy', icon: '🐉', count: 9, locked: true },
 ];
 
-// Section divider — diagonal slash with gold accent
+// Section divider — dramatic crossed slashes
 const SectionDivider = () => (
-  <div className="relative py-4 overflow-hidden">
-    <div className="absolute left-0 right-0 h-px top-1/2" style={{
-      background: 'linear-gradient(90deg, transparent 5%, rgba(255,215,0,0.4) 30%, rgba(255,215,0,0.6) 50%, rgba(255,215,0,0.4) 70%, transparent 95%)',
-      transform: 'rotate(-0.8deg)',
+  <div className="relative py-6 overflow-hidden">
+    {/* Main gold line */}
+    <div className="absolute left-0 right-0 top-1/2" style={{
+      height: '2px',
+      background: 'linear-gradient(90deg, transparent 2%, rgba(255,215,0,0.6) 20%, rgba(255,215,0,0.9) 50%, rgba(255,215,0,0.6) 80%, transparent 98%)',
+      transform: 'rotate(-1deg)',
+      boxShadow: '0 0 8px rgba(255,215,0,0.3)',
     }} />
-    <div className="absolute left-0 right-0 h-px top-1/2 mt-1" style={{
-      background: 'linear-gradient(90deg, transparent 15%, rgba(139,0,0,0.3) 40%, rgba(139,0,0,0.5) 50%, rgba(139,0,0,0.3) 60%, transparent 85%)',
-      transform: 'rotate(0.5deg)',
+    {/* Red accent line */}
+    <div className="absolute left-0 right-0 top-1/2 mt-1" style={{
+      height: '1px',
+      background: 'linear-gradient(90deg, transparent 10%, rgba(139,0,0,0.5) 30%, rgba(196,30,58,0.7) 50%, rgba(139,0,0,0.5) 70%, transparent 90%)',
+      transform: 'rotate(0.7deg)',
+    }} />
+    {/* Center diamond accent */}
+    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{
+      background: '#FFD700',
+      boxShadow: '0 0 10px rgba(255,215,0,0.5)',
     }} />
   </div>
 );
@@ -276,7 +286,7 @@ export default function Home() {
     <main className="min-h-screen font-comic relative" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
       {/* Vignette overlay */}
       <div className="fixed inset-0 pointer-events-none z-[1]" style={{
-        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)',
+        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
       }} />
       
       {/* Header with Account Menu */}
@@ -293,10 +303,28 @@ export default function Home() {
 
       {/* 1. HERO — Lead with benefit */}
       <section className="py-6 px-4 relative overflow-hidden">
-        {/* Arena spotlight glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.04) 40%, transparent 70%)',
+        {/* Arena spotlight glow — dual lights */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 35%, transparent 65%)',
         }} />
+        <div className="absolute top-20 left-1/4 w-[300px] h-[300px] pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(196,30,58,0.1) 0%, transparent 60%)',
+        }} />
+        <div className="absolute top-20 right-1/4 w-[300px] h-[300px] pointer-events-none" style={{
+          background: 'radial-gradient(circle, rgba(30,79,196,0.1) 0%, transparent 60%)',
+        }} />
+        {/* Animated speed lines */}
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="speed-line" style={{
+            top: `${15 + i * 14}%`,
+            left: 0,
+            right: 0,
+            width: `${30 + Math.random() * 40}%`,
+            marginLeft: i % 2 === 0 ? 'auto' : '0',
+            marginRight: i % 2 === 0 ? '0' : 'auto',
+            animation: `${i % 2 === 0 ? 'speed-line-left' : 'speed-line-right'} ${3 + i * 0.7}s ${i * 0.5}s ease-in-out infinite`,
+          }} />
+        ))}
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <p className="text-white/50 text-sm mb-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
             Inspired by the classic Jerry Pallotta series
@@ -347,10 +375,10 @@ export default function Home() {
       <SectionDivider />
 
       {/* PRICING SECTION — Moved up for conversion */}
-      <section id="pricing" className="py-8 px-4 relative overflow-hidden">
+      <section id="pricing" className="py-8 px-4 relative overflow-hidden halftone-bg">
         {/* Ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.06) 0%, transparent 60%)',
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[700px] pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.04) 40%, transparent 65%)',
         }} />
         <div className="max-w-5xl mx-auto relative z-10">
           <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
@@ -760,7 +788,7 @@ export default function Home() {
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ repeat: Infinity, duration: 2 }}
                     className="relative z-10 bg-[#FFD700] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000]"
-                    style={{ boxShadow: '0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.15)' }}
+                    style={{ boxShadow: '0 0 25px rgba(255,215,0,0.6), 0 0 50px rgba(255,215,0,0.25), 0 0 80px rgba(255,215,0,0.1)' }}
                   >
                     <span className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#8B0000]">VS</span>
                   </motion.div>
