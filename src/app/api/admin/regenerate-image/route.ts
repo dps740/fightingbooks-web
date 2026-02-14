@@ -51,7 +51,7 @@ const PAGE_TO_IMAGE_KEY: Record<string, string> = {
   'victory': 'victory',
 };
 
-const BOOK_CACHE_VERSION = 'v7';
+const BOOK_CACHE_VERSION = 'v9';
 
 function getCacheKey(animalA: string, animalB: string, environment: string): string {
   const sorted = [animalA.toLowerCase(), animalB.toLowerCase()].sort();
@@ -210,8 +210,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate new image
+    // For victory page, determine the winner from the cached book content
+    let effectiveAnimalA = animalA;
+    let effectiveAnimalB = animalB;
+    if (imageKey === 'victory') {
+      const victoryPage = cachedBook.pages.find((p: any) => p.type === 'victory');
+      const winnerMatch = victoryPage?.content?.match(/victory-name[^>]*>([^<]+)/i);
+      if (winnerMatch) {
+        const winner = winnerMatch[1].trim().toLowerCase();
+        // Put winner as animalA so the prompt features the winner
+        effectiveAnimalA = winner;
+        effectiveAnimalB = winner === animalA.toLowerCase() ? animalB : animalA;
+      }
+    }
     const promptFn = IMAGE_PROMPTS[imageKey];
-    const prompt = promptFn(animalA, animalB);
+    const prompt = imageKey === 'victory' 
+      ? `Exactly one ${effectiveAnimalA} standing proud after victory, natural dominant animal posture on all fours, surveying territory, nature documentary photography style, single ${effectiveAnimalA} only, ${BATTLE_NEG}`
+      : promptFn(animalA, animalB);
     
     // Sort for consistent cache key
     const sortedNames = [animalA.toLowerCase().replace(/\s+/g, '-'), animalB.toLowerCase().replace(/\s+/g, '-')].sort();
