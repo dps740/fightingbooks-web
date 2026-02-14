@@ -73,6 +73,13 @@ const CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; count: 
   { key: 'fantasy', label: 'Fantasy', icon: '🐉', count: 9, locked: true },
 ];
 
+// Section divider component
+const SectionDivider = () => (
+  <div className="max-w-4xl mx-auto px-8 py-2">
+    <div className="h-px bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
+  </div>
+);
+
 export default function Home() {
   const router = useRouter();
   const [animalA, setAnimalA] = useState('');
@@ -263,18 +270,27 @@ export default function Home() {
       
       {/* Header with Account Menu */}
       <header className="px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-end items-center">
-          <AccountMenu 
-            isAuthenticated={tierData.isAuthenticated}
-            email={tierData.email}
-            tier={tierData.tier}
-            onUpgrade={() => { setLockedFeature(undefined); setLockedAnimalClicked(undefined); setShowUpgradeModal(true); }}
-          />
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div /> {/* spacer */}
+          <div className="flex items-center gap-3">
+            <a
+              href="/signup"
+              className="px-5 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-[0_0_15px_rgba(255,215,0,0.4)] hover:shadow-[0_0_25px_rgba(255,215,0,0.6)] hover:scale-105 transition-all"
+            >
+              ✨ SIGN UP FREE
+            </a>
+            <AccountMenu 
+              isAuthenticated={tierData.isAuthenticated}
+              email={tierData.email}
+              tier={tierData.tier}
+              onUpgrade={() => { setLockedFeature(undefined); setLockedAnimalClicked(undefined); setShowUpgradeModal(true); }}
+            />
+          </div>
         </div>
       </header>
 
       {/* 1. HERO — Lead with benefit */}
-      <section className="py-8 px-4">
+      <section className="py-6 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="inline-block bg-[#FFD700] px-4 sm:px-10 py-3 sm:py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]">
@@ -333,94 +349,165 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. CREATE YOUR OWN — Mode Selector + Fighter Grid */}
-      <div id="create">
-        {/* Fighter Carousel */}
-        <section className="py-6 px-4">
-          <div className="max-w-7xl mx-auto overflow-hidden">
-            <motion.div 
-              className="flex gap-3"
-              animate={{ x: [0, -2000] }}
-              transition={{ 
-                x: { repeat: Infinity, duration: 30, ease: "linear" }
-              }}
-            >
-              {[...FIGHTERS, ...FIGHTERS].map((fighter, i) => (
-                <div 
-                  key={`${fighter.name}-${i}`}
-                  className="flex-shrink-0 w-20 h-20 rounded-full overflow-hidden border-3 border-[#FFD700]/50 shadow-lg"
-                >
-                  <img 
-                    src={getImagePath(fighter.name)} 
-                    alt={fighter.name} 
-                    className="w-full h-full object-cover"
-                  />
+      {/* Divider: Free books → Pricing */}
+      <SectionDivider />
+
+      {/* PRICING SECTION — Moved up for conversion */}
+      <section id="pricing" className="py-8 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
+            💰 CHOOSE YOUR PLAN
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6 items-center">
+            {/* Free */}
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col opacity-80">
+              <h3 className="font-bangers text-2xl text-white text-center mb-1">FREE</h3>
+              <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ 8 free animals</li>
+                <li>✅ Standard battle books</li>
+                <li>✅ Download & print PDFs</li>
+              </ul>
+              <a
+                href="#sample-books"
+                className="block text-center px-6 py-3 rounded-lg font-bangers text-lg bg-white/10 text-white border-2 border-white/30 hover:bg-white/20 transition-all"
+              >
+                Start Reading
+              </a>
+            </div>
+
+            {/* Member — DOMINANT card */}
+            <div className="relative bg-[#1a1a2e] rounded-xl p-8 border-3 border-[#FFD700] flex flex-col my-4 md:my-0 md:scale-110 z-10 overflow-hidden" style={{ boxShadow: '0 0 30px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.1)' }}>
+              {/* Animated shimmer */}
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
+              <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-20">
+                <div className="bg-[#FFD700] text-black px-6 py-1.5 rounded-b-xl text-sm font-bold animate-pulse shadow-lg" style={{ textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>
+                  ⭐ MOST POPULAR ⭐
                 </div>
-              ))}
-            </motion.div>
+              </div>
+              <h3 className="font-bangers text-3xl text-[#FFD700] text-center mb-1 mt-3">MEMBER</h3>
+              <p className="font-bangers text-4xl text-white text-center">$4.99</p>
+              <p className="text-center text-sm text-white/60 mb-1">💰 One-time payment</p>
+              <p className="font-bangers text-lg text-center mb-4" style={{ color: '#FFD700' }}>one time — forever!</p>
+              <ul className="text-white/90 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ All 30 real animals</li>
+                <li>✅ 🏆 Tournament mode</li>
+                <li>✅ 435+ matchups</li>
+                <li>✅ Download & print PDFs</li>
+              </ul>
+              <button
+                onClick={() => handleUpgrade('member')}
+                className="block w-full text-center px-6 py-4 rounded-lg font-bangers text-xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg"
+              >
+                Get Full Access →
+              </button>
+            </div>
+
+            {/* Ultimate */}
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/50 flex flex-col opacity-80">
+              <h3 className="font-bangers text-2xl text-purple-400 text-center mb-1">ULTIMATE</h3>
+              <p className="font-bangers text-3xl text-white text-center">$4.99<span className="text-lg text-white/60">/mo</span></p>
+              <p className="text-purple-400/80 text-center text-xs mb-4">Cancel anytime</p>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ Everything in Member</li>
+                <li>✅ 🦕 Dinosaurs (8)</li>
+                <li>✅ 🐉 Fantasy creatures (9)</li>
+                <li>✅ 🎭 CYOA Adventure mode</li>
+                <li>✅ ✨ Create Your Own (coming soon)</li>
+                <li>✅ 2 new animals/month</li>
+              </ul>
+              <button
+                onClick={() => handleUpgrade('ultimate')}
+                className="block w-full text-center px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all"
+              >
+                Go Ultimate
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Divider: Pricing → Creation section */}
+      <SectionDivider />
+
+      {/* CREATE YOUR BATTLE — Mode Selector + Fighter Grid */}
+      <div id="create">
+        {/* Section header */}
+        <section className="pt-6 pb-2 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="font-bangers text-4xl sm:text-5xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
+              ⚔️ CREATE YOUR BATTLE
+            </h2>
+            <p className="text-white/70 text-lg mt-2">
+              Pick your fighters and watch them clash!
+            </p>
           </div>
         </section>
 
-        {/* Mode Selector — No step gate, show directly */}
-        <section className="px-4 pt-2 pb-4">
+        {/* Mode Selector — Compact */}
+        <section className="px-4 pt-2 pb-3">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-4 border-[#FFD700] shadow-2xl">
-              <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
+            <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700] shadow-2xl">
+              <h3 className="font-bangers text-xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
                 🎮 CHOOSE YOUR MODE
-              </h2>
+              </h3>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-3">
                 <button
                   onClick={() => handleGameModeSelect('classic')}
-                  className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                  className={`relative overflow-hidden rounded-lg p-4 border-3 transition-all ${
                     gameMode === 'classic' 
-                      ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                      ? 'border-yellow-400 ring-3 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.5)]' 
                       : 'border-green-600 hover:border-green-400'
                   }`}
                   style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
                 >
-                  <div className="text-center">
-                    <div className="text-5xl mb-3">📖</div>
-                    <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
-                    <p className="text-white/80 text-sm">Watch the battle unfold</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl">📖</div>
+                    <div className="text-left">
+                      <h4 className="font-bangers text-xl text-white">CLASSIC</h4>
+                      <p className="text-white/70 text-xs">Watch the battle unfold</p>
+                    </div>
                   </div>
                   {gameMode === 'classic' && (
-                    <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                      <span className="text-black font-bold">✓</span>
+                    <div className="absolute top-2 right-2 bg-yellow-400 w-6 h-6 rounded-full flex items-center justify-center">
+                      <span className="text-black font-bold text-sm">✓</span>
                     </div>
                   )}
                 </button>
 
                 <button
                   onClick={() => handleGameModeSelect('adventure')}
-                  className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                  className={`relative overflow-hidden rounded-lg p-4 border-3 transition-all ${
                     gameMode === 'adventure' 
-                      ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                      ? 'border-yellow-400 ring-3 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.5)]' 
                       : 'border-purple-600 hover:border-purple-400'
                   }`}
                   style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
                 >
-                  <div className="text-center">
-                    <div className="text-5xl mb-3">🎭</div>
-                    <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
-                    <p className="text-white/80 text-sm">YOU decide what happens!</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl">🎭</div>
+                    <div className="text-left">
+                      <h4 className="font-bangers text-xl text-white">ADVENTURE</h4>
+                      <p className="text-white/70 text-xs">YOU decide what happens!</p>
+                    </div>
                     {isCyoaLocked(tierData.tier) && (
-                      <span className="inline-block mt-2 text-xs bg-[#FFD700] text-black px-2 py-1 rounded-full font-bold">👑 ULTIMATE</span>
+                      <span className="text-xs bg-[#FFD700] text-black px-2 py-0.5 rounded-full font-bold ml-auto">👑 ULTIMATE</span>
                     )}
                   </div>
                   {gameMode === 'adventure' && (
-                    <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                      <span className="text-black font-bold">✓</span>
+                    <div className="absolute top-2 right-2 bg-yellow-400 w-6 h-6 rounded-full flex items-center justify-center">
+                      <span className="text-black font-bold text-sm">✓</span>
                     </div>
                   )}
                 </button>
               </div>
               
-              {/* Tournament toggle */}
-              <div className="mt-4 text-center">
+              {/* Tournament toggle — inline */}
+              <div className="mt-3 flex items-center justify-center gap-3">
                 <button
                   onClick={handleTournamentToggle}
-                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                     battleType === 'tournament'
                       ? 'bg-amber-500 text-black'
                       : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
@@ -428,20 +515,17 @@ export default function Home() {
                 >
                   🏆 Tournament Mode
                   {isTournamentLocked(tierData.tier) && (
-                    <span className="text-xs bg-[#FFD700] text-black px-2 py-0.5 rounded-full">🔒 MEMBER</span>
+                    <span className="text-[10px] bg-[#FFD700] text-black px-1.5 py-0.5 rounded-full">🔒 MEMBER</span>
                   )}
                   {battleType === 'tournament' && <span>✓</span>}
                 </button>
-              </div>
-              
-              <div className="mt-4 p-4 bg-black/30 rounded-lg">
-                <p className="text-white/90 text-sm text-center">
+                <span className="text-white/50 text-xs">
                   {battleType === 'tournament'
-                    ? '🏆 Pick 8 champions to battle through the bracket!'
+                    ? '🏆 Pick 8 champions for a bracket!'
                     : gameMode === 'classic' 
-                    ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
-                    : '🎭 Make critical choices that shape the battle! Your decisions determine who wins!'}
-                </p>
+                    ? '📖 Full battle with facts & illustrations' 
+                    : '🎭 Your choices shape the battle!'}
+                </span>
               </div>
             </div>
           </div>
@@ -935,82 +1019,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* PRICING SECTION */}
-      <section id="pricing" className="py-12 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-8" style={{ textShadow: '3px 3px 0 #000' }}>
-            💰 CHOOSE YOUR PLAN
-          </h2>
-          <div className="grid md:grid-cols-3 gap-6 items-center">
-            {/* Free */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col opacity-80">
-              <h3 className="font-bangers text-2xl text-white text-center mb-1">FREE</h3>
-              <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
-              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ 8 free animals</li>
-                <li>✅ Standard battle books</li>
-                <li>✅ Download & print PDFs</li>
-              </ul>
-              <a
-                href="#sample-books"
-                className="block text-center px-6 py-3 rounded-lg font-bangers text-lg bg-white/10 text-white border-2 border-white/30 hover:bg-white/20 transition-all"
-              >
-                Start Reading
-              </a>
-            </div>
-
-            {/* Member — DOMINANT card */}
-            <div className="relative bg-[#1a1a2e] rounded-xl p-8 border-3 border-[#FFD700] flex flex-col my-4 md:my-0 md:scale-110 z-10 overflow-hidden" style={{ boxShadow: '0 0 30px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.1)' }}>
-              {/* Animated shimmer */}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-20">
-                <div className="bg-[#FFD700] text-black px-6 py-1.5 rounded-b-xl text-sm font-bold animate-pulse shadow-lg" style={{ textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>
-                  ⭐ MOST POPULAR ⭐
-                </div>
-              </div>
-              <h3 className="font-bangers text-3xl text-[#FFD700] text-center mb-1 mt-3">MEMBER</h3>
-              <p className="font-bangers text-4xl text-white text-center">$4.99</p>
-              <p className="font-bangers text-lg text-center mb-4" style={{ color: '#FFD700' }}>one time — forever!</p>
-              <ul className="text-white/90 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ All 30 real animals</li>
-                <li>✅ 🏆 Tournament mode</li>
-                <li>✅ 435+ matchups</li>
-                <li>✅ Download & print PDFs</li>
-              </ul>
-              <button
-                onClick={() => handleUpgrade('member')}
-                className="block w-full text-center px-6 py-4 rounded-lg font-bangers text-xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg"
-              >
-                Get Full Access →
-              </button>
-            </div>
-
-            {/* Ultimate */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/50 flex flex-col opacity-80">
-              <h3 className="font-bangers text-2xl text-purple-400 text-center mb-1">ULTIMATE</h3>
-              <p className="font-bangers text-3xl text-white text-center">$4.99<span className="text-lg text-white/60">/mo</span></p>
-              <p className="text-purple-400/80 text-center text-xs mb-4">Cancel anytime</p>
-              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ Everything in Member</li>
-                <li>✅ 🦕 Dinosaurs (8)</li>
-                <li>✅ 🐉 Fantasy creatures (9)</li>
-                <li>✅ 🎭 CYOA Adventure mode</li>
-                <li>✅ ✨ Create Your Own (coming soon)</li>
-                <li>✅ 2 new animals/month</li>
-              </ul>
-              <button
-                onClick={() => handleUpgrade('ultimate')}
-                className="block w-full text-center px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all"
-              >
-                Go Ultimate
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Divider: Creation → Blog CTA */}
+      <SectionDivider />
 
       {/* Blog CTA */}
-      <section className="py-8 px-4 bg-black/30">
+      <section className="py-6 px-4 bg-black/30">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
             <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ letterSpacing: '2px' }}>
