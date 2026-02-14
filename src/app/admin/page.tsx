@@ -79,7 +79,7 @@ export default function AdminPage() {
   const [cacheLoading, setCacheLoading] = useState(false);
   const [cacheError, setCacheError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'books' | 'cyoa'>('books');
+  const [activeTab, setActiveTab] = useState<'books' | 'cyoa' | 'flagged'>('books');
   const [expandedBook, setExpandedBook] = useState<string | null>(null);
   const [regenLoading, setRegenLoading] = useState<string | null>(null);
   const [regenResult, setRegenResult] = useState<{bookName: string; pageId: string; success: boolean; message: string} | null>(null);
@@ -93,6 +93,25 @@ export default function AdminPage() {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [cyoaImageLoading, setCyoaImageLoading] = useState<string | null>(null);
   const [cyoaImageResult, setCyoaImageResult] = useState<{success: boolean; message: string} | null>(null);
+
+  // Flagged images state
+  interface ImageReport {
+    id: string;
+    animal_a: string;
+    animal_b: string;
+    page_id: string;
+    image_url: string;
+    reason: string;
+    status: string;
+    reported_at: string;
+    resolved_at?: string;
+  }
+  const [flaggedReports, setFlaggedReports] = useState<ImageReport[]>([]);
+  const [flaggedLoading, setFlaggedLoading] = useState(false);
+  const [flaggedError, setFlaggedError] = useState('');
+  const [flaggedFilter, setFlaggedFilter] = useState<'pending' | 'resolved' | 'dismissed'>('pending');
+  const [flaggedRegenLoading, setFlaggedRegenLoading] = useState<string | null>(null);
+  const [flaggedActionResult, setFlaggedActionResult] = useState<{id: string; success: boolean; message: string} | null>(null);
 
   // Check admin auth on mount
   useEffect(() => {
@@ -204,6 +223,81 @@ export default function AdminPage() {
     setCyoaDeleteLoading(null);
   };
 
+  // Load flagged image reports
+  const loadFlaggedImages = async () => {
+    setFlaggedLoading(true);
+    setFlaggedError('');
+    try {
+      const response = await fetch(`/api/report-image?status=${flaggedFilter}`, {
+        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to load reports');
+      setFlaggedReports(data.reports || []);
+    } catch (err) {
+      setFlaggedError(err instanceof Error ? err.message : 'Failed to load flagged images');
+    }
+    setFlaggedLoading(false);
+  };
+
+  // Regenerate a flagged image
+  const regenerateFlaggedImage = async (report: ImageReport) => {
+    setFlaggedRegenLoading(report.id);
+    setFlaggedActionResult(null);
+
+    try {
+      // Use the existing admin regenerate-image endpoint
+      const response = await fetch('/api/admin/regenerate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          animalA: report.animal_a.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          animalB: report.animal_b.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          pageId: report.page_id,
+          adminKey: ADMIN_KEY,
+        }),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        // Mark report as resolved
+        await fetch('/api/report-image', {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${CACHE_SECRET}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: report.id, status: 'resolved' }),
+        });
+        setFlaggedActionResult({ id: report.id, success: true, message: 'Regenerated & resolved!' });
+        // Refresh list
+        await loadFlaggedImages();
+      } else {
+        setFlaggedActionResult({ id: report.id, success: false, message: data.error || 'Regeneration failed' });
+      }
+    } catch (err) {
+      setFlaggedActionResult({ id: report.id, success: false, message: 'Network error' });
+    }
+    setFlaggedRegenLoading(null);
+  };
+
+  // Dismiss a flagged image (mark as not needing regen)
+  const dismissFlaggedImage = async (reportId: string) => {
+    try {
+      await fetch('/api/report-image', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${CACHE_SECRET}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: reportId, status: 'dismissed' }),
+      });
+      await loadFlaggedImages();
+    } catch (err) {
+      setFlaggedError('Failed to dismiss report');
+    }
+  };
+
   // Regenerate a specific CYOA image
   const regenerateCyoaImage = async (matchupKey: string, pathKey: string, imageId: string) => {
     setCyoaImageLoading(`${pathKey}-${imageId}`);
@@ -276,8 +370,10 @@ export default function AdminPage() {
       loadCache();
     } else if (activeTab === 'cyoa') {
       loadCyoa();
+    } else if (activeTab === 'flagged') {
+      loadFlaggedImages();
     }
-  }, [activeTab]);
+  }, [activeTab, flaggedFilter]);
 
   const formatSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
@@ -356,6 +452,16 @@ export default function AdminPage() {
             }`}
           >
             🎮 CYOA Paths
+          </button>
+          <button
+            onClick={() => setActiveTab('flagged')}
+            className={`px-6 py-3 rounded-lg font-bangers text-lg transition-all border-2 ${
+              activeTab === 'flagged'
+                ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                : 'bg-[#1a1a2e] border-[#FFD700]/30 hover:border-[#FFD700]/50 text-white'
+            }`}
+          >
+            🚩 Flagged Images
           </button>
         </div>
 
@@ -714,12 +820,119 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* FLAGGED IMAGES TAB */}
+        {activeTab === 'flagged' && (
+          <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bangers text-[#FFD700]">🚩 Flagged Images</h2>
+              <div className="flex gap-2">
+                {(['pending', 'resolved', 'dismissed'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setFlaggedFilter(f)}
+                    className={`px-3 py-1 rounded font-comic text-sm transition border ${
+                      flaggedFilter === f
+                        ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                        : 'bg-transparent border-white/20 text-white/70 hover:border-white/40'
+                    }`}
+                  >
+                    {f === 'pending' ? '⏳' : f === 'resolved' ? '✅' : '❌'} {f.charAt(0).toUpperCase() + f.slice(1)}
+                  </button>
+                ))}
+                <button
+                  onClick={loadFlaggedImages}
+                  disabled={flaggedLoading}
+                  className="px-4 py-1 rounded font-bangers transition disabled:opacity-50 ml-2"
+                  style={{ background: 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)', color: 'white' }}
+                >
+                  {flaggedLoading ? '⏳' : '🔄'} Refresh
+                </button>
+              </div>
+            </div>
+
+            {flaggedError && (
+              <div className="bg-red-500/20 border border-red-500 rounded p-3 mb-4 text-red-200">{flaggedError}</div>
+            )}
+
+            {flaggedReports.length === 0 && !flaggedLoading && (
+              <p className="text-white/50 text-center py-12 text-lg">
+                {flaggedFilter === 'pending' ? '🎉 No flagged images — everything looks good!' : `No ${flaggedFilter} reports`}
+              </p>
+            )}
+
+            {flaggedLoading && (
+              <p className="text-[#FFD700] text-center py-8 animate-pulse">Loading reports...</p>
+            )}
+
+            {/* Image report cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {flaggedReports.map(report => {
+                const matchupName = `${report.animal_a.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} vs ${report.animal_b.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
+                const pageLabel = report.page_id === 'cover' ? '📕 Cover'
+                  : report.page_id === 'victory' ? '🏆 Victory'
+                  : `⚔️ ${report.page_id.replace('battle-', 'Battle ')}`;
+
+                return (
+                  <div key={report.id} className="bg-black/30 border border-white/10 rounded-lg overflow-hidden">
+                    {/* Image thumbnail */}
+                    <div className="relative aspect-[4/3] bg-black/50">
+                      <img
+                        src={report.image_url}
+                        alt={`${matchupName} - ${report.page_id}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x300/1a1a1a/666?text=Image+Not+Found'; }}
+                      />
+                    </div>
+
+                    {/* Info */}
+                    <div className="p-3">
+                      <p className="font-bangers text-[#FFD700] text-lg">{matchupName}</p>
+                      <p className="text-white/70 text-sm">{pageLabel}</p>
+                      <p className="text-white/40 text-xs mt-1">
+                        Flagged: {new Date(report.reported_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+
+                      {/* Action result */}
+                      {flaggedActionResult?.id === report.id && (
+                        <p className={`text-sm mt-2 ${flaggedActionResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                          {flaggedActionResult.message}
+                        </p>
+                      )}
+
+                      {/* Action buttons (only for pending) */}
+                      {report.status === 'pending' && (
+                        <div className="flex gap-2 mt-3">
+                          <button
+                            onClick={() => regenerateFlaggedImage(report)}
+                            disabled={flaggedRegenLoading === report.id}
+                            className="flex-1 px-3 py-2 rounded font-bangers text-sm transition disabled:opacity-50"
+                            style={{ background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)', color: 'white' }}
+                          >
+                            {flaggedRegenLoading === report.id ? '⏳ Regenerating...' : '🔄 Regenerate'}
+                          </button>
+                          <button
+                            onClick={() => dismissFlaggedImage(report.id)}
+                            className="px-3 py-2 rounded font-comic text-sm bg-white/10 hover:bg-white/20 transition text-white/70"
+                          >
+                            ❌ Dismiss
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Instructions */}
         <div className="text-white/60 text-sm mt-8 bg-[#1a1a2e] border-2 border-[#FFD700]/30 rounded-lg p-6">
           <h3 className="font-bangers text-lg text-[#FFD700] mb-3">How it works:</h3>
           <ul className="list-disc list-inside space-y-2">
             <li><strong className="text-white/80">Standard Books:</strong> Cached JSON + PDF for each matchup</li>
             <li><strong className="text-white/80">CYOA Paths:</strong> 27 possible paths per matchup (3 choices × 3 gates)</li>
+            <li><strong className="text-white/80">Flagged Images:</strong> Users/you flag bad images from the reader → review + one-click regenerate here</li>
             <li>Paths fill in as users play - each unique path is cached on first playthrough</li>
             <li><span className="text-green-500">Green</span> = cached, <span className="text-white/30">Gray</span> = not yet generated</li>
             <li>Delete gates to regenerate choices; delete paths to regenerate outcomes</li>

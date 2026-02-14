@@ -53,6 +53,7 @@ function BookReader() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [flaggedImages, setFlaggedImages] = useState<Set<string>>(new Set());
   const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
   const [cyoaScore, setCyoaScore] = useState({ A: 0, B: 0 });
   const [cyoaPath, setCyoaPath] = useState(''); // Tracks choices: '' → 'A' → 'A-B' → 'A-B-N'
@@ -283,6 +284,23 @@ function BookReader() {
     }
   };
 
+  // Flag a specific image for review
+  const flagImage = async (pageId: string, imageUrl: string) => {
+    const key = `${animalA}-${animalB}-${pageId}`;
+    if (flaggedImages.has(key)) return;
+    
+    setFlaggedImages(prev => new Set(prev).add(key));
+    try {
+      await fetch('/api/report-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ animalA, animalB, pageId, imageUrl }),
+      });
+    } catch (e) {
+      console.error('Flag image error:', e);
+    }
+  };
+
   const goToPage = (i: number) => { if (i >= 0 && i < pages.length) { setDirection(i > currentPage ? 1 : -1); setCurrentPage(i); } };
   const nextPage = () => goToPage(currentPage + 1);
   const prevPage = () => goToPage(currentPage - 1);
@@ -424,8 +442,17 @@ function BookReader() {
               <>
                 <div className="cover-banner">WHO WOULD WIN?</div>
                 <h1 className="cover-title">{page.title}</h1>
-                <div className="cover-image-container">
+                <div className="cover-image-container" style={{ position: 'relative' }}>
                   {page.imageUrl && <img src={page.imageUrl} alt={page.title} className="cover-image" />}
+                  {page.imageUrl && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); flagImage('cover', page.imageUrl!); }}
+                      className={`image-flag-btn ${flaggedImages.has(`${animalA}-${animalB}-cover`) ? 'flagged' : ''}`}
+                      title={flaggedImages.has(`${animalA}-${animalB}-cover`) ? 'Flagged for review' : 'Flag image for review'}
+                    >
+                      {flaggedImages.has(`${animalA}-${animalB}-cover`) ? '✅' : '🚩'}
+                    </button>
+                  )}
                 </div>
               </>
             )}
@@ -434,6 +461,15 @@ function BookReader() {
             {page?.type === 'victory' && (
               <>
                 {page.imageUrl && <div className="victory-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />}
+                {page.imageUrl && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); flagImage('victory', page.imageUrl!); }}
+                    className={`image-flag-btn ${flaggedImages.has(`${animalA}-${animalB}-victory`) ? 'flagged' : ''}`}
+                    title={flaggedImages.has(`${animalA}-${animalB}-victory`) ? 'Flagged for review' : 'Flag image for review'}
+                  >
+                    {flaggedImages.has(`${animalA}-${animalB}-victory`) ? '✅' : '🚩'}
+                  </button>
+                )}
                 <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
                 
                 {/* Tournament Winner Selection */}
@@ -546,6 +582,15 @@ function BookReader() {
             {page?.type === 'battle' && (
               <>
                 {page.imageUrl && <div className="battle-bg-image" style={{ backgroundImage: `url(${page.imageUrl})` }} />}
+                {page.imageUrl && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); flagImage(page.id, page.imageUrl!); }}
+                    className={`image-flag-btn ${flaggedImages.has(`${animalA}-${animalB}-${page.id}`) ? 'flagged' : ''}`}
+                    title={flaggedImages.has(`${animalA}-${animalB}-${page.id}`) ? 'Flagged for review' : 'Flag image for review'}
+                  >
+                    {flaggedImages.has(`${animalA}-${animalB}-${page.id}`) ? '✅' : '🚩'}
+                  </button>
+                )}
                 <h2 className="page-title">{page.title}</h2>
                 <div className="page-content battle-content" dangerouslySetInnerHTML={{ __html: page.content }} />
               </>
@@ -1447,6 +1492,38 @@ function BookReader() {
         .generating span { display: inline-block; font-size: 3em; }
         
         /* Report button and modal */
+        .image-flag-btn {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          background: rgba(0,0,0,0.5);
+          border: 1px solid rgba(255,255,255,0.2);
+          color: white;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+          opacity: 0.4;
+          z-index: 10;
+          padding: 0;
+        }
+        .image-flag-btn:hover {
+          opacity: 1;
+          background: rgba(255,50,50,0.6);
+          transform: scale(1.1);
+        }
+        .image-flag-btn.flagged {
+          opacity: 0.8;
+          background: rgba(50,200,50,0.4);
+          cursor: default;
+        }
+        .battle-page { position: relative; }
+        
         .report-btn {
           position: fixed;
           top: 20px;
