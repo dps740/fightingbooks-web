@@ -65,6 +65,14 @@ const FIGHTERS = [
   { name: 'Kraken', category: 'fantasy' },
 ];
 
+type AnimalCategory = 'real' | 'dinosaur' | 'fantasy';
+
+const CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; count: number; locked: boolean }[] = [
+  { key: 'real', label: 'Real Animals', icon: '🦁', count: 30, locked: false },
+  { key: 'dinosaur', label: 'Dinosaurs', icon: '🦕', count: 8, locked: true },
+  { key: 'fantasy', label: 'Fantasy', icon: '🐉', count: 9, locked: true },
+];
+
 export default function Home() {
   const router = useRouter();
   const [animalA, setAnimalA] = useState('');
@@ -72,9 +80,9 @@ export default function Home() {
   const [selectingFor, setSelectingFor] = useState<'A' | 'B'>('A');
   const [gameMode, setGameMode] = useState<'classic' | 'adventure'>('classic');
   const [battleType, setBattleType] = useState<'single' | 'tournament'>('single');
-  const [modeStep, setModeStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
   const [showFightOverlay, setShowFightOverlay] = useState(false);
+  const [animalCategory, setAnimalCategory] = useState<AnimalCategory>('real');
   
   // Tournament state
   const [tournamentFighters, setTournamentFighters] = useState<string[]>([]);
@@ -109,29 +117,23 @@ export default function Home() {
   const selectedA = FIGHTERS.find(f => f.name === animalA);
   const selectedB = FIGHTERS.find(f => f.name === animalB);
   
-  // Handle battle type selection (step 1)
-  const handleBattleTypeSelect = (type: 'single' | 'tournament') => {
-    // Tournament requires paid tier
-    if (type === 'tournament' && isTournamentLocked(tierData.tier)) {
+  // Handle tournament mode toggle
+  const handleTournamentToggle = () => {
+    if (battleType === 'tournament') {
+      setBattleType('single');
+      setTournamentFighters([]);
+      return;
+    }
+    if (isTournamentLocked(tierData.tier)) {
       setLockedAnimalClicked(undefined);
       setLockedFeature('tournament');
       setShowUpgradeModal(true);
       return;
     }
-    setBattleType(type);
-    setModeStep(2);
-    if (type === 'tournament') {
-      setTournamentFighters([]);
-      setAnimalA('');
-      setAnimalB('');
-    } else {
-      setTournamentFighters([]);
-    }
-  };
-  
-  const handleBackToStep1 = () => {
-    setModeStep(1);
+    setBattleType('tournament');
     setTournamentFighters([]);
+    setAnimalA('');
+    setAnimalB('');
   };
   
   // Handle game mode selection with CYOA lock check
@@ -244,6 +246,18 @@ export default function Home() {
     }
   };
 
+  // Filter fighters by selected category
+  const filteredFighters = FIGHTERS.filter(f => f.category === animalCategory);
+  
+  // Count locked animals for messaging
+  const lockedRealCount = FIGHTERS.filter(f => f.category === 'real' && isAnimalLocked(tierData.tier, f.name)).length;
+  const lockedTotalCount = FIGHTERS.filter(f => isAnimalLocked(tierData.tier, f.name)).length;
+
+  // Scroll to pricing
+  const scrollToPricing = () => {
+    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
       
@@ -269,24 +283,21 @@ export default function Home() {
               </h1>
             </div>
           </motion.div>
-          <p className="text-xl sm:text-2xl font-bold text-white mt-4 mb-2" style={{ textShadow: '2px 2px 4px #000' }}>
+          <p className="text-white/50 text-sm mt-3 italic">
+            Inspired by Jerry Pallotta&apos;s Who Would Win? series
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-white mt-3 mb-2" style={{ textShadow: '2px 2px 4px #000' }}>
             Your kid picks the animals. We make the book.
           </p>
           <p className="text-white/70 text-lg">
             Real facts. Epic battles. Illustrated in seconds.
           </p>
-          <div className="mt-6 flex justify-center gap-4 flex-wrap">
+          <div className="mt-6 flex justify-center">
             <a
               href="#sample-books"
-              className="px-6 py-3 rounded-xl font-bangers text-xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-3 border-yellow-600 shadow-lg hover:scale-105 transition-all"
+              className="px-8 py-4 rounded-xl font-bangers text-2xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-3 border-yellow-600 shadow-lg hover:scale-105 transition-all"
             >
-              📖 Try a Free Book
-            </a>
-            <a
-              href="#create"
-              className="px-6 py-3 rounded-xl font-bangers text-xl bg-white/10 text-white border-3 border-white/30 shadow-lg hover:bg-white/20 hover:scale-105 transition-all"
-            >
-              ⚔️ Create Your Own
+              📖 Read a Free Book
             </a>
           </div>
         </div>
@@ -297,35 +308,7 @@ export default function Home() {
         <SampleBookGallery />
       </div>
 
-      {/* 3. What's Inside Your Book */}
-      <section className="py-10 px-4" style={{ background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%)' }}>
-        <div className="max-w-5xl mx-auto">
-          <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-8" style={{ textShadow: '3px 3px 0 #000' }}>
-            📚 WHAT&apos;S INSIDE YOUR BOOK?
-          </h2>
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { icon: '🌍', title: 'HABITAT', desc: 'Learn where they live and survive', color: '#4CAF50' },
-              { icon: '🔬', title: 'REAL FACTS', desc: 'Size, speed, weapons, and abilities', color: '#2196F3' },
-              { icon: '📊', title: 'TALE OF THE TAPE', desc: 'Compare stats like a championship bout', color: '#FF9800' },
-              { icon: '⚔️', title: 'EPIC BATTLE', desc: 'Watch them face off in an illustrated showdown', color: '#f44336' },
-            ].map((f) => (
-              <motion.div 
-                key={f.title}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-[#f5f5dc] rounded-xl p-6 text-center border-4 shadow-xl"
-                style={{ borderColor: f.color }}
-              >
-                <div className="text-6xl mb-4">{f.icon}</div>
-                <h3 className="font-bangers text-2xl mb-2" style={{ color: f.color }}>{f.title}</h3>
-                <p className="text-gray-700 font-medium">{f.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. CREATE YOUR OWN — Mode Selector + Fighter Grid */}
+      {/* 3. CREATE YOUR OWN — Mode Selector + Fighter Grid */}
       <div id="create">
         {/* Fighter Carousel */}
         <section className="py-6 px-4">
@@ -353,138 +336,94 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Mode Selector */}
+        {/* Mode Selector — No step gate, show directly */}
         <section className="px-4 pt-2 pb-4">
           <div className="max-w-4xl mx-auto">
             <div className="bg-[#1a1a2e] rounded-xl p-6 border-4 border-[#FFD700] shadow-2xl">
+              <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
+                🎮 CHOOSE YOUR MODE
+              </h2>
               
-              {/* Step 1: Battle Type */}
-              {modeStep === 1 && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
+              <div className="grid md:grid-cols-2 gap-4">
+                <button
+                  onClick={() => handleGameModeSelect('classic')}
+                  className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                    gameMode === 'classic' 
+                      ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                      : 'border-green-600 hover:border-green-400'
+                  }`}
+                  style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
                 >
-                  <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
-                    Choose your style
-                  </h2>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <button
-                      onClick={() => handleBattleTypeSelect('single')}
-                      className="relative overflow-hidden rounded-lg p-6 border-4 transition-all border-red-600 hover:border-red-400 hover:shadow-[0_0_30px_rgba(220,38,38,0.4)]"
-                      style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}
-                    >
-                      <div className="text-center">
-                        <div className="text-5xl mb-3">⚔️</div>
-                        <h3 className="font-bangers text-2xl text-white mb-2">SINGLE BATTLE</h3>
-                        <p className="text-white/80 text-sm">One epic fight between two champions</p>
-                      </div>
-                    </button>
-
-                    <button
-                      onClick={() => handleBattleTypeSelect('tournament')}
-                      className="relative overflow-hidden rounded-lg p-6 border-4 transition-all border-amber-500 hover:border-amber-400 hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
-                      style={{ background: 'linear-gradient(135deg, #78350f 0%, #92400e 100%)' }}
-                    >
-                      <div className="text-center">
-                        <div className="text-5xl mb-3">🏆</div>
-                        <h3 className="font-bangers text-2xl text-white mb-2">TOURNAMENT</h3>
-                        <p className="text-white/80 text-sm">8 champions battle through the bracket</p>
-                        {isTournamentLocked(tierData.tier) && (
-                          <span className="inline-block mt-2 text-xs bg-[#FFD700] text-black px-2 py-1 rounded-full font-bold">👑 FULL ACCESS</span>
-                        )}
-                      </div>
-                    </button>
+                  <div className="text-center">
+                    <div className="text-5xl mb-3">📖</div>
+                    <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
+                    <p className="text-white/80 text-sm">Watch the battle unfold</p>
                   </div>
-                </motion.div>
-              )}
+                  {gameMode === 'classic' && (
+                    <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                      <span className="text-black font-bold">✓</span>
+                    </div>
+                  )}
+                </button>
 
-              {/* Step 2: Game Mode */}
-              {modeStep === 2 && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
+                <button
+                  onClick={() => handleGameModeSelect('adventure')}
+                  className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
+                    gameMode === 'adventure' 
+                      ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
+                      : 'border-purple-600 hover:border-purple-400'
+                  }`}
+                  style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
                 >
-                  <button
-                    onClick={handleBackToStep1}
-                    className="mb-4 text-white/70 hover:text-white flex items-center gap-2 transition-colors"
-                  >
-                    <span>←</span>
-                    <span className="text-sm">Back to battle type</span>
-                  </button>
-                  
-                  <h2 className="font-bangers text-2xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
-                    🎮 CHOOSE YOUR MODE
-                  </h2>
-                  <p className="text-white/60 text-center text-sm mb-4">
-                    {battleType === 'single' ? '⚔️ Single Battle' : '🏆 Tournament'} selected
-                  </p>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <button
-                      onClick={() => handleGameModeSelect('classic')}
-                      className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
-                        gameMode === 'classic' 
-                          ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
-                          : 'border-green-600 hover:border-green-400'
-                      }`}
-                      style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
-                    >
-                      <div className="text-center">
-                        <div className="text-5xl mb-3">📖</div>
-                        <h3 className="font-bangers text-2xl text-white mb-2">CLASSIC</h3>
-                        <p className="text-white/80 text-sm">Watch the battle unfold</p>
-                      </div>
-                      {gameMode === 'classic' && (
-                        <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                          <span className="text-black font-bold">✓</span>
-                        </div>
-                      )}
-                    </button>
-
-                    <button
-                      onClick={() => handleGameModeSelect('adventure')}
-                      className={`relative overflow-hidden rounded-lg p-6 border-4 transition-all ${
-                        gameMode === 'adventure' 
-                          ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-[0_0_30px_rgba(255,215,0,0.5)]' 
-                          : 'border-purple-600 hover:border-purple-400'
-                      }`}
-                      style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
-                    >
-                      <div className="text-center">
-                        <div className="text-5xl mb-3">🎭</div>
-                        <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
-                        <p className="text-white/80 text-sm">YOU decide what happens!</p>
-                        {isCyoaLocked(tierData.tier) && (
-                          <span className="inline-block mt-2 text-xs bg-[#FFD700] text-black px-2 py-1 rounded-full font-bold">👑 FULL ACCESS</span>
-                        )}
-                      </div>
-                      {gameMode === 'adventure' && (
-                        <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
-                          <span className="text-black font-bold">✓</span>
-                        </div>
-                      )}
-                    </button>
+                  <div className="text-center">
+                    <div className="text-5xl mb-3">🎭</div>
+                    <h3 className="font-bangers text-2xl text-white mb-2">ADVENTURE</h3>
+                    <p className="text-white/80 text-sm">YOU decide what happens!</p>
+                    {isCyoaLocked(tierData.tier) && (
+                      <span className="inline-block mt-2 text-xs bg-[#FFD700] text-black px-2 py-1 rounded-full font-bold">👑 ULTIMATE</span>
+                    )}
                   </div>
-                  
-                  <div className="mt-4 p-4 bg-black/30 rounded-lg">
-                    <p className="text-white/90 text-sm text-center">
-                      {gameMode === 'classic' 
-                        ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
-                        : '🎭 Make critical choices that shape the battle! Your decisions determine who wins!'}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
+                  {gameMode === 'adventure' && (
+                    <div className="absolute top-2 right-2 bg-yellow-400 w-8 h-8 rounded-full flex items-center justify-center">
+                      <span className="text-black font-bold">✓</span>
+                    </div>
+                  )}
+                </button>
+              </div>
+              
+              {/* Tournament toggle */}
+              <div className="mt-4 text-center">
+                <button
+                  onClick={handleTournamentToggle}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                    battleType === 'tournament'
+                      ? 'bg-amber-500 text-black'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                  }`}
+                >
+                  🏆 Tournament Mode
+                  {isTournamentLocked(tierData.tier) && (
+                    <span className="text-xs bg-[#FFD700] text-black px-2 py-0.5 rounded-full">🔒 MEMBER</span>
+                  )}
+                  {battleType === 'tournament' && <span>✓</span>}
+                </button>
+              </div>
+              
+              <div className="mt-4 p-4 bg-black/30 rounded-lg">
+                <p className="text-white/90 text-sm text-center">
+                  {battleType === 'tournament'
+                    ? '🏆 Pick 8 champions to battle through the bracket!'
+                    : gameMode === 'classic' 
+                    ? '📖 Experience the full battle from start to finish with educational facts and epic illustrations!' 
+                    : '🎭 Make critical choices that shape the battle! Your decisions determine who wins!'}
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Tournament Fighter Selection */}
-        {battleType === 'tournament' && modeStep === 2 && (
+        {battleType === 'tournament' && (
           <section className="px-4 pb-6">
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-4">
@@ -547,10 +486,41 @@ export default function Home() {
                 })}
               </div>
 
+              {/* Category Tabs */}
+              <div className="flex gap-2 mb-3 justify-center flex-wrap">
+                {CATEGORY_TABS.map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => {
+                      if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
+                        setLockedAnimalClicked(undefined);
+                        setLockedFeature(tab.key);
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
+                        setLockedAnimalClicked(undefined);
+                        setLockedFeature(tab.key);
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      setAnimalCategory(tab.key);
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                      animalCategory === tab.key
+                        ? 'bg-[#FFD700] text-black'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                    }`}
+                  >
+                    {tab.icon} {tab.label} ({tab.count}) {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? '🔒' : ''}
+                  </button>
+                ))}
+              </div>
+
               {/* Character Grid */}
               <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                  {FIGHTERS.map((fighter, i) => {
+                  {filteredFighters.map((fighter, i) => {
                     const isSelected = tournamentFighters.includes(fighter.name);
                     const locked = isAnimalLocked(tierData.tier, fighter.name);
                     return (
@@ -586,6 +556,18 @@ export default function Home() {
                     );
                   })}
                 </div>
+                
+                {/* Locked animals messaging */}
+                {lockedTotalCount > 0 && (
+                  <div className="mt-4 text-center">
+                    <button
+                      onClick={scrollToPricing}
+                      className="text-[#FFD700]/80 hover:text-[#FFD700] text-sm transition-colors"
+                    >
+                      🔒 {lockedTotalCount} more animals with Member access →
+                    </button>
+                  </div>
+                )}
               </div>
 
               {canStartTournament && !showTournamentOverlay && (
@@ -603,7 +585,7 @@ export default function Home() {
         )}
 
         {/* Single Battle Fighter Selection */}
-        {battleType === 'single' && modeStep === 2 && (
+        {battleType === 'single' && (
         <section className="px-4 pb-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-4">
@@ -692,10 +674,41 @@ export default function Home() {
               </button>
             </div>
 
+            {/* Category Tabs */}
+            <div className="flex gap-2 mb-3 justify-center flex-wrap">
+              {CATEGORY_TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => {
+                    if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
+                      setLockedAnimalClicked(undefined);
+                      setLockedFeature(tab.key);
+                      setShowUpgradeModal(true);
+                      return;
+                    }
+                    if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
+                      setLockedAnimalClicked(undefined);
+                      setLockedFeature(tab.key);
+                      setShowUpgradeModal(true);
+                      return;
+                    }
+                    setAnimalCategory(tab.key);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                    animalCategory === tab.key
+                      ? 'bg-[#FFD700] text-black'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20'
+                  }`}
+                >
+                  {tab.icon} {tab.label} ({tab.count}) {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? '🔒' : ''}
+                </button>
+              ))}
+            </div>
+
             {/* Character Grid */}
             <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                {FIGHTERS.map((fighter, i) => {
+                {filteredFighters.map((fighter, i) => {
                   const locked = isAnimalLocked(tierData.tier, fighter.name);
                   const isSelected = animalA === fighter.name || animalB === fighter.name;
                   return (
@@ -740,6 +753,18 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+
+              {/* Locked animals messaging */}
+              {lockedTotalCount > 0 && (
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={scrollToPricing}
+                    className="text-[#FFD700]/80 hover:text-[#FFD700] text-sm transition-colors"
+                  >
+                    🔒 {lockedTotalCount} more animals with Member access →
+                  </button>
+                </div>
+              )}
             </div>
 
             {canGenerate && !showFightOverlay && (
@@ -857,7 +882,77 @@ export default function Home() {
         </div>
       )}
 
-      {/* 5. Blog CTA */}
+      {/* PRICING SECTION */}
+      <section id="pricing" className="py-12 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-8" style={{ textShadow: '3px 3px 0 #000' }}>
+            💰 CHOOSE YOUR PLAN
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Free */}
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col">
+              <h3 className="font-bangers text-2xl text-white text-center mb-1">FREE</h3>
+              <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ 8 free animals</li>
+                <li>✅ Standard battle books</li>
+                <li>✅ Download & print PDFs</li>
+              </ul>
+              <a
+                href="#sample-books"
+                className="block text-center px-6 py-3 rounded-lg font-bangers text-lg bg-white/10 text-white border-2 border-white/30 hover:bg-white/20 transition-all"
+              >
+                Start Reading
+              </a>
+            </div>
+
+            {/* Member */}
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-[#FFD700] flex flex-col relative shadow-[0_0_30px_rgba(255,215,0,0.2)]">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFD700] text-black px-4 py-1 rounded-full text-xs font-bold">
+                ⭐ MOST POPULAR
+              </div>
+              <h3 className="font-bangers text-2xl text-[#FFD700] text-center mb-1">MEMBER</h3>
+              <p className="font-bangers text-3xl text-white text-center">$4.99</p>
+              <p className="text-[#FFD700]/80 text-center text-xs mb-4">One time — forever</p>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ All 30 real animals</li>
+                <li>✅ 🏆 Tournament mode</li>
+                <li>✅ 435+ matchups</li>
+                <li>✅ Download & print PDFs</li>
+              </ul>
+              <button
+                onClick={() => handleUpgrade('member')}
+                className="block w-full text-center px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all"
+              >
+                Get Full Access
+              </button>
+            </div>
+
+            {/* Ultimate */}
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/50 flex flex-col">
+              <h3 className="font-bangers text-2xl text-purple-400 text-center mb-1">ULTIMATE</h3>
+              <p className="font-bangers text-3xl text-white text-center">$4.99<span className="text-lg text-white/60">/mo</span></p>
+              <p className="text-purple-400/80 text-center text-xs mb-4">Cancel anytime</p>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+                <li>✅ Everything in Member</li>
+                <li>✅ 🦕 Dinosaurs (8)</li>
+                <li>✅ 🐉 Fantasy creatures (9)</li>
+                <li>✅ 🎭 CYOA Adventure mode</li>
+                <li>✅ ✨ Create Your Own (coming soon)</li>
+                <li>✅ 2 new animals/month</li>
+              </ul>
+              <button
+                onClick={() => handleUpgrade('ultimate')}
+                className="block w-full text-center px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all"
+              >
+                Go Ultimate
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog CTA */}
       <section className="py-8 px-4 bg-black/30">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
@@ -877,7 +972,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Official Books - Amazon Affiliate */}
+      {/* Official Books - Amazon Affiliate */}
       <section className="py-16 px-4 bg-gradient-to-b from-[#232f3e] to-[#131921]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
