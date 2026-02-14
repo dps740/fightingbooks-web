@@ -270,28 +270,22 @@ export default function Home() {
       
       {/* Header with Account Menu */}
       <header className="px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div /> {/* spacer */}
-          <div className="flex items-center gap-3">
-            <a
-              href="/signup"
-              className="px-5 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-500 to-orange-500 text-black shadow-[0_0_15px_rgba(255,215,0,0.4)] hover:shadow-[0_0_25px_rgba(255,215,0,0.6)] hover:scale-105 transition-all"
-            >
-              ✨ SIGN UP FREE
-            </a>
-            <AccountMenu 
-              isAuthenticated={tierData.isAuthenticated}
-              email={tierData.email}
-              tier={tierData.tier}
-              onUpgrade={() => { setLockedFeature(undefined); setLockedAnimalClicked(undefined); setShowUpgradeModal(true); }}
-            />
-          </div>
+        <div className="max-w-7xl mx-auto flex justify-end items-center">
+          <AccountMenu 
+            isAuthenticated={tierData.isAuthenticated}
+            email={tierData.email}
+            tier={tierData.tier}
+            onUpgrade={() => { setLockedFeature(undefined); setLockedAnimalClicked(undefined); setShowUpgradeModal(true); }}
+          />
         </div>
       </header>
 
       {/* 1. HERO — Lead with benefit */}
       <section className="py-6 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <p className="text-white/50 text-sm mb-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+            Inspired by the classic Jerry Pallotta series
+          </p>
           <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
             <div className="inline-block bg-[#FFD700] px-4 sm:px-10 py-3 sm:py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]">
               <h1 className="font-bangers text-2xl sm:text-4xl md:text-5xl text-[#CC0000]" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '2px' }}>
@@ -299,16 +293,10 @@ export default function Home() {
               </h1>
             </div>
           </motion.div>
-          <p className="text-white/50 text-sm mt-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-            📖 Inspired by Jerry Pallotta&apos;s Who Would Win? series
+          <p className="text-xl sm:text-2xl text-white mt-4 mb-1" style={{ textShadow: '2px 2px 4px #000' }}>
+            Your kid picks the animals. <span className="font-bold" style={{ color: '#FFD700' }}>We make the book.</span>
           </p>
-          <p className="text-xl sm:text-2xl text-white mt-3 mb-1" style={{ textShadow: '2px 2px 4px #000' }}>
-            <span className="font-bold">Your kid</span> picks the animals.
-          </p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1 mb-2" style={{ textShadow: '2px 2px 4px #000', color: '#FFD700' }}>
-            We make the book.
-          </p>
-          <p className="text-white/70 text-lg">
+          <p className="text-white/60 text-base mt-2">
             Real facts. Epic battles. Illustrated in seconds.
           </p>
           <div className="mt-6 flex justify-center">
@@ -316,7 +304,7 @@ export default function Home() {
               href="#sample-books"
               className="px-8 py-4 rounded-xl font-bangers text-2xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-3 border-yellow-600 shadow-lg hover:scale-105 transition-all"
             >
-              📖 Read a Free Book
+              Read a Free Book
             </a>
           </div>
         </div>
@@ -328,24 +316,15 @@ export default function Home() {
       </div>
 
       {/* Social Proof Bar */}
-      <section className="py-4 px-4">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-4 sm:gap-8">
-          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
-            <span className="text-lg">🎉</span>
-            <span><strong className="text-white">2,500+</strong> battle books created</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
-            <span className="text-lg">⭐</span>
-            <span>Educational</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
-            <span className="text-lg">🎨</span>
-            <span>AI-Illustrated</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
-            <span className="text-lg">👨‍👩‍👧‍👦</span>
-            <span>Trusted by <strong className="text-white">500+</strong> families</span>
-          </div>
+      <section className="py-3 px-4">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-white/50 text-sm">
+          <span><strong className="text-white/70">2,500+</strong> books created</span>
+          <span>•</span>
+          <span>Educational</span>
+          <span>•</span>
+          <span>AI-Illustrated</span>
+          <span>•</span>
+          <span>Trusted by <strong className="text-white/70">500+</strong> families</span>
         </div>
       </section>
 
@@ -356,17 +335,17 @@ export default function Home() {
       <section id="pricing" className="py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
-            💰 CHOOSE YOUR PLAN
+            CHOOSE YOUR PLAN
           </h2>
           <div className="grid md:grid-cols-3 gap-6 items-center">
             {/* Free */}
             <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col opacity-80">
               <h3 className="font-bangers text-2xl text-white text-center mb-1">FREE</h3>
               <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
-              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ 8 free animals</li>
-                <li>✅ Standard battle books</li>
-                <li>✅ Download & print PDFs</li>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1 list-none">
+                <li>• 8 free animals</li>
+                <li>• Standard battle books</li>
+                <li>• Download &amp; print PDFs</li>
               </ul>
               <a
                 href="#sample-books"
@@ -382,18 +361,18 @@ export default function Home() {
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
               <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-20">
                 <div className="bg-[#FFD700] text-black px-6 py-1.5 rounded-b-xl text-sm font-bold animate-pulse shadow-lg" style={{ textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>
-                  ⭐ MOST POPULAR ⭐
+                  MOST POPULAR
                 </div>
               </div>
               <h3 className="font-bangers text-3xl text-[#FFD700] text-center mb-1 mt-3">MEMBER</h3>
               <p className="font-bangers text-4xl text-white text-center">$4.99</p>
-              <p className="text-center text-sm text-white/60 mb-1">💰 One-time payment</p>
+              <p className="text-center text-sm text-white/60 mb-1">One-time payment</p>
               <p className="font-bangers text-lg text-center mb-4" style={{ color: '#FFD700' }}>one time — forever!</p>
-              <ul className="text-white/90 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ All 30 real animals</li>
-                <li>✅ 🏆 Tournament mode</li>
-                <li>✅ 435+ matchups</li>
-                <li>✅ Download & print PDFs</li>
+              <ul className="text-white/90 text-sm space-y-2 mb-6 flex-1 list-none">
+                <li>• All 30 real animals</li>
+                <li>• Tournament mode</li>
+                <li>• 435+ matchups</li>
+                <li>• Download &amp; print PDFs</li>
               </ul>
               <button
                 onClick={() => handleUpgrade('member')}
@@ -408,13 +387,13 @@ export default function Home() {
               <h3 className="font-bangers text-2xl text-purple-400 text-center mb-1">ULTIMATE</h3>
               <p className="font-bangers text-3xl text-white text-center">$4.99<span className="text-lg text-white/60">/mo</span></p>
               <p className="text-purple-400/80 text-center text-xs mb-4">Cancel anytime</p>
-              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
-                <li>✅ Everything in Member</li>
-                <li>✅ 🦕 Dinosaurs (8)</li>
-                <li>✅ 🐉 Fantasy creatures (9)</li>
-                <li>✅ 🎭 CYOA Adventure mode</li>
-                <li>✅ ✨ Create Your Own (coming soon)</li>
-                <li>✅ 2 new animals/month</li>
+              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1 list-none">
+                <li>• Everything in Member</li>
+                <li>• Dinosaurs (8)</li>
+                <li>• Fantasy creatures (9)</li>
+                <li>• CYOA Adventure mode</li>
+                <li>• Create Your Own (coming soon)</li>
+                <li>• 2 new animals/month</li>
               </ul>
               <button
                 onClick={() => handleUpgrade('ultimate')}
@@ -436,7 +415,7 @@ export default function Home() {
         <section className="pt-6 pb-2 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-bangers text-4xl sm:text-5xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-              ⚔️ CREATE YOUR BATTLE
+              CREATE YOUR BATTLE
             </h2>
             <p className="text-white/70 text-lg mt-2">
               Pick your fighters and watch them clash!
@@ -449,7 +428,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700] shadow-2xl">
               <h3 className="font-bangers text-xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
-                🎮 CHOOSE YOUR MODE
+                CHOOSE YOUR MODE
               </h3>
               
               <div className="grid md:grid-cols-2 gap-3">
@@ -537,7 +516,7 @@ export default function Home() {
             <div className="max-w-6xl mx-auto">
               <div className="text-center mb-4">
                 <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-                  🏆 SELECT 8 CHAMPIONS
+                  SELECT 8 CHAMPIONS
                 </h2>
                 <p className="text-white/70 mt-2">
                   {gameMode === 'classic' ? '📖 Classic' : '🎭 Adventure'} mode • {tournamentFighters.length}/8 selected
@@ -690,7 +669,7 @@ export default function Home() {
                     onClick={() => setShowTournamentOverlay(true)}
                     className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
                   >
-                    🏆 READY FOR BATTLE!
+                    READY FOR BATTLE!
                   </button>
                 </div>
               )}
@@ -704,7 +683,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-4">
               <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-                ⚔️ PLAYER SELECT
+                PLAYER SELECT
               </h2>
               <div className="mt-2">
                 <TierInfoPopover isAuthenticated={tierData.isAuthenticated} currentTier={tierData.tier} />
@@ -910,7 +889,7 @@ export default function Home() {
                   onClick={() => setShowFightOverlay(true)}
                   className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
                 >
-                  ⚔️ READY TO FIGHT!
+                  READY TO FIGHT!
                 </button>
               </div>
             )}
@@ -1027,7 +1006,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
             <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ letterSpacing: '2px' }}>
-              📚 WANT TO LEARN MORE?
+              WANT TO LEARN MORE?
             </h2>
             <p className="text-white/90 text-lg mb-6">
               Read in-depth battle guides with real facts, scientific analysis, and expert verdicts!
@@ -1036,7 +1015,7 @@ export default function Home() {
               href="/blog"
               className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-xl px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-4 border-[#8B0000]"
             >
-              🔥 READ BATTLE GUIDES
+              READ BATTLE GUIDES
             </a>
           </div>
         </div>
@@ -1118,7 +1097,7 @@ export default function Home() {
       <footer className="py-6 bg-[#0d1f0d] text-center">
         <p className="text-white/50 text-sm">Made with ❤️ for animal fans • AI-powered educational content</p>
         <p className="text-white/30 text-xs mt-2">
-          📸 Content creator? <a href="mailto:scout@openclaw.ai" className="underline hover:text-white/50">Get free access</a>
+          Content creator? <a href="mailto:scout@openclaw.ai" className="underline hover:text-white/50">Get free access</a>
         </p>
       </footer>
 

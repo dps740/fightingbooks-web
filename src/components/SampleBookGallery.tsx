@@ -42,7 +42,7 @@ export default function SampleBookGallery() {
     <section className="py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] text-center mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
-          📖 TRY A FREE BOOK
+          TRY A FREE BOOK
         </h2>
         <p className="text-white/70 text-center mb-6">
           Tap to read the full book instantly — no signup needed!
