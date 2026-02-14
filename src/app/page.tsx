@@ -283,11 +283,14 @@ export default function Home() {
               </h1>
             </div>
           </motion.div>
-          <p className="text-white/50 text-sm mt-3 italic">
-            Inspired by Jerry Pallotta&apos;s Who Would Win? series
+          <p className="text-white/50 text-sm mt-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
+            📖 Inspired by Jerry Pallotta&apos;s Who Would Win? series
           </p>
-          <p className="text-xl sm:text-2xl font-bold text-white mt-3 mb-2" style={{ textShadow: '2px 2px 4px #000' }}>
-            Your kid picks the animals. We make the book.
+          <p className="text-xl sm:text-2xl text-white mt-3 mb-1" style={{ textShadow: '2px 2px 4px #000' }}>
+            <span className="font-bold">Your kid</span> picks the animals.
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold mt-1 mb-2" style={{ textShadow: '2px 2px 4px #000', color: '#FFD700' }}>
+            We make the book.
           </p>
           <p className="text-white/70 text-lg">
             Real facts. Epic battles. Illustrated in seconds.
@@ -307,6 +310,28 @@ export default function Home() {
       <div id="sample-books">
         <SampleBookGallery />
       </div>
+
+      {/* Social Proof Bar */}
+      <section className="py-4 px-4">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-4 sm:gap-8">
+          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+            <span className="text-lg">🎉</span>
+            <span><strong className="text-white">2,500+</strong> battle books created</span>
+          </div>
+          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+            <span className="text-lg">⭐</span>
+            <span>Educational</span>
+          </div>
+          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+            <span className="text-lg">🎨</span>
+            <span>AI-Illustrated</span>
+          </div>
+          <div className="flex items-center gap-2 text-white/80 text-sm sm:text-base">
+            <span className="text-lg">👨‍👩‍👧‍👦</span>
+            <span>Trusted by <strong className="text-white">500+</strong> families</span>
+          </div>
+        </div>
+      </section>
 
       {/* 3. CREATE YOUR OWN — Mode Selector + Fighter Grid */}
       <div id="create">
@@ -508,11 +533,11 @@ export default function Home() {
                     }}
                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                       animalCategory === tab.key
-                        ? 'bg-[#FFD700] text-black'
-                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                        ? 'bg-[#FFD700] text-black shadow-[0_0_15px_rgba(255,215,0,0.4)]'
+                        : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white/80'
                     }`}
                   >
-                    {tab.icon} {tab.label} ({tab.count}) {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? '🔒' : ''}
+                    {tab.icon} {tab.label} <span className="text-xs opacity-70">({tab.count})</span> {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? <span className="ml-1 text-yellow-400">🔒</span> : ''}
                   </button>
                 ))}
               </div>
@@ -557,16 +582,21 @@ export default function Home() {
                   })}
                 </div>
                 
-                {/* Locked animals messaging */}
+                {/* Locked animals banner */}
                 {lockedTotalCount > 0 && (
-                  <div className="mt-4 text-center">
-                    <button
-                      onClick={scrollToPricing}
-                      className="text-[#FFD700]/80 hover:text-[#FFD700] text-sm transition-colors"
-                    >
-                      🔒 {lockedTotalCount} more animals with Member access →
-                    </button>
-                  </div>
+                  <button
+                    onClick={scrollToPricing}
+                    className="mt-4 w-full relative overflow-hidden rounded-lg py-3 px-4 transition-all hover:scale-[1.01] group"
+                    style={{ background: 'linear-gradient(90deg, #1a1a2e, #2d1f4e, #1a1a2e)' }}
+                  >
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)', animation: 'shimmer 2s infinite' }} />
+                    <p className="font-bangers text-[#FFD700] text-lg sm:text-xl relative z-10" style={{ textShadow: '1px 1px 2px #000' }}>
+                      🔒 {lockedTotalCount} More Animals with Member Access →
+                    </p>
+                    <p className="text-white/60 text-xs sm:text-sm relative z-10 mt-0.5">
+                      Including 🦕 Dinosaurs and 🐉 Fantasy creatures!
+                    </p>
+                  </button>
                 )}
               </div>
 
@@ -620,8 +650,17 @@ export default function Home() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <span className="font-bangers text-xl text-white/60">CLICK TO SELECT</span>
+                  <div className="flex flex-col items-center justify-center h-full relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/fighters/lion.jpg), url(/fighters/tiger.jpg), url(/fighters/gorilla.jpg), url(/fighters/crocodile.jpg)', backgroundSize: '50% 50%', backgroundPosition: '0 0, 100% 0, 0 100%, 100% 100%', filter: 'grayscale(1) blur(2px)' }} />
+                    <motion.div
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
+                      transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                      className="text-5xl mb-2"
+                      style={{ filter: 'drop-shadow(0 0 12px rgba(255,50,50,0.6))' }}
+                    >
+                      ❓
+                    </motion.div>
+                    <span className="font-bangers text-lg text-white/70 relative z-10">TAP TO SELECT</span>
                   </div>
                 )}
                 {selectingFor === 'A' && (
@@ -662,8 +701,17 @@ export default function Home() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <span className="font-bangers text-xl text-white/60">CLICK TO SELECT</span>
+                  <div className="flex flex-col items-center justify-center h-full relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/fighters/eagle.jpg), url(/fighters/wolf.jpg), url(/fighters/orca.jpg), url(/fighters/elephant.jpg)', backgroundSize: '50% 50%', backgroundPosition: '0 0, 100% 0, 0 100%, 100% 100%', filter: 'grayscale(1) blur(2px)' }} />
+                    <motion.div
+                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
+                      transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut', delay: 0.5 }}
+                      className="text-5xl mb-2"
+                      style={{ filter: 'drop-shadow(0 0 12px rgba(50,100,255,0.6))' }}
+                    >
+                      ❓
+                    </motion.div>
+                    <span className="font-bangers text-lg text-white/70 relative z-10">TAP TO SELECT</span>
                   </div>
                 )}
                 {selectingFor === 'B' && (
@@ -696,11 +744,11 @@ export default function Home() {
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                     animalCategory === tab.key
-                      ? 'bg-[#FFD700] text-black'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
+                      ? 'bg-[#FFD700] text-black shadow-[0_0_15px_rgba(255,215,0,0.4)]'
+                      : 'bg-white/10 text-white/60 hover:bg-white/20 hover:text-white/80'
                   }`}
                 >
-                  {tab.icon} {tab.label} ({tab.count}) {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? '🔒' : ''}
+                  {tab.icon} {tab.label} <span className="text-xs opacity-70">({tab.count})</span> {tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member')) ? <span className="ml-1 text-yellow-400">🔒</span> : ''}
                 </button>
               ))}
             </div>
@@ -754,16 +802,21 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Locked animals messaging */}
+              {/* Locked animals banner */}
               {lockedTotalCount > 0 && (
-                <div className="mt-4 text-center">
-                  <button
-                    onClick={scrollToPricing}
-                    className="text-[#FFD700]/80 hover:text-[#FFD700] text-sm transition-colors"
-                  >
-                    🔒 {lockedTotalCount} more animals with Member access →
-                  </button>
-                </div>
+                <button
+                  onClick={scrollToPricing}
+                  className="mt-4 w-full relative overflow-hidden rounded-lg py-3 px-4 transition-all hover:scale-[1.01] group"
+                  style={{ background: 'linear-gradient(90deg, #1a1a2e, #2d1f4e, #1a1a2e)' }}
+                >
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)', animation: 'shimmer 2s infinite' }} />
+                  <p className="font-bangers text-[#FFD700] text-lg sm:text-xl relative z-10" style={{ textShadow: '1px 1px 2px #000' }}>
+                    🔒 {lockedTotalCount} More Animals with Member Access →
+                  </p>
+                  <p className="text-white/60 text-xs sm:text-sm relative z-10 mt-0.5">
+                    Including 🦕 Dinosaurs and 🐉 Fantasy creatures!
+                  </p>
+                </button>
               )}
             </div>
 
@@ -888,9 +941,9 @@ export default function Home() {
           <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-8" style={{ textShadow: '3px 3px 0 #000' }}>
             💰 CHOOSE YOUR PLAN
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 items-center">
             {/* Free */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col">
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-white/20 flex flex-col opacity-80">
               <h3 className="font-bangers text-2xl text-white text-center mb-1">FREE</h3>
               <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
               <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
@@ -906,15 +959,19 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Member */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-[#FFD700] flex flex-col relative shadow-[0_0_30px_rgba(255,215,0,0.2)]">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#FFD700] text-black px-4 py-1 rounded-full text-xs font-bold">
-                ⭐ MOST POPULAR
+            {/* Member — DOMINANT card */}
+            <div className="relative bg-[#1a1a2e] rounded-xl p-8 border-3 border-[#FFD700] flex flex-col my-4 md:my-0 md:scale-110 z-10 overflow-hidden" style={{ boxShadow: '0 0 30px rgba(255,215,0,0.3), 0 0 60px rgba(255,215,0,0.1)' }}>
+              {/* Animated shimmer */}
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
+              <div className="absolute -top-0 left-1/2 -translate-x-1/2 z-20">
+                <div className="bg-[#FFD700] text-black px-6 py-1.5 rounded-b-xl text-sm font-bold animate-pulse shadow-lg" style={{ textShadow: '0 0 10px rgba(255,215,0,0.5)' }}>
+                  ⭐ MOST POPULAR ⭐
+                </div>
               </div>
-              <h3 className="font-bangers text-2xl text-[#FFD700] text-center mb-1">MEMBER</h3>
-              <p className="font-bangers text-3xl text-white text-center">$4.99</p>
-              <p className="text-[#FFD700]/80 text-center text-xs mb-4">One time — forever</p>
-              <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1">
+              <h3 className="font-bangers text-3xl text-[#FFD700] text-center mb-1 mt-3">MEMBER</h3>
+              <p className="font-bangers text-4xl text-white text-center">$4.99</p>
+              <p className="font-bangers text-lg text-center mb-4" style={{ color: '#FFD700' }}>one time — forever!</p>
+              <ul className="text-white/90 text-sm space-y-2 mb-6 flex-1">
                 <li>✅ All 30 real animals</li>
                 <li>✅ 🏆 Tournament mode</li>
                 <li>✅ 435+ matchups</li>
@@ -922,14 +979,14 @@ export default function Home() {
               </ul>
               <button
                 onClick={() => handleUpgrade('member')}
-                className="block w-full text-center px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all"
+                className="block w-full text-center px-6 py-4 rounded-lg font-bangers text-xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg"
               >
-                Get Full Access
+                Get Full Access →
               </button>
             </div>
 
             {/* Ultimate */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/50 flex flex-col">
+            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/50 flex flex-col opacity-80">
               <h3 className="font-bangers text-2xl text-purple-400 text-center mb-1">ULTIMATE</h3>
               <p className="font-bangers text-3xl text-white text-center">$4.99<span className="text-lg text-white/60">/mo</span></p>
               <p className="text-purple-400/80 text-center text-xs mb-4">Cancel anytime</p>
@@ -1056,6 +1113,10 @@ export default function Home() {
         @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
         .font-bangers { font-family: 'Bangers', cursive; }
         .font-comic { font-family: 'Comic Neue', cursive; }
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
       `}</style>
     </main>
   );
