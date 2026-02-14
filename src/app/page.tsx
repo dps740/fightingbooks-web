@@ -73,10 +73,17 @@ const CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; count: 
   { key: 'fantasy', label: 'Fantasy', icon: '🐉', count: 9, locked: true },
 ];
 
-// Section divider component
+// Section divider — diagonal slash with gold accent
 const SectionDivider = () => (
-  <div className="max-w-4xl mx-auto px-8 py-2">
-    <div className="h-px bg-gradient-to-r from-transparent via-[#FFD700]/30 to-transparent" />
+  <div className="relative py-4 overflow-hidden">
+    <div className="absolute left-0 right-0 h-px top-1/2" style={{
+      background: 'linear-gradient(90deg, transparent 5%, rgba(255,215,0,0.4) 30%, rgba(255,215,0,0.6) 50%, rgba(255,215,0,0.4) 70%, transparent 95%)',
+      transform: 'rotate(-0.8deg)',
+    }} />
+    <div className="absolute left-0 right-0 h-px top-1/2 mt-1" style={{
+      background: 'linear-gradient(90deg, transparent 15%, rgba(139,0,0,0.3) 40%, rgba(139,0,0,0.5) 50%, rgba(139,0,0,0.3) 60%, transparent 85%)',
+      transform: 'rotate(0.5deg)',
+    }} />
   </div>
 );
 
@@ -266,7 +273,11 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen font-comic" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
+    <main className="min-h-screen font-comic relative" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
+      {/* Vignette overlay */}
+      <div className="fixed inset-0 pointer-events-none z-[1]" style={{
+        background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%)',
+      }} />
       
       {/* Header with Account Menu */}
       <header className="px-4 py-3">
@@ -281,8 +292,12 @@ export default function Home() {
       </header>
 
       {/* 1. HERO — Lead with benefit */}
-      <section className="py-6 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="py-6 px-4 relative overflow-hidden">
+        {/* Arena spotlight glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0.04) 40%, transparent 70%)',
+        }} />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <p className="text-white/50 text-sm mb-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
             Inspired by the classic Jerry Pallotta series
           </p>
@@ -332,8 +347,12 @@ export default function Home() {
       <SectionDivider />
 
       {/* PRICING SECTION — Moved up for conversion */}
-      <section id="pricing" className="py-8 px-4">
-        <div className="max-w-5xl mx-auto">
+      <section id="pricing" className="py-8 px-4 relative overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.06) 0%, transparent 60%)',
+        }} />
+        <div className="max-w-5xl mx-auto relative z-10">
           <h2 className="font-bangers text-4xl text-[#FFD700] text-center mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
             CHOOSE YOUR PLAN
           </h2>
@@ -734,13 +753,18 @@ export default function Home() {
               </button>
 
               <div className="flex items-center justify-center px-1 sm:px-2">
-                <motion.div 
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="bg-[#FFD700] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000] shadow-xl"
-                >
-                  <span className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#8B0000]">VS</span>
-                </motion.div>
+                <div className="relative">
+                  {/* Impact burst lines */}
+                  <div className="vs-impact-lines" />
+                  <motion.div 
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="relative z-10 bg-[#FFD700] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000]"
+                    style={{ boxShadow: '0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.15)' }}
+                  >
+                    <span className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#8B0000]">VS</span>
+                  </motion.div>
+                </div>
               </div>
 
               <button
@@ -823,8 +847,11 @@ export default function Home() {
                   const locked = isAnimalLocked(tierData.tier, fighter.name);
                   const isSelected = animalA === fighter.name || animalB === fighter.name;
                   return (
-                    <button
-                      key={i}
+                    <motion.button
+                      key={fighter.name}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: i * 0.03 }}
                       onClick={() => handleFighterSelect(fighter.name)}
                       className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all hover:scale-110 hover:z-10 ${
                         isSelected
@@ -848,7 +875,7 @@ export default function Home() {
                           <span className="text-yellow-400 text-sm">🔒</span>
                         </div>
                       )}
-                    </button>
+                    </motion.button>
                   );
                 })}
                 
