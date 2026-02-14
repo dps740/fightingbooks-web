@@ -515,6 +515,35 @@ function BookReader() {
                   </div>
                 )}
                 
+                {/* Post-reading upgrade CTA for free users */}
+                {tierData.tier !== 'member' && tierData.tier !== 'ultimate' && !tierData.loading && (
+                  <div className="download-section" style={{ borderColor: '#FFD700', background: 'linear-gradient(135deg, #1a1a2e, #2d1a4e)' }}>
+                    <h3 className="download-title" style={{ color: '#FFD700' }}>❤️ Loved it?</h3>
+                    <p style={{ color: 'white', textAlign: 'center', marginBottom: '15px', fontSize: '1.1em' }}>
+                      Unlock <strong style={{ color: '#FFD700' }}>435+ matchups</strong> for just <strong style={{ color: '#FFD700' }}>$4.99</strong> — one time, forever!
+                    </p>
+                    <div style={{ textAlign: 'center' }}>
+                      <a
+                        href="/#pricing"
+                        style={{
+                          display: 'inline-block',
+                          padding: '12px 30px',
+                          background: 'linear-gradient(135deg, #FFD700, #FFA500)',
+                          color: '#1a1a2e',
+                          fontFamily: "'Bangers', cursive",
+                          fontSize: '1.3em',
+                          borderRadius: '8px',
+                          textDecoration: 'none',
+                          border: '2px solid #FFD700',
+                          letterSpacing: '1px',
+                        }}
+                      >
+                        👑 Get Full Access
+                      </a>
+                    </div>
+                  </div>
+                )}
+
                 {/* Download Options - Only show if NOT tournament mode */}
                 {searchParams.get('tournament') !== 'true' && (
                   <div className="download-section">
