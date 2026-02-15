@@ -1023,6 +1023,11 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       type: 'stats',
       title: 'TALE OF THE TAPE!',
       content: `
+        <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 8px; font-family: 'Bangers', cursive; font-size: 1.1em; letter-spacing: 1px;">
+          <span style="color: #c41e3a;">🔴 ${factsA.name}</span>
+          <span style="color: #666;">VS</span>
+          <span style="color: #1e4fc4;">🔵 ${factsB.name}</span>
+        </div>
         <div class="stat-bar-container">
           <div class="stat-bar-label">💪 STRENGTH</div>
           ${compStats.strengthNote ? `<p class="stat-note">${compStats.strengthNote}</p>` : ''}
@@ -1033,7 +1038,6 @@ async function generateBook(animalA: string, animalB: string, environment: strin
                   ${factsA.strength_score}/10
                 </div>
               </div>
-              <p style="text-align: center; margin-top: 2px; font-weight: bold; font-size: 0.85em; color: #c41e3a;">${factsA.name}</p>
             </div>
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -1041,7 +1045,6 @@ async function generateBook(animalA: string, animalB: string, environment: strin
                   ${factsB.strength_score}/10
                 </div>
               </div>
-              <p style="text-align: center; margin-top: 2px; font-weight: bold; font-size: 0.85em; color: #1e4fc4;">${factsB.name}</p>
             </div>
           </div>
 
