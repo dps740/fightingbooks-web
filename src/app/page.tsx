@@ -395,12 +395,7 @@ export default function Home() {
             >
               Create a Free Book
             </a>
-            <a
-              href="#sample-books"
-              className="px-8 py-4 rounded-xl font-bangers text-xl bg-white/10 text-white border-3 border-white/40 hover:bg-white/20 hover:border-white/60 transition-all w-full sm:w-auto"
-            >
-              See Example Books
-            </a>
+{/* Secondary CTA removed — example books visible directly below */}
           </motion.div>
 
           {/* 3 Benefit Pillars */}
