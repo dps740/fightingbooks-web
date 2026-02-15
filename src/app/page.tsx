@@ -320,7 +320,15 @@ export default function Home() {
       
       {/* Header with Account Menu */}
       <header className="px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-end items-center">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <nav className="flex gap-6 items-center">
+            <a href="/learn" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
+              📚 LEARNING CENTER
+            </a>
+            <a href="/blog" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
+              📖 BATTLE GUIDES
+            </a>
+          </nav>
           <AccountMenu 
             isAuthenticated={tierData.isAuthenticated}
             email={tierData.email}
@@ -454,10 +462,10 @@ export default function Home() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
-              4 Free Example Books Available Now
+              Example Books
             </h2>
             <p className="text-white/70 text-base sm:text-lg">
-              No signup needed — read instantly!
+              Tap any cover to start reading
             </p>
           </div>
 

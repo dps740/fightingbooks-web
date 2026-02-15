@@ -18,6 +18,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     console.error('Could not read articles directory:', error)
   }
 
+  // Get all learn articles
+  const learnDir = path.join(process.cwd(), 'content', 'learn')
+  let learnSlugs: string[] = []
+  
+  try {
+    const files = fs.readdirSync(learnDir)
+    learnSlugs = files
+      .filter(file => file.endsWith('.md'))
+      .map(file => file.replace('.md', ''))
+  } catch (error) {
+    console.error('Could not read learn directory:', error)
+  }
+
   const staticPages = [
     {
       url: baseUrl,
@@ -31,6 +44,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/learn`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.9,
+    },
   ]
 
   const blogPages = articleSlugs.map(slug => ({
@@ -40,5 +59,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }))
 
-  return [...staticPages, ...blogPages]
+  const learnPages = learnSlugs.map(slug => ({
+    url: `${baseUrl}/learn/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.85,
+  }))
+
+  return [...staticPages, ...blogPages, ...learnPages]
 }

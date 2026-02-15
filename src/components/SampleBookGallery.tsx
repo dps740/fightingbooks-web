@@ -38,7 +38,7 @@ export default function SampleBookGallery() {
     <section className="py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <p className="text-white/60 text-center text-sm mb-6 tracking-wide uppercase">
-          Read free — no signup needed
+          No signup needed
         </p>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-8">
