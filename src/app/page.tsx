@@ -331,7 +331,7 @@ export default function Home() {
       </header>
 
       {/* 1. HERO — Lead with benefit */}
-      <section className="py-8 px-4 relative overflow-hidden">
+      <section className="pt-4 pb-4 px-4 relative overflow-hidden">
         {/* Arena spotlight glow — dual lights */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none" style={{
           background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 35%, transparent 65%)',
@@ -361,7 +361,7 @@ export default function Home() {
           
           {/* New Headline */}
           <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
-            <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-4 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
+            <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
               Turn Animal Debates Into<br />
               <span className="text-[#FFD700]">Reading and Critical Thinking</span>
             </h1>
@@ -372,7 +372,7 @@ export default function Home() {
             initial={{ y: 20, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-8 px-4" 
+            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-5 px-4" 
             style={{ textShadow: '1px 1px 2px #000' }}
           >
             Create custom wildlife learning books in seconds. Inspired by &apos;Who Would Win&apos; style stories — but fully interactive and endless.
@@ -383,7 +383,7 @@ export default function Home() {
             initial={{ scale: 0.9, opacity: 0 }} 
             animate={{ scale: 1, opacity: 1 }} 
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4"
           >
             <a
               href="#create"
@@ -404,7 +404,7 @@ export default function Home() {
             initial={{ y: 30, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 max-w-4xl mx-auto mb-8"
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 max-w-4xl mx-auto mb-2"
           >
             <div className="flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
@@ -420,25 +420,12 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Social Proof */}
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="bg-gradient-to-r from-purple-900/40 via-purple-800/40 to-purple-900/40 rounded-lg py-4 px-6 border border-purple-500/30 max-w-2xl mx-auto"
-          >
-            <p className="text-purple-200 font-semibold text-base sm:text-lg mb-1">
-              Perfect for curious kids ages 5–7
-            </p>
-            <p className="text-purple-300/80 text-sm">
-              Great for reading practice and screen-time that feels productive
-            </p>
-          </motion.div>
+          {/* Age callout integrated into bullet line */}
         </div>
       </section>
 
       {/* DEMO SECTION - How it works */}
-      <section className="py-8 px-4 bg-black/20">
+      <section className="py-4 px-4 bg-black/20">
         <div className="max-w-5xl mx-auto">
           <h3 className="font-bangers text-2xl sm:text-3xl text-center text-white mb-8" style={{ textShadow: '2px 2px 0 #000' }}>
             How It Works
