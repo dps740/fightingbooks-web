@@ -37,9 +37,7 @@ export default function SampleBookGallery() {
   return (
     <section className="py-8 px-4">
       <div className="max-w-5xl mx-auto">
-        <p className="text-white/60 text-center text-sm mb-6 tracking-wide uppercase">
-          No signup needed
-        </p>
+        {/* signup note removed to compress space */}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-8">
           {SAMPLE_BOOKS.map((book, i) => (

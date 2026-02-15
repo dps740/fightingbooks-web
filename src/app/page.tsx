@@ -458,15 +458,12 @@ export default function Home() {
       </section>
 
       {/* 2. FREE EXAMPLE BOOKS SECTION */}
-      <div id="sample-books" className="py-6 px-4">
+      <div id="sample-books" className="py-3 px-4">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-6">
-            <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
-              Example Books
+          <div className="text-center mb-3">
+            <h2 className="font-bangers text-2xl sm:text-3xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
+              Example Books — Tap to Read
             </h2>
-            <p className="text-white/70 text-base sm:text-lg">
-              Tap any cover to start reading
-            </p>
           </div>
 
           <SampleBookGallery />
