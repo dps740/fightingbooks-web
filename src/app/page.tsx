@@ -433,8 +433,8 @@ export default function Home() {
           <div className="flex items-center justify-center gap-0">
             {[
               { num: '1', label: 'Pick Animals' },
-              { num: '2', label: 'Read Story' },
-              { num: '3', label: 'Compare Traits' },
+              { num: '2', label: 'Compare Traits' },
+              { num: '3', label: 'Read Story' },
               { num: '4', label: 'Discover Winner' },
             ].map((step, i) => (
               <div key={i} className="flex items-center">
