@@ -10,6 +10,7 @@ import UpgradeModal from '@/components/UpgradeModal';
 import TierInfoPopover from '@/components/TierInfoPopover';
 import AccountMenu from '@/components/AccountMenu';
 import SampleBookGallery from '@/components/SampleBookGallery';
+import EmailCaptureModal from '@/components/EmailCaptureModal';
 import { UserTier } from '@/lib/tierAccess';
 
 // All fighters
@@ -112,6 +113,10 @@ export default function Home() {
   const [tournamentFighters, setTournamentFighters] = useState<string[]>([]);
   const [showTournamentOverlay, setShowTournamentOverlay] = useState(false);
   
+  // Email capture state
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [pendingGenerate, setPendingGenerate] = useState(false);
+  
   // Tier & Upgrade state
   const tierData = useTier();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -194,8 +199,20 @@ export default function Home() {
   
   const handleStartTournament = () => {
     if (tournamentFighters.length !== 8) return;
-    setLoading(true);
     
+    // Check email gate
+    const hasEmail = typeof window !== 'undefined' && localStorage.getItem('fb_email');
+    if (!tierData.isAuthenticated && !hasEmail) {
+      setPendingGenerate(true);
+      setShowEmailCapture(true);
+      return;
+    }
+    
+    proceedWithTournament();
+  };
+
+  const proceedWithTournament = () => {
+    setLoading(true);
     const bracket = {
       fighters: tournamentFighters,
       round1: [
@@ -257,10 +274,8 @@ export default function Home() {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!canGenerate) return;
+  const proceedWithGenerate = () => {
     setLoading(true);
-    
     if (battleType === 'tournament') {
       const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
       router.push(`/tournament?seed1=${encodeURIComponent(animalA)}&seed2=${encodeURIComponent(animalB)}&mode=${mode}`);
@@ -268,6 +283,20 @@ export default function Home() {
       const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
       router.push(`/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=neutral&mode=${mode}`);
     }
+  };
+
+  const handleGenerate = async () => {
+    if (!canGenerate) return;
+    
+    // Check if email gate needed: skip if authenticated or already captured
+    const hasEmail = typeof window !== 'undefined' && localStorage.getItem('fb_email');
+    if (!tierData.isAuthenticated && !hasEmail) {
+      setPendingGenerate(true);
+      setShowEmailCapture(true);
+      return;
+    }
+    
+    proceedWithGenerate();
   };
 
   // Filter fighters by selected category
@@ -1135,6 +1164,23 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Email Capture Modal */}
+      <EmailCaptureModal
+        isOpen={showEmailCapture}
+        onClose={() => { setShowEmailCapture(false); setPendingGenerate(false); }}
+        onSubmit={() => {
+          setShowEmailCapture(false);
+          if (pendingGenerate) {
+            setPendingGenerate(false);
+            if (battleType === 'tournament') {
+              proceedWithTournament();
+            } else {
+              proceedWithGenerate();
+            }
+          }
+        }}
+      />
 
       {/* Upgrade Modal */}
       <UpgradeModal
