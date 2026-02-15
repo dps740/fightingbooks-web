@@ -1,3 +1,10 @@
+---
+title: "Crocodile vs Shark: Who Would Win? (2026) - Saltwater Croc vs Great White"
+description: "Crocodile vs Shark: 3,700 PSI bite force croc vs 400-million-year-old killing machine. Armor meets speed in this aquatic showdown."
+keywords: ["crocodile vs shark", "who would win", "saltwater crocodile vs great white shark", "animal battle", "croc vs shark"]
+date: "2026-02-08"
+---
+
 # Crocodile vs Shark: Who Would Win?
 
 *When the apex predators of river and ocean collide — armor meets speed*

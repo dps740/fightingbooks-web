@@ -3,12 +3,15 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import fs from 'fs';
 import path from 'path';
+import matter from 'gray-matter';
 import BookAffiliateSection from '@/components/BookAffiliateSection';
 
 interface ArticleMetadata {
   title: string;
   description: string;
   animals?: [string, string];
+  keywords?: string[];
+  date?: string;
 }
 
 interface ArticleData {
@@ -40,6 +43,8 @@ const ARTICLE_ANIMALS: Record<string, [string, string] | undefined> = {
   'giant-panda-vs-great-horned-owl': ['Giant Panda', 'Great Horned Owl'],
   'jaguar-vs-leopard': ['Jaguar', 'Leopard'],
   'anaconda-vs-crocodile': ['Anaconda', 'Crocodile'],
+  'honey-badger-vs-lion': ['Honey Badger', 'Lion'],
+  'komodo-dragon-vs-king-cobra': ['Komodo Dragon', 'King Cobra'],
 };
 
 const VALID_SLUGS = Object.keys(ARTICLE_ANIMALS);
@@ -56,23 +61,32 @@ function getArticleData(slug: string): ArticleData | null {
     return null;
   }
 
-  const content = fs.readFileSync(filePath, 'utf-8');
-  
-  // Extract title from first # heading
-  const titleMatch = content.match(/^#\s+(.+)$/m);
-  const title = titleMatch ? titleMatch[1] : slug;
-  
-  // Extract description from italic line after title
-  const descMatch = content.match(/\*(.+)\*/);
-  const description = descMatch ? descMatch[1] : '';
+  const rawContent = fs.readFileSync(filePath, 'utf-8');
+  const { data: frontmatter, content } = matter(rawContent);
+
+  // Prefer frontmatter title/description, fall back to H1/italic extraction
+  let title = frontmatter.title;
+  let description = frontmatter.description;
+
+  if (!title) {
+    const titleMatch = content.match(/^#\s+(.+)$/m);
+    title = titleMatch ? titleMatch[1] : slug;
+  }
+
+  if (!description) {
+    const descMatch = content.match(/\*(.+)\*/);
+    description = descMatch ? descMatch[1] : '';
+  }
 
   return {
     slug,
     content,
-    metadata: { 
-      title, 
+    metadata: {
+      title,
       description,
       animals: ARTICLE_ANIMALS[slug],
+      keywords: frontmatter.keywords,
+      date: frontmatter.date,
     },
   };
 }
@@ -96,8 +110,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: `${article.metadata.title} | FightingBooks`,
+    title: `${article.metadata.title} | Who Would Win Books`,
     description: article.metadata.description,
+    keywords: article.metadata.keywords,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: article.metadata.title,
       description: article.metadata.description,
@@ -150,6 +168,36 @@ function markdownToHtml(markdown: string): string {
   return html;
 }
 
+// Get related articles that share an animal with the current article
+function getRelatedSlugs(currentSlug: string): string[] {
+  const currentAnimals = ARTICLE_ANIMALS[currentSlug];
+  
+  const otherSlugs = VALID_SLUGS.filter(s => s !== currentSlug);
+  
+  if (!currentAnimals) {
+    // For cornerstone content, just return first 4
+    return otherSlugs.slice(0, 4);
+  }
+
+  // Score each slug by shared animals
+  const scored = otherSlugs.map(s => {
+    const animals = ARTICLE_ANIMALS[s];
+    let score = 0;
+    if (animals) {
+      for (const animal of animals) {
+        if (currentAnimals.includes(animal)) {
+          score += 1;
+        }
+      }
+    }
+    return { slug: s, score };
+  });
+
+  // Sort by score descending, then take top 4
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 4).map(s => s.slug);
+}
+
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = getArticleData(slug);
@@ -159,9 +207,33 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   }
 
   const htmlContent = markdownToHtml(article.content);
+  const relatedSlugs = getRelatedSlugs(slug);
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+
+  // JSON-LD Article schema
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.metadata.title,
+    description: article.metadata.description,
+    url: `${baseUrl}/blog/${slug}`,
+    datePublished: article.metadata.date || '2026-02-08',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Who Would Win Books',
+      url: baseUrl,
+    },
+  };
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Header */}
       <header className="border-b border-[var(--border-accent)] bg-[var(--bg-secondary)]">
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -200,10 +272,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className="mt-12">
             <h3 className="text-2xl font-bold mb-6 text-[var(--accent-gold)]">Related Battles</h3>
             <div className="grid md:grid-cols-2 gap-4">
-              {VALID_SLUGS
-                .filter(s => s !== slug)
-                .slice(0, 4)
-                .map((relatedSlug) => (
+              {relatedSlugs.map((relatedSlug) => (
                   <Link
                     key={relatedSlug}
                     href={`/blog/${relatedSlug}`}
@@ -225,7 +294,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       {/* Footer */}
       <footer className="py-8 bg-[var(--bg-secondary)] border-t border-[var(--border-accent)]">
         <div className="max-w-4xl mx-auto px-4 text-center text-[var(--text-muted)] text-sm">
-          <p>© 2025 FightingBooks • A fan tribute to Jerry Pallotta's Who Would Win? series</p>
+          <p>© 2025 FightingBooks • A fan tribute to Jerry Pallotta&apos;s Who Would Win? series</p>
         </div>
       </footer>
     </main>

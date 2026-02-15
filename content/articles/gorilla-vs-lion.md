@@ -1,3 +1,10 @@
+---
+title: "Gorilla vs Lion: Who Would Win? (2026) - Strength vs Killer Instinct"
+description: "Gorilla vs Lion: 485 lb silverback with 1,300 PSI bite vs 550 lb lion built to kill. Intelligence vs predatory instinct — who wins?"
+keywords: ["gorilla vs lion", "who would win", "silverback vs lion", "animal battle", "gorilla vs lion fight"]
+date: "2026-02-08"
+---
+
 # Gorilla vs Lion: Who Would Win?
 
 *The king of the jungle meets the true jungle king — strength versus killer instinct*

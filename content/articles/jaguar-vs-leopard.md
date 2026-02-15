@@ -1,3 +1,10 @@
+---
+title: "Jaguar vs Leopard: Who Would Win? (2026) - Spotted Big Cat Showdown"
+description: "Jaguar vs Leopard: 250 lb muscular jaguar with skull-crushing bite vs 175 lb agile leopard. Two spotted cats — only one wins this fight."
+keywords: ["jaguar vs leopard", "who would win", "jaguar vs leopard fight", "animal battle", "big cat comparison"]
+date: "2026-02-08"
+---
+
 # Jaguar vs Leopard: Who Would Win?
 
 *Two spotted big cats — one's built like a tank, the other's a master assassin*

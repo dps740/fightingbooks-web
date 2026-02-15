@@ -1,3 +1,10 @@
+---
+title: "Elephant vs Rhino: Who Would Win? (2026) - 13,000 lb Giant vs Armored Charger"
+description: "Elephant vs Rhino: 13,000 lb elephant with 6-foot tusks vs 5,000 lb rhino charging at 35 mph. The ultimate megafauna battle."
+keywords: ["elephant vs rhino", "who would win", "elephant vs rhinoceros", "animal battle", "largest land animals fight"]
+date: "2026-02-08"
+---
+
 # Elephant vs Rhino: Who Would Win?
 
 *The two largest land animals collide — intelligence and size versus armor and horn*

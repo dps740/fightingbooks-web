@@ -1,3 +1,10 @@
+---
+title: "Gorilla vs Bear: Who Would Win? (2026) - Silverback vs Grizzly Breakdown"
+description: "Gorilla vs Grizzly Bear: 485 lb silverback with 1,300 PSI bite vs 600 lb grizzly with 4-inch claws. Full stats and verdict inside."
+keywords: ["gorilla vs bear", "who would win", "silverback vs grizzly", "animal battle", "gorilla vs grizzly bear"]
+date: "2026-02-08"
+---
+
 # Gorilla vs Bear: Who Would Win?
 
 *Silverback Gorilla vs Grizzly Bear — the ultimate strength showdown*

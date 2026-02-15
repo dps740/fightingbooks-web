@@ -1135,12 +1135,12 @@ function BookReader() {
         /* EDUCATIONAL PAGES - "Who Would Win?" Style */
         .edu-image-hero {
           width: 100%;
-          flex: 0 0 60%;
-          max-height: 60%;
+          flex: 1 1 auto;
           overflow: hidden;
           border-radius: 10px 10px 0 0;
           margin: -20px -20px 0 -20px;
           position: relative;
+          min-height: 0;
         }
         .edu-hero-img {
           width: 100%;
@@ -1151,25 +1151,26 @@ function BookReader() {
         .edu-content-bottom {
           position: relative;
           background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 20%);
-          padding: 10px 15px 12px;
-          margin: -40px 0 0 0;
+          padding: 8px 12px 10px;
+          margin: -30px 0 0 0;
           border-radius: 15px 15px 0 0;
           z-index: 1;
-          flex: 1;
+          flex: 0 0 auto;
+          max-height: 35%;
           overflow-y: auto;
         }
         .edu-title {
           font-family: 'Bangers', cursive;
-          font-size: 2em;
+          font-size: 1.7em;
           color: #ff5722;
           text-shadow: 3px 3px 0px #ffd54f, 4px 4px 8px rgba(0,0,0,0.3);
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           text-align: center;
           letter-spacing: 2px;
           line-height: 1.1;
         }
         .edu-content {
-          font-size: 0.95em;
+          font-size: 0.85em;
         }
         
         /* DID YOU KNOW boxes */
@@ -1205,20 +1206,20 @@ function BookReader() {
         /* THINK ABOUT IT boxes */
         .think-about-it {
           background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
-          border: 4px solid #0277bd;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+          border: 3px solid #0277bd;
+          border-radius: 10px;
+          padding: 6px 10px;
+          margin: 6px 0;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
         .think-about-it::before {
           content: '🤔 THINK ABOUT IT!';
           display: block;
           font-family: 'Bangers', cursive;
-          font-size: 1.5em;
+          font-size: 1.1em;
           color: #0277bd;
           text-shadow: 2px 2px 0px white;
-          margin-bottom: 8px;
+          margin-bottom: 3px;
           letter-spacing: 2px;
         }
         .think-about-it p {
@@ -1227,18 +1228,18 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 1.05em;
+          font-size: 0.85em;
           font-style: italic;
         }
         
         /* SIZE COMPARISON boxes */
         .size-compare {
           background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-          border: 4px solid #2e7d32;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+          border: 3px solid #2e7d32;
+          border-radius: 10px;
+          padding: 8px;
+          margin: 6px 0;
+          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
           text-align: center;
         }
         .size-compare .size-emoji {

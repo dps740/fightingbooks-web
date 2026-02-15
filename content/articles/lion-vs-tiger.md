@@ -1,3 +1,10 @@
+---
+title: "Lion vs Tiger: Who Would Win in a Fight? (2026) - Size, Speed & Strength Compared"
+description: "Lion vs Tiger breakdown: 550 lb lion with 650 PSI bite vs 660 lb tiger with 1,050 PSI bite force. Stats, weapons, and who actually wins."
+keywords: ["lion vs tiger", "who would win", "lion vs tiger fight", "animal battle", "big cat comparison", "lion vs tiger who would win"]
+date: "2026-02-08"
+---
+
 # Lion vs Tiger: Who Would Win in a Fight?
 
 *The ultimate breakdown of nature's most debated big cat battle*

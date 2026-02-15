@@ -1,3 +1,10 @@
+---
+title: "Wolf vs Lion: Who Would Win in a Fight? (2026) - Pack vs King"
+description: "Wolf vs Lion: 175 lb wolf with pack tactics vs 550 lb apex predator. One-on-one it's a mismatch — but what if the wolf brings friends?"
+keywords: ["wolf vs lion", "who would win", "wolf vs lion fight", "animal battle", "wolf pack vs lion"]
+date: "2026-02-08"
+---
+
 # Wolf vs Lion: Who Would Win in a Fight?
 
 *When pack tactics meet solo supremacy*

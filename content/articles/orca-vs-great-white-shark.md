@@ -1,3 +1,10 @@
+---
+title: "Orca vs Great White Shark: Who Would Win? (2026) - Ocean's Top Predators"
+description: "Orca vs Great White Shark: 12,000 lb killer whale with 19,000 PSI bite vs 5,000 lb great white. Spoiler: orcas hunt great whites for their livers."
+keywords: ["orca vs great white shark", "who would win", "killer whale vs shark", "animal battle", "ocean predator fight"]
+date: "2026-02-08"
+---
+
 # Orca vs Great White Shark: Who Would Win?
 
 *When the ocean's apex predator meets an even scarier apex predator*

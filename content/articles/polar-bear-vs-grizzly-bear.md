@@ -1,3 +1,10 @@
+---
+title: "Polar Bear vs Grizzly Bear: Who Would Win? (2026) - Ultimate Bear Showdown"
+description: "Polar Bear vs Grizzly Bear: 1,500 lb Arctic giant vs 800 lb inland powerhouse. Size, strength, aggression — which bear wins this fight?"
+keywords: ["polar bear vs grizzly bear", "who would win", "bear fight", "animal battle", "polar bear vs grizzly"]
+date: "2026-02-08"
+---
+
 # Polar Bear vs Grizzly Bear: Who Would Win?
 
 *Arctic giant meets inland powerhouse — the ultimate bear showdown*

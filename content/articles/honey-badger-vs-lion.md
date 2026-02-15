@@ -1,3 +1,10 @@
+---
+title: "Honey Badger vs Lion: Who Would Win? (2026) - Fearless vs King of Beasts"
+description: "Honey Badger vs Lion: 30 lb fearless weasel with thick skin vs 450 lb apex predator. Can attitude really beat overwhelming size and power?"
+keywords: ["honey badger vs lion", "who would win", "honey badger fight", "animal battle", "honey badger don't care"]
+date: "2026-02-08"
+---
+
 # Honey Badger vs Lion: Who Would Win?
 
 *When the internet's favorite fearless animal meets the King of Beasts*

@@ -50,6 +50,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    "pinterest-rich-pin": "true",
+  },
 };
 
 export default function RootLayout({

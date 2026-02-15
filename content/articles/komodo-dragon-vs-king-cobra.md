@@ -1,3 +1,10 @@
+---
+title: "Komodo Dragon vs King Cobra: Who Would Win? (2026) - Reptile Death Match"
+description: "Komodo Dragon vs King Cobra: 200 lb venomous lizard with serrated teeth vs 18-foot snake with elephant-killing neurotoxin. Epic reptile showdown."
+keywords: ["komodo dragon vs king cobra", "who would win", "komodo dragon fight", "animal battle", "reptile battle"]
+date: "2026-02-08"
+---
+
 # Komodo Dragon vs King Cobra: Who Would Win?
 
 *When the world's largest lizard meets the world's deadliest snake*

@@ -1,3 +1,10 @@
+---
+title: "Who Would Win Books: The Complete Guide for Parents (2026)"
+description: "Everything about Jerry Pallotta's Who Would Win series: all 35+ books, reading order, age guide, and how to create your own custom animal matchups."
+keywords: ["who would win books", "who would win complete guide", "jerry pallotta books", "who would win reading order", "animal battle books"]
+date: "2026-02-08"
+---
+
 # Who Would Win Books: The Complete Guide for Parents (2024)
 
 *Everything you need to know about Jerry Pallotta's beloved animal battle series — plus how to create your own custom matchups*

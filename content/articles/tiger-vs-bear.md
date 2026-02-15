@@ -1,3 +1,10 @@
+---
+title: "Tiger vs Bear: Who Would Win? (2026) - Siberian Tiger vs Grizzly Bear"
+description: "Tiger vs Bear: 660 lb Siberian tiger with razor claws and lightning speed vs 800 lb grizzly with bone-crushing power. Full breakdown."
+keywords: ["tiger vs bear", "who would win", "siberian tiger vs grizzly", "animal battle", "tiger vs grizzly bear"]
+date: "2026-02-08"
+---
+
 # Tiger vs Bear: Who Would Win?
 
 *Speed and agility versus raw power and durability — the ultimate predator showdown*
