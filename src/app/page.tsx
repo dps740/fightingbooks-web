@@ -404,31 +404,19 @@ export default function Home() {
             initial={{ y: 30, opacity: 0 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8"
+            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 max-w-4xl mx-auto mb-8"
           >
-            <div className="relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-yellow-500/40 transition-all group">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                <svg className="w-5 h-5 text-red-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-              </div>
-              <p className="text-white font-semibold text-sm sm:text-base mt-3 leading-snug">
-                Builds vocabulary with fun similes
-              </p>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">Builds vocabulary with fun similes</span>
             </div>
-            <div className="relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-yellow-500/40 transition-all group">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                <svg className="w-5 h-5 text-red-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-              <p className="text-white font-semibold text-sm sm:text-base mt-3 leading-snug">
-                Teaches real wildlife traits and comparisons
-              </p>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">Real wildlife traits and comparisons</span>
             </div>
-            <div className="relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-yellow-500/40 transition-all group">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-                <svg className="w-5 h-5 text-red-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
-              </div>
-              <p className="text-white font-semibold text-sm sm:text-base mt-3 leading-snug">
-                Encourages reasoning through structured scoring
-              </p>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">Reasoning through structured scoring</span>
             </div>
           </motion.div>
 
