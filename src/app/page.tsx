@@ -497,59 +497,44 @@ export default function Home() {
           <div className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0d1f0d] border-2 border-[#FFD700]/30 p-6 sm:p-8" onClick={e => e.stopPropagation()}>
             <button onClick={() => setShowPricing(false)} className="absolute top-3 right-4 text-white/60 hover:text-white text-2xl font-bold z-10">✕</button>
             <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] text-center mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
-              MEMBERSHIP
+              UNLOCK MORE ANIMALS
             </h2>
-            <p className="text-white/60 text-center text-sm mb-6">Upgrade in steps — start with Member, add Ultimate anytime</p>
+            <p className="text-white/60 text-center text-sm mb-6">The free version is great — but there&apos;s so much more to explore</p>
 
-            {/* Step 1: Member */}
+            {/* Member */}
             <div className="relative bg-[#1a1a2e] rounded-xl p-6 border-3 border-[#FFD700] mb-4 overflow-hidden" style={{ boxShadow: '0 0 30px rgba(255,215,0,0.2)' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-[#FFD700] text-black px-3 py-0.5 rounded-full text-xs font-bold">STEP 1</span>
                     <h3 className="font-bangers text-2xl text-[#FFD700]">MEMBER</h3>
                     <span className="font-bangers text-2xl text-white">$4.99</span>
-                    <span className="text-white/50 text-sm">one-time — forever</span>
+                    <span className="text-white/50 text-sm">one-time, keep forever</span>
                   </div>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-white/80 text-sm">
-                    <span>All 30 real animals</span>
-                    <span>Tournament mode</span>
-                    <span>435+ matchups</span>
-                    <span>Download &amp; print PDFs</span>
-                  </div>
+                  <p className="text-white/60 text-sm mb-2">Unlock the full animal kingdom — 30 real animals, 435+ matchups, tournaments, and printable PDFs</p>
                 </div>
                 <button onClick={() => handleUpgrade('member')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
-                  Get Member Access
+                  Unlock All Animals
                 </button>
               </div>
             </div>
 
-            {/* Step 2: Ultimate add-on */}
+            {/* Ultimate */}
             <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/40">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="bg-purple-500 text-white px-3 py-0.5 rounded-full text-xs font-bold">STEP 2</span>
                     <h3 className="font-bangers text-2xl text-purple-400">ULTIMATE</h3>
-                    <span className="font-bangers text-2xl text-white">+$4.99<span className="text-base text-white/50">/mo</span></span>
+                    <span className="font-bangers text-2xl text-white">$4.99<span className="text-base text-white/50">/mo</span></span>
                   </div>
-                  <p className="text-white/50 text-xs mb-2">Requires Member — adds on top of your one-time purchase</p>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-white/80 text-sm">
-                    <span>Dinosaurs (8)</span>
-                    <span>Fantasy creatures (9)</span>
-                    <span>CYOA Adventure mode</span>
-                    <span>Create Your Own (coming soon)</span>
-                    <span>2 new animals/month</span>
-                  </div>
+                  <p className="text-white/60 text-sm mb-2">Everything in Member plus dinosaurs, fantasy creatures, Choose Your Own Adventure mode, and new animals every month</p>
+                  <p className="text-white/40 text-xs">Includes Member access — cancel anytime</p>
                 </div>
                 <button onClick={() => handleUpgrade('ultimate')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all whitespace-nowrap">
-                  Add Ultimate
+                  Go Ultimate
                 </button>
               </div>
             </div>
-
-            <p className="text-white/40 text-center text-xs mt-4">Free tier: 8 animals, standard books, PDF downloads — no signup needed</p>
           </div>
         </div>
       )}
