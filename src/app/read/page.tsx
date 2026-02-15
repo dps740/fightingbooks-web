@@ -817,7 +817,8 @@ function BookReader() {
           width: 100%;
           max-width: 800px;
           min-height: 500px;
-          height: auto;
+          height: calc(100vh - 160px);
+          max-height: 900px;
           perspective: 2000px;
           transform-style: preserve-3d;
         }
@@ -825,12 +826,15 @@ function BookReader() {
         @media (max-width: 768px) {
           .book-container {
             min-height: 400px;
+            height: auto;
+            max-height: none;
           }
         }
         
         .page {
           position: relative;
           width: 100%;
+          height: 100%;
           min-height: 500px;
           background: linear-gradient(to right, #f8f6f1 0%, #fffef9 5%, #fffef9 95%, #f5f3ee 100%);
           border-radius: 3px 10px 10px 3px;
@@ -843,6 +847,8 @@ function BookReader() {
           overflow: auto;
           backface-visibility: hidden;
           transform-style: preserve-3d;
+          display: flex;
+          flex-direction: column;
         }
         
         .page::before {
@@ -878,6 +884,7 @@ function BookReader() {
           flex-direction: column;
           align-items: center;
           padding: 40px 30px !important;
+          overflow: hidden;
         }
         
         .cover-banner {
@@ -914,8 +921,11 @@ function BookReader() {
           margin-bottom: 15px;
         }
         
-        .cover-image-container { flex: 1; display: flex; align-items: center; justify-content: center; }
-        .cover-image { max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .cover-image-container { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
+        .cover-image { max-width: 90%; max-height: 55vh; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); object-fit: contain; }
+        @media (max-width: 768px) {
+          .cover-image { max-height: 45vh; }
+        }
         
         /* Victory Page - matches battle page dramatic style */
         .victory-page {
@@ -1125,8 +1135,8 @@ function BookReader() {
         /* EDUCATIONAL PAGES - "Who Would Win?" Style */
         .edu-image-hero {
           width: 100%;
-          height: 65%;
-          min-height: 320px;
+          flex: 0 0 45%;
+          max-height: 45%;
           overflow: hidden;
           border-radius: 10px 10px 0 0;
           margin: -20px -20px 0 -20px;
@@ -1145,6 +1155,8 @@ function BookReader() {
           margin: -40px 0 0 0;
           border-radius: 15px 15px 0 0;
           z-index: 1;
+          flex: 1;
+          overflow-y: auto;
         }
         .edu-title {
           font-family: 'Bangers', cursive;
