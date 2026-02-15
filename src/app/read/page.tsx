@@ -1151,47 +1151,47 @@ function BookReader() {
         .edu-content-bottom {
           position: relative;
           background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 20%);
-          padding: 8px 12px 10px;
-          margin: -30px 0 0 0;
+          padding: 6px 10px 8px;
+          margin: -25px 0 0 0;
           border-radius: 15px 15px 0 0;
           z-index: 1;
-          flex: 0 0 auto;
-          max-height: 35%;
-          overflow-y: auto;
+          flex: 0 1 auto;
+          overflow: hidden;
         }
         .edu-title {
           font-family: 'Bangers', cursive;
-          font-size: 1.7em;
+          font-size: 1.4em;
           color: #ff5722;
-          text-shadow: 3px 3px 0px #ffd54f, 4px 4px 8px rgba(0,0,0,0.3);
-          margin-bottom: 6px;
+          text-shadow: 2px 2px 0px #ffd54f, 3px 3px 6px rgba(0,0,0,0.3);
+          margin-bottom: 4px;
           text-align: center;
-          letter-spacing: 2px;
-          line-height: 1.1;
+          letter-spacing: 1px;
+          line-height: 1.0;
         }
         .edu-content {
-          font-size: 0.85em;
+          font-size: 0.75em;
+          line-height: 1.3;
         }
         
         /* DID YOU KNOW boxes */
         .did-you-know {
           background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
-          border: 3px solid #ff5722;
-          border-radius: 10px;
-          padding: 8px 12px;
-          margin: 8px 0;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+          border: 2px solid #ff5722;
+          border-radius: 8px;
+          padding: 4px 8px;
+          margin: 4px 0;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           position: relative;
         }
         .did-you-know::before {
           content: '💡 DID YOU KNOW?';
           display: block;
           font-family: 'Bangers', cursive;
-          font-size: 1.2em;
+          font-size: 0.95em;
           color: #ff5722;
-          text-shadow: 2px 2px 0px white;
-          margin-bottom: 4px;
-          letter-spacing: 2px;
+          text-shadow: 1px 1px 0px white;
+          margin-bottom: 2px;
+          letter-spacing: 1px;
         }
         .did-you-know p {
           background: transparent !important;
@@ -1199,28 +1199,28 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 0.9em;
-          line-height: 1.3;
+          font-size: 0.8em;
+          line-height: 1.2;
         }
         
         /* THINK ABOUT IT boxes */
         .think-about-it {
           background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
-          border: 3px solid #0277bd;
-          border-radius: 10px;
-          padding: 6px 10px;
-          margin: 6px 0;
-          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+          border: 2px solid #0277bd;
+          border-radius: 8px;
+          padding: 4px 8px;
+          margin: 4px 0;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
         .think-about-it::before {
           content: '🤔 THINK ABOUT IT!';
           display: block;
           font-family: 'Bangers', cursive;
-          font-size: 1.1em;
+          font-size: 0.95em;
           color: #0277bd;
-          text-shadow: 2px 2px 0px white;
-          margin-bottom: 3px;
-          letter-spacing: 2px;
+          text-shadow: 1px 1px 0px white;
+          margin-bottom: 2px;
+          letter-spacing: 1px;
         }
         .think-about-it p {
           background: transparent !important;
@@ -1228,24 +1228,24 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 0.85em;
+          font-size: 0.8em;
           font-style: italic;
         }
         
         /* SIZE COMPARISON boxes */
         .size-compare {
           background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
-          border: 3px solid #2e7d32;
-          border-radius: 10px;
-          padding: 8px;
-          margin: 6px 0;
-          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+          border: 2px solid #2e7d32;
+          border-radius: 8px;
+          padding: 4px 8px;
+          margin: 4px 0;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
           text-align: center;
         }
         .size-compare .size-emoji {
-          font-size: 2em;
+          font-size: 1.5em;
           display: block;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
         }
         .size-compare p {
           background: transparent !important;
@@ -1259,32 +1259,32 @@ function BookReader() {
         /* WEAPON/DEFENSE highlight boxes */
         .weapon-box {
           background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
-          border: 3px solid #b71c1c;
-          border-radius: 10px;
-          padding: 6px 10px;
-          margin: 5px 0;
+          border: 2px solid #b71c1c;
+          border-radius: 8px;
+          padding: 3px 8px;
+          margin: 3px 0;
           color: white;
-          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .weapon-box::before {
           content: '⚔️ WEAPON: ';
           font-family: 'Bangers', cursive;
-          font-size: 1.05em;
+          font-size: 0.9em;
           letter-spacing: 1px;
         }
         .defense-box {
           background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
-          border: 3px solid #0d47a1;
-          border-radius: 10px;
-          padding: 6px 10px;
-          margin: 5px 0;
+          border: 2px solid #0d47a1;
+          border-radius: 8px;
+          padding: 3px 8px;
+          margin: 3px 0;
           color: white;
-          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .defense-box::before {
           content: '🛡️ DEFENSE: ';
           font-family: 'Bangers', cursive;
-          font-size: 1.05em;
+          font-size: 0.9em;
           letter-spacing: 1px;
         }
         .weapon-box p, .defense-box p {
@@ -1293,7 +1293,7 @@ function BookReader() {
           padding: 0 !important;
           margin: 0 !important;
           display: inline;
-          font-size: 0.9em;
+          font-size: 0.8em;
           font-weight: bold;
           font-size: 1.1em;
         }
