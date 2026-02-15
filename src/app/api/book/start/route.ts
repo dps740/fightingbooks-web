@@ -16,6 +16,8 @@ import {
   getTierInfo,
   getUpgradeOptions,
   normalizeTier,
+  FANTASY_ANIMALS,
+  DINOSAUR_ANIMALS,
 } from '@/lib/tierAccess';
 
 // Supabase client for auth
@@ -263,7 +265,24 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting, detailed fur/scales/feathers texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, animals in NATURAL quadruped or species-appropriate poses only. CRITICAL SPECIES SEPARATION: Each animal must be its own DISTINCT species with NO blending. A lion has a mane but NO stripes. A tiger has stripes but NO mane. Keep each animal 100% true to its real species appearance. FORBIDDEN - NEVER INCLUDE: NO human features whatsoever, NO human hands, NO human arms, NO bipedal standing poses, NO raised fists or celebration poses, NO victory poses, NO human-like expressions, NO anthropomorphism, NO human clothing on animals, NO human weapons (no swords no guns no armor), NO fantasy elements, NO extra limbs or heads, NO conjoined or merged animals, NO hybrid animals, NO blended features between species, NO mutant features, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND. Animals must behave and pose like REAL WILD ANIMALS in nature.`;
+  // Detect if prompt contains fantasy or dinosaur creatures
+  const promptLower = prompt.toLowerCase();
+  const hasFantasy = FANTASY_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+  const hasDinosaur = DINOSAUR_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+  
+  let stylePrompt: string;
+  if (hasFantasy) {
+    // Fantasy creatures need a different art style - no "photorealistic wildlife" or "NO fantasy elements"
+    stylePrompt = `STYLE: epic fantasy illustration, detailed mythological creature art, dramatic cinematic lighting, rich colors, detailed textures on scales/fur/feathers/wings, high fantasy concept art quality. ANATOMY: each creature has species-accurate anatomy as described in mythology, correct proportions for mythological depiction. CRITICAL SPECIES SEPARATION: Each creature must be its own DISTINCT species with NO blending between the two fighters. FORBIDDEN - NEVER INCLUDE: NO human features whatsoever, NO human hands, NO human arms, NO bipedal standing poses unless species-appropriate, NO raised fists or celebration poses, NO human-like expressions, NO anthropomorphism, NO human clothing, NO human weapons (no swords no guns no armor), NO extra heads beyond what the species has (e.g. hydra has multiple, griffin has one), NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND.`;
+  } else if (hasDinosaur) {
+    // Dinosaurs: photorealistic but prehistoric setting
+    stylePrompt = `STYLE: photorealistic paleoart, museum-quality dinosaur illustration, dramatic natural lighting, prehistoric environment, detailed scales/skin texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions. CRITICAL SPECIES SEPARATION: Each animal must be its own DISTINCT species with NO blending. FORBIDDEN - NEVER INCLUDE: NO human features whatsoever, NO human hands, NO human arms, NO bipedal standing poses unless species-appropriate, NO raised fists or celebration poses, NO human-like expressions, NO anthropomorphism, NO human clothing on animals, NO human weapons, NO fantasy elements, NO extra limbs or heads, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND.`;
+  } else {
+    // Real animals: original photorealistic wildlife style
+    stylePrompt = `STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting, detailed fur/scales/feathers texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, animals in NATURAL quadruped or species-appropriate poses only. CRITICAL SPECIES SEPARATION: Each animal must be its own DISTINCT species with NO blending. A lion has a mane but NO stripes. A tiger has stripes but NO mane. Keep each animal 100% true to its real species appearance. FORBIDDEN - NEVER INCLUDE: NO human features whatsoever, NO human hands, NO human arms, NO bipedal standing poses, NO raised fists or celebration poses, NO victory poses, NO human-like expressions, NO anthropomorphism, NO human clothing on animals, NO human weapons (no swords no guns no armor), NO fantasy elements, NO extra limbs or heads, NO conjoined or merged animals, NO hybrid animals, NO blended features between species, NO mutant features, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND. Animals must behave and pose like REAL WILD ANIMALS in nature.`;
+  }
+
+  const fullPrompt = `${prompt},${animalFeatures} ${stylePrompt}`;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {

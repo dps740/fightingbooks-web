@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, head, BlobNotFoundError } from '@vercel/blob';
 import OpenAI from 'openai';
+import { FANTASY_ANIMALS, DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 
 // CYOA Cache Version - bump to invalidate when narrative logic changes
 const CYOA_CACHE_VERSION = 'v2';
@@ -166,7 +167,21 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
     }
   }
 
-  const fullPrompt = `${prompt}, STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. CRITICAL: Each animal must be its own DISTINCT species - DO NOT merge or blend animal features. A lion has a mane but NO stripes. A tiger has stripes but NO mane. Keep species completely separate and anatomically accurate to their real-world appearance. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO raised limbs, NO anthropomorphism, NO human clothing, NO fantasy elements, NO hybrid animals, NO merged features between species. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND. Animals must behave like REAL WILD ANIMALS.`;
+  // Detect if prompt contains fantasy or dinosaur creatures
+  const promptLower = prompt.toLowerCase();
+  const hasFantasy = FANTASY_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+  const hasDinosaur = DINOSAUR_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+  
+  let stylePrompt: string;
+  if (hasFantasy) {
+    stylePrompt = `STYLE: epic fantasy illustration, detailed mythological creature art, dramatic cinematic lighting, rich colors, detailed textures, high fantasy concept art quality. ANATOMY: each creature has species-accurate anatomy as described in mythology. CRITICAL: Each creature must be its own DISTINCT species - DO NOT merge or blend features. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses unless species-appropriate, NO celebration poses, NO anthropomorphism, NO human clothing, NO extra heads beyond species norm. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND.`;
+  } else if (hasDinosaur) {
+    stylePrompt = `STYLE: photorealistic paleoart, museum-quality dinosaur illustration, dramatic natural lighting, prehistoric environment. ANATOMY: correct limbs, realistic proportions. CRITICAL: Each animal must be its own DISTINCT species. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses unless species-appropriate, NO celebration poses, NO anthropomorphism, NO human clothing, NO fantasy elements, NO hybrid animals. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND.`;
+  } else {
+    stylePrompt = `STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. CRITICAL: Each animal must be its own DISTINCT species - DO NOT merge or blend animal features. A lion has a mane but NO stripes. A tiger has stripes but NO mane. Keep species completely separate and anatomically accurate to their real-world appearance. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO raised limbs, NO anthropomorphism, NO human clothing, NO fantasy elements, NO hybrid animals, NO merged features between species. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING, NO CAPTIONS, NO LABELS IN THE IMAGE - THE IMAGE MUST CONTAIN ZERO TEXT OF ANY KIND. Animals must behave like REAL WILD ANIMALS.`;
+  }
+
+  const fullPrompt = `${prompt}, ${stylePrompt}`;
 
   try {
     const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
