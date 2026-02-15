@@ -425,44 +425,26 @@ export default function Home() {
       </section>
 
       {/* DEMO SECTION - How it works */}
-      <section className="py-4 px-4 bg-black/20">
-        <div className="max-w-5xl mx-auto">
-          <h3 className="font-bangers text-2xl sm:text-3xl text-center text-white mb-8" style={{ textShadow: '2px 2px 0 #000' }}>
+      <section className="py-3 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="font-bangers text-xl sm:text-2xl text-center text-white mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
             How It Works
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-red-900 to-red-700 rounded-xl p-6 mb-3 border-2 border-red-500">
-                <div className="text-4xl mb-2">🦁</div>
-                <div className="text-4xl mb-2">🐯</div>
+          <div className="flex items-center justify-center gap-0">
+            {[
+              { num: '1', label: 'Pick Animals' },
+              { num: '2', label: 'Read Story' },
+              { num: '3', label: 'Compare Traits' },
+              { num: '4', label: 'Discover Winner' },
+            ].map((step, i) => (
+              <div key={i} className="flex items-center">
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-red-900 font-bold text-sm shrink-0">{step.num}</span>
+                  <span className="text-white/90 text-sm font-medium whitespace-nowrap">{step.label}</span>
+                </div>
+                {i < 3 && <span className="text-white/30 mx-4">→</span>}
               </div>
-              <p className="text-white/90 font-semibold text-sm">1. Pick Animals</p>
-              <p className="text-white/60 text-xs mt-1">Choose your matchup</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-blue-900 to-blue-700 rounded-xl p-6 mb-3 border-2 border-blue-500">
-                <div className="text-4xl mb-2">📖</div>
-                <div className="text-white/80 text-xs mt-2">Facts • Stats<br/>Comparisons</div>
-              </div>
-              <p className="text-white/90 font-semibold text-sm">2. Read Story</p>
-              <p className="text-white/60 text-xs mt-1">Learn traits & abilities</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-xl p-6 mb-3 border-2 border-purple-500">
-                <div className="text-3xl mb-2">⚔️</div>
-                <div className="text-white/80 text-xs mt-2">Speed: 8/10<br/>Power: 9/10</div>
-              </div>
-              <p className="text-white/90 font-semibold text-sm">3. Compare Traits</p>
-              <p className="text-white/60 text-xs mt-1">Structured scoring system</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-gradient-to-br from-yellow-900 to-yellow-700 rounded-xl p-6 mb-3 border-2 border-yellow-500">
-                <div className="text-4xl mb-2">🏆</div>
-                <div className="text-white/80 text-xs mt-2">Winner!</div>
-              </div>
-              <p className="text-white/90 font-semibold text-sm">4. Discover Winner</p>
-              <p className="text-white/60 text-xs mt-1">Science-based verdict</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
