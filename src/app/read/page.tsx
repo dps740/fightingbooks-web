@@ -1135,8 +1135,8 @@ function BookReader() {
         /* EDUCATIONAL PAGES - "Who Would Win?" Style */
         .edu-image-hero {
           width: 100%;
-          flex: 0 0 45%;
-          max-height: 45%;
+          flex: 0 0 60%;
+          max-height: 60%;
           overflow: hidden;
           border-radius: 10px 10px 0 0;
           margin: -20px -20px 0 -20px;
@@ -1151,7 +1151,7 @@ function BookReader() {
         .edu-content-bottom {
           position: relative;
           background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 20%);
-          padding: 15px 20px 20px;
+          padding: 10px 15px 12px;
           margin: -40px 0 0 0;
           border-radius: 15px 15px 0 0;
           z-index: 1;
@@ -1160,36 +1160,36 @@ function BookReader() {
         }
         .edu-title {
           font-family: 'Bangers', cursive;
-          font-size: 2.5em;
+          font-size: 2em;
           color: #ff5722;
           text-shadow: 3px 3px 0px #ffd54f, 4px 4px 8px rgba(0,0,0,0.3);
-          margin-bottom: 15px;
+          margin-bottom: 8px;
           text-align: center;
           letter-spacing: 2px;
           line-height: 1.1;
         }
         .edu-content {
-          font-size: 1.1em;
+          font-size: 0.95em;
         }
         
         /* DID YOU KNOW boxes */
         .did-you-know {
           background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
-          border: 4px solid #ff5722;
-          border-radius: 12px;
-          padding: 15px;
-          margin: 15px 0;
-          box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+          border: 3px solid #ff5722;
+          border-radius: 10px;
+          padding: 8px 12px;
+          margin: 8px 0;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.3);
           position: relative;
         }
         .did-you-know::before {
           content: '💡 DID YOU KNOW?';
           display: block;
           font-family: 'Bangers', cursive;
-          font-size: 1.5em;
+          font-size: 1.2em;
           color: #ff5722;
           text-shadow: 2px 2px 0px white;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
           letter-spacing: 2px;
         }
         .did-you-know p {
@@ -1198,8 +1198,8 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 1.05em;
-          line-height: 1.4;
+          font-size: 0.9em;
+          line-height: 1.3;
         }
         
         /* THINK ABOUT IT boxes */
@@ -1258,32 +1258,32 @@ function BookReader() {
         /* WEAPON/DEFENSE highlight boxes */
         .weapon-box {
           background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
-          border: 4px solid #b71c1c;
-          border-radius: 12px;
-          padding: 12px;
-          margin: 10px 0;
+          border: 3px solid #b71c1c;
+          border-radius: 10px;
+          padding: 6px 10px;
+          margin: 5px 0;
           color: white;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
         .weapon-box::before {
           content: '⚔️ WEAPON: ';
           font-family: 'Bangers', cursive;
-          font-size: 1.2em;
+          font-size: 1.05em;
           letter-spacing: 1px;
         }
         .defense-box {
           background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
-          border: 4px solid #0d47a1;
-          border-radius: 12px;
-          padding: 12px;
-          margin: 10px 0;
+          border: 3px solid #0d47a1;
+          border-radius: 10px;
+          padding: 6px 10px;
+          margin: 5px 0;
           color: white;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
         .defense-box::before {
           content: '🛡️ DEFENSE: ';
           font-family: 'Bangers', cursive;
-          font-size: 1.2em;
+          font-size: 1.05em;
           letter-spacing: 1px;
         }
         .weapon-box p, .defense-box p {
@@ -1292,6 +1292,7 @@ function BookReader() {
           padding: 0 !important;
           margin: 0 !important;
           display: inline;
+          font-size: 0.9em;
           font-weight: bold;
           font-size: 1.1em;
         }
