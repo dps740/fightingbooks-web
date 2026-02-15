@@ -331,7 +331,7 @@ export default function Home() {
       </header>
 
       {/* 1. HERO — Lead with benefit */}
-      <section className="py-6 px-4 relative overflow-hidden">
+      <section className="py-8 px-4 relative overflow-hidden">
         {/* Arena spotlight glow — dual lights */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none" style={{
           background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 35%, transparent 65%)',
@@ -354,43 +354,170 @@ export default function Home() {
             animation: `${i % 2 === 0 ? 'speed-line-left' : 'speed-line-right'} ${3 + i * 0.7}s ${i * 0.5}s ease-in-out infinite`,
           }} />
         ))}
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <p className="text-white/50 text-sm mb-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-            Inspired by the classic Jerry Pallotta series
+            Inspired by the classic Jerry Pallotta "Who Would Win" series
           </p>
-          <motion.div initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-            <div className="inline-block bg-[#FFD700] px-4 sm:px-10 py-3 sm:py-4 rounded-lg shadow-2xl border-4 border-[#8B0000]">
-              <h1 className="font-bangers text-2xl sm:text-4xl md:text-5xl text-[#CC0000]" style={{ textShadow: '2px 2px 0 #000', letterSpacing: '2px' }}>
-                WHO WOULD WIN?
-              </h1>
-            </div>
+          
+          {/* New Headline */}
+          <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
+            <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-4 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
+              Turn Animal Debates Into<br />
+              <span className="text-[#FFD700]">Reading and Critical Thinking</span>
+            </h1>
           </motion.div>
-          <p className="text-xl sm:text-2xl text-white mt-4 mb-1" style={{ textShadow: '2px 2px 4px #000' }}>
-            Your kid picks the animals. <span className="font-bold" style={{ color: '#FFD700' }}>We make the book.</span>
-          </p>
-          <p className="text-white/60 text-base mt-2">
-            Real facts. Epic battles. Illustrated in seconds.
-          </p>
-          <div className="mt-6 flex justify-center">
+          
+          {/* Subheadline */}
+          <motion.p 
+            initial={{ y: 20, opacity: 0 }} 
+            animate={{ y: 0, opacity: 1 }} 
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-8 px-4" 
+            style={{ textShadow: '1px 1px 2px #000' }}
+          >
+            Create custom wildlife learning books in seconds. Inspired by &apos;Who Would Win&apos; style stories — but fully interactive and endless.
+          </motion.p>
+
+          {/* Primary + Secondary CTAs */}
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }} 
+            animate={{ scale: 1, opacity: 1 }} 
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10"
+          >
+            <a
+              href="#create"
+              className="px-10 py-5 rounded-xl font-bangers text-2xl sm:text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all w-full sm:w-auto"
+            >
+              Create a Free Book
+            </a>
             <a
               href="#sample-books"
-              className="px-8 py-4 rounded-xl font-bangers text-2xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-3 border-yellow-600 shadow-lg hover:scale-105 transition-all"
+              className="px-8 py-4 rounded-xl font-bangers text-xl bg-white/10 text-white border-3 border-white/40 hover:bg-white/20 hover:border-white/60 transition-all w-full sm:w-auto"
             >
-              Read a Free Book
+              Try 4 Free Examples
             </a>
+          </motion.div>
+
+          {/* 3 Benefit Pillars */}
+          <motion.div 
+            initial={{ y: 30, opacity: 0 }} 
+            animate={{ y: 0, opacity: 1 }} 
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8"
+          >
+            <div className="bg-black/30 backdrop-blur-sm rounded-xl p-5 border-2 border-white/20">
+              <div className="text-3xl mb-2">📚</div>
+              <p className="text-white/90 text-sm sm:text-base font-semibold">
+                ✓ Builds vocabulary with fun similes
+              </p>
+            </div>
+            <div className="bg-black/30 backdrop-blur-sm rounded-xl p-5 border-2 border-white/20">
+              <div className="text-3xl mb-2">🦁</div>
+              <p className="text-white/90 text-sm sm:text-base font-semibold">
+                ✓ Teaches real wildlife traits and comparisons
+              </p>
+            </div>
+            <div className="bg-black/30 backdrop-blur-sm rounded-xl p-5 border-2 border-white/20">
+              <div className="text-3xl mb-2">🧠</div>
+              <p className="text-white/90 text-sm sm:text-base font-semibold">
+                ✓ Encourages reasoning through structured scoring
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Social Proof */}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="bg-gradient-to-r from-purple-900/40 via-purple-800/40 to-purple-900/40 rounded-lg py-4 px-6 border border-purple-500/30 max-w-2xl mx-auto"
+          >
+            <p className="text-purple-200 font-semibold text-base sm:text-lg mb-1">
+              Perfect for curious kids ages 5–7
+            </p>
+            <p className="text-purple-300/80 text-sm">
+              Great for reading practice and screen-time that feels productive
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* DEMO SECTION - How it works */}
+      <section className="py-8 px-4 bg-black/20">
+        <div className="max-w-5xl mx-auto">
+          <h3 className="font-bangers text-2xl sm:text-3xl text-center text-white mb-8" style={{ textShadow: '2px 2px 0 #000' }}>
+            How It Works
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-red-900 to-red-700 rounded-xl p-6 mb-3 border-2 border-red-500">
+                <div className="text-4xl mb-2">🦁</div>
+                <div className="text-4xl mb-2">🐯</div>
+              </div>
+              <p className="text-white/90 font-semibold text-sm">1. Pick Animals</p>
+              <p className="text-white/60 text-xs mt-1">Choose your matchup</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-blue-900 to-blue-700 rounded-xl p-6 mb-3 border-2 border-blue-500">
+                <div className="text-4xl mb-2">📖</div>
+                <div className="text-white/80 text-xs mt-2">Facts • Stats<br/>Comparisons</div>
+              </div>
+              <p className="text-white/90 font-semibold text-sm">2. Read Story</p>
+              <p className="text-white/60 text-xs mt-1">Learn traits & abilities</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-purple-900 to-purple-700 rounded-xl p-6 mb-3 border-2 border-purple-500">
+                <div className="text-3xl mb-2">⚔️</div>
+                <div className="text-white/80 text-xs mt-2">Speed: 8/10<br/>Power: 9/10</div>
+              </div>
+              <p className="text-white/90 font-semibold text-sm">3. Compare Traits</p>
+              <p className="text-white/60 text-xs mt-1">Structured scoring system</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-yellow-900 to-yellow-700 rounded-xl p-6 mb-3 border-2 border-yellow-500">
+                <div className="text-4xl mb-2">🏆</div>
+                <div className="text-white/80 text-xs mt-2">Winner!</div>
+              </div>
+              <p className="text-white/90 font-semibold text-sm">4. Discover Winner</p>
+              <p className="text-white/60 text-xs mt-1">Science-based verdict</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. SAMPLE BOOK GALLERY — Show product quality immediately */}
-      <div id="sample-books">
-        <SampleBookGallery />
+      {/* 2. FREE EXAMPLE BOOKS SECTION */}
+      <div id="sample-books" className="py-6 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-6">
+            <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
+              4 Free Example Books Available Now
+            </h2>
+            <p className="text-white/70 text-base sm:text-lg">
+              No signup needed — read instantly!
+            </p>
+          </div>
+
+          <SampleBookGallery />
+
+          <div className="text-center mt-8">
+            <p className="text-white/80 text-lg sm:text-xl mb-2">
+              Or create unlimited custom matchups with membership
+            </p>
+            <button
+              onClick={scrollToPricing}
+              className="inline-block px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all"
+            >
+              See Membership Options →
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Social Proof Bar */}
       <section className="py-3 px-4">
         <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-white/50 text-sm">
-          <span><strong className="text-white/70">2,500+</strong> books created</span>
+          <span><strong className="text-white/70">2,500+</strong> wildlife learning books created</span>
           <span>•</span>
           <span>Educational</span>
           <span>•</span>
@@ -420,7 +547,7 @@ export default function Home() {
               <p className="text-white/50 text-center text-sm mb-4">No signup needed</p>
               <ul className="text-white/80 text-sm space-y-2 mb-6 flex-1 list-none">
                 <li>• 8 free animals</li>
-                <li>• Standard battle books</li>
+                <li>• Standard wildlife books</li>
                 <li>• Download &amp; print PDFs</li>
               </ul>
               <a
@@ -485,16 +612,16 @@ export default function Home() {
       {/* Divider: Pricing → Creation section */}
       <SectionDivider />
 
-      {/* CREATE YOUR BATTLE — Mode Selector + Fighter Grid */}
+      {/* CREATE YOUR WILDLIFE BOOK — Mode Selector + Fighter Grid */}
       <div id="create">
         {/* Section header */}
         <section className="pt-6 pb-2 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-bangers text-4xl sm:text-5xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-              CREATE YOUR BATTLE
+              CREATE YOUR WILDLIFE BOOK
             </h2>
             <p className="text-white/70 text-lg mt-2">
-              Pick your fighters and watch them clash!
+              Pick two animals and discover who would win!
             </p>
           </div>
         </section>
@@ -521,7 +648,7 @@ export default function Home() {
                     <div className="text-3xl">📖</div>
                     <div className="text-left">
                       <h4 className="font-bangers text-xl text-white">CLASSIC</h4>
-                      <p className="text-white/70 text-xs">Watch the battle unfold</p>
+                      <p className="text-white/70 text-xs">Watch the story unfold</p>
                     </div>
                   </div>
                   {gameMode === 'classic' && (
@@ -578,8 +705,8 @@ export default function Home() {
                   {battleType === 'tournament'
                     ? '🏆 Pick 8 champions for a bracket!'
                     : gameMode === 'classic' 
-                    ? '📖 Full battle with facts & illustrations' 
-                    : '🎭 Your choices shape the battle!'}
+                    ? '📖 Full story with facts & illustrations' 
+                    : '🎭 Your choices shape the story!'}
                 </span>
               </div>
             </div>
@@ -1015,7 +1142,7 @@ export default function Home() {
             
             <p className="mt-6 text-white/80 text-lg">
               {gameMode === 'classic' 
-                ? 'Click to create your battle book!' 
+                ? 'Click to create your wildlife book!' 
                 : '✨ Interactive adventure mode'}
             </p>
             {!loading && (
@@ -1073,7 +1200,7 @@ export default function Home() {
             </button>
             
             <p className="mt-6 text-white/60 text-sm">
-              {gameMode === 'classic' ? '📖 Classic mode' : '🎭 Adventure mode'} • 7 battles to the championship
+              {gameMode === 'classic' ? '📖 Classic mode' : '🎭 Adventure mode'} • 7 matchups to the championship
             </p>
             {!loading && (
               <p className="mt-4 text-white/50 text-sm">Click START to begin or outside to re-select fighters</p>
@@ -1093,13 +1220,13 @@ export default function Home() {
               WANT TO LEARN MORE?
             </h2>
             <p className="text-white/90 text-lg mb-6">
-              Read in-depth battle guides with real facts, scientific analysis, and expert verdicts!
+              Read in-depth wildlife matchup guides with real facts, scientific analysis, and expert verdicts!
             </p>
             <a
               href="/blog"
               className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-xl px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-4 border-[#8B0000]"
             >
-              READ BATTLE GUIDES
+              READ WILDLIFE GUIDES
             </a>
           </div>
         </div>

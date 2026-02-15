@@ -66,7 +66,7 @@ const BOOK_PAGES = [
   },
   {
     title: 'Environment Context',
-    desc: 'How the battlefield terrain gives advantages and disadvantages',
+    desc: 'How the matchup terrain gives advantages and disadvantages',
     icon: '🌍',
     accent: '#1e90ff',
   },
@@ -188,7 +188,7 @@ export default function ParentsPage() {
               margin: '0 auto 2rem',
             }}
           >
-            Create custom wildlife battle books in seconds. Inspired by &ldquo;Who Would Win&rdquo; style stories — but interactive and endless.
+            Create custom wildlife learning books in seconds. Inspired by &ldquo;Who Would Win&rdquo; style stories — but interactive and endless.
           </motion.p>
 
           {/* CTAs */}

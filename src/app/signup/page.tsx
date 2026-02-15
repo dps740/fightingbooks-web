@@ -71,7 +71,7 @@ function SignupForm() {
             <div className="bg-[#0d0d1a] border-2 border-[#FFD700]/50 rounded-xl p-4 mb-6">
               <h3 className="font-bold text-[#FFD700] mb-1">🎮 Adventure Mode Awaits!</h3>
               <p className="text-white/80 text-sm">
-                Create a free account to play Choose Your Own Adventure battles!
+                Create a free account to play Choose Your Own Adventure stories!
                 Your choices affect the outcome.
               </p>
             </div>
@@ -87,7 +87,7 @@ function SignupForm() {
             </h1>
             <p className="text-white/70">
               {mode === 'signup' 
-                ? (isAdventureSignup ? 'Sign up to unlock Adventure mode!' : 'Start creating unlimited battle books!')
+                ? (isAdventureSignup ? 'Sign up to unlock Adventure mode!' : 'Start creating unlimited wildlife books!')
                 : 'Sign in to continue creating books'}
             </p>
           </div>
