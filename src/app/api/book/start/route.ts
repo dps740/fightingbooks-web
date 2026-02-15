@@ -494,6 +494,38 @@ Make each scene UNIQUE and DIFFERENT. Be exciting but educational. Base the winn
 }
 
 // Generate tactical analysis comparing the two animals
+function generateSizePrompt(name: string): string {
+  const prompts = [
+    `How many ${name}s would it take to be as tall as your school?`,
+    `Could a ${name} fit through your front door?`,
+    `Is a ${name} bigger or smaller than your family car?`,
+    `Would a ${name} be heavier than your teacher?`,
+    `Could you ride on a ${name}'s back?`,
+    `How many of YOU would weigh the same as one ${name}?`,
+    `Would a ${name} fit in your bedroom?`,
+    `Could a ${name} hide behind your couch?`,
+    `Is a ${name} longer than a school bus?`,
+    `Would a ${name} be taller than your dad?`,
+    `Could you carry a baby ${name}?`,
+    `How many ${name}s could fit in a swimming pool?`,
+  ];
+  return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
+function generateWildPrompt(name: string): string {
+  const prompts = [
+    `What would YOU do if you met a ${name} in the wild?`,
+    `Would you rather be as fast as a ${name} or as strong?`,
+    `If you could have one ${name} superpower, which would you pick?`,
+    `Could you outsmart a ${name} in a game of hide and seek?`,
+    `What would a ${name} think of YOUR house?`,
+    `Would a ${name} make a good pet? Why or why not?`,
+    `If a ${name} came to your school, what would happen?`,
+    `What's the first thing you'd ask a ${name} if it could talk?`,
+  ];
+  return prompts[Math.floor(Math.random() * prompts.length)];
+}
+
 function generateTacticalAnalysis(factsA: AnimalFacts, factsB: AnimalFacts): string {
   const analyses: string[] = [];
   
@@ -844,7 +876,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
         ` : ''}
         <div class="think-about-it">
-          <p>Could YOU fit under a ${factsA.name}? Would it be taller than your house?</p>
+          <p>${generateSizePrompt(factsA.name)}</p>
         </div>
       `,
       imageUrl: imagesA.habitat,
@@ -892,7 +924,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
         `).join('')}
         <div class="think-about-it">
-          <p>What would YOU do if you met a ${factsA.name} in the wild?</p>
+          <p>${generateWildPrompt(factsA.name)}</p>
         </div>
       `,
       imageUrl: imagesA.secrets,
@@ -933,7 +965,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
         ` : ''}
         <div class="think-about-it">
-          <p>Could YOU fit under a ${factsB.name}? Would it be taller than your house?</p>
+          <p>${generateSizePrompt(factsB.name)}</p>
         </div>
       `,
       imageUrl: imagesB.habitat,
@@ -981,7 +1013,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
           </div>
         `).join('')}
         <div class="think-about-it">
-          <p>What would YOU do if you met a ${factsB.name} in the wild?</p>
+          <p>${generateWildPrompt(factsB.name)}</p>
         </div>
       `,
       imageUrl: imagesB.secrets,

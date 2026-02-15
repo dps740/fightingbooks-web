@@ -1243,9 +1243,9 @@ function BookReader() {
           text-align: center;
         }
         .size-compare .size-emoji {
-          font-size: 3em;
+          font-size: 2em;
           display: block;
-          margin-bottom: 10px;
+          margin-bottom: 4px;
         }
         .size-compare p {
           background: transparent !important;
@@ -1253,7 +1253,7 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 1.2em;
+          font-size: 0.9em;
         }
         
         /* WEAPON/DEFENSE highlight boxes */
