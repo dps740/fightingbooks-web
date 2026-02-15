@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    gap: 40px;
+    font-family: Arial, sans-serif;
+  }
+
+  h2 {
+    text-align: center;
+    color: #fff;
+    font-family: 'Bangers', cursive;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  .mockup-label {
+    color: #aaa;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  /* ===== OPTION A: UFC-Style Face-Off Card ===== */
+  .option-a {
+    width: 420px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    border-radius: 16px;
+    padding: 16px;
+    border: 3px solid #ff5722;
+  }
+
+  .tape-title {
+    font-family: 'Bangers', cursive;
+    font-size: 1.5em;
+    color: #ff5722;
+    text-shadow: 2px 2px 0px #ffd54f;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .fighters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 6px 0;
+    border-bottom: 3px solid #ff5722;
+  }
+  .fighter-name {
+    font-family: 'Bangers', cursive;
+    font-size: 1.3em;
+    letter-spacing: 1px;
+  }
+  .fighter-a { color: #c41e3a; }
+  .fighter-b { color: #1e4fc4; }
+  .vs-text {
+    font-family: 'Bangers', cursive;
+    font-size: 1.1em;
+    color: #666;
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    gap: 6px;
+  }
+  .stat-score-left {
+    width: 35px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.95em;
+    color: #c41e3a;
+  }
+  .stat-score-right {
+    width: 35px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.95em;
+    color: #1e4fc4;
+  }
+  .stat-bars {
+    flex: 1;
+    display: flex;
+    gap: 3px;
+    align-items: center;
+  }
+  .bar-left {
+    flex: 1;
+    height: 18px;
+    background: #e0e0e0;
+    border-radius: 9px 0 0 9px;
+    overflow: hidden;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .bar-left .fill {
+    height: 100%;
+    background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+    border-radius: 9px 0 0 9px;
+  }
+  .bar-right {
+    flex: 1;
+    height: 18px;
+    background: #e0e0e0;
+    border-radius: 0 9px 9px 0;
+    overflow: hidden;
+  }
+  .bar-right .fill {
+    height: 100%;
+    background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);
+    border-radius: 0 9px 9px 0;
+  }
+  .stat-emoji {
+    width: 24px;
+    text-align: center;
+    font-size: 1em;
+  }
+
+  .stat-note-a {
+    font-size: 0.75em;
+    color: #555;
+    font-style: italic;
+    text-align: center;
+    margin: 2px 0 8px;
+    line-height: 1.3;
+    padding: 3px 8px;
+    background: rgba(255,215,0,0.15);
+    border-radius: 6px;
+  }
+
+  .key-advantage {
+    background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+    border: 2px solid #ff5722;
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  .key-advantage .label {
+    font-family: 'Bangers', cursive;
+    font-size: 0.95em;
+    color: #ff5722;
+    margin-bottom: 2px;
+  }
+  .key-advantage p {
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #1a1a1a;
+    line-height: 1.3;
+  }
+
+  /* ===== OPTION B: Compact Table Style ===== */
+  .option-b {
+    width: 420px;
+    background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);
+    border-radius: 16px;
+    padding: 16px;
+    border: 3px solid #ff5722;
+  }
+
+  .stat-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 4px;
+  }
+  .stat-table th {
+    font-family: 'Bangers', cursive;
+    font-size: 1em;
+    padding: 4px 8px;
+    letter-spacing: 1px;
+  }
+  .stat-table th.name-a { color: #c41e3a; text-align: left; }
+  .stat-table th.stat-col { color: #ff5722; text-align: center; }
+  .stat-table th.name-b { color: #1e4fc4; text-align: right; }
+  
+  .stat-table td {
+    padding: 4px 8px;
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+  .stat-table .score-a { 
+    text-align: left; 
+    color: #c41e3a;
+  }
+  .stat-table .stat-name { 
+    text-align: center; 
+    font-family: 'Bangers', cursive;
+    color: #ff5722;
+    font-size: 1em;
+  }
+  .stat-table .score-b { 
+    text-align: right; 
+    color: #1e4fc4;
+  }
+  .stat-table .winner-cell {
+    font-size: 0.75em;
+    color: #2e7d32;
+  }
+
+  .table-row {
+    background: rgba(255,255,255,0.5);
+    border-radius: 8px;
+  }
+  .table-row td:first-child { border-radius: 8px 0 0 8px; }
+  .table-row td:last-child { border-radius: 0 8px 8px 0; }
+
+  .mini-bar {
+    display: inline-block;
+    height: 8px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin: 0 4px;
+  }
+  .mini-bar-a { background: linear-gradient(135deg, #c41e3a, #8b0000); }
+  .mini-bar-b { background: linear-gradient(135deg, #1e4fc4, #0d47a1); }
+
+  .note-row td {
+    font-size: 0.7em;
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 0 8px 6px;
+    line-height: 1.3;
+  }
+</style>
+</head>
+<body>
+
+<!-- OPTION A: UFC Face-Off Bars -->
+<div>
+  <h2>Option A: Face-Off Bars</h2>
+  <p class="mockup-label">Mirrored bars meet in the middle — visual + scores</p>
+  <div class="option-a">
+    <div class="tape-title">📊 TALE OF THE TAPE!</div>
+    
+    <div class="fighters-header">
+      <span class="fighter-name fighter-a">🔴 Lion</span>
+      <span class="vs-text">VS</span>
+      <span class="fighter-name fighter-b">Tiger 🔵</span>
+    </div>
+
+    <!-- Strength -->
+    <div style="margin-bottom: 4px;">
+      <div style="text-align: center; font-family: 'Bangers', cursive; color: #ff5722; font-size: 0.95em;">💪 STRENGTH</div>
+      <div class="stat-note-a">Tiger CRUSHES with 1,050 PSI bite force — enough to crack a bowling ball! Lion bites at 650 PSI. 🏆 Edge: Tiger!</div>
+      <div class="stat-row">
+        <span class="stat-score-left">6/10</span>
+        <div class="stat-bars">
+          <div class="bar-left"><div class="fill" style="width: 60%;"></div></div>
+          <div class="bar-right"><div class="fill" style="width: 100%;"></div></div>
+        </div>
+        <span class="stat-score-right">10/10</span>
+      </div>
+    </div>
+
+    <!-- Speed -->
+    <div style="margin-bottom: 4px;">
+      <div style="text-align: center; font-family: 'Bangers', cursive; color: #ff5722; font-size: 0.95em;">⚡ SPEED</div>
+      <div class="stat-note-a">Lion ROARS at 50 MPH — faster than your school bus! Tiger lopes at 35-40 MPH. 🏆 Edge: Lion!</div>
+      <div class="stat-row">
+        <span class="stat-score-left">8/10</span>
+        <div class="stat-bars">
+          <div class="bar-left"><div class="fill" style="width: 80%;"></div></div>
+          <div class="bar-right"><div class="fill" style="width: 70%;"></div></div>
+        </div>
+        <span class="stat-score-right">7/10</span>
+      </div>
+    </div>
+
+    <!-- Weapons -->
+    <div style="margin-bottom: 4px;">
+      <div style="text-align: center; font-family: 'Bangers', cursive; color: #ff5722; font-size: 0.95em;">⚔️ WEAPONS</div>
+      <div class="stat-note-a">Tiger packs 4-INCH claws — as long as your FINGER! Lion has 3-inch claws. 🏆 Edge: Tiger!</div>
+      <div class="stat-row">
+        <span class="stat-score-left">5/10</span>
+        <div class="stat-bars">
+          <div class="bar-left"><div class="fill" style="width: 50%;"></div></div>
+          <div class="bar-right"><div class="fill" style="width: 100%;"></div></div>
+        </div>
+        <span class="stat-score-right">10/10</span>
+      </div>
+    </div>
+
+    <!-- Defense -->
+    <div style="margin-bottom: 4px;">
+      <div style="text-align: center; font-family: 'Bangers', cursive; color: #ff5722; font-size: 0.95em;">🛡️ DEFENSE</div>
+      <div class="stat-note-a">Tiger's thick fur and muscle make it TOUGH, while Lion's size gives solid defense. 🏆 Edge: Tiger!</div>
+      <div class="stat-row">
+        <span class="stat-score-left">7/10</span>
+        <div class="stat-bars">
+          <div class="bar-left"><div class="fill" style="width: 70%;"></div></div>
+          <div class="bar-right"><div class="fill" style="width: 80%;"></div></div>
+        </div>
+        <span class="stat-score-right">8/10</span>
+      </div>
+    </div>
+
+    <div class="key-advantage">
+      <div class="label">💡 KEY ADVANTAGE</div>
+      <p>🎯 The Tiger has the EDGE in raw POWER and WEAPONS, but the Lion's speed is a game-changer in the wild!</p>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B: Compact Table -->
+<div>
+  <h2>Option B: Compact Table</h2>
+  <p class="mockup-label">Table grid — maximum density, all info visible</p>
+  <div class="option-b">
+    <div class="tape-title">📊 TALE OF THE TAPE!</div>
+    
+    <table class="stat-table">
+      <thead>
+        <tr>
+          <th class="name-a">🔴 Lion</th>
+          <th class="stat-col">STAT</th>
+          <th class="name-b">Tiger 🔵</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="table-row">
+          <td class="score-a">
+            <span class="mini-bar mini-bar-a" style="width: 48px;"></span> 6/10
+          </td>
+          <td class="stat-name">💪 STRENGTH</td>
+          <td class="score-b">
+            10/10 <span class="mini-bar mini-bar-b" style="width: 80px;"></span>
+          </td>
+        </tr>
+        <tr class="note-row"><td colspan="3">Tiger CRUSHES with 1,050 PSI bite — enough to crack a bowling ball! 🏆 Tiger</td></tr>
+        
+        <tr class="table-row">
+          <td class="score-a">
+            <span class="mini-bar mini-bar-a" style="width: 64px;"></span> 8/10
+          </td>
+          <td class="stat-name">⚡ SPEED</td>
+          <td class="score-b">
+            7/10 <span class="mini-bar mini-bar-b" style="width: 56px;"></span>
+          </td>
+        </tr>
+        <tr class="note-row"><td colspan="3">Lion ROARS at 50 MPH — faster than your school bus! 🏆 Lion</td></tr>
+        
+        <tr class="table-row">
+          <td class="score-a">
+            <span class="mini-bar mini-bar-a" style="width: 40px;"></span> 5/10
+          </td>
+          <td class="stat-name">⚔️ WEAPONS</td>
+          <td class="score-b">
+            10/10 <span class="mini-bar mini-bar-b" style="width: 80px;"></span>
+          </td>
+        </tr>
+        <tr class="note-row"><td colspan="3">Tiger packs 4-INCH claws — as long as your FINGER! 🏆 Tiger</td></tr>
+        
+        <tr class="table-row">
+          <td class="score-a">
+            <span class="mini-bar mini-bar-a" style="width: 56px;"></span> 7/10
+          </td>
+          <td class="stat-name">🛡️ DEFENSE</td>
+          <td class="score-b">
+            8/10 <span class="mini-bar mini-bar-b" style="width: 64px;"></span>
+          </td>
+        </tr>
+        <tr class="note-row"><td colspan="3">Tiger's thick fur and muscle = TOUGH opponent. 🏆 Tiger</td></tr>
+      </tbody>
+    </table>
+
+    <div class="key-advantage">
+      <div class="label">💡 KEY ADVANTAGE</div>
+      <p>🎯 The Tiger has the EDGE in raw POWER and WEAPONS, but the Lion's speed is a game-changer in the wild!</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
