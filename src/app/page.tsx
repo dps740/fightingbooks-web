@@ -363,11 +363,7 @@ export default function Home() {
           }} />
         ))}
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <p className="text-white/50 text-sm mb-3" style={{ fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>
-            Inspired by the classic Jerry Pallotta "Who Would Win" series
-          </p>
-          
-          {/* New Headline */}
+          {/* Headline */}
           <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
             <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
               Turn Animal Debates Into<br />
@@ -383,7 +379,7 @@ export default function Home() {
             className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-5 px-4" 
             style={{ textShadow: '1px 1px 2px #000' }}
           >
-            Create custom wildlife learning books in seconds. Inspired by &apos;Who Would Win&apos; style stories — but fully interactive and endless.
+            Custom wildlife learning books in seconds — fully interactive and endless.
           </motion.p>
 
           {/* Primary + Secondary CTAs */}
