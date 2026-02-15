@@ -585,11 +585,11 @@ function BookReader() {
 
             {/* STATS PAGE */}
             {page?.type === 'stats' && (
-              <>
-                <h2 className="page-title">📊 {page.title}</h2>
+              <div className="stats-page-wrapper">
+                <h2 className="page-title stats-title">📊 {page.title}</h2>
                 {page.imageUrl && <img src={page.imageUrl} alt={page.title} className="stats-hero-image" />}
-                <div className="page-content" dangerouslySetInnerHTML={{ __html: page.content }} />
-              </>
+                <div className="page-content stats-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+              </div>
             )}
 
             {/* EDU / FACTS PAGES - "Who Would Win?" style */}
@@ -1300,31 +1300,32 @@ function BookReader() {
         
         /* Visual stat bars */
         .stat-bar-container {
-          margin: 20px 0;
+          margin: 6px 0;
         }
         .stat-bar-label {
           font-family: 'Bangers', cursive;
-          font-size: 1.3em;
+          font-size: 1.1em;
           color: #ff5722;
-          margin-bottom: 5px;
+          margin-bottom: 2px;
           letter-spacing: 1px;
         }
         .stat-note {
-          font-size: 0.9em;
+          font-size: 0.75em;
           color: #333;
           font-style: italic;
-          margin: 5px 0 10px 0;
+          margin: 2px 0 5px 0;
           text-align: center;
           background: rgba(255,215,0,0.2);
-          padding: 5px 10px;
-          border-radius: 8px;
+          padding: 3px 8px;
+          border-radius: 6px;
           border-left: 3px solid #FFD700;
+          line-height: 1.3;
         }
         .stat-bar {
           width: 100%;
-          height: 30px;
+          height: 22px;
           background: #e0e0e0;
-          border-radius: 15px;
+          border-radius: 11px;
           overflow: hidden;
           box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
           position: relative;
@@ -1332,12 +1333,13 @@ function BookReader() {
         .stat-bar-fill {
           height: 100%;
           background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-          border-radius: 15px;
+          border-radius: 11px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          padding-right: 10px;
+          padding-right: 8px;
           font-weight: bold;
+          font-size: 0.8em;
           color: white;
           text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
           transition: width 0.5s ease;
@@ -1385,8 +1387,45 @@ function BookReader() {
           }
         }
         
-        /* Stats page */
-        .stats-hero-image { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 15px; }
+        /* Stats page - compact to fit without scrolling */
+        .stats-page-wrapper {
+          height: 100%;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+        }
+        .stats-title {
+          font-size: 1.5em !important;
+          margin-bottom: 6px !important;
+        }
+        .stats-content {
+          font-size: 0.85em;
+          flex: 1;
+        }
+        .stats-content .did-you-know,
+        .stats-content .think-about-it {
+          padding: 4px 8px;
+          margin: 4px 0;
+        }
+        .stats-hero-image { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        
+        /* Override stats page content to be compact */
+        [class*="stats"] ~ .page-content .stat-bar-container,
+        .page-content .stat-bar-container {
+          margin: 8px 0;
+        }
+        .page-content .stat-bar {
+          height: 22px;
+        }
+        .page-content .stat-bar-fill {
+          font-size: 0.8em;
+          padding-right: 6px;
+        }
+        .page-content .stat-note {
+          font-size: 0.75em;
+          padding: 3px 8px;
+          margin: 2px 0 6px 0;
+        }
         
         /* Battle pages - text at bottom, image prominent */
         .battle-page { 

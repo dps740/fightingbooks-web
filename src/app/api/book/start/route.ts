@@ -1026,14 +1026,14 @@ async function generateBook(animalA: string, animalB: string, environment: strin
         <div class="stat-bar-container">
           <div class="stat-bar-label">💪 STRENGTH</div>
           ${compStats.strengthNote ? `<p class="stat-note">${compStats.strengthNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
             <div style="flex: 1;">
               <div class="stat-bar">
                 <div class="stat-bar-fill" style="width: ${factsA.strength_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
                   ${factsA.strength_score}/10
                 </div>
               </div>
-              <p style="text-align: center; margin-top: 5px; font-weight: bold; color: #c41e3a;">${factsA.name}</p>
+              <p style="text-align: center; margin-top: 2px; font-weight: bold; font-size: 0.85em; color: #c41e3a;">${factsA.name}</p>
             </div>
             <div style="flex: 1;">
               <div class="stat-bar">
@@ -1041,13 +1041,13 @@ async function generateBook(animalA: string, animalB: string, environment: strin
                   ${factsB.strength_score}/10
                 </div>
               </div>
-              <p style="text-align: center; margin-top: 5px; font-weight: bold; color: #1e4fc4;">${factsB.name}</p>
+              <p style="text-align: center; margin-top: 2px; font-weight: bold; font-size: 0.85em; color: #1e4fc4;">${factsB.name}</p>
             </div>
           </div>
 
           <div class="stat-bar-label">⚡ SPEED</div>
           ${compStats.speedNote ? `<p class="stat-note">${compStats.speedNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
             <div style="flex: 1;">
               <div class="stat-bar">
                 <div class="stat-bar-fill" style="width: ${factsA.speed_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
@@ -1066,7 +1066,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
 
           <div class="stat-bar-label">⚔️ WEAPONS</div>
           ${compStats.weaponsNote ? `<p class="stat-note">${compStats.weaponsNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
             <div style="flex: 1;">
               <div class="stat-bar">
                 <div class="stat-bar-fill" style="width: ${factsA.weapons_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
@@ -1085,7 +1085,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
 
           <div class="stat-bar-label">🛡️ DEFENSE</div>
           ${compStats.defenseNote ? `<p class="stat-note">${compStats.defenseNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
             <div style="flex: 1;">
               <div class="stat-bar">
                 <div class="stat-bar-fill" style="width: ${factsA.defense_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
@@ -1104,11 +1104,11 @@ async function generateBook(animalA: string, animalB: string, environment: strin
         </div>
 
         ${compStats.keyAdvantage ? `
-        <div class="did-you-know" style="margin-top: 20px;">
+        <div class="did-you-know" style="margin-top: 8px;">
           <p>🎯 KEY ADVANTAGE: ${compStats.keyAdvantage}</p>
         </div>
         ` : `
-        <div class="think-about-it" style="margin-top: 20px;">
+        <div class="think-about-it" style="margin-top: 8px;">
           <p>${generateTacticalAnalysis(factsA, factsB)}</p>
         </div>
         `}
