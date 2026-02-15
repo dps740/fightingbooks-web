@@ -188,10 +188,6 @@ const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
     include: 'tiger with ORANGE fur with BLACK STRIPES all over body, NO MANE, striped pattern from head to tail',
     avoid: 'NO mane, NO lion mane, NOT solid colored, NOT golden brown without stripes'
   },
-  'hammerhead shark': {
-    include: 'hammerhead shark with distinctive wide flat T-shaped head called cephalofoil, eyes on the far ends of the hammer, grey streamlined body, tropical ocean water',
-    avoid: 'NO normal shark head, NOT a regular shark, must show the distinctive wide hammer-shaped head clearly'
-  },
   'electric eel': {
     include: 'electric eel, long serpentine freshwater fish with smooth dark olive-brown skin, elongated body, small eyes, flat wide mouth, South American river habitat',
     avoid: 'NOT a snake, NOT a moray eel, this is a freshwater FISH with a long body, NO scales visible'

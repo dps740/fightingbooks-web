@@ -1,8 +1,8 @@
 // User tier definitions and access control
 // v4 Tier Structure:
 // - unregistered: 4 free sample books only (pre-made, read-only, no login needed)
-// - member ($4.99 one-time): All 30 real animals, standard + tournament mode
-// - ultimate ($4.99/month): Everything — all 47+ animals, all modes, CYOA, create-your-own, +2 animals/month
+// - member ($4.99 one-time): All 26 real animals, standard + tournament mode
+// - ultimate ($4.99/month): Everything — all 43+ animals, all modes, CYOA, create-your-own, +2 animals/month
 
 export type UserTier = 'unregistered' | 'member' | 'ultimate';
 
@@ -21,14 +21,13 @@ export const FREE_SAMPLE_MATCHUPS = [
   { animalA: 'Polar Bear', animalB: 'Crocodile' },
 ];
 
-// All real animals (30 total)
+// All real animals (26 total)
 export const REAL_ANIMALS = [
   'Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear',
   'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
-  'Elephant', 'Hippo', 'Rhino', 'Hammerhead Shark',
-  'King Cobra', 'Anaconda', 'Wolf', 'Jaguar',
+  'Elephant', 'Hippo', 'Rhino', 'Wolf', 'Jaguar',
   'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel',
-  'Moose', 'Cape Buffalo', 'Great Horned Owl', 'Python',
+  'Moose', 'Cape Buffalo', 'Great Horned Owl',
   'Alligator', 'Mandrill', 'Cheetah', 'Hyena',
   'Walrus', 'Octopus'
 ];
@@ -45,7 +44,7 @@ export const FANTASY_ANIMALS = [
   'Chimera', 'Manticore', 'Basilisk', 'Kraken'
 ];
 
-// All animals (47 total)
+// All animals (43 total)
 export const ALL_ANIMALS = [...REAL_ANIMALS, ...DINOSAUR_ANIMALS, ...FANTASY_ANIMALS];
 
 // Get accessible animals for a tier
@@ -118,12 +117,12 @@ export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier
   switch (currentTier) {
     case 'unregistered':
       return [
-        { tier: 'member', name: 'Member', price: '$4.99', animals: 30 },
-        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 47, recurring: true },
+        { tier: 'member', name: 'Member', price: '$4.99', animals: 26 },
+        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 43, recurring: true },
       ];
     case 'member':
       return [
-        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 47, recurring: true },
+        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 43, recurring: true },
       ];
     case 'ultimate':
       return [];
@@ -138,9 +137,9 @@ export function getTierInfo(tier: UserTier): { name: string; animals: number; ba
     case 'unregistered':
       return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
     case 'member':
-      return { name: 'Member', animals: 30, badge: '🥊', description: '30 real animals + tournaments' };
+      return { name: 'Member', animals: 26, badge: '🥊', description: '26 real animals + tournaments' };
     case 'ultimate':
-      return { name: 'Ultimate', animals: 47, badge: '👑', description: 'Everything + CYOA + create your own' };
+      return { name: 'Ultimate', animals: 43, badge: '👑', description: 'Everything + CYOA + create your own' };
     default:
       return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
   }

@@ -67,8 +67,8 @@ export default function UpgradeModal({
   // Determine if the locked content needs member or ultimate
   const needsUltimate = lockedFeature === 'cyoa' || lockedFeature === 'create_own' ||
     (lockedAnimal && !['Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear', 'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
-      'Elephant', 'Hippo', 'Rhino', 'Hammerhead Shark', 'King Cobra', 'Anaconda', 'Wolf', 'Jaguar',
-      'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel', 'Moose', 'Cape Buffalo', 'Great Horned Owl', 'Python',
+      'Elephant', 'Hippo', 'Rhino', 'Wolf', 'Jaguar',
+      'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel', 'Moose', 'Cape Buffalo', 'Great Horned Owl',
       'Alligator', 'Mandrill', 'Cheetah', 'Hyena', 'Walrus', 'Octopus'].includes(lockedAnimal));
 
   const headerText = lockedAnimal
