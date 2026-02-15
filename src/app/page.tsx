@@ -1185,20 +1185,39 @@ export default function Home() {
 
       {/* Blog CTA */}
       <section className="py-6 px-4 bg-black/30">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
-            <h2 className="font-bangers text-3xl text-[#FFD700] mb-4" style={{ letterSpacing: '2px' }}>
-              WANT TO LEARN MORE?
-            </h2>
-            <p className="text-white/90 text-lg mb-6">
-              Read in-depth wildlife matchup guides with real facts, scientific analysis, and expert verdicts!
-            </p>
-            <a
-              href="/blog"
-              className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-xl px-8 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-4 border-[#8B0000]"
-            >
-              READ WILDLIFE GUIDES
-            </a>
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Learning Center Card */}
+            <div className="bg-gradient-to-br from-[#1e5a3d] via-[#2d5a3d] to-[#1e3d2a] rounded-xl p-8 border-4 border-[#FFD700]">
+              <h2 className="font-bangers text-2xl text-[#FFD700] mb-3" style={{ letterSpacing: '2px' }}>
+                📚 LEARNING CENTER
+              </h2>
+              <p className="text-white/90 text-base mb-5">
+                Educational activities, printable books, and teaching resources for kids ages 5-12!
+              </p>
+              <a
+                href="/learn"
+                className="inline-block bg-[#FFD700] text-[#1e3d2a] font-bangers text-lg px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-3 border-[#1e3d2a]"
+              >
+                EXPLORE RESOURCES
+              </a>
+            </div>
+            
+            {/* Battle Guides Card */}
+            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
+              <h2 className="font-bangers text-2xl text-[#FFD700] mb-3" style={{ letterSpacing: '2px' }}>
+                📖 BATTLE GUIDES
+              </h2>
+              <p className="text-white/90 text-base mb-5">
+                In-depth wildlife matchup guides with real facts, scientific analysis, and expert verdicts!
+              </p>
+              <a
+                href="/blog"
+                className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-lg px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-3 border-[#8B0000]"
+              >
+                READ GUIDES
+              </a>
+            </div>
           </div>
         </div>
       </section>
