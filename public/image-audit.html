@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FightingBooks Image Audit — Visual Review</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 20px; }
+  h1 { font-size: 1.8rem; margin-bottom: 8px; color: #fff; }
+  .meta { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
+  .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 20px; }
+  .stat-num { font-size: 1.6rem; font-weight: 700; }
+  .stat-label { font-size: 0.8rem; color: #888; }
+  .stat.bad .stat-num { color: #ff6b6b; }
+  .stat.ok .stat-num { color: #51cf66; }
+  .stat.warn .stat-num { color: #ffd43b; }
+  .filters { margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters button { background: #1a1a1a; border: 1px solid #444; color: #ccc; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  .filters button.active { background: #d4af37; color: #000; border-color: #d4af37; }
+  .animal-section { margin-bottom: 32px; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+  .animal-header { background: #151515; padding: 14px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .animal-header:hover { background: #1a1a1a; }
+  .animal-name { font-size: 1.2rem; font-weight: 600; text-transform: capitalize; }
+  .animal-badge { font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; }
+  .badge-critical { background: #ff6b6b22; color: #ff6b6b; border: 1px solid #ff6b6b44; }
+  .badge-moderate { background: #ffd43b22; color: #ffd43b; border: 1px solid #ffd43b44; }
+  .badge-clean { background: #51cf6622; color: #51cf66; border: 1px solid #51cf6644; }
+  .animal-body { display: none; padding: 16px; }
+  .animal-body.open { display: block; }
+  .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .image-card { background: #111; border-radius: 8px; overflow: hidden; border: 2px solid transparent; }
+  .image-card.has-issue { border-color: #ff6b6b66; }
+  .image-card.clean { border-color: #51cf6633; }
+  .image-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .image-info { padding: 10px; }
+  .image-filename { font-size: 0.8rem; color: #888; font-family: monospace; }
+  .image-type { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-top: 2px; }
+  .image-issue { margin-top: 6px; font-size: 0.85rem; color: #ff9999; line-height: 1.4; }
+  .image-ok { margin-top: 6px; font-size: 0.85rem; color: #88cc88; }
+  .severity-critical { border-left: 3px solid #ff6b6b; padding-left: 8px; }
+  .severity-moderate { border-left: 3px solid #ffd43b; padding-left: 8px; }
+  .severity-minor { border-left: 3px solid #74c0fc; padding-left: 8px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<h1>🔍 FightingBooks Image Audit</h1>
+<p class="meta">Visual review — Feb 16, 2026 • 235 educational images across 47 animals</p>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">235</div><div class="stat-label">Total Images</div></div>
+  <div class="stat bad"><div class="stat-num" id="issues-count">—</div><div class="stat-label">With Issues</div></div>
+  <div class="stat ok"><div class="stat-num" id="clean-count">—</div><div class="stat-label">Clean</div></div>
+  <div class="stat warn"><div class="stat-num">47</div><div class="stat-label">Animals</div></div>
+</div>
+
+<div class="filters">
+  <button class="active" data-filter="all">All</button>
+  <button data-filter="issues">Issues Only</button>
+  <button data-filter="clean">Clean Only</button>
+  <button data-filter="species">Wrong Species</button>
+  <button data-filter="anatomy">Anatomy</button>
+  <button data-filter="extra">Extra Animals</button>
+</div>
+
+<div id="animals"></div>
+
+<script>
+const BASE = '/fighters';
+const TYPES = ['', '-closeup', '-action', '-habitat', '-secrets'];
+const TYPE_LABELS = { '': 'portrait', '-closeup': 'closeup', '-action': 'action', '-habitat': 'habitat', '-secrets': 'secrets' };
+
+// Issues from the audit (only flagged ones — unlisted images are clean)
+const ISSUES = {
+  'alligator.jpg': 'Extra/merged limb near jaw, ambiguous object in mouth',
+  'alligator-habitat.jpg': 'Distorted body proportions, tail emerges too high',
+  'alligator-secrets.jpg': 'Bird-like stick nest (wrong nest type), eggs exposed',
+  'alligator-closeup.jpg': 'Neck/throat excessively thick and bulging',
+  'anaconda-action.jpg': 'Reddish fleshy protrusion/appendage (extra limb)',
+  'anaconda-closeup.jpg': '4 eyes or extra eye-like structures, wrong teeth',
+  'anaconda-habitat.jpg': 'Wrong coloring (solid green vs spotted)',
+  'anaconda-secrets.jpg': 'Head shape like lizard/eel, not snake',
+  'anaconda.jpg': 'Jaw deformed/split, bifurcated lower jaw',
+  'ankylosaurus-action.jpg': 'Different species (theropod), wrong head/teeth',
+  'ankylosaurus-closeup.jpg': 'Horns look ceratopsian, not ankylosaurus',
+  'ankylosaurus-habitat.jpg': 'Chimera body (stegosaurus plates + ceratopsian horn)',
+  'ankylosaurus-secrets.jpg': 'Back plates have artificial glyphs/hieroglyphics',
+  'ankylosaurus.jpg': 'Ceratopsian frill, missing tail club, mishmash body plan',
+  'basilisk-action.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'basilisk-closeup.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'basilisk-habitat.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'basilisk-secrets.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'basilisk.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'brachiosaurus-action.jpg': 'Only 2 legs visible, odd proportions',
+  'brachiosaurus-closeup.jpg': 'Deformed rhinoceros-like head, horn-like eye protrusions',
+  'brachiosaurus-habitat.jpg': 'Giraffe-like spots, raptor-like head',
+  'brachiosaurus-secrets.jpg': 'Eating rocks (bizarre)',
+  'brachiosaurus.jpg': 'Three eyes, giraffe spots, carnivorous teeth (herbivore!)',
+  'cape-buffalo-secrets.jpg': 'Mirror-image composition, merged/deformed calves',
+  'cape-buffalo.jpg': 'Exaggerated horn boss, unusually large/odd ears',
+  'cerberus-action.jpg': 'Mythological — multi-headed dog',
+  'cerberus-closeup.jpg': 'Mythological — multi-headed dog',
+  'cerberus-habitat.jpg': 'Mythological — multi-headed dog',
+  'cerberus-secrets.jpg': 'Mythological — multi-headed dog',
+  'cerberus.jpg': 'Mythological — multi-headed dog',
+  'cheetah-action.jpg': '5 LEGS (extra front limb), different species in background',
+  'cheetah-closeup.jpg': 'AI-generated face, tear lines asymmetrical',
+  'cheetah-habitat.jpg': 'Rear anatomy compressed/truncated, only 2 legs visible',
+  'cheetah-secrets.jpg': 'Graphic predation scene with prey remains',
+  'cheetah.jpg': 'Hybrid cheetah-leopard face/proportions',
+  'chimera-action.jpg': 'Mythological — lion-goat-snake hybrid',
+  'chimera-closeup.jpg': 'Mythological — lion-goat-snake hybrid',
+  'chimera-habitat.jpg': 'Mythological — lion-goat-snake hybrid',
+  'chimera-secrets.jpg': 'Mythological — lion-goat-snake hybrid',
+  'chimera.jpg': 'Mythological — lion-goat-snake hybrid',
+  'crocodile-action.jpg': 'Torso/neck unnaturally thick, forelimb deformed',
+  'crocodile-closeup.jpg': 'Irregular teeth, plastic texture',
+  'crocodile-habitat.jpg': 'Different species (bird), tail curls unnaturally',
+  'crocodile-secrets.jpg': 'Baby crocodile deformed/fused limbs',
+  'crocodile.jpg': 'Overly symmetrical, exaggerated eye ridges',
+  'dragon-action.jpg': 'Mythological — fire-breathing reptile',
+  'dragon-closeup.jpg': 'Mythological — fire-breathing reptile',
+  'dragon-habitat.jpg': 'Mythological — fire-breathing reptile',
+  'dragon-secrets.jpg': 'Mythological — fire-breathing reptile',
+  'dragon.jpg': 'Mythological — fire-breathing reptile',
+  'eagle-action.jpg': 'Different species (fish visible), talons slightly off',
+  'eagle-closeup.jpg': 'Beak unnaturally straight, nostrils odd',
+  'eagle.jpg': 'Belly too white for bald eagle',
+  'electric-eel-action.jpg': 'Looks like snake with fangs, wrong head shape',
+  'electric-eel-closeup.jpg': 'Looks like snake with fangs, wrong head shape',
+  'electric-eel-habitat.jpg': 'Looks like snake, shows bioluminescence (inaccurate)',
+  'electric-eel-secrets.jpg': 'Looks like snake with fangs, wrong head shape',
+  'electric-eel.jpg': 'Looks like snake with fangs, wrong head shape',
+  'elephant-action.jpg': 'Only 3 legs visible, tusks from odd positions',
+  'elephant-closeup.jpg': 'Tusks protrude from trunk itself (wrong!)',
+  'elephant-secrets.jpg': 'Extra trunk-like appendage, deformed ears, stick-like legs',
+  'elephant.jpg': 'Tusks asymmetrical unnaturally',
+  'giant-panda-action.jpg': 'Extra/oddly-positioned paw (5 limbs)',
+  'gorilla-action.jpg': 'Deformed/extra thumb, overly humanized/aggressive',
+  'gorilla-secrets.jpg': 'Malformed fingers/hands',
+  'great-horned-owl-action.jpg': 'Graphic predation, deformed prey',
+  'great-horned-owl-closeup.jpg': 'Exaggerated fierce look',
+  'great-white-shark-action.jpg': 'Oddly shaped pectoral fins, bulbous head',
+  'great-white-shark-closeup.jpg': 'Deformed bloated face, human-like teeth',
+  'great-white-shark.jpg': 'Different species (fish), unusual fin proportions',
+  'griffin-action.jpg': '3 LEGS (extra limb)',
+  'griffin-closeup.jpg': 'Deformed beak/cere, mammal-like nostrils',
+  'griffin-habitat.jpg': 'CRITICAL: Lion-eagle chimera (6 limbs total)',
+  'griffin-secrets.jpg': 'Oversized deformed legs/talons',
+  'griffin.jpg': 'Bear-like ear tufts, primate-like face',
+  'grizzly-bear-action.jpg': 'Fish visible (acceptable — natural behavior)',
+  'hammerhead-shark-action.jpg': 'Different species (ray), wire-like artifact',
+  'hammerhead-shark-closeup.jpg': 'No visible eyes, humanized smile',
+  'hammerhead-shark.jpg': 'Fishing line/lure artifact, disproportionate fin',
+  'hammerhead-shark-habitat.jpg': 'Exaggerated head, manta ray-shark hybrid look',
+  'hippo-action.jpg': 'Reptilian texture on snout',
+  'hippo-secrets.jpg': 'BLOOD dripping from mouth, pool of blood in water',
+  'hippo.jpg': 'Only one eye visible from near-frontal angle',
+  'hydra-action.jpg': 'Mythological — multi-headed snake',
+  'hydra-closeup.jpg': 'Mythological — multi-headed snake',
+  'hydra-habitat.jpg': 'Mythological — multi-headed snake',
+  'hydra-secrets.jpg': 'Mythological — multi-headed snake',
+  'hydra.jpg': 'Mythological — multi-headed snake',
+  'hyena-action.jpg': 'Leopard-like legs, merged/deformed background faces',
+  'hyena-habitat.jpg': 'Different species (rhino, vehicle in background)',
+  'hyena-secrets.jpg': 'Merged/deformed bodies, too orange',
+  'jaguar-action.jpg': 'Wrong spot pattern (cheetah-like), oversized paws',
+  'jaguar-closeup.jpg': 'Deformed jaw/chin',
+  'jaguar-habitat.jpg': 'Wrong spot pattern, missing tail',
+  'jaguar.jpg': 'Deformed double-chin',
+  'king-cobra.jpg': 'Second head at tail tip, rattlesnake pattern',
+  'king-cobra-closeup.jpg': 'Watermark/copyright text',
+  'king-cobra-action.jpg': '4 EYES instead of 2',
+  'kraken-action.jpg': 'Mythological — sea monster',
+  'kraken-closeup.jpg': 'Mythological — sea monster',
+  'kraken-habitat.jpg': 'Mythological — sea monster',
+  'kraken-secrets.jpg': 'Mythological — sea monster',
+  'kraken.jpg': 'Mythological — sea monster',
+  'leopard-action.jpg': 'Gray/purple fabric/prey remains draped over tree',
+  'leopard-closeup.jpg': 'AI-generated symmetry, uncanny eyes',
+  'leopard-habitat.jpg': 'Dead prey carcass visible',
+  'leopard.jpg': 'Lynx-like ears, jaguar-like face',
+  'lion-closeup.jpg': 'Spotted nose/muzzle texture',
+  'lion-habitat.jpg': 'Different species (zebras/wildebeest)',
+  'lion.jpg': 'Deformed mouth/jaw, dark rectangular artifact',
+  'mandrill-action.jpg': 'Frightening threat display with large fangs',
+  'mandrill-habitat.jpg': 'Missing vivid face colors (looks like drill)',
+  'mandrill-secrets.jpg': 'Abnormal elongated fingers',
+  'manticore-action.jpg': 'Mythological — lion-scorpion hybrid',
+  'manticore-closeup.jpg': 'Mythological — lion-scorpion hybrid',
+  'manticore-habitat.jpg': 'Mythological — lion-scorpion hybrid',
+  'manticore-secrets.jpg': 'Mythological — lion-scorpion hybrid',
+  'manticore.jpg': 'Mythological — lion-scorpion hybrid',
+  'moose-action.jpg': 'Face lacks characteristic bulbous nose',
+  'moose-closeup.jpg': 'Bell/object hanging from chin (domesticated?)',
+  'moose-habitat.jpg': 'Exaggerated translucent antlers',
+  'moose-secrets.jpg': 'Only 3 legs visible, small/asymmetrical antlers',
+  'octopus-action.jpg': 'Only 5-6 arms visible, oversized white suckers',
+  'octopus-closeup.jpg': 'Round pupils (should be horizontal slits)',
+  'octopus-habitat.jpg': '10 arms instead of 8, nose-like protrusion',
+  'octopus.jpg': 'Elephant trunk-like head, one eye',
+  'orca-action.jpg': 'Deformed mouth, unnatural grin',
+  'orca.jpg': 'Unnaturally symmetrical, cartoon-like eye patches',
+  'phoenix-action.jpg': 'Mythological — fire bird',
+  'phoenix-closeup.jpg': 'Mythological — fire bird',
+  'phoenix-habitat.jpg': 'Mythological — fire bird',
+  'phoenix-secrets.jpg': 'Mythological — fire bird',
+  'phoenix.jpg': 'Mythological — fire bird',
+  'polar-bear-secrets.jpg': 'Right cub face deformed/merged',
+  'polar-bear.jpg': 'Excessive claws, too-small head, overly symmetrical',
+  'pteranodon-action.jpg': 'TWO HEADS/beaks, different species (fish)',
+  'pteranodon-closeup.jpg': 'Frilled lizard-dinosaur hybrid',
+  'pteranodon-habitat.jpg': 'Feathered wings (should be membrane)',
+  'pteranodon-secrets.jpg': 'SIX LIMBS (wings + arms + legs)',
+  'pteranodon.jpg': 'Unclear species, dinosaur-bird hybrid',
+  'python-action.jpg': 'Deformed mouth/tongue',
+  'python-closeup.jpg': 'Extra/deformed nostril structures',
+  'python-habitat.jpg': 'Unnatural pattern regularity, merged coils',
+  'python.jpg': 'Excessively symmetrical, deformed heat pits',
+  'rhino-action.jpg': 'Deformed feet (merging into stumps), only 3 legs',
+  'rhino-habitat.jpg': 'Only one horn, deformed/missing eye',
+  'rhino-secrets.jpg': 'Only one horn, distorted eye/nostril',
+  'rhino.jpg': 'Deformed tubular ear, distorted eye',
+  'spinosaurus-action.jpg': 'Different species (fish), exaggerated sail',
+  'spinosaurus-closeup.jpg': 'Generic monster face, not accurate snout',
+  'spinosaurus-habitat.jpg': 'Dimetrodon-like sail, different species (fish)',
+  'spinosaurus-secrets.jpg': 'FISH-DINOSAUR CHIMERA with fins and fish tail',
+  'spinosaurus.jpg': 'Wrong head shape (theropod, not spinosaurus)',
+  'stegosaurus-action.jpg': 'Different species (theropod), CARNIVORE TEETH (herbivore!)',
+  'stegosaurus-closeup.jpg': 'WRONG SPECIES: Styracosaurus/ceratopsian',
+  'stegosaurus-habitat.jpg': 'Too few plates, no tail thagomizer',
+  'stegosaurus-secrets.jpg': 'Glowing red dots, too many small red spikes',
+  'stegosaurus.jpg': 'Horn on head (wrong!), CARNIVORE TEETH, too few plates',
+  'tiger-action.jpg': 'Front legs appear merged',
+  'triceratops-action.jpg': 'Hieroglyphic patterns on frill, missing nose horn',
+  'triceratops-habitat.jpg': 'Different species in background, only 2 horns',
+  'triceratops-secrets.jpg': 'Baby has only 2 horns',
+  'triceratops.jpg': 'Only 2 horns, asymmetrical frill',
+  'tyrannosaurus-rex-action.jpg': 'Extra appendage in mouth, 3 FINGERS (should be 2)',
+  'tyrannosaurus-rex-habitat.jpg': '3 FINGERS, neck spines',
+  'tyrannosaurus-rex-secrets.jpg': 'Different species (pterosaur), 3 FINGERS',
+  'tyrannosaurus-rex.jpg': '3 FINGERS, oversized arms',
+  'velociraptor-action.jpg': 'Wing membrane, blade tail, chimera body',
+  'velociraptor-closeup.jpg': 'Ear tufts, head crest (wrong anatomy)',
+  'velociraptor-habitat.jpg': 'Different species in background',
+  'velociraptor-secrets.jpg': 'Porcupine-like quills, small sickle claw',
+  'velociraptor.jpg': 'T. rex-like head, wrong proportions',
+  'walrus-secrets.jpg': 'Only one tusk, asymmetrical face',
+  'walrus.jpg': 'Smooth/symmetrical face, flat forehead, rectangular ears',
+  'wolf-action.jpg': 'GRAPHIC PREDATION: merged wolf-deer figure',
+  'wolf-closeup.jpg': 'Excessively symmetrical, phantom extra ears',
+  'wolf-habitat.jpg': 'Thin elongated legs, merged bodies',
+  'wolf-secrets.jpg': 'Merged legs/paws, bodies blend together',
+};
+
+// Categorize issues
+function categorize(issue) {
+  const l = issue.toLowerCase();
+  if (l.includes('mythological')) return 'myth';
+  if (l.includes('different species') || l.includes('wrong species') || l.includes('wrong head') || l.includes('not accurate')) return 'species';
+  if (l.includes('extra') || l.includes('limb') || l.includes('deformed') || l.includes('merged') || l.includes('leg') || l.includes('finger') || l.includes('head') || l.includes('eye') || l.includes('anatomy')) return 'anatomy';
+  if (l.includes('blood') || l.includes('graphic') || l.includes('predation') || l.includes('prey') || l.includes('frightening')) return 'extra';
+  return 'other';
+}
+
+const ANIMALS = [
+  'alligator','anaconda','ankylosaurus','basilisk','brachiosaurus','cape-buffalo',
+  'cerberus','cheetah','chimera','crocodile','dragon','eagle','electric-eel',
+  'elephant','giant-panda','gorilla','great-horned-owl','great-white-shark','griffin',
+  'grizzly-bear','hammerhead-shark','hippo','hydra','hyena','jaguar','king-cobra',
+  'kraken','leopard','lion','mandrill','manticore','moose','octopus','orca','phoenix',
+  'polar-bear','pteranodon','python','rhino','spinosaurus','stegosaurus','tiger',
+  'triceratops','tyrannosaurus-rex','velociraptor','walrus','wolf'
+];
+
+let issueCount = 0, cleanCount = 0;
+const container = document.getElementById('animals');
+
+ANIMALS.forEach(animal => {
+  const section = document.createElement('div');
+  section.className = 'animal-section';
+  
+  let animalIssues = 0;
+  let cards = '';
+  
+  TYPES.forEach(suffix => {
+    const filename = `${animal}${suffix}.jpg`;
+    const type = TYPE_LABELS[suffix];
+    const issue = ISSUES[filename];
+    
+    if (issue) { animalIssues++; issueCount++; }
+    else { cleanCount++; }
+    
+    const cat = issue ? categorize(issue) : '';
+    
+    cards += `<div class="image-card ${issue ? 'has-issue' : 'clean'}" data-cat="${cat}" data-has-issue="${!!issue}">
+      <img src="${BASE}/${filename}" alt="${animal} ${type}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect fill=%22%23222%22 width=%22300%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22>Not found</text></svg>'">
+      <div class="image-info">
+        <div class="image-filename">${filename}</div>
+        <div class="image-type">${type}</div>
+        ${issue ? `<div class="image-issue">${issue}</div>` : '<div class="image-ok">✓ Clean</div>'}
+      </div>
+    </div>`;
+  });
+  
+  const severity = animalIssues >= 4 ? 'critical' : animalIssues >= 2 ? 'moderate' : 'clean';
+  const badgeClass = severity === 'critical' ? 'badge-critical' : severity === 'moderate' ? 'badge-moderate' : 'badge-clean';
+  const badgeText = animalIssues === 0 ? '✓ Clean' : `${animalIssues}/5 issues`;
+  
+  section.innerHTML = `
+    <div class="animal-header" onclick="this.nextElementSibling.classList.toggle('open')">
+      <span class="animal-name">${animal.replace(/-/g, ' ')}</span>
+      <span class="animal-badge ${badgeClass}">${badgeText}</span>
+    </div>
+    <div class="animal-body${animalIssues > 0 ? '' : ''}">
+      <div class="image-grid">${cards}</div>
+    </div>`;
+  
+  section.dataset.issueCount = animalIssues;
+  container.appendChild(section);
+});
+
+document.getElementById('issues-count').textContent = issueCount;
+document.getElementById('clean-count').textContent = cleanCount;
+
+// Filter logic
+document.querySelectorAll('.filters button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    
+    document.querySelectorAll('.animal-section').forEach(sec => {
+      const cards = sec.querySelectorAll('.image-card');
+      let visible = 0;
+      
+      cards.forEach(card => {
+        const hasIssue = card.dataset.hasIssue === 'true';
+        const cat = card.dataset.cat;
+        let show = true;
+        
+        if (filter === 'issues') show = hasIssue;
+        else if (filter === 'clean') show = !hasIssue;
+        else if (filter === 'species') show = cat === 'species' || cat === 'myth';
+        else if (filter === 'anatomy') show = cat === 'anatomy';
+        else if (filter === 'extra') show = cat === 'extra';
+        
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      
+      sec.classList.toggle('hidden', visible === 0);
+    });
+  });
+});
+</script>
+</body>
+</html>
