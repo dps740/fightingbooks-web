@@ -460,7 +460,7 @@ ANIMALS.forEach(animal => {
       data-filename="${filename}" data-cat="${issue ? 'issue' : 'clean'}" data-has-issue="${!!issue}" data-is-new="${isNew}">
       ${isDino ? '<div class="new-badge" style="background:#fbbf24;color:#000">DINO</div>' : isR2 ? '<div class="new-badge" style="background:#a78bfa">PRO</div>' : isNew ? '<div class="new-badge">NEW</div>' : ''}
       ${d ? `<div class="flag-badge ${d === 'ok' ? 'ok-badge' : 'replace-badge'}">${d === 'ok' ? '✓' : '✗'}</div>` : ''}
-      <img src="${BASE}/${filename}${isNew ? '?v=5' : ''}" alt="${animal} ${type}" loading="lazy"
+      <img src="${BASE}/${filename}${isNew ? '?v=6' : ''}" alt="${animal} ${type}" loading="lazy"
         onclick="openLightbox(${idx})"
         onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect fill=%22%23222%22 width=%22300%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22>Not found</text></svg>'">
       <div class="image-info">
@@ -500,7 +500,7 @@ function openLightbox(idx) {
   lightboxIndex = idx;
   const img = allImages[idx];
   const isReplaced = ALL_REPLACED.has(img.filename);
-  document.getElementById('lb-img').src = `${BASE}/${img.filename}${isReplaced ? '?v=5' : ''}`;
+  document.getElementById('lb-img').src = `${BASE}/${img.filename}${isReplaced ? '?v=6' : ''}`;
   document.getElementById('lb-filename').textContent = `${img.filename} — ${img.animal.replace(/-/g,' ')} (${img.type})`;
   document.getElementById('lb-issue').textContent = img.issue || 'No AI issues found';
   document.getElementById('lb-issue').style.color = img.issue ? '#ff9999' : '#88cc88';

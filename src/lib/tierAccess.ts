@@ -32,10 +32,11 @@ export const REAL_ANIMALS = [
   'Walrus', 'Octopus'
 ];
 
-// Dinosaurs (8 total) - Paid only
+// Dinosaurs (6 total) - Paid only
+// Removed: Ankylosaurus (AI can't render accurately), Pteranodon (same)
 export const DINOSAUR_ANIMALS = [
   'Tyrannosaurus Rex', 'Velociraptor', 'Triceratops', 'Spinosaurus',
-  'Stegosaurus', 'Ankylosaurus', 'Pteranodon', 'Brachiosaurus'
+  'Stegosaurus', 'Brachiosaurus'
 ];
 
 // Fantasy (9 total) - Paid only

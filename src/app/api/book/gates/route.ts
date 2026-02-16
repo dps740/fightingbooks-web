@@ -7,7 +7,6 @@ import { DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
   'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.8 },
   'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.8 },
-  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.8 },
   'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.8 },
   'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.8 },
 };
