@@ -99,19 +99,25 @@ export default function AdminPage() {
     id: string;
     animal_a: string;
     animal_b: string;
-    page_id: string;
-    image_url: string;
+    page_id: string | null;
+    image_url: string | null;
     reason: string;
+    description: string | null;
     status: string;
+    ai_assessment: string | null;
+    resolution_action: string | null;
+    resolution_notes: string | null;
+    resolved_by: string | null;
     reported_at: string;
     resolved_at?: string;
   }
   const [flaggedReports, setFlaggedReports] = useState<ImageReport[]>([]);
   const [flaggedLoading, setFlaggedLoading] = useState(false);
   const [flaggedError, setFlaggedError] = useState('');
-  const [flaggedFilter, setFlaggedFilter] = useState<'pending' | 'resolved' | 'dismissed'>('pending');
+  const [flaggedFilter, setFlaggedFilter] = useState<'pending' | 'needs_human' | 'resolved' | 'auto_resolved' | 'dismissed'>('pending');
   const [flaggedRegenLoading, setFlaggedRegenLoading] = useState<string | null>(null);
   const [flaggedActionResult, setFlaggedActionResult] = useState<{id: string; success: boolean; message: string} | null>(null);
+  const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
 
   // Check admin auth on mount
   useEffect(() => {
@@ -223,12 +229,12 @@ export default function AdminPage() {
     setCyoaDeleteLoading(null);
   };
 
-  // Load flagged image reports
+  // Load flagged image reports (from Supabase via /api/report)
   const loadFlaggedImages = async () => {
     setFlaggedLoading(true);
     setFlaggedError('');
     try {
-      const response = await fetch(`/api/report-image?status=${flaggedFilter}`, {
+      const response = await fetch(`/api/report?status=${flaggedFilter}`, {
         headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
       });
       const data = await response.json();
@@ -240,13 +246,16 @@ export default function AdminPage() {
     setFlaggedLoading(false);
   };
 
-  // Regenerate a flagged image
+  // Regenerate a flagged image and mark resolved
   const regenerateFlaggedImage = async (report: ImageReport) => {
+    if (!report.page_id) {
+      setFlaggedActionResult({ id: report.id, success: false, message: 'No page ID — cannot regenerate (general report)' });
+      return;
+    }
     setFlaggedRegenLoading(report.id);
     setFlaggedActionResult(null);
 
     try {
-      // Use the existing admin regenerate-image endpoint
       const response = await fetch('/api/admin/regenerate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -260,17 +269,22 @@ export default function AdminPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Mark report as resolved
-        await fetch('/api/report-image', {
+        // Mark report as resolved in Supabase
+        await fetch('/api/report', {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${CACHE_SECRET}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ id: report.id, status: 'resolved' }),
+          body: JSON.stringify({
+            id: report.id,
+            status: 'resolved',
+            resolution_action: 'regenerated',
+            resolution_notes: adminNotes[report.id] || null,
+            resolved_by: 'david',
+          }),
         });
         setFlaggedActionResult({ id: report.id, success: true, message: 'Regenerated & resolved!' });
-        // Refresh list
         await loadFlaggedImages();
       } else {
         setFlaggedActionResult({ id: report.id, success: false, message: data.error || 'Regeneration failed' });
@@ -284,13 +298,19 @@ export default function AdminPage() {
   // Dismiss a flagged image (mark as not needing regen)
   const dismissFlaggedImage = async (reportId: string) => {
     try {
-      await fetch('/api/report-image', {
+      await fetch('/api/report', {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: reportId, status: 'dismissed' }),
+        body: JSON.stringify({
+          id: reportId,
+          status: 'dismissed',
+          resolution_action: 'dismissed',
+          resolution_notes: adminNotes[reportId] || null,
+          resolved_by: 'david',
+        }),
       });
       await loadFlaggedImages();
     } catch (err) {
@@ -820,13 +840,13 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* FLAGGED IMAGES TAB */}
+        {/* FLAGGED IMAGES / CONTENT REPORTS TAB */}
         {activeTab === 'flagged' && (
           <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bangers text-[#FFD700]">🚩 Flagged Images</h2>
-              <div className="flex gap-2">
-                {(['pending', 'resolved', 'dismissed'] as const).map(f => (
+              <h2 className="text-2xl font-bangers text-[#FFD700]">🚩 Content Reports</h2>
+              <div className="flex gap-2 flex-wrap">
+                {(['pending', 'needs_human', 'auto_resolved', 'resolved', 'dismissed'] as const).map(f => (
                   <button
                     key={f}
                     onClick={() => setFlaggedFilter(f)}
@@ -836,7 +856,7 @@ export default function AdminPage() {
                         : 'bg-transparent border-white/20 text-white/70 hover:border-white/40'
                     }`}
                   >
-                    {f === 'pending' ? '⏳' : f === 'resolved' ? '✅' : '❌'} {f.charAt(0).toUpperCase() + f.slice(1)}
+                    {f === 'pending' ? '⏳' : f === 'needs_human' ? '🤔' : f === 'auto_resolved' ? '🤖' : f === 'resolved' ? '✅' : '❌'} {f.replace('_', ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                   </button>
                 ))}
                 <button
@@ -856,7 +876,7 @@ export default function AdminPage() {
 
             {flaggedReports.length === 0 && !flaggedLoading && (
               <p className="text-white/50 text-center py-12 text-lg">
-                {flaggedFilter === 'pending' ? '🎉 No flagged images — everything looks good!' : `No ${flaggedFilter} reports`}
+                {flaggedFilter === 'pending' ? '🎉 No pending reports — everything looks good!' : `No ${flaggedFilter.replace('_', ' ')} reports`}
               </p>
             )}
 
@@ -864,60 +884,143 @@ export default function AdminPage() {
               <p className="text-[#FFD700] text-center py-8 animate-pulse">Loading reports...</p>
             )}
 
-            {/* Image report cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Report cards */}
+            <div className="space-y-4">
               {flaggedReports.map(report => {
                 const matchupName = `${report.animal_a.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} vs ${report.animal_b.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}`;
-                const pageLabel = report.page_id === 'cover' ? '📕 Cover'
+                const pageLabel = !report.page_id ? '📄 General'
+                  : report.page_id === 'cover' ? '📕 Cover'
                   : report.page_id === 'victory' ? '🏆 Victory'
-                  : `⚔️ ${report.page_id.replace('battle-', 'Battle ')}`;
+                  : report.page_id === 'stats' ? '📊 Stats'
+                  : report.page_id === 'intro' ? '📖 Intro'
+                  : report.page_id.startsWith('battle-') ? `⚔️ Battle ${report.page_id.replace('battle-', '')}`
+                  : report.page_id.startsWith('outcome-') ? `🎬 Outcome ${report.page_id.replace('outcome-', '')}`
+                  : `📄 ${report.page_id}`;
+
+                const reasonLabel: Record<string, string> = {
+                  'bad_anatomy': '🦴 Bad anatomy',
+                  'wrong_animal': '🐾 Wrong animal',
+                  'wrong_count': '🔢 Wrong count',
+                  'offensive': '⚠️ Offensive',
+                  'factual': '📚 Factual error',
+                  'other': '❓ Other',
+                  'Inappropriate content': '⚠️ Inappropriate',
+                  'Offensive images': '⚠️ Offensive',
+                  'Factual errors': '📚 Factual',
+                  'Other issue': '❓ Other',
+                };
 
                 return (
                   <div key={report.id} className="bg-black/30 border border-white/10 rounded-lg overflow-hidden">
-                    {/* Image thumbnail */}
-                    <div className="relative aspect-[4/3] bg-black/50">
-                      <img
-                        src={report.image_url}
-                        alt={`${matchupName} - ${report.page_id}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x300/1a1a1a/666?text=Image+Not+Found'; }}
-                      />
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-3">
-                      <p className="font-bangers text-[#FFD700] text-lg">{matchupName}</p>
-                      <p className="text-white/70 text-sm">{pageLabel}</p>
-                      <p className="text-white/40 text-xs mt-1">
-                        Flagged: {new Date(report.reported_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </p>
-
-                      {/* Action result */}
-                      {flaggedActionResult?.id === report.id && (
-                        <p className={`text-sm mt-2 ${flaggedActionResult.success ? 'text-green-400' : 'text-red-400'}`}>
-                          {flaggedActionResult.message}
-                        </p>
-                      )}
-
-                      {/* Action buttons (only for pending) */}
-                      {report.status === 'pending' && (
-                        <div className="flex gap-2 mt-3">
-                          <button
-                            onClick={() => regenerateFlaggedImage(report)}
-                            disabled={flaggedRegenLoading === report.id}
-                            className="flex-1 px-3 py-2 rounded font-bangers text-sm transition disabled:opacity-50"
-                            style={{ background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)', color: 'white' }}
-                          >
-                            {flaggedRegenLoading === report.id ? '⏳ Regenerating...' : '🔄 Regenerate'}
-                          </button>
-                          <button
-                            onClick={() => dismissFlaggedImage(report.id)}
-                            className="px-3 py-2 rounded font-comic text-sm bg-white/10 hover:bg-white/20 transition text-white/70"
-                          >
-                            ❌ Dismiss
-                          </button>
+                    <div className="flex gap-4 p-4">
+                      {/* Image thumbnail */}
+                      {report.image_url ? (
+                        <div className="flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden bg-black/50">
+                          <img
+                            src={report.image_url}
+                            alt={`${matchupName} - ${report.page_id}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x150/1a1a1a/666?text=No+Image'; }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex-shrink-0 w-32 h-24 rounded-lg bg-black/30 flex items-center justify-center text-white/30 text-sm">
+                          No image
                         </div>
                       )}
+
+                      {/* Report details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="font-bangers text-[#FFD700] text-lg">{matchupName}</p>
+                            <div className="flex items-center gap-3 text-sm mt-1">
+                              <span className="text-white/70">{pageLabel}</span>
+                              <span className="px-2 py-0.5 bg-white/10 rounded text-white/60 text-xs">
+                                {reasonLabel[report.reason] || report.reason}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="text-white/40 text-xs whitespace-nowrap">
+                            {new Date(report.reported_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+
+                        {/* User description */}
+                        {report.description && (
+                          <div className="mt-2 p-2 bg-white/5 rounded border-l-2 border-orange-400/50">
+                            <p className="text-white/80 text-sm italic">&ldquo;{report.description}&rdquo;</p>
+                          </div>
+                        )}
+
+                        {/* AI assessment (from cron) */}
+                        {report.ai_assessment && (
+                          <div className="mt-2 p-2 bg-blue-500/10 rounded border-l-2 border-blue-400/50">
+                            <p className="text-xs text-blue-300/70 font-bold mb-1">🤖 Scout&apos;s Assessment:</p>
+                            <p className="text-white/70 text-sm">{report.ai_assessment}</p>
+                          </div>
+                        )}
+
+                        {/* Resolution info (for resolved/dismissed) */}
+                        {(report.status === 'resolved' || report.status === 'auto_resolved' || report.status === 'dismissed') && (
+                          <div className="mt-2 text-xs text-white/40">
+                            {report.resolution_action && <span>Action: {report.resolution_action}</span>}
+                            {report.resolved_by && <span className="ml-3">By: {report.resolved_by}</span>}
+                            {report.resolution_notes && <span className="ml-3">Notes: {report.resolution_notes}</span>}
+                          </div>
+                        )}
+
+                        {/* Action result */}
+                        {flaggedActionResult?.id === report.id && (
+                          <p className={`text-sm mt-2 ${flaggedActionResult.success ? 'text-green-400' : 'text-red-400'}`}>
+                            {flaggedActionResult.message}
+                          </p>
+                        )}
+
+                        {/* Action buttons (for pending or needs_human) */}
+                        {(report.status === 'pending' || report.status === 'needs_human') && (
+                          <div className="mt-3">
+                            {/* Admin notes input */}
+                            <input
+                              type="text"
+                              placeholder="Add notes (optional)..."
+                              value={adminNotes[report.id] || ''}
+                              onChange={(e) => setAdminNotes(prev => ({ ...prev, [report.id]: e.target.value }))}
+                              className="w-full px-3 py-1.5 mb-2 bg-black/30 border border-white/10 rounded text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFD700]/50"
+                            />
+                            <div className="flex gap-2">
+                              {report.page_id && (
+                                <button
+                                  onClick={() => regenerateFlaggedImage(report)}
+                                  disabled={flaggedRegenLoading === report.id}
+                                  className="px-4 py-2 rounded font-bangers text-sm transition disabled:opacity-50"
+                                  style={{ background: 'linear-gradient(135deg, #ff5722 0%, #e64a19 100%)', color: 'white' }}
+                                >
+                                  {flaggedRegenLoading === report.id ? '⏳ Regenerating...' : '🔄 Regenerate'}
+                                </button>
+                              )}
+                              <button
+                                onClick={() => dismissFlaggedImage(report.id)}
+                                className="px-4 py-2 rounded font-comic text-sm bg-white/10 hover:bg-white/20 transition text-white/70"
+                              >
+                                ❌ Dismiss
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const parts = report.animal_a.split('-');
+                                  const a = parts.join('-');
+                                  const b = report.animal_b.split('-').join('-');
+                                  window.open(`/read?a=${a}&b=${b}`, '_blank');
+                                }}
+                                className="px-3 py-2 rounded text-sm transition"
+                                style={{ background: 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)' }}
+                              >
+                                👁️ View Book
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
