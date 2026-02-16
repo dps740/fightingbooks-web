@@ -116,7 +116,8 @@
   <button data-filter="approved">✓ Approved</button>
   <button data-filter="replace">✗ Replace</button>
   <div class="sep"></div>
-  <button class="btn-new" data-filter="new">🆕 Newly Replaced (24)</button>
+  <button class="btn-new" data-filter="new">🆕 All Replaced (49)</button>
+  <button class="btn-new" data-filter="dino" style="background:#2a2a1a !important;border-color:#8a7a2d !important;color:#fbbf24 !important">🦕 Dino Sourced (25)</button>
   <div class="sep"></div>
   <button class="btn-export" onclick="exportDecisions()">📥 Export Decisions</button>
 </div>
@@ -171,8 +172,18 @@ const REPLACED_R2 = new Set([
   'hydra-action.jpg',
 ]);
 
+// Round 3 — Sourced dinosaur images (Wikimedia Commons)
+const REPLACED_DINO = new Set([
+  'ankylosaurus.jpg', 'ankylosaurus-closeup.jpg', 'ankylosaurus-action.jpg', 'ankylosaurus-habitat.jpg', 'ankylosaurus-secrets.jpg',
+  'brachiosaurus.jpg', 'brachiosaurus-closeup.jpg', 'brachiosaurus-action.jpg', 'brachiosaurus-habitat.jpg', 'brachiosaurus-secrets.jpg',
+  'pteranodon.jpg', 'pteranodon-closeup.jpg', 'pteranodon-action.jpg', 'pteranodon-habitat.jpg', 'pteranodon-secrets.jpg',
+  'spinosaurus.jpg', 'spinosaurus-action.jpg', 'spinosaurus-secrets.jpg',
+  'stegosaurus.jpg', 'stegosaurus-closeup.jpg', 'stegosaurus-action.jpg', 'stegosaurus-secrets.jpg',
+  'velociraptor-action.jpg', 'velociraptor-closeup.jpg', 'velociraptor-secrets.jpg',
+]);
+
 // Combine all replaced
-const ALL_REPLACED = new Set([...REPLACED, ...REPLACED_R2]);
+const ALL_REPLACED = new Set([...REPLACED, ...REPLACED_R2, ...REPLACED_DINO]);
 
 const ISSUES = {
   'alligator.jpg': 'Extra/merged limb near jaw, ambiguous object in mouth',
@@ -444,9 +455,10 @@ ANIMALS.forEach(animal => {
 
     const isNew = ALL_REPLACED.has(filename);
     const isR2 = REPLACED_R2.has(filename);
+    const isDino = REPLACED_DINO.has(filename);
     cards += `<div class="image-card ${issue ? 'has-issue' : 'clean'} ${d === 'ok' ? 'flagged-ok' : d === 'replace' ? 'flagged-replace' : ''} ${isNew ? 'newly-replaced' : ''}"
       data-filename="${filename}" data-cat="${issue ? 'issue' : 'clean'}" data-has-issue="${!!issue}" data-is-new="${isNew}">
-      ${isR2 ? '<div class="new-badge" style="background:#a78bfa">PRO</div>' : isNew ? '<div class="new-badge">NEW</div>' : ''}
+      ${isDino ? '<div class="new-badge" style="background:#fbbf24;color:#000">DINO</div>' : isR2 ? '<div class="new-badge" style="background:#a78bfa">PRO</div>' : isNew ? '<div class="new-badge">NEW</div>' : ''}
       ${d ? `<div class="flag-badge ${d === 'ok' ? 'ok-badge' : 'replace-badge'}">${d === 'ok' ? '✓' : '✗'}</div>` : ''}
       <img src="${BASE}/${filename}${isNew ? '?v=2' : ''}" alt="${animal} ${type}" loading="lazy"
         onclick="openLightbox(${idx})"
@@ -561,6 +573,7 @@ document.querySelectorAll('.toolbar button[data-filter]').forEach(btn => {
         else if (filter === 'approved') show = d === 'ok';
         else if (filter === 'replace') show = d === 'replace';
         else if (filter === 'new') show = card.dataset.isNew === 'true';
+        else if (filter === 'dino') show = REPLACED_DINO.has(fn);
 
         card.classList.toggle('hidden', !show);
         if (show) visible++;
