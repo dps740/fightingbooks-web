@@ -3,6 +3,15 @@ import { put, head, BlobNotFoundError } from '@vercel/blob';
 import OpenAI from 'openai';
 import { FANTASY_ANIMALS, DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 
+// Dinosaur reference images for image conditioning
+const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
+  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.2 },
+  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.2 },
+  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.25 },
+  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.2 },
+  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.2 },
+};
+
 // CYOA Cache Version - bump to invalidate when narrative logic changes
 const CYOA_CACHE_VERSION = 'v2';
 
@@ -184,7 +193,23 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
   const fullPrompt = `${prompt}, ${stylePrompt}`;
 
   try {
-    const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    // Check for dinosaur reference image conditioning
+    let imageConditioningParams: Record<string, unknown> = {};
+    if (hasDinosaur) {
+      for (const [dinoName, ref] of Object.entries(DINO_REFERENCE_IMAGES)) {
+        if (promptLower.includes(dinoName)) {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+          imageConditioningParams = {
+            image_url: `${siteUrl}${ref.url}`,
+            image_prompt_strength: ref.strength,
+          };
+          console.log(`[CYOA-DINO-REF] Using reference for ${dinoName}`);
+          break;
+        }
+      }
+    }
+
+    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
@@ -193,7 +218,8 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
       body: JSON.stringify({
         prompt: fullPrompt,
         image_size: 'square_hd',
-        num_inference_steps: 4,
+        num_inference_steps: 28,
+        ...imageConditioningParams,
       }),
     });
 

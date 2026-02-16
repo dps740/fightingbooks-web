@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { put, head, BlobNotFoundError } from '@vercel/blob';
+import { DINOSAUR_ANIMALS } from '@/lib/tierAccess';
+
+// Dinosaur reference images for image conditioning
+const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
+  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.2 },
+  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.2 },
+  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.25 },
+  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.2 },
+  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.2 },
+};
 
 // Must match start/route.ts and choice/route.ts
 const CYOA_CACHE_VERSION = 'v2';
@@ -223,7 +233,25 @@ async function generateBattleBg(animalA: string, animalB: string): Promise<strin
   if (!falKey) return `https://placehold.co/512x512/1a1a1a/d4af37?text=Battle`;
 
   try {
-    const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    // Check for dinosaur reference conditioning
+    let imageConditioningParams: Record<string, unknown> = {};
+    const matchupLower = `${animalA} ${animalB}`.toLowerCase();
+    const hasDino = DINOSAUR_ANIMALS.some(a => matchupLower.includes(a.toLowerCase()));
+    if (hasDino) {
+      for (const [dinoName, ref] of Object.entries(DINO_REFERENCE_IMAGES)) {
+        if (matchupLower.includes(dinoName)) {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+          imageConditioningParams = {
+            image_url: `${siteUrl}${ref.url}`,
+            image_prompt_strength: ref.strength,
+          };
+          console.log(`[GATES-DINO-REF] Using reference for ${dinoName}`);
+          break;
+        }
+      }
+    }
+
+    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
@@ -232,7 +260,8 @@ async function generateBattleBg(animalA: string, animalB: string): Promise<strin
       body: JSON.stringify({
         prompt: `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield, wildlife documentary photography, photorealistic, dramatic lighting. ABSOLUTELY NO TEXT IN THE IMAGE.`,
         image_size: 'square_hd',
-        num_inference_steps: 4,
+        num_inference_steps: 28,
+        ...imageConditioningParams,
       }),
     });
 

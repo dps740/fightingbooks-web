@@ -20,6 +20,16 @@ import {
   DINOSAUR_ANIMALS,
 } from '@/lib/tierAccess';
 
+// Dinosaur reference images for image conditioning (improves anatomical accuracy)
+// These are served from public/fighters/refs/ and used as image_url with Flux Dev
+const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
+  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.2 },
+  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.2 },
+  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.25 },
+  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.2 },
+  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.2 },
+};
+
 // Supabase client for auth
 function getSupabase() {
   return createClient(
@@ -290,6 +300,23 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
       const modelEndpoint = _imageModelOverride?.model || 'fal-ai/flux/dev';
       const inferenceSteps = _imageModelOverride?.steps || 28;
       
+      // Check if any dinosaur in the prompt has a reference image for conditioning
+      let imageConditioningParams: Record<string, unknown> = {};
+      if (hasDinosaur && modelEndpoint === 'fal-ai/flux/dev') {
+        for (const [dinoName, ref] of Object.entries(DINO_REFERENCE_IMAGES)) {
+          if (promptLower.includes(dinoName)) {
+            // Use the site URL to serve the reference image
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+            imageConditioningParams = {
+              image_url: `${siteUrl}${ref.url}`,
+              image_prompt_strength: ref.strength,
+            };
+            console.log(`[DINO-REF] Using reference image for ${dinoName} (strength=${ref.strength})`);
+            break; // Use first matching dino reference
+          }
+        }
+      }
+      
       const response = await fetch(`https://fal.run/${modelEndpoint}`, {
         method: 'POST',
         headers: {
@@ -300,6 +327,7 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
           prompt: fullPrompt,
           image_size: 'square_hd',
           num_inference_steps: inferenceSteps,
+          ...imageConditioningParams,
         }),
       });
 
