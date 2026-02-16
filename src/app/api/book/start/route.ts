@@ -753,6 +753,58 @@ function swapStats(stats: ComparativeStats): ComparativeStats {
   };
 }
 
+// Generate Tale of the Tape HTML — Option A face-off bars with bold fonts
+// Exported as a standalone function so migration scripts can use it too
+function generateTapeHTML(nameA: string, nameB: string, compStats: ComparativeStats, tacticalFallback: string): string {
+  const scoreA_str = compStats.strengthA;
+  const scoreA_spd = compStats.speedA;
+  const scoreA_wpn = compStats.weaponsA;
+  const scoreA_def = compStats.defenseA;
+  const scoreB_str = compStats.strengthB;
+  const scoreB_spd = compStats.speedB;
+  const scoreB_wpn = compStats.weaponsB;
+  const scoreB_def = compStats.defenseB;
+
+  function statBlock(emoji: string, label: string, sA: number, sB: number, note?: string): string {
+    return `
+      <div class="tape-stat">
+        <div class="tape-stat-label">${emoji} ${label}</div>
+        ${note ? `<div class="tape-stat-note">${note}</div>` : ''}
+        <div class="tape-stat-row">
+          <span class="tape-score tape-score-a">${sA}/10</span>
+          <div class="tape-bars">
+            <div class="tape-bar-left"><div class="tape-fill tape-fill-a" style="width: ${sA * 10}%;"></div></div>
+            <div class="tape-bar-right"><div class="tape-fill tape-fill-b" style="width: ${sB * 10}%;"></div></div>
+          </div>
+          <span class="tape-score tape-score-b">${sB}/10</span>
+        </div>
+      </div>`;
+  }
+
+  const advantageHTML = compStats.keyAdvantage
+    ? `<div class="tape-advantage">
+        <div class="tape-advantage-label">💡 KEY ADVANTAGE</div>
+        <p>${compStats.keyAdvantage}</p>
+      </div>`
+    : `<div class="tape-advantage">
+        <div class="tape-advantage-label">💡 ANALYSIS</div>
+        <p>${tacticalFallback}</p>
+      </div>`;
+
+  return `
+    <div class="tape-fighters">
+      <span class="tape-fighter-a">🔴 ${nameA}</span>
+      <span class="tape-vs">VS</span>
+      <span class="tape-fighter-b">${nameB} 🔵</span>
+    </div>
+    ${statBlock('💪', 'STRENGTH', scoreA_str, scoreB_str, compStats.strengthNote)}
+    ${statBlock('⚡', 'SPEED', scoreA_spd, scoreB_spd, compStats.speedNote)}
+    ${statBlock('⚔️', 'WEAPONS', scoreA_wpn, scoreB_wpn, compStats.weaponsNote)}
+    ${statBlock('🛡️', 'DEFENSE', scoreA_def, scoreB_def, compStats.defenseNote)}
+    ${advantageHTML}
+  `;
+}
+
 async function generateBook(animalA: string, animalB: string, environment: string): Promise<{ pages: BookPage[], winner: string }> {
   console.log(`Generating book: ${animalA} vs ${animalB} in ${environment}`);
   
@@ -1022,100 +1074,7 @@ async function generateBook(animalA: string, animalB: string, environment: strin
       id: 'stats',
       type: 'stats',
       title: 'TALE OF THE TAPE!',
-      content: `
-        <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 8px; font-family: 'Bangers', cursive; font-size: 1.1em; letter-spacing: 1px;">
-          <span style="color: #c41e3a;">🔴 ${factsA.name}</span>
-          <span style="color: #666;">VS</span>
-          <span style="color: #1e4fc4;">🔵 ${factsB.name}</span>
-        </div>
-        <div class="stat-bar-container">
-          <div class="stat-bar-label">💪 STRENGTH</div>
-          ${compStats.strengthNote ? `<p class="stat-note">${compStats.strengthNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsA.strength_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
-                  ${factsA.strength_score}/10
-                </div>
-              </div>
-            </div>
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsB.strength_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
-                  ${factsB.strength_score}/10
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-bar-label">⚡ SPEED</div>
-          ${compStats.speedNote ? `<p class="stat-note">${compStats.speedNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsA.speed_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
-                  ${factsA.speed_score}/10
-                </div>
-              </div>
-            </div>
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsB.speed_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
-                  ${factsB.speed_score}/10
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-bar-label">⚔️ WEAPONS</div>
-          ${compStats.weaponsNote ? `<p class="stat-note">${compStats.weaponsNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsA.weapons_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
-                  ${factsA.weapons_score}/10
-                </div>
-              </div>
-            </div>
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsB.weapons_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
-                  ${factsB.weapons_score}/10
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="stat-bar-label">🛡️ DEFENSE</div>
-          ${compStats.defenseNote ? `<p class="stat-note">${compStats.defenseNote}</p>` : ''}
-          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsA.defense_score * 10}%; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);">
-                  ${factsA.defense_score}/10
-                </div>
-              </div>
-            </div>
-            <div style="flex: 1;">
-              <div class="stat-bar">
-                <div class="stat-bar-fill" style="width: ${factsB.defense_score * 10}%; background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);">
-                  ${factsB.defense_score}/10
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        ${compStats.keyAdvantage ? `
-        <div class="did-you-know" style="margin-top: 8px;">
-          <p>🎯 KEY ADVANTAGE: ${compStats.keyAdvantage}</p>
-        </div>
-        ` : `
-        <div class="think-about-it" style="margin-top: 8px;">
-          <p>${generateTacticalAnalysis(factsA, factsB)}</p>
-        </div>
-        `}
-      `,
+      content: generateTapeHTML(factsA.name, factsB.name, compStats, generateTacticalAnalysis(factsA, factsB)),
       // Store numeric stats for CYOA winner calculation
       stats: {
         animalA: {

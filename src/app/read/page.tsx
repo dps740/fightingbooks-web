@@ -1408,6 +1408,139 @@ function BookReader() {
           margin: 4px 0;
         }
         .stats-hero-image { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+
+        /* === TALE OF THE TAPE — Option A Face-Off Bars === */
+        .tape-fighters {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          padding: 6px 0;
+          border-bottom: 3px solid #ff5722;
+        }
+        .tape-fighter-a {
+          font-family: 'Bangers', cursive;
+          font-size: 1.35em;
+          color: #c41e3a;
+          letter-spacing: 1px;
+          -webkit-text-stroke: 0.3px #c41e3a;
+        }
+        .tape-fighter-b {
+          font-family: 'Bangers', cursive;
+          font-size: 1.35em;
+          color: #1e4fc4;
+          letter-spacing: 1px;
+          -webkit-text-stroke: 0.3px #1e4fc4;
+        }
+        .tape-vs {
+          font-family: 'Bangers', cursive;
+          font-size: 1.1em;
+          color: #666;
+          letter-spacing: 1px;
+        }
+
+        .tape-stat {
+          margin-bottom: 4px;
+        }
+        .tape-stat-label {
+          text-align: center;
+          font-family: 'Bangers', cursive;
+          color: #ff5722;
+          font-size: 1em;
+          letter-spacing: 1px;
+          -webkit-text-stroke: 0.2px #ff5722;
+        }
+        .tape-stat-note {
+          font-size: 0.72em;
+          color: #555;
+          font-style: italic;
+          text-align: center;
+          margin: 1px 0 4px;
+          line-height: 1.3;
+          padding: 3px 8px;
+          background: rgba(255,215,0,0.15);
+          border-radius: 6px;
+        }
+        .tape-stat-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 4px;
+        }
+        .tape-score {
+          width: 38px;
+          font-weight: bold;
+          font-size: 0.9em;
+          font-family: 'Comic Neue', cursive;
+        }
+        .tape-score-a {
+          text-align: right;
+          color: #c41e3a;
+        }
+        .tape-score-b {
+          text-align: left;
+          color: #1e4fc4;
+        }
+        .tape-bars {
+          flex: 1;
+          display: flex;
+          gap: 3px;
+          align-items: center;
+        }
+        .tape-bar-left {
+          flex: 1;
+          height: 18px;
+          background: #e0e0e0;
+          border-radius: 9px 0 0 9px;
+          overflow: hidden;
+          display: flex;
+          justify-content: flex-end;
+        }
+        .tape-bar-right {
+          flex: 1;
+          height: 18px;
+          background: #e0e0e0;
+          border-radius: 0 9px 9px 0;
+          overflow: hidden;
+        }
+        .tape-fill {
+          height: 100%;
+          transition: width 0.5s ease;
+        }
+        .tape-fill-a {
+          background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+          border-radius: 9px 0 0 9px;
+        }
+        .tape-fill-b {
+          background: linear-gradient(135deg, #1e4fc4 0%, #0d47a1 100%);
+          border-radius: 0 9px 9px 0;
+        }
+
+        .tape-advantage {
+          background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+          border: 2px solid #ff5722;
+          border-radius: 8px;
+          padding: 6px 10px;
+          margin-top: 8px;
+          text-align: center;
+        }
+        .tape-advantage-label {
+          font-family: 'Bangers', cursive;
+          font-size: 0.95em;
+          color: #ff5722;
+          margin-bottom: 2px;
+          letter-spacing: 1px;
+        }
+        .tape-advantage p {
+          font-size: 0.8em;
+          font-weight: bold;
+          color: #1a1a1a;
+          line-height: 1.3;
+          margin: 0;
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+        }
         
         /* Override stats page content to be compact */
         [class*="stats"] ~ .page-content .stat-bar-container,
