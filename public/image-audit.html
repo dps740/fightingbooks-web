@@ -9,71 +9,134 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 20px; }
   h1 { font-size: 1.8rem; margin-bottom: 8px; color: #fff; }
   .meta { color: #888; margin-bottom: 24px; font-size: 0.9rem; }
-  .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-  .stat { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 12px 20px; }
-  .stat-num { font-size: 1.6rem; font-weight: 700; }
-  .stat-label { font-size: 0.8rem; color: #888; }
+  .stats { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 16px; min-width: 100px; }
+  .stat-num { font-size: 1.4rem; font-weight: 700; }
+  .stat-label { font-size: 0.75rem; color: #888; }
   .stat.bad .stat-num { color: #ff6b6b; }
   .stat.ok .stat-num { color: #51cf66; }
   .stat.warn .stat-num { color: #ffd43b; }
-  .filters { margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .filters button { background: #1a1a1a; border: 1px solid #444; color: #ccc; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
-  .filters button.active { background: #d4af37; color: #000; border-color: #d4af37; }
-  .animal-section { margin-bottom: 32px; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
-  .animal-header { background: #151515; padding: 14px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .stat.blue .stat-num { color: #74c0fc; }
+
+  .toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .toolbar button { background: #1a1a1a; border: 1px solid #444; color: #ccc; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
+  .toolbar button:hover { background: #252525; border-color: #666; }
+  .toolbar button.active { background: #d4af37; color: #000; border-color: #d4af37; }
+  .toolbar .sep { width: 1px; height: 28px; background: #333; margin: 0 4px; }
+  .btn-export { background: #1a3a1a !important; border-color: #2d5a2d !important; color: #51cf66 !important; }
+  .btn-export:hover { background: #244a24 !important; }
+
+  .animal-section { margin-bottom: 24px; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+  .animal-header { background: #151515; padding: 12px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
   .animal-header:hover { background: #1a1a1a; }
-  .animal-name { font-size: 1.2rem; font-weight: 600; text-transform: capitalize; }
-  .animal-badge { font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; }
+  .animal-name { font-size: 1.15rem; font-weight: 600; text-transform: capitalize; }
+  .animal-badges { display: flex; gap: 6px; align-items: center; }
+  .animal-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; }
   .badge-critical { background: #ff6b6b22; color: #ff6b6b; border: 1px solid #ff6b6b44; }
   .badge-moderate { background: #ffd43b22; color: #ffd43b; border: 1px solid #ffd43b44; }
   .badge-clean { background: #51cf6622; color: #51cf66; border: 1px solid #51cf6644; }
+  .badge-reviewed { background: #74c0fc22; color: #74c0fc; border: 1px solid #74c0fc44; }
   .animal-body { display: none; padding: 16px; }
   .animal-body.open { display: block; }
-  .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-  .image-card { background: #111; border-radius: 8px; overflow: hidden; border: 2px solid transparent; }
-  .image-card.has-issue { border-color: #ff6b6b66; }
-  .image-card.clean { border-color: #51cf6633; }
-  .image-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+  .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+  .image-card { background: #111; border-radius: 8px; overflow: hidden; border: 2px solid #222; transition: border-color 0.2s; position: relative; }
+  .image-card.has-issue { border-color: #ff6b6b44; }
+  .image-card.clean { border-color: #51cf6622; }
+  .image-card.flagged-ok { border-color: #51cf66; }
+  .image-card.flagged-replace { border-color: #ff6b6b; }
+  .image-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: zoom-in; }
   .image-info { padding: 10px; }
-  .image-filename { font-size: 0.8rem; color: #888; font-family: monospace; }
-  .image-type { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-top: 2px; }
-  .image-issue { margin-top: 6px; font-size: 0.85rem; color: #ff9999; line-height: 1.4; }
-  .image-ok { margin-top: 6px; font-size: 0.85rem; color: #88cc88; }
-  .severity-critical { border-left: 3px solid #ff6b6b; padding-left: 8px; }
-  .severity-moderate { border-left: 3px solid #ffd43b; padding-left: 8px; }
-  .severity-minor { border-left: 3px solid #74c0fc; padding-left: 8px; }
+  .image-filename { font-size: 0.78rem; color: #888; font-family: monospace; }
+  .image-type { font-size: 0.68rem; color: #555; text-transform: uppercase; margin-top: 2px; }
+  .image-issue { margin-top: 6px; font-size: 0.82rem; color: #ff9999; line-height: 1.3; }
+  .image-ok-text { margin-top: 6px; font-size: 0.82rem; color: #88cc88; }
+
+  .flag-buttons { display: flex; gap: 6px; margin-top: 8px; }
+  .flag-btn { flex: 1; padding: 6px 0; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; background: #1a1a1a; color: #888; transition: all 0.15s; }
+  .flag-btn:hover { transform: scale(1.02); }
+  .flag-btn.btn-ok:hover, .flag-btn.btn-ok.selected { background: #1a3a1a; border-color: #51cf66; color: #51cf66; }
+  .flag-btn.btn-replace:hover, .flag-btn.btn-replace.selected { background: #3a1a1a; border-color: #ff6b6b; color: #ff6b6b; }
+  .flag-badge { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; z-index: 2; }
+  .flag-badge.ok-badge { background: #51cf66; color: #000; }
+  .flag-badge.replace-badge { background: #ff6b6b; color: #fff; }
+
+  /* Lightbox */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; cursor: zoom-out; }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 8px; }
+  .lightbox-info { color: #ccc; margin-top: 12px; text-align: center; max-width: 600px; }
+  .lightbox-filename { font-family: monospace; font-size: 1rem; color: #fff; }
+  .lightbox-issue { color: #ff9999; margin-top: 6px; font-size: 0.9rem; }
+  .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); font-size: 2.5rem; color: #666; cursor: pointer; padding: 20px; user-select: none; }
+  .lightbox-nav:hover { color: #fff; }
+  .lightbox-nav.prev { left: 10px; }
+  .lightbox-nav.next { right: 10px; }
+  .lightbox-close { position: absolute; top: 16px; right: 24px; font-size: 2rem; color: #666; cursor: pointer; }
+  .lightbox-close:hover { color: #fff; }
+  .lightbox-flags { display: flex; gap: 12px; margin-top: 14px; }
+  .lightbox-flags button { padding: 8px 24px; border-radius: 8px; border: 2px solid #444; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: #1a1a1a; color: #888; }
+  .lightbox-flags .lb-ok:hover, .lightbox-flags .lb-ok.selected { background: #1a3a1a; border-color: #51cf66; color: #51cf66; }
+  .lightbox-flags .lb-replace:hover, .lightbox-flags .lb-replace.selected { background: #3a1a1a; border-color: #ff6b6b; color: #ff6b6b; }
+
+  .progress-bar { height: 4px; background: #222; border-radius: 2px; margin-bottom: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; display: flex; }
+  .progress-ok { background: #51cf66; }
+  .progress-replace { background: #ff6b6b; }
+  .progress-unreviewed { background: #333; }
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
 <h1>🔍 FightingBooks Image Audit</h1>
-<p class="meta">Visual review — Feb 16, 2026 • 235 educational images across 47 animals</p>
+<p class="meta">Click any image to expand • Green = OK, Red = Replace • Decisions auto-save</p>
 
 <div class="stats">
   <div class="stat"><div class="stat-num">235</div><div class="stat-label">Total Images</div></div>
-  <div class="stat bad"><div class="stat-num" id="issues-count">—</div><div class="stat-label">With Issues</div></div>
-  <div class="stat ok"><div class="stat-num" id="clean-count">—</div><div class="stat-label">Clean</div></div>
-  <div class="stat warn"><div class="stat-num">47</div><div class="stat-label">Animals</div></div>
+  <div class="stat bad"><div class="stat-num" id="ai-flagged">—</div><div class="stat-label">AI Flagged</div></div>
+  <div class="stat ok"><div class="stat-num" id="reviewed-ok">0</div><div class="stat-label">✓ Approved</div></div>
+  <div class="stat bad"><div class="stat-num" id="reviewed-replace">0</div><div class="stat-label">✗ Replace</div></div>
+  <div class="stat blue"><div class="stat-num" id="unreviewed">235</div><div class="stat-label">Unreviewed</div></div>
 </div>
 
-<div class="filters">
-  <button class="active" data-filter="all">All</button>
-  <button data-filter="issues">Issues Only</button>
-  <button data-filter="clean">Clean Only</button>
-  <button data-filter="species">Wrong Species</button>
-  <button data-filter="anatomy">Anatomy</button>
-  <button data-filter="extra">Extra Animals</button>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<div class="toolbar">
+  <button class="active" data-filter="all">All (235)</button>
+  <button data-filter="issues">AI Flagged</button>
+  <button data-filter="clean">AI Clean</button>
+  <div class="sep"></div>
+  <button data-filter="unreviewed">Unreviewed</button>
+  <button data-filter="approved">✓ Approved</button>
+  <button data-filter="replace">✗ Replace</button>
+  <div class="sep"></div>
+  <button class="btn-export" onclick="exportDecisions()">📥 Export Decisions</button>
 </div>
 
 <div id="animals"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close" onclick="closeLightbox()">×</span>
+  <span class="lightbox-nav prev" onclick="navLightbox(-1)">‹</span>
+  <span class="lightbox-nav next" onclick="navLightbox(1)">›</span>
+  <img id="lb-img" src="" alt="">
+  <div class="lightbox-info">
+    <div class="lightbox-filename" id="lb-filename"></div>
+    <div class="lightbox-issue" id="lb-issue"></div>
+  </div>
+  <div class="lightbox-flags">
+    <button class="lb-ok" onclick="flagFromLightbox('ok')">✓ OK — Keep</button>
+    <button class="lb-replace" onclick="flagFromLightbox('replace')">✗ Replace</button>
+  </div>
+</div>
 
 <script>
 const BASE = '/fighters';
 const TYPES = ['', '-closeup', '-action', '-habitat', '-secrets'];
 const TYPE_LABELS = { '': 'portrait', '-closeup': 'closeup', '-action': 'action', '-habitat': 'habitat', '-secrets': 'secrets' };
 
-// Issues from the audit (only flagged ones — unlisted images are clean)
 const ISSUES = {
   'alligator.jpg': 'Extra/merged limb near jaw, ambiguous object in mouth',
   'alligator-habitat.jpg': 'Distorted body proportions, tail emerges too high',
@@ -89,11 +152,11 @@ const ISSUES = {
   'ankylosaurus-habitat.jpg': 'Chimera body (stegosaurus plates + ceratopsian horn)',
   'ankylosaurus-secrets.jpg': 'Back plates have artificial glyphs/hieroglyphics',
   'ankylosaurus.jpg': 'Ceratopsian frill, missing tail club, mishmash body plan',
-  'basilisk-action.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
-  'basilisk-closeup.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
-  'basilisk-habitat.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
-  'basilisk-secrets.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
-  'basilisk.jpg': 'Limbs on snake, horns/spikes (dragon-like)',
+  'basilisk-action.jpg': 'Mythological — limbs on snake, horns/spikes',
+  'basilisk-closeup.jpg': 'Mythological — limbs on snake, horns/spikes',
+  'basilisk-habitat.jpg': 'Mythological — limbs on snake, horns/spikes',
+  'basilisk-secrets.jpg': 'Mythological — limbs on snake, horns/spikes',
+  'basilisk.jpg': 'Mythological — limbs on snake, horns/spikes',
   'brachiosaurus-action.jpg': 'Only 2 legs visible, odd proportions',
   'brachiosaurus-closeup.jpg': 'Deformed rhinoceros-like head, horn-like eye protrusions',
   'brachiosaurus-habitat.jpg': 'Giraffe-like spots, raptor-like head',
@@ -229,7 +292,7 @@ const ISSUES = {
   'spinosaurus-habitat.jpg': 'Dimetrodon-like sail, different species (fish)',
   'spinosaurus-secrets.jpg': 'FISH-DINOSAUR CHIMERA with fins and fish tail',
   'spinosaurus.jpg': 'Wrong head shape (theropod, not spinosaurus)',
-  'stegosaurus-action.jpg': 'Different species (theropod), CARNIVORE TEETH (herbivore!)',
+  'stegosaurus-action.jpg': 'Different species (theropod), CARNIVORE TEETH',
   'stegosaurus-closeup.jpg': 'WRONG SPECIES: Styracosaurus/ceratopsian',
   'stegosaurus-habitat.jpg': 'Too few plates, no tail thagomizer',
   'stegosaurus-secrets.jpg': 'Glowing red dots, too many small red spikes',
@@ -256,16 +319,6 @@ const ISSUES = {
   'wolf-secrets.jpg': 'Merged legs/paws, bodies blend together',
 };
 
-// Categorize issues
-function categorize(issue) {
-  const l = issue.toLowerCase();
-  if (l.includes('mythological')) return 'myth';
-  if (l.includes('different species') || l.includes('wrong species') || l.includes('wrong head') || l.includes('not accurate')) return 'species';
-  if (l.includes('extra') || l.includes('limb') || l.includes('deformed') || l.includes('merged') || l.includes('leg') || l.includes('finger') || l.includes('head') || l.includes('eye') || l.includes('anatomy')) return 'anatomy';
-  if (l.includes('blood') || l.includes('graphic') || l.includes('predation') || l.includes('prey') || l.includes('frightening')) return 'extra';
-  return 'other';
-}
-
 const ANIMALS = [
   'alligator','anaconda','ankylosaurus','basilisk','brachiosaurus','cape-buffalo',
   'cerberus','cheetah','chimera','crocodile','dragon','eagle','electric-eel',
@@ -276,86 +329,230 @@ const ANIMALS = [
   'triceratops','tyrannosaurus-rex','velociraptor','walrus','wolf'
 ];
 
-let issueCount = 0, cleanCount = 0;
-const container = document.getElementById('animals');
+// State
+let decisions = JSON.parse(localStorage.getItem('fb-audit-decisions') || '{}');
+let allImages = []; // flat list for lightbox nav
+let lightboxIndex = -1;
 
+function saveDecisions() {
+  localStorage.setItem('fb-audit-decisions', JSON.stringify(decisions));
+  updateStats();
+}
+
+function flagImage(filename, flag) {
+  if (decisions[filename] === flag) {
+    delete decisions[filename]; // toggle off
+  } else {
+    decisions[filename] = flag;
+  }
+  saveDecisions();
+  renderCards();
+}
+
+function updateStats() {
+  let okCount = 0, replaceCount = 0;
+  Object.values(decisions).forEach(d => { if (d === 'ok') okCount++; else if (d === 'replace') replaceCount++; });
+  const unreviewed = 235 - okCount - replaceCount;
+  document.getElementById('reviewed-ok').textContent = okCount;
+  document.getElementById('reviewed-replace').textContent = replaceCount;
+  document.getElementById('unreviewed').textContent = unreviewed;
+  document.getElementById('ai-flagged').textContent = Object.keys(ISSUES).length;
+
+  const pct_ok = (okCount / 235 * 100).toFixed(1);
+  const pct_replace = (replaceCount / 235 * 100).toFixed(1);
+  document.getElementById('progress').innerHTML =
+    `<div class="progress-ok" style="width:${pct_ok}%"></div>` +
+    `<div class="progress-replace" style="width:${pct_replace}%"></div>`;
+}
+
+function renderCards() {
+  document.querySelectorAll('.image-card').forEach(card => {
+    const fn = card.dataset.filename;
+    const d = decisions[fn];
+    card.classList.remove('flagged-ok', 'flagged-replace');
+    if (d === 'ok') card.classList.add('flagged-ok');
+    if (d === 'replace') card.classList.add('flagged-replace');
+
+    // Badge
+    let badge = card.querySelector('.flag-badge');
+    if (d) {
+      if (!badge) { badge = document.createElement('div'); badge.className = 'flag-badge'; card.appendChild(badge); }
+      badge.className = 'flag-badge ' + (d === 'ok' ? 'ok-badge' : 'replace-badge');
+      badge.textContent = d === 'ok' ? '✓' : '✗';
+    } else if (badge) { badge.remove(); }
+
+    // Buttons
+    card.querySelector('.btn-ok')?.classList.toggle('selected', d === 'ok');
+    card.querySelector('.btn-replace')?.classList.toggle('selected', d === 'replace');
+  });
+  updateLightboxFlags();
+}
+
+// Build page
+const container = document.getElementById('animals');
 ANIMALS.forEach(animal => {
   const section = document.createElement('div');
   section.className = 'animal-section';
-  
   let animalIssues = 0;
   let cards = '';
-  
+
   TYPES.forEach(suffix => {
     const filename = `${animal}${suffix}.jpg`;
     const type = TYPE_LABELS[suffix];
     const issue = ISSUES[filename];
-    
-    if (issue) { animalIssues++; issueCount++; }
-    else { cleanCount++; }
-    
-    const cat = issue ? categorize(issue) : '';
-    
-    cards += `<div class="image-card ${issue ? 'has-issue' : 'clean'}" data-cat="${cat}" data-has-issue="${!!issue}">
-      <img src="${BASE}/${filename}" alt="${animal} ${type}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect fill=%22%23222%22 width=%22300%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22>Not found</text></svg>'">
+    if (issue) animalIssues++;
+    const idx = allImages.length;
+    allImages.push({ filename, animal, type, issue });
+    const d = decisions[filename];
+
+    cards += `<div class="image-card ${issue ? 'has-issue' : 'clean'} ${d === 'ok' ? 'flagged-ok' : d === 'replace' ? 'flagged-replace' : ''}"
+      data-filename="${filename}" data-cat="${issue ? 'issue' : 'clean'}" data-has-issue="${!!issue}">
+      ${d ? `<div class="flag-badge ${d === 'ok' ? 'ok-badge' : 'replace-badge'}">${d === 'ok' ? '✓' : '✗'}</div>` : ''}
+      <img src="${BASE}/${filename}" alt="${animal} ${type}" loading="lazy"
+        onclick="openLightbox(${idx})"
+        onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect fill=%22%23222%22 width=%22300%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22>Not found</text></svg>'">
       <div class="image-info">
         <div class="image-filename">${filename}</div>
         <div class="image-type">${type}</div>
-        ${issue ? `<div class="image-issue">${issue}</div>` : '<div class="image-ok">✓ Clean</div>'}
+        ${issue ? `<div class="image-issue">${issue}</div>` : '<div class="image-ok-text">✓ AI: no issues found</div>'}
+        <div class="flag-buttons">
+          <button class="flag-btn btn-ok ${d === 'ok' ? 'selected' : ''}" onclick="event.stopPropagation();flagImage('${filename}','ok')">✓ OK</button>
+          <button class="flag-btn btn-replace ${d === 'replace' ? 'selected' : ''}" onclick="event.stopPropagation();flagImage('${filename}','replace')">✗ Replace</button>
+        </div>
       </div>
     </div>`;
   });
-  
+
   const severity = animalIssues >= 4 ? 'critical' : animalIssues >= 2 ? 'moderate' : 'clean';
   const badgeClass = severity === 'critical' ? 'badge-critical' : severity === 'moderate' ? 'badge-moderate' : 'badge-clean';
-  const badgeText = animalIssues === 0 ? '✓ Clean' : `${animalIssues}/5 issues`;
-  
+  const reviewedCount = TYPES.filter(s => decisions[`${animal}${s}.jpg`]).length;
+
   section.innerHTML = `
     <div class="animal-header" onclick="this.nextElementSibling.classList.toggle('open')">
       <span class="animal-name">${animal.replace(/-/g, ' ')}</span>
-      <span class="animal-badge ${badgeClass}">${badgeText}</span>
+      <div class="animal-badges">
+        ${reviewedCount > 0 ? `<span class="animal-badge badge-reviewed">${reviewedCount}/5 reviewed</span>` : ''}
+        <span class="animal-badge ${badgeClass}">${animalIssues === 0 ? '✓ AI clean' : `${animalIssues}/5 AI flagged`}</span>
+      </div>
     </div>
-    <div class="animal-body${animalIssues > 0 ? '' : ''}">
-      <div class="image-grid">${cards}</div>
-    </div>`;
-  
+    <div class="animal-body"><div class="image-grid">${cards}</div></div>`;
+
   section.dataset.issueCount = animalIssues;
   container.appendChild(section);
 });
 
-document.getElementById('issues-count').textContent = issueCount;
-document.getElementById('clean-count').textContent = cleanCount;
+updateStats();
 
-// Filter logic
-document.querySelectorAll('.filters button').forEach(btn => {
+// Lightbox
+function openLightbox(idx) {
+  lightboxIndex = idx;
+  const img = allImages[idx];
+  document.getElementById('lb-img').src = `${BASE}/${img.filename}`;
+  document.getElementById('lb-filename').textContent = `${img.filename} — ${img.animal.replace(/-/g,' ')} (${img.type})`;
+  document.getElementById('lb-issue').textContent = img.issue || 'No AI issues found';
+  document.getElementById('lb-issue').style.color = img.issue ? '#ff9999' : '#88cc88';
+  document.getElementById('lightbox').classList.add('active');
+  updateLightboxFlags();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function navLightbox(dir) {
+  let next = lightboxIndex + dir;
+  if (next < 0) next = allImages.length - 1;
+  if (next >= allImages.length) next = 0;
+  openLightbox(next);
+}
+
+function flagFromLightbox(flag) {
+  const fn = allImages[lightboxIndex].filename;
+  flagImage(fn, flag);
+  // Auto-advance to next
+  setTimeout(() => navLightbox(1), 200);
+}
+
+function updateLightboxFlags() {
+  if (lightboxIndex < 0) return;
+  const fn = allImages[lightboxIndex].filename;
+  const d = decisions[fn];
+  document.querySelector('.lb-ok').classList.toggle('selected', d === 'ok');
+  document.querySelector('.lb-replace').classList.toggle('selected', d === 'replace');
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'ArrowRight') navLightbox(1);
+  if (e.key === '1' || e.key === 'g') flagFromLightbox('ok');
+  if (e.key === '2' || e.key === 'r') flagFromLightbox('replace');
+});
+
+// Click outside to close
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+
+// Filters
+document.querySelectorAll('.toolbar button[data-filter]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.toolbar button[data-filter]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const filter = btn.dataset.filter;
-    
+
     document.querySelectorAll('.animal-section').forEach(sec => {
       const cards = sec.querySelectorAll('.image-card');
       let visible = 0;
-      
       cards.forEach(card => {
+        const fn = card.dataset.filename;
         const hasIssue = card.dataset.hasIssue === 'true';
-        const cat = card.dataset.cat;
+        const d = decisions[fn];
         let show = true;
-        
+
         if (filter === 'issues') show = hasIssue;
         else if (filter === 'clean') show = !hasIssue;
-        else if (filter === 'species') show = cat === 'species' || cat === 'myth';
-        else if (filter === 'anatomy') show = cat === 'anatomy';
-        else if (filter === 'extra') show = cat === 'extra';
-        
+        else if (filter === 'unreviewed') show = !d;
+        else if (filter === 'approved') show = d === 'ok';
+        else if (filter === 'replace') show = d === 'replace';
+
         card.classList.toggle('hidden', !show);
         if (show) visible++;
       });
-      
       sec.classList.toggle('hidden', visible === 0);
     });
   });
 });
+
+// Export
+function exportDecisions() {
+  const okList = [], replaceList = [];
+  Object.entries(decisions).forEach(([fn, d]) => {
+    const issue = ISSUES[fn] || null;
+    if (d === 'ok') okList.push({ filename: fn, aiIssue: issue });
+    if (d === 'replace') replaceList.push({ filename: fn, aiIssue: issue });
+  });
+
+  const data = {
+    exportedAt: new Date().toISOString(),
+    totalReviewed: Object.keys(decisions).length,
+    approved: okList.length,
+    replace: replaceList.length,
+    unreviewed: 235 - Object.keys(decisions).length,
+    approvedImages: okList,
+    replaceImages: replaceList,
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `image-audit-decisions-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
 </script>
 </body>
 </html>
