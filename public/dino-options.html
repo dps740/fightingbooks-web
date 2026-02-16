@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shutterstock Dino Options</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 20px; }
+  h1 { font-size: 1.6rem; margin-bottom: 6px; color: #fff; }
+  .meta { color: #888; margin-bottom: 24px; font-size: 0.85rem; }
+  h2 { font-size: 1.2rem; margin: 24px 0 12px; color: #fbbf24; border-bottom: 1px solid #333; padding-bottom: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .card { background: #111; border-radius: 8px; overflow: hidden; border: 1px solid #222; }
+  .card img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #1a1a1a; cursor: zoom-in; }
+  .card .info { padding: 8px 10px; font-size: 0.8rem; color: #aaa; }
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center; cursor: zoom-out; }
+  .lightbox.active { display: flex; }
+  .lightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; }
+  .note { background: #1a1a0a; border: 1px solid #444; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; color: #ccc; }
+</style>
+</head>
+<body>
+<h1>🦕 Shutterstock Dinosaur Options</h1>
+<p class="meta">Watermarked previews — pick your favourites and we'll purchase the unwatermarked versions</p>
+
+<div class="note">
+These are all high-quality 3D renders / realistic illustrations from Shutterstock. They'd match the polished style of the AI-generated animal images much better than the Wikimedia paleoart. Subscription pricing: ~$0.22-0.80/image depending on plan.
+</div>
+
+<h2>🦕 Stegosaurus</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-depiction-stegosaurus-dinosaur-600nw-2655987923.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic Stegosaurus — detailed 3D render, correct plates</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/detailed-illustration-stegosaurus-dinosaur-600nw-2695688663.jpg" onclick="openLB(this)" alt=""><div class="info">Detailed Stegosaurus — side view, natural coloring</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/lifelike-stegosaurus-dinosaur-rendering-detailed-600nw-2686710689.jpg" onclick="openLB(this)" alt=""><div class="info">Lifelike Stegosaurus — warm tones, detailed form</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/artistic-3d-illustration-stegosaurus-colorful-600nw-2461738415.jpg" onclick="openLB(this)" alt=""><div class="info">3D Stegosaurus — colorful plates, isolated</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-model-stegosaurus-dinosaur-600nw-2730128485.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic model — clean render</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-model-stegosaurus-dinosaur-600nw-2730129919.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic model — different angle</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-stegosaurus-dinosaur-model-on-600nw-2730131735.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic model — full body</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-depiction-stegosaurus-dinosaur-600nw-2695678439.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic depiction — natural pose</div></div>
+</div>
+
+<h2>🛡️ Ankylosaurus</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/ankylosaurus-on-dry-land-this-600nw-2209993741.jpg" onclick="openLB(this)" alt=""><div class="info">Ankylosaurus on dry land — 3D render with habitat</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-depiction-green-ankylosaurus-600nw-2719530025.jpg" onclick="openLB(this)" alt=""><div class="info">Green Ankylosaurus — realistic depiction</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-3d-model-ankylosaurus-dinosaur-600nw-2727088275.jpg" onclick="openLB(this)" alt=""><div class="info">3D model Ankylosaurus — detailed</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/3d-rendering-realistic-ankylosaurus-dinosaur-600nw-2719531001.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic Ankylosaurus — 3D rendering</div></div>
+</div>
+
+<h2>🦅 Pteranodon</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/pterodactyl-3d-illustrationrealistic-flying-prehistoric-600nw-2138412241.jpg" onclick="openLB(this)" alt=""><div class="info">Pterodactyl 3D — realistic flying pose</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/illustration-pteranodons-various-flight-poses-600nw-2670637905.jpg" onclick="openLB(this)" alt=""><div class="info">Pteranodons — various flight poses</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-vector/flying-reptile-pteranodon-sky-above-600nw-1359961733.jpg" onclick="openLB(this)" alt=""><div class="info">Pteranodon flying over prehistoric forest</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-vector/detailed-handdrawn-illustration-pterodactyl-dinosaur-600nw-2729733351.jpg" onclick="openLB(this)" alt=""><div class="info">Hand-drawn pterodactyl — wings spread</div></div>
+</div>
+
+<h2>🌊 Spinosaurus</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-illustration-spinosaurus-dinosaur-600nw-2695679855.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic Spinosaurus — detailed illustration</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-depiction-spinosaurus-dinosaur-600nw-2632401983.jpg" onclick="openLB(this)" alt=""><div class="info">Spinosaurus depiction — prominent sail</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-3d-rendering-spinosaurus-prominent-600nw-2461738411.jpg" onclick="openLB(this)" alt=""><div class="info">3D Spinosaurus — dramatic pose with sail</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-depiction-spinosaurus-dinosaur-600nw-2730129581.jpg" onclick="openLB(this)" alt=""><div class="info">Spinosaurus — realistic model</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-illustration-spinosaurus-dinosaur-600nw-2727095841.jpg" onclick="openLB(this)" alt=""><div class="info">Spinosaurus — open mouth action</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-3d-rendering-spinosaurus-dinosaur-600nw-2702929913.jpg" onclick="openLB(this)" alt=""><div class="info">3D Spinosaurus — full body render</div></div>
+</div>
+
+<h2>🦎 Velociraptor</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-rendering-velociraptor-dinosaur-600nw-2677760183.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic Velociraptor — scaly, JP-style</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/velociraptor-dinosaur-figure-strikes-dynamic-600nw-2555075095.jpg" onclick="openLB(this)" alt=""><div class="info">Velociraptor — dynamic action pose</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/velociraptor-dinosaur-figure-displays-fierce-600nw-2556108097.jpg" onclick="openLB(this)" alt=""><div class="info">Velociraptor — fierce stance</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-velociraptor-dinosaur-on-white-600nw-2632392359.jpg" onclick="openLB(this)" alt=""><div class="info">Realistic velociraptor — clean render</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/3d-rendering-realistic-velociraptor-dinosaur-600nw-2712595759.jpg" onclick="openLB(this)" alt=""><div class="info">3D velociraptor — detailed scales</div></div>
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/realistic-3d-rendering-velociraptor-dinosaur-600nw-2677758737.jpg" onclick="openLB(this)" alt=""><div class="info">3D velociraptor render — natural coloring</div></div>
+</div>
+
+<h2>🦕 Brachiosaurus</h2>
+<div class="grid">
+  <div class="card"><img src="https://www.shutterstock.com/image-illustration/brachiosaurus-mountains-this-3d-render-600nw-2172259113.jpg" onclick="openLB(this)" alt=""><div class="info">Brachiosaurus in mountains — 3D render with habitat</div></div>
+</div>
+
+<div class="lightbox" id="lb" onclick="this.classList.remove('active')">
+  <img id="lb-img" src="">
+</div>
+
+<script>
+function openLB(el) {
+  document.getElementById('lb-img').src = el.src;
+  document.getElementById('lb').classList.add('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lb').classList.remove('active'); });
+</script>
+</body>
+</html>
