@@ -5,11 +5,11 @@ import { DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 
 // Dinosaur reference images for image conditioning
 const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
-  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.55 },
-  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.55 },
-  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.6 },
-  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.55 },
-  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.55 },
+  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.8 },
+  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.8 },
+  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.8 },
+  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.8 },
+  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.8 },
 };
 
 // Must match start/route.ts and choice/route.ts
