@@ -309,7 +309,7 @@ function BookReader() {
   const prevPage = () => goToPage(currentPage - 1);
 
   useEffect(() => {
-    const h = (e: KeyboardEvent) => { if (e.key === 'ArrowRight' || e.key === ' ') nextPage(); if (e.key === 'ArrowLeft') prevPage(); if (e.key === 'Escape') router.push('/'); };
+    const h = (e: KeyboardEvent) => { const tag = (e.target as HTMLElement)?.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target as HTMLElement)?.isContentEditable) return; if (e.key === 'ArrowRight' || e.key === ' ') nextPage(); if (e.key === 'ArrowLeft') prevPage(); if (e.key === 'Escape') router.push('/'); };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [currentPage, pages.length]);
