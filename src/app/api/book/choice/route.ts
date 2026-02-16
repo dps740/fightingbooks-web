@@ -5,11 +5,11 @@ import { FANTASY_ANIMALS, DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 
 // Dinosaur reference images for image conditioning
 const DINO_REFERENCE_IMAGES: Record<string, { url: string; strength: number }> = {
-  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.2 },
-  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.2 },
-  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.25 },
-  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.2 },
-  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.2 },
+  'stegosaurus': { url: '/fighters/refs/stegosaurus.png', strength: 0.55 },
+  'brachiosaurus': { url: '/fighters/refs/brachiosaurus.png', strength: 0.55 },
+  'pteranodon': { url: '/fighters/refs/pteranodon.png', strength: 0.6 },
+  'spinosaurus': { url: '/fighters/refs/spinosaurus.png', strength: 0.55 },
+  'velociraptor': { url: '/fighters/refs/velociraptor.png', strength: 0.55 },
 };
 
 // CYOA Cache Version - bump to invalidate when narrative logic changes
