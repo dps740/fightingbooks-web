@@ -127,6 +127,7 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
 async function loadCachedBook(cacheKey: string): Promise<any | null> {
   const blobPath = `fightingbooks/cache/${cacheKey}.json`;
   
+  // Try head() first (works for blobs without random suffix)
   try {
     const blobInfo = await head(blobPath);
     const response = await fetch(blobInfo.url);
@@ -135,9 +136,28 @@ async function loadCachedBook(cacheKey: string): Promise<any | null> {
     }
   } catch (error) {
     if (!(error instanceof BlobNotFoundError)) {
-      console.error('Cache load error:', error);
+      console.error('Cache head() error, falling back to list:', error);
     }
   }
+  
+  // Fallback: use list() to find blobs with random suffixes
+  try {
+    const { list } = await import('@vercel/blob');
+    const result = await list({ prefix: blobPath.replace('.json', ''), limit: 5 });
+    const match = result.blobs.find(b => 
+      b.pathname === blobPath || b.pathname.startsWith(blobPath.replace('.json', ''))
+    );
+    if (match) {
+      console.log(`[ADMIN] Found cache via list fallback: ${match.url}`);
+      const response = await fetch(match.url);
+      if (response.ok) {
+        return await response.json();
+      }
+    }
+  } catch (listError) {
+    console.error('Cache list fallback error:', listError);
+  }
+  
   return null;
 }
 
@@ -156,11 +176,12 @@ async function saveCachedBook(cacheKey: string, data: any): Promise<void> {
       // Blob doesn't exist, that's fine
     }
     
-    // Now save the new version
+    // Now save the new version (no random suffix for cache files so head() can find them)
     const jsonData = JSON.stringify(data);
     const blob = await put(blobPath, jsonData, {
       access: 'public',
       contentType: 'application/json',
+      addRandomSuffix: false,
     });
     console.log(`[ADMIN] Saved updated book to: ${blob.url}`);
   } catch (error) {
