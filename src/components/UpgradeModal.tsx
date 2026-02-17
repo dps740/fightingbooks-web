@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserTier } from '@/lib/tierAccess';
+import { UserTier, REAL_ANIMALS } from '@/lib/tierAccess';
 
 interface UpgradeOption {
   tier: UserTier;
@@ -66,11 +66,7 @@ export default function UpgradeModal({
 
   // Determine if the locked content needs member or ultimate
   const needsUltimate = lockedFeature === 'cyoa' || lockedFeature === 'create_own' ||
-    (lockedAnimal && !['Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear', 'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
-      'Elephant', 'Hippo', 'Rhino', 'Wolf', 'Jaguar',
-      'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel', 'Moose', 'Cape Buffalo', 'Great Horned Owl',
-      'Alligator', 'Mandrill', 'Cheetah', 'Hyena', 'Walrus', 'Octopus',
-      'Hammerhead Shark', 'King Cobra', 'Python', 'Anaconda'].includes(lockedAnimal));
+    (lockedAnimal && !REAL_ANIMALS.includes(lockedAnimal));
 
   const headerText = lockedAnimal
     ? needsUltimate

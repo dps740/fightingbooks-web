@@ -11,59 +11,13 @@ import TierInfoPopover from '@/components/TierInfoPopover';
 import AccountMenu from '@/components/AccountMenu';
 import SampleBookGallery from '@/components/SampleBookGallery';
 import EmailCaptureModal from '@/components/EmailCaptureModal';
-import { UserTier } from '@/lib/tierAccess';
+import { UserTier, REAL_ANIMALS, DINOSAUR_ANIMALS, FANTASY_ANIMALS } from '@/lib/tierAccess';
 
-// All fighters
+// Derive fighter list from single source of truth (tierAccess.ts)
 const FIGHTERS = [
-  { name: 'Lion', category: 'real' },
-  { name: 'Tiger', category: 'real' },
-  { name: 'Grizzly Bear', category: 'real' },
-  { name: 'Polar Bear', category: 'real' },
-  { name: 'Gorilla', category: 'real' },
-  { name: 'Great White Shark', category: 'real' },
-  { name: 'Orca', category: 'real' },
-  { name: 'Crocodile', category: 'real' },
-  { name: 'Elephant', category: 'real' },
-  { name: 'Hippo', category: 'real' },
-  { name: 'Rhino', category: 'real' },
-  { name: 'Wolf', category: 'real' },
-  { name: 'Jaguar', category: 'real' },
-  { name: 'Leopard', category: 'real' },
-  { name: 'Eagle', category: 'real' },
-  { name: 'Giant Panda', category: 'real' },
-  { name: 'Electric Eel', category: 'real' },
-  { name: 'Moose', category: 'real' },
-  { name: 'Cape Buffalo', category: 'real' },
-  { name: 'Great Horned Owl', category: 'real' },
-  { name: 'Alligator', category: 'real' },
-  { name: 'Mandrill', category: 'real' },
-  { name: 'Cheetah', category: 'real' },
-  { name: 'Hyena', category: 'real' },
-  { name: 'Walrus', category: 'real' },
-  { name: 'Octopus', category: 'real' },
-  { name: 'Hammerhead Shark', category: 'real' },
-  { name: 'King Cobra', category: 'real' },
-  { name: 'Python', category: 'real' },
-  { name: 'Anaconda', category: 'real' },
-  // Dinosaurs
-  { name: 'Tyrannosaurus Rex', category: 'dinosaur' },
-  { name: 'Velociraptor', category: 'dinosaur' },
-  { name: 'Triceratops', category: 'dinosaur' },
-  { name: 'Spinosaurus', category: 'dinosaur' },
-  { name: 'Stegosaurus', category: 'dinosaur' },
-  { name: 'Ankylosaurus', category: 'dinosaur' },
-  { name: 'Pteranodon', category: 'dinosaur' },
-  { name: 'Brachiosaurus', category: 'dinosaur' },
-  // Fantasy
-  { name: 'Dragon', category: 'fantasy' },
-  { name: 'Griffin', category: 'fantasy' },
-  { name: 'Hydra', category: 'fantasy' },
-  { name: 'Phoenix', category: 'fantasy' },
-  { name: 'Cerberus', category: 'fantasy' },
-  { name: 'Chimera', category: 'fantasy' },
-  { name: 'Manticore', category: 'fantasy' },
-  { name: 'Basilisk', category: 'fantasy' },
-  { name: 'Kraken', category: 'fantasy' },
+  ...REAL_ANIMALS.map(name => ({ name, category: 'real' as const })),
+  ...DINOSAUR_ANIMALS.map(name => ({ name, category: 'dinosaur' as const })),
+  ...FANTASY_ANIMALS.map(name => ({ name, category: 'fantasy' as const })),
 ];
 
 type AnimalCategory = 'real' | 'dinosaur' | 'fantasy';
@@ -990,17 +944,19 @@ export default function Home() {
                   );
                 })}
                 
-                {/* Custom animal placeholder */}
-                <div
-                  className="relative aspect-square rounded-lg overflow-hidden border-3 border-dashed border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-not-allowed"
-                  title="Coming Soon!"
-                >
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                    <div className="text-3xl mb-1">✨</div>
-                    <p className="font-bangers text-white text-xs text-center leading-tight">YOUR IMAGINATION</p>
-                    <p className="text-yellow-400 text-[10px] font-bold">COMING SOON</p>
+                {/* Custom animal placeholder - only show for fantasy category */}
+                {animalCategory === 'fantasy' && (
+                  <div
+                    className="relative aspect-square rounded-lg overflow-hidden border-3 border-dashed border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-not-allowed"
+                    title="Coming Soon!"
+                  >
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+                      <div className="text-3xl mb-1">✨</div>
+                      <p className="font-bangers text-white text-xs text-center leading-tight">YOUR IMAGINATION</p>
+                      <p className="text-yellow-400 text-[10px] font-bold">COMING SOON</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Locked animals banner */}
