@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, head, del, BlobNotFoundError } from '@vercel/blob';
+import { FANTASY_ANIMALS, DINOSAUR_ANIMALS } from '@/lib/tierAccess';
 
 // Simple admin key check (you can make this more secure)
 const ADMIN_KEY = process.env.ADMIN_KEY || 'fightingbooks-admin-2024';
@@ -78,7 +79,21 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
     }
   }
 
-  const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, natural history museum quality art, educational wildlife book style, dramatic lighting, detailed fur/scales/feathers texture, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, NEVER merge animals together, each animal is SEPARATE and DISTINCT, NO human weapons (no swords no guns no armor), NO anthropomorphism, NO human clothing on animals, NO fantasy elements, NO extra limbs or heads, NO conjoined animals, NO mutant features, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
+  // Detect fantasy/dinosaur animals for appropriate style prompts
+  const promptLower = prompt.toLowerCase();
+  const hasFantasy = FANTASY_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+  const hasDinosaur = DINOSAUR_ANIMALS.some(a => promptLower.includes(a.toLowerCase()));
+
+  let stylePrompt: string;
+  if (hasFantasy) {
+    stylePrompt = `STYLE: epic fantasy illustration, detailed mythological creature art, dramatic cinematic lighting, rich colors, detailed textures on scales/fur/feathers/wings, high fantasy concept art quality. ANATOMY: each creature has species-accurate anatomy as described in mythology, correct proportions for mythological depiction. CRITICAL SPECIES SEPARATION: Each creature must be its own DISTINCT species with NO blending between the two fighters. FORBIDDEN: NO human features, NO human hands, NO human arms, NO bipedal standing poses unless species-appropriate, NO anthropomorphism, NO human clothing, NO human weapons, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING IN THE IMAGE.`;
+  } else if (hasDinosaur) {
+    stylePrompt = `STYLE: photorealistic paleoart, museum-quality dinosaur illustration, dramatic natural lighting, prehistoric environment, detailed scales/skin texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions. CRITICAL SPECIES SEPARATION: Each animal must be its own DISTINCT species with NO blending. FORBIDDEN: NO human features, NO anthropomorphism, NO human clothing, NO human weapons, NO fantasy elements, NO extra limbs or heads, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING IN THE IMAGE.`;
+  } else {
+    stylePrompt = `STYLE: wildlife documentary photography, photorealistic nature photography, dramatic natural lighting, detailed fur/scales/feathers texture. ANATOMY: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, animals in NATURAL poses only. CRITICAL SPECIES SEPARATION: Each animal must be its own DISTINCT species with NO blending. FORBIDDEN: NO human features, NO anthropomorphism, NO human clothing, NO human weapons, NO fantasy elements, NO extra limbs or heads, NO conjoined animals, NO cartoon style. ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO WRITING IN THE IMAGE.`;
+  }
+
+  const fullPrompt = `${prompt},${animalFeatures} ${stylePrompt}`;
 
   try {
     // Use Grok Imagine via FAL ($0.02/image, better quality than Flux)
