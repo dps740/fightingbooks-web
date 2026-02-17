@@ -854,58 +854,52 @@ export default function Home() {
                 })}
               </div>
 
-              {/* Category Navigation */}
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <button
-                  onClick={() => navigateCategory('prev')}
-                  className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-white/10 hover:bg-[#FFD700]/20 border-2 border-white/20 hover:border-[#FFD700]/50 text-white/60 hover:text-[#FFD700] transition-all hover:scale-110"
-                  aria-label="Previous category"
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-                <div className="flex gap-2 flex-wrap justify-center">
-                  {CATEGORY_TABS.map((tab) => {
-                    const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
-                    return (
-                      <button
-                        key={tab.key}
-                        onClick={() => {
-                          if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-                            setLockedAnimalClicked(undefined);
-                            setLockedFeature(tab.key);
-                            setShowUpgradeModal(true);
-                            return;
-                          }
-                          if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
-                            setLockedAnimalClicked(undefined);
-                            setLockedFeature(tab.key);
-                            setShowUpgradeModal(true);
-                            return;
-                          }
-                          setAnimalCategory(tab.key);
-                        }}
-                        className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
-                          animalCategory === tab.key
-                            ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
-                            : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
-                        }`}
-                      >
-                        {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
-                      </button>
-                    );
-                  })}
-                </div>
-                <button
-                  onClick={() => navigateCategory('next')}
-                  className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-white/10 hover:bg-[#FFD700]/20 border-2 border-white/20 hover:border-[#FFD700]/50 text-white/60 hover:text-[#FFD700] transition-all hover:scale-110"
-                  aria-label="Next category"
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
+              {/* Category Tabs */}
+              <div className="flex gap-2 mb-3 justify-center flex-wrap">
+                {CATEGORY_TABS.map((tab) => {
+                  const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => {
+                        if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
+                          setLockedAnimalClicked(undefined);
+                          setLockedFeature(tab.key);
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
+                          setLockedAnimalClicked(undefined);
+                          setLockedFeature(tab.key);
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        setAnimalCategory(tab.key);
+                      }}
+                      className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
+                        animalCategory === tab.key
+                          ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
+                          : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Character Grid */}
-              <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
+              {/* Grid with flanking arrows */}
+              <div className="flex items-center gap-2 sm:gap-4">
+                <button
+                  onClick={() => navigateCategory('prev')}
+                  className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
+                  aria-label="Previous category"
+                >
+                  <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+
+                {/* Character Grid */}
+                <div className="flex-1 bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                   {filteredFighters.map((fighter, i) => {
                     const isSelected = tournamentFighters.includes(fighter.name);
@@ -960,6 +954,15 @@ export default function Home() {
                     </p>
                   </button>
                 )}
+                </div>
+
+                <button
+                  onClick={() => navigateCategory('next')}
+                  className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
+                  aria-label="Next category"
+                >
+                  <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
               </div>
 
               {canStartTournament && !showTournamentOverlay && (
@@ -1089,58 +1092,52 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Category Navigation */}
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <button
-                onClick={() => navigateCategory('prev')}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-white/10 hover:bg-[#FFD700]/20 border-2 border-white/20 hover:border-[#FFD700]/50 text-white/60 hover:text-[#FFD700] transition-all hover:scale-110"
-                aria-label="Previous category"
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              <div className="flex gap-2 flex-wrap justify-center">
-                {CATEGORY_TABS.map((tab) => {
-                  const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => {
-                        if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        setAnimalCategory(tab.key);
-                      }}
-                      className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
-                        animalCategory === tab.key
-                          ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
-                          : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
-                      }`}
-                    >
-                      {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                onClick={() => navigateCategory('next')}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-white/10 hover:bg-[#FFD700]/20 border-2 border-white/20 hover:border-[#FFD700]/50 text-white/60 hover:text-[#FFD700] transition-all hover:scale-110"
-                aria-label="Next category"
-              >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
+            {/* Category Tabs */}
+            <div className="flex gap-2 mb-3 justify-center flex-wrap">
+              {CATEGORY_TABS.map((tab) => {
+                const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => {
+                      if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
+                        setLockedAnimalClicked(undefined);
+                        setLockedFeature(tab.key);
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
+                        setLockedAnimalClicked(undefined);
+                        setLockedFeature(tab.key);
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      setAnimalCategory(tab.key);
+                    }}
+                    className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
+                      animalCategory === tab.key
+                        ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
+                    }`}
+                  >
+                    {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Character Grid */}
-            <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
+            {/* Grid with flanking arrows */}
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button
+                onClick={() => navigateCategory('prev')}
+                className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
+                aria-label="Previous category"
+              >
+                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+
+              {/* Character Grid */}
+              <div className="flex-1 bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                 {filteredFighters.map((fighter, i) => {
                   const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
@@ -1256,6 +1253,15 @@ export default function Home() {
                   </p>
                 </button>
               )}
+              </div>
+
+              <button
+                onClick={() => navigateCategory('next')}
+                className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
+                aria-label="Next category"
+              >
+                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
             </div>
 
             {canGenerate && !showFightOverlay && (
