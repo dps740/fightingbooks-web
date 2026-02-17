@@ -235,7 +235,7 @@ function getAnimalFeatures(animalName: string): { include: string, avoid: string
 // Image model override (set by admin bypass for Dev-quality regeneration)
 let _imageModelOverride: { model: string; steps: number } | null = null;
 
-// Generate image using fal.ai Flux with retry logic
+// Generate image using Grok Imagine via FAL with retry logic
 async function generateImage(prompt: string, cacheKey?: string, retries = 2): Promise<string> {
   const falKey = process.env.FAL_API_KEY;
   if (!falKey) {

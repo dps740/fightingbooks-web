@@ -81,8 +81,8 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
   const fullPrompt = `${prompt},${animalFeatures} detailed painted wildlife illustration, natural history museum quality art, educational wildlife book style, dramatic lighting, detailed fur/scales/feathers texture, ANATOMICALLY CORRECT: each animal has exactly ONE head and ONE body, correct number of limbs for species, species-accurate distinctive markings, realistic proportions, NEVER merge animals together, each animal is SEPARATE and DISTINCT, NO human weapons (no swords no guns no armor), NO anthropomorphism, NO human clothing on animals, NO fantasy elements, NO extra limbs or heads, NO conjoined animals, NO mutant features, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   try {
-    // Use Flux Dev as default (higher quality, better species accuracy)
-    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
+    // Use Grok Imagine via FAL ($0.02/image, better quality than Flux)
+    const response = await fetch('https://fal.run/xai/grok-imagine-image', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
@@ -90,13 +90,13 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
       },
       body: JSON.stringify({
         prompt: fullPrompt,
-        image_size: 'square_hd',
-        num_inference_steps: 28,
+        aspect_ratio: '1:1',
+        output_format: 'jpeg',
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Fal.ai error: ${await response.text()}`);
+      throw new Error(`Grok Imagine error: ${await response.text()}`);
     }
 
     const result = await response.json();
