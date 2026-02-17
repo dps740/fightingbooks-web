@@ -1,18 +1,20 @@
 #!/bin/bash
-# Generate educational images for 5 new animals using Flux Dev
+# Generate educational images for 5 new animals using Grok Imagine
 # Replacing: Komodo Dragon, Honey Badger, Cassowary, Black Panther, Wolverine
 # Adding: Hammerhead Shark, Electric Eel, Great Horned Owl, Narwhal, Mandrill
+# Uses Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
 
-FAL_KEY="c0f1713d-6fa5-41a0-8f4e-84defdb39eed:bfb696c0dce01f989089febd9b8990f8"
+FAL_KEY=$(cat ~/.clawd/.api-keys/fal.key)
 OUT="$(dirname "$0")/../public/fighters"
 
 gen() {
   local file="$1" prompt="$2"
   echo "→ $file"
-  local resp=$(curl -s "https://fal.run/fal-ai/flux/dev" \
+  # Grok Imagine via FAL — GROK ONLY
+  local resp=$(curl -s "https://fal.run/xai/grok-imagine-image" \
     -H "Authorization: Key $FAL_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"prompt\": $(echo "$prompt" | jq -Rs .), \"image_size\": \"square_hd\", \"num_inference_steps\": 28}")
+    -d "{\"prompt\": $(echo "$prompt" | jq -Rs .), \"aspect_ratio\": \"1:1\", \"output_format\": \"jpeg\"}")
   local url=$(echo "$resp" | jq -r '.images[0].url // empty')
   if [ -n "$url" ]; then
     curl -s "$url" -o "${OUT}/${file}"

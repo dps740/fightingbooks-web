@@ -1,8 +1,9 @@
 #!/bin/bash
 # Generate educational images for all 47 animals
 # portrait (already exists), habitat, action, closeup
+# Uses Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
 
-FAL_KEY="c0f1713d-6fa5-41a0-8f4e-84defdb39eed:bfb696c0dce01f989089febd9b8990f8"
+FAL_KEY=$(cat ~/.clawd/.api-keys/fal.key)
 OUTPUT_DIR="../public/fighters"
 
 # All animals
@@ -88,14 +89,14 @@ generate_image() {
   
   local full_prompt="${prompt}, detailed painted wildlife illustration, ANATOMICALLY ACCURATE, natural history museum quality art, educational wildlife book, detailed fur/scales/feathers texture, dramatic lighting, NO TEXT"
   
-  # Call FAL API
-  local response=$(curl -s "https://fal.run/fal-ai/flux/schnell" \
+  # Call FAL API — Grok Imagine (GROK ONLY per David directive)
+  local response=$(curl -s "https://fal.run/xai/grok-imagine-image" \
     -H "Authorization: Key $FAL_KEY" \
     -H "Content-Type: application/json" \
     -d "{
       \"prompt\": \"${full_prompt}\",
-      \"image_size\": \"square_hd\",
-      \"num_inference_steps\": 4
+      \"aspect_ratio\": \"1:1\",
+      \"output_format\": \"jpeg\"
     }")
   
   local img_url=$(echo "$response" | jq -r '.images[0].url // empty')

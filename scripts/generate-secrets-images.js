@@ -32,7 +32,8 @@ async function generateImage(animal) {
 
   console.log(`Generating: ${animal}...`);
 
-  const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+  // Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
+  const response = await fetch('https://fal.run/xai/grok-imagine-image', {
     method: 'POST',
     headers: {
       'Authorization': `Key ${FAL_API_KEY}`,
@@ -40,14 +41,14 @@ async function generateImage(animal) {
     },
     body: JSON.stringify({
       prompt,
-      image_size: 'square_hd',
-      num_inference_steps: 4,
+      aspect_ratio: '1:1',
+      output_format: 'jpeg',
     }),
   });
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Fal.ai error for ${animal}: ${error}`);
+    throw new Error(`Grok Imagine error for ${animal}: ${error}`);
   }
 
   const result = await response.json();

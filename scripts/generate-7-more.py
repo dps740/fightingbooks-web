@@ -5,7 +5,8 @@ import time
 import requests
 from pathlib import Path
 
-FAL_KEY = "c0f1713d-6fa5-41a0-8f4e-84defdb39eed:bfb696c0dce01f989089febd9b8990f8"
+import subprocess
+FAL_KEY = subprocess.check_output(['cat', os.path.expanduser('~/.clawd/.api-keys/fal.key')]).decode().strip()
 OUTPUT_DIR = Path(__file__).parent.parent / 'public' / 'fighters'
 
 FIGHTERS = [
@@ -22,10 +23,11 @@ for name in FIGHTERS:
     
     print(f"Generating {name}...")
     
+    # Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
     response = requests.post(
-        "https://fal.run/fal-ai/flux/schnell",
+        "https://fal.run/xai/grok-imagine-image",
         headers={"Authorization": f"Key {FAL_KEY}", "Content-Type": "application/json"},
-        json={"prompt": prompt, "image_size": "square", "num_images": 1}
+        json={"prompt": prompt, "aspect_ratio": "1:1", "output_format": "jpeg"}
     )
     
     if response.status_code == 200:
