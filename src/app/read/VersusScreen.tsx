@@ -3,6 +3,40 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+// Animated stage messages during book generation
+function GeneratingStages() {
+  const stages = [
+    '📚 Researching animal facts...',
+    '⚔️ Writing battle scenes...',
+    '🎨 Generating battle artwork...',
+    '📊 Calculating fight stats...',
+    '🖼️ Creating epic cover art...',
+    '🏆 Determining the winner...',
+    '✨ Finishing touches...',
+  ];
+  const [stageIndex, setStageIndex] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStageIndex(prev => (prev + 1) % stages.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={stageIndex}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.3 }}
+        style={{ fontFamily: "'Bangers', cursive", fontSize: '1rem', color: '#ffd54f', letterSpacing: '1px', textShadow: '1px 1px 3px rgba(0,0,0,0.8)' }}
+      >
+        {stages[stageIndex]}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 interface VersusScreenProps {
   fighterA: string;
   fighterB: string;
@@ -447,13 +481,29 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="generating-text">CREATING YOUR BOOK</div>
+            <motion.div 
+              className="generating-icon"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+            >
+              ⚔️
+            </motion.div>
+            <motion.div 
+              className="generating-text"
+              animate={{ opacity: [1, 0.5, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              CREATING YOUR BOOK
+            </motion.div>
+            <div className="generating-stages">
+              <GeneratingStages />
+            </div>
             <div className="generating-bar">
               <motion.div 
                 className="generating-bar-fill"
-                initial={{ width: 0 }}
-                animate={{ width: '100%' }}
-                transition={{ duration: 20, ease: 'linear' }}
+                initial={{ width: '5%' }}
+                animate={{ width: '95%' }}
+                transition={{ duration: 25, ease: 'easeOut' }}
               />
             </div>
           </motion.div>
@@ -810,7 +860,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
         /* Generating indicator - Bottom center, clean text */
         .generating-indicator {
           position: fixed;
-          bottom: 8%;
+          bottom: 6%;
           left: 0;
           right: 0;
           z-index: 30;
@@ -818,30 +868,51 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
           flex-direction: column;
           align-items: center;
           justify-content: center;
+          gap: 8px;
+        }
+
+        .generating-icon {
+          font-size: 2.5rem;
+          filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));
         }
 
         .generating-text {
-          font-family: 'Anton', sans-serif;
-          font-size: 1.5rem;
+          font-family: 'Bangers', cursive;
+          font-size: 2rem;
           color: #ffffff;
           text-transform: uppercase;
-          letter-spacing: 3px;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-          margin-bottom: 12px;
+          letter-spacing: 4px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.3);
           white-space: nowrap;
         }
 
+        .generating-stages {
+          min-height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .generating-bar {
-          height: 6px;
-          background: rgba(255,255,255,0.3);
-          border-radius: 3px;
+          width: 260px;
+          height: 8px;
+          background: rgba(255,255,255,0.2);
+          border-radius: 4px;
           overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.3);
         }
 
         .generating-bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #ffffff, #e0e0e0);
-          border-radius: 3px;
+          background: linear-gradient(90deg, #ffd54f, #ff9800, #ffd54f);
+          background-size: 200% 100%;
+          animation: barShimmer 1.5s ease-in-out infinite;
+          border-radius: 4px;
+        }
+
+        @keyframes barShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
         }
       `}</style>
     </div>

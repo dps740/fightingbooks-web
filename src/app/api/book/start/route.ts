@@ -918,18 +918,54 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   
   console.log(`Starting book generation for ${animalA} vs ${animalB}`);
   
-  // Use pre-generated educational images (stored in public/fighters/)
-  const imgA_portrait = `/fighters/${nameA}.jpg`;
-  const imgA_habitat = `/fighters/${nameA}-habitat.jpg`;
-  const imgA_action = `/fighters/${nameA}-action.jpg`;
-  const imgA_closeup = `/fighters/${nameA}-closeup.jpg`;
+  // Load educational images — check DB for custom animals, fall back to static files
+  const loadAnimalImages = async (slug: string) => {
+    // Check if this is a DB-backed custom animal with blob-stored images
+    try {
+      const { data: customAnimal } = await getSupabase()
+        .from('custom_animals')
+        .select('images')
+        .eq('slug', slug)
+        .eq('status', 'ready')
+        .limit(1)
+        .single();
+      if (customAnimal?.images) {
+        const imgs = customAnimal.images as Record<string, string>;
+        console.log(`[IMAGES] Using DB images for: ${slug}`);
+        return {
+          portrait: imgs.portrait || `/fighters/${slug}.jpg`,
+          habitat: imgs.habitat || `/fighters/${slug}-habitat.jpg`,
+          action: imgs.action || `/fighters/${slug}-action.jpg`,
+          closeup: imgs.closeup || `/fighters/${slug}-closeup.jpg`,
+          secrets: imgs.secrets || `/fighters/${slug}-secrets.jpg`,
+        };
+      }
+    } catch { /* Not a custom animal, use static files */ }
+    return {
+      portrait: `/fighters/${slug}.jpg`,
+      habitat: `/fighters/${slug}-habitat.jpg`,
+      action: `/fighters/${slug}-action.jpg`,
+      closeup: `/fighters/${slug}-closeup.jpg`,
+      secrets: `/fighters/${slug}-secrets.jpg`,
+    };
+  };
+
+  const [eduImagesA, eduImagesB] = await Promise.all([
+    loadAnimalImages(nameA),
+    loadAnimalImages(nameB),
+  ]);
   
-  const imgB_portrait = `/fighters/${nameB}.jpg`;
-  const imgB_habitat = `/fighters/${nameB}-habitat.jpg`;
-  const imgB_action = `/fighters/${nameB}-action.jpg`;
-  const imgB_closeup = `/fighters/${nameB}-closeup.jpg`;
+  const imgA_portrait = eduImagesA.portrait;
+  const imgA_habitat = eduImagesA.habitat;
+  const imgA_action = eduImagesA.action;
+  const imgA_closeup = eduImagesA.closeup;
   
-  console.log('Using pre-generated educational images');
+  const imgB_portrait = eduImagesB.portrait;
+  const imgB_habitat = eduImagesB.habitat;
+  const imgB_action = eduImagesB.action;
+  const imgB_closeup = eduImagesB.closeup;
+  
+  console.log('Educational images loaded');
   
   // Generate only battle-specific images (7 total)
   // Prompts are derived from the actual battle text for unique, story-matched scenes
@@ -955,13 +991,13 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   ]);
   console.log('Battle images generated');
   
-  // Pre-generated secrets images
-  const imgA_secrets = `/fighters/${nameA}-secrets.jpg`;
-  const imgB_secrets = `/fighters/${nameB}-secrets.jpg`;
+  // Secrets images (already loaded from DB or static)
+  const imgA_secrets = eduImagesA.secrets;
+  const imgB_secrets = eduImagesB.secrets;
   
   // Group images for easy access
-  const imagesA = { portrait: imgA_portrait, habitat: imgA_habitat, action: imgA_action, closeup: imgA_closeup, secrets: imgA_secrets };
-  const imagesB = { portrait: imgB_portrait, habitat: imgB_habitat, action: imgB_action, closeup: imgB_closeup, secrets: imgB_secrets };
+  const imagesA = eduImagesA;
+  const imagesB = eduImagesB;
 
   const pages: BookPage[] = [
     {
