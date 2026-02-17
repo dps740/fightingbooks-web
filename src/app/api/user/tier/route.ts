@@ -80,7 +80,7 @@ export async function GET() {
     }
 
     // Admin emails always get full access
-    const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
+    const ADMIN_EMAILS = ['david.smith@epsilon-three.com', 'davidpatricksmith@hotmail.com'];
     const isAdmin = user.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
     // Get user's tier from users table

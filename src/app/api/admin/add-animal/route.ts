@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import { put } from '@vercel/blob';
 
-const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
+const ADMIN_EMAILS = ['david.smith@epsilon-three.com', 'davidpatricksmith@hotmail.com'];
 
 function getSupabase() {
   return createClient(

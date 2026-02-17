@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 const ADMIN_KEY = 'fightingbooks-admin-2024';
 const CACHE_SECRET = 'fightingbooks-admin-2026';
-const ADMIN_EMAILS = ['david.smith@epsilon-three.com'];
+const ADMIN_EMAILS = ['david.smith@epsilon-three.com', 'davidpatricksmith@hotmail.com'];
 
 const PAGE_OPTIONS = [
   { id: 'cover', label: '📕 Cover' },
