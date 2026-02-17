@@ -69,7 +69,8 @@ export default function UpgradeModal({
     (lockedAnimal && !['Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear', 'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
       'Elephant', 'Hippo', 'Rhino', 'Wolf', 'Jaguar',
       'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel', 'Moose', 'Cape Buffalo', 'Great Horned Owl',
-      'Alligator', 'Mandrill', 'Cheetah', 'Hyena', 'Walrus', 'Octopus'].includes(lockedAnimal));
+      'Alligator', 'Mandrill', 'Cheetah', 'Hyena', 'Walrus', 'Octopus',
+      'Hammerhead Shark', 'King Cobra', 'Python', 'Anaconda'].includes(lockedAnimal));
 
   const headerText = lockedAnimal
     ? needsUltimate
