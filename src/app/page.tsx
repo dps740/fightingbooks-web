@@ -1426,13 +1426,13 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-10">
             <div className="inline-block bg-[#FF9900] px-6 py-2 rounded-full mb-4">
-              <span className="text-black font-bold text-sm">📚 OFFICIAL BOOK SERIES</span>
+              <span className="text-black font-bold text-sm">📚 LOVE ANIMAL BATTLES?</span>
             </div>
             <h2 className="font-bangers text-4xl sm:text-5xl text-white mb-4" style={{ textShadow: '3px 3px 0 #000' }}>
-              GET THE REAL BOOKS!
+              CHECK OUT THE BOOKS!
             </h2>
             <p className="text-white/80 text-lg max-w-2xl mx-auto">
-              Jerry Pallotta&apos;s bestselling <strong className="text-[#FF9900]">Who Would Win?</strong> series — 26+ titles with amazing illustrations by Rob Bolster!
+              The <strong className="text-[#FF9900]">Who Would Win?</strong> book series by Jerry Pallotta — 26+ titles with amazing illustrations by Rob Bolster!
             </p>
           </div>
           
