@@ -1211,11 +1211,11 @@ function BookReader() {
         
         /* EDUCATIONAL PAGES - "Who Would Win?" Style */
         .edu-image-hero {
-          width: 100%;
+          width: calc(100% + 40px);
           flex: 1 1 60%;
           overflow: hidden;
           border-radius: 10px 10px 0 0;
-          margin: -20px -20px 0 -20px;
+          margin: 0 -20px 0 -20px;
           position: relative;
           min-height: 45%;
         }
@@ -1314,16 +1314,18 @@ function BookReader() {
         .size-compare {
           background: linear-gradient(135deg, #a5d6a7 0%, #81c784 100%);
           border: 2px solid #2e7d32;
-          border-radius: 8px;
+          border-radius: 6px;
           padding: 4px 8px;
-          margin: 4px 0;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-          text-align: center;
+          margin: 3px 0;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          text-align: left;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .size-compare .size-emoji {
-          font-size: 1.8em;
-          display: block;
-          margin-bottom: 3px;
+          font-size: 1.4em;
+          flex-shrink: 0;
         }
         .size-compare p {
           background: transparent !important;
@@ -1331,6 +1333,7 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
+          font-size: 0.8em;
           font-size: 0.9em;
         }
         
