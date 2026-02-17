@@ -1,11 +1,11 @@
 #!/bin/bash
-FAL_KEY="c0f1713d-6fa5-41a0-8f4e-84defdb39eed:bfb696c0dce01f989089febd9b8990f8"
+FAL_KEY=$(cat ~/.clawd/.api-keys/fal.key)
 OUT="$(dirname "$0")/../public/fighters"
 
 gen() {
   local file="$1" prompt="$2"
   echo "→ $file"
-  local resp=$(curl -s "https://fal.run/fal-ai/flux/schnell" \
+  local resp=$(curl -s "https://fal.run/xai/grok-imagine-image" \
     -H "Authorization: Key $FAL_KEY" \
     -H "Content-Type: application/json" \
     -d "{\"prompt\": $(echo "$prompt" | jq -Rs .), \"image_size\": \"square_hd\", \"num_inference_steps\": 4}")

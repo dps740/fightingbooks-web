@@ -22,7 +22,8 @@ async function generateAndSaveImage(name: string): Promise<{ name: string; succe
   const prompt = `${name} dinosaur portrait, powerful pose, majestic prehistoric wildlife photography style, dramatic lighting, detailed painted wildlife illustration, ANATOMICALLY ACCURATE dinosaur anatomy, natural history museum quality art, educational wildlife book, detailed scales texture, ABSOLUTELY NO TEXT OR WORDS IN THE IMAGE`;
 
   try {
-    const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    // Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
+    const response = await fetch('https://fal.run/xai/grok-imagine-image', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
@@ -30,13 +31,13 @@ async function generateAndSaveImage(name: string): Promise<{ name: string; succe
       },
       body: JSON.stringify({
         prompt,
-        image_size: 'square_hd',
-        num_inference_steps: 4,
+        aspect_ratio: '1:1',
+        output_format: 'jpeg',
       }),
     });
 
     if (!response.ok) {
-      return { name, success: false, error: `Fal.ai error: ${response.status}` };
+      return { name, success: false, error: `Grok Imagine error: ${response.status}` };
     }
 
     const result = await response.json();

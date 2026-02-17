@@ -250,7 +250,8 @@ async function generateBattleBg(animalA: string, animalB: string): Promise<strin
       }
     }
 
-    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
+    // Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
+    const response = await fetch('https://fal.run/xai/grok-imagine-image', {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
@@ -258,9 +259,8 @@ async function generateBattleBg(animalA: string, animalB: string): Promise<strin
       },
       body: JSON.stringify({
         prompt: `${animalA} and ${animalB} facing off, epic battle scene, dramatic dark battlefield, wildlife documentary photography, photorealistic, dramatic lighting. ABSOLUTELY NO TEXT IN THE IMAGE.`,
-        image_size: 'square_hd',
-        num_inference_steps: 28,
-        ...imageConditioningParams,
+        aspect_ratio: '1:1',
+        output_format: 'jpeg',
       }),
     });
 

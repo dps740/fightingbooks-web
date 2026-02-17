@@ -1693,12 +1693,9 @@ export async function POST(request: NextRequest) {
     // Admin bypass for automated regeneration (e.g., cache warming)
     const isAdminBypass = adminSecret === process.env.BLOB_READ_WRITE_TOKEN;
     
-    // Allow admin to override image model (default is now Dev; use "schnell" for fast/cheap testing)
-    if (isAdminBypass && imageModel === 'schnell') {
-      _imageModelOverride = { model: 'fal-ai/flux/schnell', steps: 4 };
-    } else {
-      _imageModelOverride = null;
-    }
+    // Image model override disabled — GROK ONLY per David directive 2026-02-16
+    // All image generation uses Grok Imagine (xai/grok-imagine-image)
+    _imageModelOverride = null;
 
     // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();

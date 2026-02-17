@@ -13,7 +13,8 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
 
   const fullPrompt = `${prompt}, STYLE: wildlife documentary photography, National Geographic quality, photorealistic nature photography, dramatic natural lighting. ANATOMY: animals in NATURAL quadruped or species-appropriate poses only, correct number of limbs, realistic proportions. CRITICAL: Each animal must be its own DISTINCT species - DO NOT merge or blend animal features. FORBIDDEN: NO human features, NO human hands or arms, NO bipedal poses, NO celebration poses, NO anthropomorphism. ABSOLUTELY NO TEXT IN THE IMAGE.`;
 
-  const response = await fetch('https://fal.run/fal-ai/flux/schnell', {
+  // Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
+  const response = await fetch('https://fal.run/xai/grok-imagine-image', {
     method: 'POST',
     headers: {
       'Authorization': `Key ${falKey}`,
@@ -21,13 +22,13 @@ async function generateImage(prompt: string, cacheKey: string): Promise<string> 
     },
     body: JSON.stringify({
       prompt: fullPrompt,
-      image_size: 'square_hd',
-      num_inference_steps: 4,
+      aspect_ratio: '1:1',
+      output_format: 'jpeg',
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`Fal.ai error: ${await response.text()}`);
+    throw new Error(`Grok Imagine error: ${await response.text()}`);
   }
 
   const result = await response.json();

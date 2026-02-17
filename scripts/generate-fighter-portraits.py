@@ -47,16 +47,17 @@ def generate_portrait(name, category):
     print(f"Generating {name}...")
     
     # Call FAL API
+    # Grok Imagine via FAL — GROK ONLY per David directive 2026-02-16
     response = requests.post(
-        "https://fal.run/fal-ai/flux/schnell",
+        "https://fal.run/xai/grok-imagine-image",
         headers={
             "Authorization": f"Key {FAL_KEY}",
             "Content-Type": "application/json"
         },
         json={
             "prompt": prompt,
-            "image_size": "square",
-            "num_images": 1
+            "aspect_ratio": "1:1",
+            "output_format": "jpeg"
         }
     )
     
