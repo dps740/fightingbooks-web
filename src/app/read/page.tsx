@@ -1212,12 +1212,12 @@ function BookReader() {
         /* EDUCATIONAL PAGES - "Who Would Win?" Style */
         .edu-image-hero {
           width: 100%;
-          flex: 1 1 0;
+          flex: 1 1 60%;
           overflow: hidden;
           border-radius: 10px 10px 0 0;
           margin: -20px -20px 0 -20px;
           position: relative;
-          min-height: 0;
+          min-height: 45%;
         }
         .edu-hero-img {
           width: 100%;
@@ -1228,46 +1228,47 @@ function BookReader() {
         .edu-content-bottom {
           position: relative;
           background: linear-gradient(to bottom, rgba(255,255,255,0.95) 0%, rgba(255,255,255,1) 20%);
-          padding: 8px 12px 10px;
+          padding: 6px 10px 8px;
           margin: -25px 0 0 0;
           border-radius: 15px 15px 0 0;
           z-index: 1;
           flex: 0 0 auto;
           overflow: visible;
+          max-height: 45%;
         }
         .edu-title {
           font-family: 'Bangers', cursive;
-          font-size: 1.6em;
+          font-size: 1.3em;
           color: #ff5722;
           text-shadow: 2px 2px 0px #ffd54f, 3px 3px 6px rgba(0,0,0,0.3);
-          margin-bottom: 5px;
+          margin-bottom: 3px;
           text-align: center;
           letter-spacing: 1px;
           line-height: 1.05;
         }
         .edu-content {
-          font-size: 0.85em;
-          line-height: 1.3;
+          font-size: 0.75em;
+          line-height: 1.2;
         }
         
         /* DID YOU KNOW boxes */
         .did-you-know {
           background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
           border: 2px solid #ff5722;
-          border-radius: 8px;
-          padding: 6px 10px;
-          margin: 5px 0;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border-radius: 6px;
+          padding: 4px 8px;
+          margin: 3px 0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
           position: relative;
         }
         .did-you-know::before {
           content: '💡 DID YOU KNOW?';
           display: block;
           font-family: 'Bangers', cursive;
-          font-size: 1.05em;
+          font-size: 0.85em;
           color: #ff5722;
           text-shadow: 1px 1px 0px white;
-          margin-bottom: 2px;
+          margin-bottom: 1px;
           letter-spacing: 1px;
         }
         .did-you-know p {
@@ -1276,8 +1277,8 @@ function BookReader() {
           padding: 0 !important;
           color: #1a1a1a !important;
           font-weight: bold;
-          font-size: 0.85em;
-          line-height: 1.3;
+          font-size: 0.75em;
+          line-height: 1.2;
         }
         
         /* THINK ABOUT IT boxes */
@@ -1337,31 +1338,31 @@ function BookReader() {
         .weapon-box {
           background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
           border: 2px solid #b71c1c;
-          border-radius: 8px;
-          padding: 5px 10px;
-          margin: 4px 0;
+          border-radius: 6px;
+          padding: 3px 8px;
+          margin: 3px 0;
           color: white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .weapon-box::before {
           content: '⚔️ WEAPON: ';
           font-family: 'Bangers', cursive;
-          font-size: 0.95em;
+          font-size: 0.8em;
           letter-spacing: 1px;
         }
         .defense-box {
           background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
           border: 2px solid #0d47a1;
-          border-radius: 8px;
-          padding: 5px 10px;
-          margin: 4px 0;
+          border-radius: 6px;
+          padding: 3px 8px;
+          margin: 3px 0;
           color: white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .defense-box::before {
           content: '🛡️ DEFENSE: ';
           font-family: 'Bangers', cursive;
-          font-size: 0.95em;
+          font-size: 0.8em;
           letter-spacing: 1px;
         }
         .weapon-box p, .defense-box p {
@@ -1372,7 +1373,6 @@ function BookReader() {
           display: inline;
           font-size: 0.85em;
           font-weight: bold;
-          font-size: 1.1em;
         }
         
         /* Visual stat bars */
@@ -1443,18 +1443,17 @@ function BookReader() {
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
           .edu-image-hero {
-            height: 55%;
-            min-height: 250px;
+            min-height: 50%;
           }
           .edu-title {
-            font-size: 1.8em;
+            font-size: 1.5em;
           }
           .edu-content {
-            font-size: 1em;
+            font-size: 0.85em;
           }
           .did-you-know::before,
           .think-about-it::before {
-            font-size: 1.2em;
+            font-size: 1em;
           }
           .size-compare .size-emoji {
             font-size: 2.5em;
