@@ -262,7 +262,8 @@ export default function Home() {
   
   // Handle tournament fighter selection
   const handleTournamentFighterSelect = (fighterName: string) => {
-    if (isAnimalLocked(tierData.tier, fighterName)) {
+    const isCustom = dbAnimals.some(a => a.name === fighterName);
+    if (!isCustom && isAnimalLocked(tierData.tier, fighterName)) {
       setLockedAnimalClicked(fighterName);
       setLockedFeature(undefined);
       setShowUpgradeModal(true);
@@ -327,7 +328,8 @@ export default function Home() {
   };
 
   const handleFighterSelect = (fighterName: string) => {
-    if (isAnimalLocked(tierData.tier, fighterName)) {
+    const isCustom = dbAnimals.some(a => a.name === fighterName);
+    if (!isCustom && isAnimalLocked(tierData.tier, fighterName)) {
       setLockedAnimalClicked(fighterName);
       setLockedFeature(undefined);
       setShowUpgradeModal(true);
