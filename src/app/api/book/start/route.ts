@@ -1665,8 +1665,20 @@ export async function POST(request: NextRequest) {
     // === TIER ACCESS CONTROL (v2: free/paid) ===
     const { tier, userId } = await getUserTier();
 
-    // Check if user can access this matchup (skip for admin bypass and free sample matchups)
-    if (!isAdminBypass && !isFreeSampleMatchup(animalA, animalB) && !canAccessMatchup(tier, animalA, animalB)) {
+    // Check if either animal is a DB-added custom animal (accessible to all logged-in users)
+    const isCustomAnimal = async (name: string) => {
+      if (canAccessAnimal(tier, name)) return true; // Already accessible via static list
+      try {
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
+        const { data } = await getSupabase().from('custom_animals').select('id, scope').eq('slug', slug).eq('status', 'ready').limit(1).single();
+        return !!data; // If it exists in DB, it's accessible
+      } catch { return false; }
+    };
+    const canAccessA = await isCustomAnimal(animalA);
+    const canAccessB = await isCustomAnimal(animalB);
+
+    // Check if user can access this matchup (skip for admin bypass, free samples, and custom animals)
+    if (!isAdminBypass && !isFreeSampleMatchup(animalA, animalB) && !(canAccessA && canAccessB) && !canAccessMatchup(tier, animalA, animalB)) {
       const upgradeOptions = getUpgradeOptions(tier);
       return NextResponse.json(
         {
@@ -1674,8 +1686,8 @@ export async function POST(request: NextRequest) {
           code: 'TIER_REQUIRED',
           message: 'This matchup requires Full Access ($4.99).',
           lockedAnimals: [
-            !canAccessAnimal(tier, animalA) ? animalA : null,
-            !canAccessAnimal(tier, animalB) ? animalB : null,
+            !canAccessA ? animalA : null,
+            !canAccessB ? animalB : null,
           ].filter(Boolean),
           requiredTier: getRequiredTier(animalA) === 'ultimate' || getRequiredTier(animalB) === 'ultimate' ? 'ultimate' : 'member',
           currentTier: tier,
