@@ -475,6 +475,17 @@ export default function Home() {
           }} />
         ))}
         <div className="max-w-5xl mx-auto text-center relative z-10">
+          {/* Inspired by tagline */}
+          <motion.p
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-sm sm:text-base text-white/70 mb-2 px-4"
+            style={{ textShadow: '1px 1px 2px #000' }}
+          >
+            Inspired by our kids&apos; love for the bestselling <span className="text-[#FFD700] font-bold">Who Would Win</span> books
+          </motion.p>
+
           {/* Headline */}
           <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
             <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
@@ -622,7 +633,7 @@ export default function Home() {
                     <span className="font-bangers text-2xl text-white">$4.99</span>
                     <span className="text-white/50 text-sm">one-time, keep forever</span>
                   </div>
-                  <p className="text-white/60 text-sm mb-2">Unlock the full animal kingdom — 30 real animals, 435+ matchups, tournaments, and printable PDFs</p>
+                  <p className="text-white/60 text-sm mb-2">Unlock the full animal kingdom — 30 real animals, 435 unique matchups, tournaments, and printable PDFs</p>
                 </div>
                 <button onClick={() => handleUpgrade('member')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
                   Unlock All Animals
@@ -638,8 +649,8 @@ export default function Home() {
                     <h3 className="font-bangers text-2xl text-purple-400">ULTIMATE</h3>
                     <span className="font-bangers text-2xl text-white">$4.99<span className="text-base text-white/50">/mo</span></span>
                   </div>
-                  <p className="text-white/60 text-sm mb-2">Everything in Member plus dinosaurs, fantasy creatures, Choose Your Own Adventure mode, and new animals every month</p>
-                  <p className="text-white/40 text-xs">Includes Member access — cancel anytime</p>
+                  <p className="text-white/60 text-sm mb-2">Add dinosaurs, fantasy creatures, and Choose Your Own Adventure mode — 1,081 matchups with 27 unique story paths each, creating over 29,000 possible books</p>
+                  <p className="text-white/40 text-xs">Requires Member — adds on top of your membership. Cancel anytime.</p>
                 </div>
                 <button onClick={() => handleUpgrade('ultimate')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all whitespace-nowrap">
                   Go Ultimate
