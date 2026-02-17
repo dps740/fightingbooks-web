@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, ArrowLeft, Check, Send, Lock } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Check, Send } from 'lucide-react';
 
 export default function FeedbackPage() {
   const router = useRouter();
@@ -15,24 +15,33 @@ export default function FeedbackPage() {
   const [authChecking, setAuthChecking] = useState(true);
   const [isMember, setIsMember] = useState(false);
 
-  // Check if user is a member/ultimate
+  // Check if user is a member/ultimate — redirect non-members
   useEffect(() => {
     async function checkAuth() {
       try {
         const res = await fetch('/api/auth/me');
         if (res.ok) {
           const data = await res.json();
-          // member or ultimate can access feedback
-          setIsMember(data.tier === 'member' || data.tier === 'ultimate');
+          const hasMembership = data.tier === 'member' || data.tier === 'ultimate';
+          setIsMember(hasMembership);
+          if (!hasMembership) {
+            router.push('/');
+            return;
+          }
+        } else {
+          // Not logged in — redirect
+          router.push('/');
+          return;
         }
       } catch {
-        // Not logged in
+        router.push('/');
+        return;
       } finally {
         setAuthChecking(false);
       }
     }
     checkAuth();
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,27 +93,7 @@ export default function FeedbackPage() {
             </div>
           )}
 
-          {/* Not a member */}
-          {!authChecking && !isMember && (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-[#FFD700]/10 border-2 border-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Lock className="w-8 h-8 text-[#FFD700]" />
-              </div>
-              <h2 className="text-2xl font-bangers text-[#FFD700] mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
-                Members Only
-              </h2>
-              <p className="text-white/70 mb-6">
-                Feedback is available for members. Upgrade to share your ideas and help shape FightingBooks!
-              </p>
-              <button
-                onClick={() => router.push('/#pricing')}
-                className="text-white py-3 px-6 rounded-xl font-bangers text-lg hover:opacity-90 transition-opacity"
-                style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}
-              >
-                🥊 Become a Member
-              </button>
-            </div>
-          )}
+          {/* Non-members are redirected via useEffect */}
 
           {/* Member content */}
           {!authChecking && isMember && <>
