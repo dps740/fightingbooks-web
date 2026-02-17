@@ -1116,12 +1116,11 @@ export default function Home() {
                   );
                 })}
                 
-                {/* "Your Imagination" placeholder slots - fill remaining grid row */}
-                {(() => {
+                {/* "Your Imagination" placeholder slots - fantasy only, fill remaining grid row */}
+                {animalCategory === 'fantasy' && (() => {
                   const GRID_COLS = 8; // md:grid-cols-8
                   const animalCount = filteredFighters.length;
                   const remainder = animalCount % GRID_COLS;
-                  // Fill to complete the row, minimum 1 slot always visible
                   const placeholderCount = remainder === 0 ? GRID_COLS : (GRID_COLS - remainder);
                   return Array.from({ length: placeholderCount }).map((_, i) => (
                     <button
