@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { MessageSquare, ArrowLeft, Check, Send } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Check, Send, Lock } from 'lucide-react';
 
 export default function FeedbackPage() {
   const router = useRouter();
@@ -12,6 +12,27 @@ export default function FeedbackPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [authChecking, setAuthChecking] = useState(true);
+  const [isMember, setIsMember] = useState(false);
+
+  // Check if user is a member/ultimate
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me');
+        if (res.ok) {
+          const data = await res.json();
+          // member or ultimate can access feedback
+          setIsMember(data.tier === 'member' || data.tier === 'ultimate');
+        }
+      } catch {
+        // Not logged in
+      } finally {
+        setAuthChecking(false);
+      }
+    }
+    checkAuth();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +77,37 @@ export default function FeedbackPage() {
             Back to generator
           </button>
 
+          {/* Loading state */}
+          {authChecking && (
+            <div className="text-center py-12">
+              <span className="text-4xl animate-spin inline-block">⏳</span>
+            </div>
+          )}
+
+          {/* Not a member */}
+          {!authChecking && !isMember && (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-[#FFD700]/10 border-2 border-[#FFD700]/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-[#FFD700]" />
+              </div>
+              <h2 className="text-2xl font-bangers text-[#FFD700] mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
+                Members Only
+              </h2>
+              <p className="text-white/70 mb-6">
+                Feedback is available for members. Upgrade to share your ideas and help shape FightingBooks!
+              </p>
+              <button
+                onClick={() => router.push('/#pricing')}
+                className="text-white py-3 px-6 rounded-xl font-bangers text-lg hover:opacity-90 transition-opacity"
+                style={{ background: 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%)' }}
+              >
+                🥊 Become a Member
+              </button>
+            </div>
+          )}
+
+          {/* Member content */}
+          {!authChecking && isMember && <>
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -178,6 +230,7 @@ export default function FeedbackPage() {
               </button>
             </form>
           )}
+          </>}
         </div>
       </div>
     </main>

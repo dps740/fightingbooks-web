@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { normalizeTier } from '@/lib/tierAccess';
 
 function getSupabase() {
   return createClient(
@@ -29,20 +30,42 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabase();
 
-    // Try to get current user (optional - feedback can be anonymous)
-    let userId = null;
-    let userEmail = email || null;
-
+    // Require logged-in member or ultimate user
     const cookieStore = await cookies();
     const token = cookieStore.get('sb-access-token')?.value;
 
-    if (token) {
-      const { data: { user } } = await supabase.auth.getUser(token);
-      if (user) {
-        userId = user.id;
-        userEmail = userEmail || user.email;
-      }
+    if (!token) {
+      return NextResponse.json(
+        { error: 'You must be logged in to send feedback' },
+        { status: 401 }
+      );
     }
+
+    const { data: { user } } = await supabase.auth.getUser(token);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'You must be logged in to send feedback' },
+        { status: 401 }
+      );
+    }
+
+    // Check tier — members and ultimate only
+    const { data: profile } = await supabase
+      .from('users')
+      .select('tier')
+      .eq('id', user.id)
+      .single();
+
+    const tier = normalizeTier(profile?.tier || 'free');
+    if (tier === 'unregistered') {
+      return NextResponse.json(
+        { error: 'Feedback is available for members. Upgrade to share your thoughts!' },
+        { status: 403 }
+      );
+    }
+
+    const userId = user.id;
+    const userEmail = email || user.email;
 
     // Store feedback in database
     const { error: insertError } = await supabase

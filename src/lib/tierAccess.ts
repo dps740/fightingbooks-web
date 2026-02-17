@@ -9,7 +9,8 @@ export type UserTier = 'unregistered' | 'member' | 'ultimate';
 // Legacy tier mapping (for existing DB records)
 export function normalizeTier(tier: string): UserTier {
   if (tier === 'ultimate') return 'ultimate';
-  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member' || tier === 'free') return 'member';
+  if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member') return 'member';
+  // 'free' accounts get same access as unregistered (4 sample books only)
   return 'unregistered';
 }
 
