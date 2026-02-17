@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
@@ -13,19 +13,44 @@ import SampleBookGallery from '@/components/SampleBookGallery';
 import EmailCaptureModal from '@/components/EmailCaptureModal';
 import { UserTier, REAL_ANIMALS, DINOSAUR_ANIMALS, FANTASY_ANIMALS } from '@/lib/tierAccess';
 
-// Derive fighter list from single source of truth (tierAccess.ts)
-const FIGHTERS = [
-  ...REAL_ANIMALS.map(name => ({ name, category: 'real' as const })),
-  ...DINOSAUR_ANIMALS.map(name => ({ name, category: 'dinosaur' as const })),
-  ...FANTASY_ANIMALS.map(name => ({ name, category: 'fantasy' as const })),
+// Static fighter list from tierAccess.ts (base animals)
+const STATIC_FIGHTERS = [
+  ...REAL_ANIMALS.map(name => ({ name, category: 'real' as const, isCustom: false, imageUrl: undefined as string | undefined })),
+  ...DINOSAUR_ANIMALS.map(name => ({ name, category: 'dinosaur' as const, isCustom: false, imageUrl: undefined as string | undefined })),
+  ...FANTASY_ANIMALS.map(name => ({ name, category: 'fantasy' as const, isCustom: false, imageUrl: undefined as string | undefined })),
 ];
+
+// DB animal type
+interface DbAnimal {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  scope: string;
+  status: string;
+  images: Record<string, string> | null;
+  facts: Record<string, unknown> | null;
+}
+
+type FighterEntry = {
+  name: string;
+  category: 'real' | 'dinosaur' | 'fantasy';
+  isCustom: boolean;
+  imageUrl?: string;
+  isUserCustom?: boolean;
+  status?: string;
+};
+
+// Keep FIGHTERS as a reference for backward compat
+const FIGHTERS = STATIC_FIGHTERS;
 
 type AnimalCategory = 'real' | 'dinosaur' | 'fantasy';
 
-const CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; count: number; locked: boolean }[] = [
-  { key: 'real', label: 'Real Animals', icon: '🦁', count: 30, locked: false },
-  { key: 'dinosaur', label: 'Dinosaurs', icon: '🦕', count: 8, locked: true },
-  { key: 'fantasy', label: 'Fantasy', icon: '🐉', count: 9, locked: true },
+// Base category tab config (counts updated dynamically)
+const BASE_CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; baseCount: number; locked: boolean }[] = [
+  { key: 'real', label: 'Real Animals', icon: '🦁', baseCount: 30, locked: false },
+  { key: 'dinosaur', label: 'Dinosaurs', icon: '🦕', baseCount: 8, locked: true },
+  { key: 'fantasy', label: 'Fantasy', icon: '🐉', baseCount: 9, locked: true },
 ];
 
 // Section divider — dramatic crossed slashes
@@ -77,6 +102,80 @@ export default function Home() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [lockedAnimalClicked, setLockedAnimalClicked] = useState<string | undefined>();
   const [lockedFeature, setLockedFeature] = useState<string | undefined>();
+
+  // DB-backed animals state
+  const [dbAnimals, setDbAnimals] = useState<FighterEntry[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createName, setCreateName] = useState('');
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [hasGenerating, setHasGenerating] = useState(false);
+
+  // Fetch DB-backed animals
+  const fetchDbAnimals = useCallback(async () => {
+    try {
+      const response = await fetch('/api/animals/list');
+      const data = await response.json();
+
+      const entries: FighterEntry[] = [];
+      let generating = false;
+
+      // Add global custom animals
+      if (data.global) {
+        for (const animal of data.global) {
+          // Skip if already in static list
+          const existsInStatic = STATIC_FIGHTERS.some(
+            f => f.name.toLowerCase() === animal.name.toLowerCase()
+          );
+          if (!existsInStatic) {
+            entries.push({
+              name: animal.name,
+              category: animal.category as 'real' | 'dinosaur' | 'fantasy',
+              isCustom: true,
+              imageUrl: animal.images?.portrait,
+              status: animal.status,
+            });
+          }
+        }
+      }
+
+      // Add user's custom animals
+      if (data.custom) {
+        for (const animal of data.custom) {
+          entries.push({
+            name: animal.name,
+            category: 'fantasy',
+            isCustom: true,
+            isUserCustom: true,
+            imageUrl: animal.images?.portrait,
+            status: animal.status,
+          });
+          if (animal.status === 'generating') {
+            generating = true;
+          }
+        }
+      }
+
+      setDbAnimals(entries);
+      setHasGenerating(generating);
+    } catch (e) {
+      console.error('Failed to fetch DB animals:', e);
+    }
+  }, [tierData.isAuthenticated]);
+
+  // Fetch DB animals on mount and when tier changes
+  useEffect(() => {
+    fetchDbAnimals();
+  }, [fetchDbAnimals]);
+
+  // Poll if any animals are generating
+  useEffect(() => {
+    if (!hasGenerating) return;
+    const interval = setInterval(() => {
+      fetchDbAnimals();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [hasGenerating, fetchDbAnimals]);
   
   // Handle upgrade checkout
   const handleUpgrade = async (tier: UserTier) => {
@@ -98,8 +197,38 @@ export default function Home() {
     }
   };
 
-  const selectedA = FIGHTERS.find(f => f.name === animalA);
-  const selectedB = FIGHTERS.find(f => f.name === animalB);
+  // Handle creating a custom animal
+  const handleCreateAnimal = async () => {
+    if (!createName.trim() || createLoading) return;
+
+    setCreateLoading(true);
+    setCreateError('');
+
+    try {
+      const response = await fetch('/api/animals/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: createName.trim() }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setCreateError(data.error || 'Failed to create creature');
+        setCreateLoading(false);
+        return;
+      }
+
+      // Success! Close modal and refresh animals
+      setShowCreateModal(false);
+      setCreateName('');
+      setCreateLoading(false);
+      await fetchDbAnimals();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'Network error');
+      setCreateLoading(false);
+    }
+  };
   
   // Handle tournament mode toggle
   const handleTournamentToggle = () => {
@@ -190,7 +319,12 @@ export default function Home() {
   const canGenerate = animalA && animalB && animalA !== animalB;
   const canStartTournament = tournamentFighters.length === 8;
 
-  const getImagePath = (name: string) => `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
+  const getImagePath = (name: string) => {
+    // Check if this is a custom animal with a blob URL
+    const dbAnimal = dbAnimals.find(a => a.name === name);
+    if (dbAnimal?.imageUrl) return dbAnimal.imageUrl;
+    return `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
+  };
 
   const handleFighterSelect = (fighterName: string) => {
     if (isAnimalLocked(tierData.tier, fighterName)) {
@@ -254,8 +388,23 @@ export default function Home() {
     proceedWithGenerate();
   };
 
+  // Merge static fighters with DB animals
+  const allFighters: FighterEntry[] = [
+    ...STATIC_FIGHTERS,
+    ...dbAnimals,
+  ];
+
+  const selectedA = allFighters.find(f => f.name === animalA);
+  const selectedB = allFighters.find(f => f.name === animalB);
+
+  // Dynamic category tabs with updated counts
+  const CATEGORY_TABS = BASE_CATEGORY_TABS.map(tab => ({
+    ...tab,
+    count: allFighters.filter(f => f.category === tab.key).length,
+  }));
+
   // Filter fighters by selected category
-  const filteredFighters = FIGHTERS.filter(f => f.category === animalCategory);
+  const filteredFighters = allFighters.filter(f => f.category === animalCategory);
   
   // Count locked animals for messaging
   const lockedRealCount = FIGHTERS.filter(f => f.category === 'real' && isAnimalLocked(tierData.tier, f.name)).length;
@@ -909,27 +1058,50 @@ export default function Home() {
             <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                 {filteredFighters.map((fighter, i) => {
-                  const locked = isAnimalLocked(tierData.tier, fighter.name);
+                  const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
                   const isSelected = animalA === fighter.name || animalB === fighter.name;
+                  const isGenerating = fighter.status === 'generating';
+                  const isFailed = fighter.status === 'failed';
                   return (
                     <motion.button
-                      key={fighter.name}
+                      key={`${fighter.name}-${fighter.isUserCustom ? 'custom' : 'static'}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: i * 0.03 }}
-                      onClick={() => handleFighterSelect(fighter.name)}
+                      transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.5) }}
+                      onClick={() => !isGenerating && !isFailed && handleFighterSelect(fighter.name)}
+                      disabled={isGenerating || isFailed}
                       className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all hover:scale-110 hover:z-10 ${
-                        isSelected
+                        isGenerating
+                          ? 'border-purple-500 opacity-70 cursor-wait'
+                          : isFailed
+                          ? 'border-red-500 opacity-50 cursor-not-allowed'
+                          : isSelected
                           ? 'border-yellow-400 ring-2 ring-yellow-400'
                           : locked
                           ? 'border-gray-600 opacity-70 hover:border-yellow-500 hover:opacity-100'
+                          : fighter.isUserCustom
+                          ? 'border-purple-500 hover:border-purple-300'
                           : 'border-gray-600 hover:border-white'
                       }`}
                     >
-                      <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
+                      {isGenerating ? (
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="text-2xl animate-spin mb-1">✨</div>
+                            <p className="text-purple-300 text-[10px] font-bold">CREATING...</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
+                      )}
                       <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
                         <p className="font-bangers text-white text-xs text-center truncate">{fighter.name.toUpperCase()}</p>
                       </div>
+                      {fighter.isUserCustom && !isGenerating && (
+                        <div className="absolute top-1 left-1 bg-purple-600/80 px-1 py-0.5 rounded text-[9px] text-white font-bold">
+                          ✨
+                        </div>
+                      )}
                       {isSelected && (
                         <div className="absolute top-1 right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
                           <span className="text-black font-bold text-sm">✓</span>
@@ -944,18 +1116,35 @@ export default function Home() {
                   );
                 })}
                 
-                {/* Custom animal placeholder - only show for fantasy category */}
+                {/* Create Custom Animal - only show for fantasy category */}
                 {animalCategory === 'fantasy' && (
-                  <div
-                    className="relative aspect-square rounded-lg overflow-hidden border-3 border-dashed border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-not-allowed"
-                    title="Coming Soon!"
+                  <button
+                    onClick={() => {
+                      if (tierData.tier !== 'ultimate') {
+                        setLockedAnimalClicked(undefined);
+                        setLockedFeature('create-own');
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      setShowCreateModal(true);
+                    }}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-3 border-dashed transition-all hover:scale-110 hover:z-10 ${
+                      tierData.tier === 'ultimate'
+                        ? 'border-purple-400 hover:border-purple-300 bg-gradient-to-br from-purple-900 to-purple-700 cursor-pointer'
+                        : 'border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-pointer hover:border-yellow-500 hover:opacity-100'
+                    }`}
+                    title={tierData.tier === 'ultimate' ? 'Create your own creature!' : 'Ultimate tier required'}
                   >
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
                       <div className="text-3xl mb-1">✨</div>
                       <p className="font-bangers text-white text-xs text-center leading-tight">YOUR IMAGINATION</p>
-                      <p className="text-yellow-400 text-[10px] font-bold">COMING SOON</p>
+                      {tierData.tier === 'ultimate' ? (
+                        <p className="text-purple-300 text-[10px] font-bold mt-1">TAP TO CREATE</p>
+                      ) : (
+                        <p className="text-yellow-400 text-[10px] font-bold mt-1">👑 ULTIMATE</p>
+                      )}
                     </div>
-                  </div>
+                  </button>
                 )}
               </div>
 
@@ -1222,6 +1411,71 @@ export default function Home() {
         onUpgrade={handleUpgrade}
         isAuthenticated={tierData.isAuthenticated}
       />
+
+      {/* Create Custom Animal Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => { if (!createLoading) { setShowCreateModal(false); setCreateError(''); setCreateName(''); } }}>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="relative max-w-md w-full rounded-2xl bg-[#0d1f0d] border-2 border-purple-500/50 p-6 sm:p-8" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => { if (!createLoading) { setShowCreateModal(false); setCreateError(''); setCreateName(''); } }}
+              className="absolute top-3 right-4 text-white/60 hover:text-white text-2xl font-bold z-10"
+            >
+              ✕
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="text-5xl mb-3">✨</div>
+              <h2 className="font-bangers text-3xl text-purple-300" style={{ textShadow: '2px 2px 0 #000' }}>
+                CREATE YOUR CREATURE
+              </h2>
+              <p className="text-white/60 text-sm mt-2">
+                Imagine any mythical creature and we&apos;ll bring it to life!
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-white/80 text-sm font-bold mb-2">Creature Name</label>
+                <input
+                  type="text"
+                  value={createName}
+                  onChange={(e) => { setCreateName(e.target.value); setCreateError(''); }}
+                  placeholder="e.g., Shadow Phoenix, Crystal Serpent..."
+                  className="w-full px-4 py-3 bg-black/30 border-2 border-purple-500/30 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-purple-400 text-lg"
+                  disabled={createLoading}
+                  maxLength={50}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && createName.trim() && !createLoading) {
+                      handleCreateAnimal();
+                    }
+                  }}
+                />
+              </div>
+
+              {createError && (
+                <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
+                  <p className="text-red-300 text-sm">{createError}</p>
+                </div>
+              )}
+
+              <button
+                onClick={handleCreateAnimal}
+                disabled={createLoading || !createName.trim()}
+                className="w-full px-6 py-4 rounded-xl font-bangers text-xl bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+              >
+                {createLoading ? '⏳ Creating your creature...' : '✨ Bring It to Life!'}
+              </button>
+
+              {createLoading && (
+                <p className="text-white/50 text-xs text-center animate-pulse">
+                  Generating facts and 5 unique illustrations... this takes about 30-60 seconds
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="py-6 bg-[#0d1f0d] text-center">

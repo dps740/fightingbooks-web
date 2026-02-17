@@ -79,7 +79,7 @@ export default function AdminPage() {
   const [cacheLoading, setCacheLoading] = useState(false);
   const [cacheError, setCacheError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'books' | 'cyoa' | 'flagged'>('books');
+  const [activeTab, setActiveTab] = useState<'books' | 'cyoa' | 'flagged' | 'add-animal'>('books');
   const [expandedBook, setExpandedBook] = useState<string | null>(null);
   const [regenLoading, setRegenLoading] = useState<string | null>(null);
   const [regenResult, setRegenResult] = useState<{bookName: string; pageId: string; success: boolean; message: string} | null>(null);
@@ -118,6 +118,13 @@ export default function AdminPage() {
   const [flaggedRegenLoading, setFlaggedRegenLoading] = useState<string | null>(null);
   const [flaggedActionResult, setFlaggedActionResult] = useState<{id: string; success: boolean; message: string} | null>(null);
   const [adminNotes, setAdminNotes] = useState<Record<string, string>>({});
+
+  // Add Animal state
+  const [addAnimalName, setAddAnimalName] = useState('');
+  const [addAnimalCategory, setAddAnimalCategory] = useState<'real' | 'dinosaur' | 'fantasy'>('real');
+  const [addAnimalLoading, setAddAnimalLoading] = useState(false);
+  const [addAnimalStatus, setAddAnimalStatus] = useState('');
+  const [addAnimalResult, setAddAnimalResult] = useState<{ success: boolean; message: string; animal?: { name: string; slug: string; images: Record<string, string> } } | null>(null);
 
   // Check admin auth on mount
   useEffect(() => {
@@ -482,6 +489,16 @@ export default function AdminPage() {
             }`}
           >
             🚩 Flagged Images
+          </button>
+          <button
+            onClick={() => setActiveTab('add-animal')}
+            className={`px-6 py-3 rounded-lg font-bangers text-lg transition-all border-2 ${
+              activeTab === 'add-animal'
+                ? 'bg-[#FFD700] text-black border-[#FFD700]'
+                : 'bg-[#1a1a2e] border-[#FFD700]/30 hover:border-[#FFD700]/50 text-white'
+            }`}
+          >
+            🦁 Add Animal
           </button>
         </div>
 
@@ -1026,6 +1043,121 @@ export default function AdminPage() {
                 );
               })}
             </div>
+          </div>
+        )}
+
+        {/* Add Animal Tab */}
+        {activeTab === 'add-animal' && (
+          <div className="bg-[#1a1a2e] border-4 border-[#FFD700] rounded-lg p-6">
+            <h2 className="text-2xl font-bangers text-[#FFD700] mb-6">🦁 Add Global Animal</h2>
+            <p className="text-white/70 mb-6">Add a new animal to the global roster. This generates facts via GPT-4o-mini and 5 images via Grok Imagine.</p>
+
+            <div className="space-y-4 max-w-md">
+              <div>
+                <label className="block text-white/80 text-sm font-bold mb-2">Animal Name</label>
+                <input
+                  type="text"
+                  value={addAnimalName}
+                  onChange={(e) => setAddAnimalName(e.target.value)}
+                  placeholder="e.g., Wolverine, Komodo Dragon, Pegasus"
+                  className="w-full px-4 py-3 bg-black/30 border-2 border-[#FFD700]/30 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-[#FFD700] text-lg"
+                  disabled={addAnimalLoading}
+                />
+              </div>
+
+              <div>
+                <label className="block text-white/80 text-sm font-bold mb-2">Category</label>
+                <select
+                  value={addAnimalCategory}
+                  onChange={(e) => setAddAnimalCategory(e.target.value as 'real' | 'dinosaur' | 'fantasy')}
+                  className="w-full px-4 py-3 bg-black/30 border-2 border-[#FFD700]/30 rounded-lg text-white focus:outline-none focus:border-[#FFD700] text-lg"
+                  disabled={addAnimalLoading}
+                >
+                  <option value="real">🦁 Real Animal</option>
+                  <option value="dinosaur">🦕 Dinosaur</option>
+                  <option value="fantasy">🐉 Fantasy Creature</option>
+                </select>
+              </div>
+
+              <button
+                onClick={async () => {
+                  if (!addAnimalName.trim()) return;
+                  setAddAnimalLoading(true);
+                  setAddAnimalStatus('Creating animal record...');
+                  setAddAnimalResult(null);
+
+                  try {
+                    setAddAnimalStatus('Generating facts and images (this takes ~30-60 seconds)...');
+                    const response = await fetch('/api/admin/add-animal', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name: addAnimalName.trim(),
+                        category: addAnimalCategory,
+                      }),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                      setAddAnimalResult({
+                        success: true,
+                        message: `✅ ${addAnimalName} added successfully!`,
+                        animal: data.animal,
+                      });
+                      setAddAnimalName('');
+                    } else {
+                      setAddAnimalResult({
+                        success: false,
+                        message: `❌ ${data.error || 'Failed to add animal'}`,
+                      });
+                    }
+                  } catch (err) {
+                    setAddAnimalResult({
+                      success: false,
+                      message: `❌ Network error: ${err instanceof Error ? err.message : 'Unknown'}`,
+                    });
+                  }
+                  setAddAnimalStatus('');
+                  setAddAnimalLoading(false);
+                }}
+                disabled={addAnimalLoading || !addAnimalName.trim()}
+                className="w-full px-6 py-4 rounded-lg font-bangers text-xl transition-all disabled:opacity-50"
+                style={{ background: addAnimalLoading ? '#555' : 'linear-gradient(135deg, #1e5a3d 0%, #2d7a4d 100%)', color: 'white' }}
+              >
+                {addAnimalLoading ? '⏳ Generating...' : '🚀 Add Animal'}
+              </button>
+            </div>
+
+            {/* Progress status */}
+            {addAnimalStatus && (
+              <div className="mt-4 p-4 bg-blue-900/30 border border-blue-500/50 rounded-lg">
+                <p className="text-blue-300 animate-pulse">⏳ {addAnimalStatus}</p>
+              </div>
+            )}
+
+            {/* Result */}
+            {addAnimalResult && (
+              <div className={`mt-4 p-4 rounded-lg border ${addAnimalResult.success ? 'bg-green-900/30 border-green-500/50' : 'bg-red-900/30 border-red-500/50'}`}>
+                <p className={addAnimalResult.success ? 'text-green-300' : 'text-red-300'}>
+                  {addAnimalResult.message}
+                </p>
+                {addAnimalResult.animal?.images && (
+                  <div className="mt-4 grid grid-cols-5 gap-2">
+                    {Object.entries(addAnimalResult.animal.images).map(([type, url]) => (
+                      <div key={type} className="text-center">
+                        <img
+                          src={url}
+                          alt={`${addAnimalResult.animal?.name} ${type}`}
+                          className="w-full aspect-square object-cover rounded-lg border border-[#FFD700]/30"
+                        />
+                        <p className="text-xs text-white/50 mt-1">{type}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

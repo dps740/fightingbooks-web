@@ -423,6 +423,26 @@ async function generateAnimalFacts(animalName: string): Promise<AnimalFacts> {
     console.log(`[FACTS] Using pre-verified facts for: ${animalName}`);
     return staticFacts[key];
   }
+
+  // Check custom_animals table (DB-backed animals)
+  try {
+    const supabase = getSupabase();
+    const { data: customAnimal } = await supabase
+      .from('custom_animals')
+      .select('facts')
+      .eq('slug', key)
+      .eq('status', 'ready')
+      .limit(1)
+      .single();
+
+    if (customAnimal?.facts) {
+      console.log(`[FACTS] Using custom animal facts for: ${animalName}`);
+      return customAnimal.facts as unknown as AnimalFacts;
+    }
+  } catch (e) {
+    console.log(`[FACTS] No custom animal facts for "${animalName}"`);
+  }
+
   console.log(`[FACTS] No static facts for "${animalName}" (key: ${key}), falling back to LLM`);
 
   const prompt = `Generate educational facts about a ${animalName} for a children's "Who Would Win?" style book by Jerry Pallotta.
