@@ -29,14 +29,14 @@ export const REAL_ANIMALS = [
   'Leopard', 'Eagle', 'Giant Panda', 'Electric Eel',
   'Moose', 'Cape Buffalo', 'Great Horned Owl',
   'Alligator', 'Mandrill', 'Cheetah', 'Hyena',
-  'Walrus', 'Octopus'
+  'Walrus', 'Octopus', 'Hammerhead Shark',
+  'King Cobra', 'Python', 'Anaconda'
 ];
 
-// Dinosaurs (6 total) - Paid only
-// Removed: Ankylosaurus (AI can't render accurately), Pteranodon (same)
+// Dinosaurs (8 total) - Paid only
 export const DINOSAUR_ANIMALS = [
   'Tyrannosaurus Rex', 'Velociraptor', 'Triceratops', 'Spinosaurus',
-  'Stegosaurus', 'Brachiosaurus'
+  'Stegosaurus', 'Brachiosaurus', 'Ankylosaurus', 'Pteranodon'
 ];
 
 // Fantasy (9 total) - Paid only
