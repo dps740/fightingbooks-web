@@ -192,34 +192,34 @@ async function generateImage(prompt: string, cacheKey?: string): Promise<string>
   const fullPrompt = `${prompt}, ${stylePrompt}`;
 
   try {
-    // Check for dinosaur reference image conditioning
-    let imageConditioningParams: Record<string, unknown> = {};
+    // Use Grok Imagine for CYOA battle images (better quality, $0.02/image via FAL)
+    let grokEndpoint = 'xai/grok-imagine-image';
+    let grokBody: Record<string, unknown> = {
+      prompt: fullPrompt,
+      aspect_ratio: '1:1',
+      output_format: 'jpeg',
+    };
+
+    // Check for dinosaur reference image conditioning (uses /edit endpoint)
     if (hasDinosaur) {
       for (const [dinoName, ref] of Object.entries(DINO_REFERENCE_IMAGES)) {
         if (promptLower.includes(dinoName)) {
           const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
-          imageConditioningParams = {
-            image_url: `${siteUrl}${ref.url}`,
-            image_prompt_strength: ref.strength,
-          };
-          console.log(`[CYOA-DINO-REF] Using reference for ${dinoName}`);
+          grokEndpoint = 'xai/grok-imagine-image/edit';
+          grokBody.image_url = `${siteUrl}${ref.url}`;
+          console.log(`[CYOA-DINO-REF] Using Grok Imagine edit with reference for ${dinoName}`);
           break;
         }
       }
     }
 
-    const response = await fetch('https://fal.run/fal-ai/flux/dev', {
+    const response = await fetch(`https://fal.run/${grokEndpoint}`, {
       method: 'POST',
       headers: {
         'Authorization': `Key ${falKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        prompt: fullPrompt,
-        image_size: 'square_hd',
-        num_inference_steps: 28,
-        ...imageConditioningParams,
-      }),
+      body: JSON.stringify(grokBody),
     });
 
     if (!response.ok) {

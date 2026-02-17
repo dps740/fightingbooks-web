@@ -296,38 +296,70 @@ async function generateImage(prompt: string, cacheKey?: string, retries = 2): Pr
         await new Promise(r => setTimeout(r, 1000 * attempt)); // Backoff delay
       }
       
-      const modelEndpoint = _imageModelOverride?.model || 'fal-ai/flux/dev';
-      const inferenceSteps = _imageModelOverride?.steps || 28;
-      
+      // Use Grok Imagine for battle image generation (better quality, $0.02/image via FAL)
+      // For dino reference conditioning, use the /edit endpoint
+      let grokEndpoint = 'xai/grok-imagine-image';
+      let grokBody: Record<string, unknown> = {
+        prompt: fullPrompt,
+        aspect_ratio: '1:1',
+        output_format: 'jpeg',
+      };
+
       // Check if any dinosaur in the prompt has a reference image for conditioning
-      let imageConditioningParams: Record<string, unknown> = {};
-      if (hasDinosaur && modelEndpoint === 'fal-ai/flux/dev') {
+      if (hasDinosaur) {
         for (const [dinoName, ref] of Object.entries(DINO_REFERENCE_IMAGES)) {
           if (promptLower.includes(dinoName)) {
-            // Use the site URL to serve the reference image
             const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
-            imageConditioningParams = {
-              image_url: `${siteUrl}${ref.url}`,
-              image_prompt_strength: ref.strength,
-            };
-            console.log(`[DINO-REF] Using reference image for ${dinoName} (strength=${ref.strength})`);
+            // Use the /edit endpoint for image-to-image with reference
+            grokEndpoint = 'xai/grok-imagine-image/edit';
+            grokBody.image_url = `${siteUrl}${ref.url}`;
+            console.log(`[DINO-REF] Using Grok Imagine edit with reference for ${dinoName}`);
             break; // Use first matching dino reference
           }
         }
       }
+
+      // Allow model override for admin regeneration (falls back to Flux Dev)
+      if (_imageModelOverride) {
+        const response = await fetch(`https://fal.run/${_imageModelOverride.model}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Key ${falKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt: fullPrompt,
+            image_size: 'square_hd',
+            num_inference_steps: _imageModelOverride.steps,
+          }),
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Fal.ai override error (attempt ${attempt + 1}):`, errorText);
+          if (attempt === retries) {
+            return `https://placehold.co/512x512/1a1a1a/d4af37?text=${encodeURIComponent(prompt.slice(0, 20))}`;
+          }
+          continue;
+        }
+        const result = await response.json();
+        const imageUrl = result.images?.[0]?.url;
+        if (!imageUrl) {
+          if (attempt === retries) return `https://placehold.co/512x512/1a1a1a/d4af37?text=Image`;
+          continue;
+        }
+        const filename = cacheKey || `img-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const finalUrl = await uploadToBlob(imageUrl, filename);
+        console.log(`Generated (override): ${cacheKey || 'image'}`);
+        return finalUrl;
+      }
       
-      const response = await fetch(`https://fal.run/${modelEndpoint}`, {
+      const response = await fetch(`https://fal.run/${grokEndpoint}`, {
         method: 'POST',
         headers: {
           'Authorization': `Key ${falKey}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          prompt: fullPrompt,
-          image_size: 'square_hd',
-          num_inference_steps: inferenceSteps,
-          ...imageConditioningParams,
-        }),
+        body: JSON.stringify(grokBody),
       });
 
       if (!response.ok) {
