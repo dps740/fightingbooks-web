@@ -1116,36 +1116,44 @@ export default function Home() {
                   );
                 })}
                 
-                {/* Create Custom Animal - only show for fantasy category */}
-                {animalCategory === 'fantasy' && (
-                  <button
-                    onClick={() => {
-                      if (tierData.tier !== 'ultimate') {
-                        setLockedAnimalClicked(undefined);
-                        setLockedFeature('create-own');
-                        setShowUpgradeModal(true);
-                        return;
-                      }
-                      setShowCreateModal(true);
-                    }}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-3 border-dashed transition-all hover:scale-110 hover:z-10 ${
-                      tierData.tier === 'ultimate'
-                        ? 'border-purple-400 hover:border-purple-300 bg-gradient-to-br from-purple-900 to-purple-700 cursor-pointer'
-                        : 'border-gray-500 bg-gradient-to-br from-gray-600 to-gray-800 opacity-75 cursor-pointer hover:border-yellow-500 hover:opacity-100'
-                    }`}
-                    title={tierData.tier === 'ultimate' ? 'Create your own creature!' : 'Ultimate tier required'}
-                  >
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                      <div className="text-3xl mb-1">✨</div>
-                      <p className="font-bangers text-white text-xs text-center leading-tight">YOUR IMAGINATION</p>
-                      {tierData.tier === 'ultimate' ? (
-                        <p className="text-purple-300 text-[10px] font-bold mt-1">TAP TO CREATE</p>
-                      ) : (
-                        <p className="text-yellow-400 text-[10px] font-bold mt-1">👑 ULTIMATE</p>
-                      )}
-                    </div>
-                  </button>
-                )}
+                {/* "Your Imagination" placeholder slots - fill remaining grid row */}
+                {(() => {
+                  const GRID_COLS = 8; // md:grid-cols-8
+                  const animalCount = filteredFighters.length;
+                  const remainder = animalCount % GRID_COLS;
+                  // Fill to complete the row, minimum 1 slot always visible
+                  const placeholderCount = remainder === 0 ? GRID_COLS : (GRID_COLS - remainder);
+                  return Array.from({ length: placeholderCount }).map((_, i) => (
+                    <button
+                      key={`imagination-${i}`}
+                      onClick={() => {
+                        if (tierData.tier !== 'ultimate') {
+                          setLockedAnimalClicked(undefined);
+                          setLockedFeature('create-own');
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        setShowCreateModal(true);
+                      }}
+                      className={`relative aspect-square rounded-lg overflow-hidden border-3 border-dashed transition-all hover:scale-110 hover:z-10 ${
+                        tierData.tier === 'ultimate'
+                          ? 'border-purple-400 hover:border-purple-300 bg-gradient-to-br from-purple-900/80 to-purple-700/80 cursor-pointer'
+                          : 'border-gray-500/50 bg-gradient-to-br from-gray-700/50 to-gray-800/50 opacity-60 cursor-pointer hover:border-yellow-500 hover:opacity-90'
+                      }`}
+                      title={tierData.tier === 'ultimate' ? 'Create your own creature!' : 'Ultimate tier required'}
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+                        <div className="text-2xl mb-0.5">✨</div>
+                        <p className="font-bangers text-white/80 text-[9px] text-center leading-tight">YOUR IMAGINATION</p>
+                        {tierData.tier === 'ultimate' ? (
+                          <p className="text-purple-300 text-[8px] font-bold mt-0.5">TAP TO CREATE</p>
+                        ) : (
+                          <p className="text-yellow-400/70 text-[8px] font-bold mt-0.5">👑 ULTIMATE</p>
+                        )}
+                      </div>
+                    </button>
+                  ));
+                })()}
               </div>
 
               {/* Locked animals banner */}
