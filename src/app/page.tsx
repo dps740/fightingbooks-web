@@ -372,7 +372,13 @@ export default function Home() {
       router.push(`/tournament?seed1=${encodeURIComponent(animalA)}&seed2=${encodeURIComponent(animalB)}&mode=${mode}`);
     } else {
       const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
-      router.push(`/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=neutral&mode=${mode}`);
+      // Pass custom animal portrait URLs so VersusScreen can display them
+      const dbA = dbAnimals.find(a => a.name === animalA);
+      const dbB = dbAnimals.find(a => a.name === animalB);
+      let readUrl = `/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=neutral&mode=${mode}`;
+      if (dbA?.imageUrl) readUrl += `&imgA=${encodeURIComponent(dbA.imageUrl)}`;
+      if (dbB?.imageUrl) readUrl += `&imgB=${encodeURIComponent(dbB.imageUrl)}`;
+      router.push(readUrl);
     }
   };
 

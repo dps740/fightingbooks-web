@@ -73,6 +73,8 @@ function BookReader() {
   const mode = searchParams.get('mode') || 'standard';
   const environment = searchParams.get('env') || 'neutral';
   const forceRegenerate = searchParams.get('regenerate') === 'true';
+  const customImgA = searchParams.get('imgA') || undefined;
+  const customImgB = searchParams.get('imgB') || undefined;
 
   const handleVersusComplete = useCallback(() => {
     setShowVersusScreen(false);
@@ -331,7 +333,9 @@ function BookReader() {
         fighterA={animalA} 
         fighterB={animalB} 
         bookReady={bookReady}
-        onComplete={handleVersusComplete} 
+        onComplete={handleVersusComplete}
+        imageUrlA={customImgA}
+        imageUrlB={customImgB}
       />
     );
   }

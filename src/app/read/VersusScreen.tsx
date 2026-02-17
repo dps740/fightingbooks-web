@@ -42,6 +42,8 @@ interface VersusScreenProps {
   fighterB: string;
   bookReady: boolean;
   onComplete: () => void;
+  imageUrlA?: string;
+  imageUrlB?: string;
 }
 
 interface FighterTagline {
@@ -54,7 +56,7 @@ function getImagePath(name: string): string {
   return `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
 }
 
-export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete }: VersusScreenProps) {
+export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete, imageUrlA, imageUrlB }: VersusScreenProps) {
   const [phase, setPhase] = useState<'enter' | 'clash' | 'stats' | 'ready'>('enter');
   const [animationDone, setAnimationDone] = useState(false);
   const [visibleStats, setVisibleStats] = useState<number>(0);
@@ -196,7 +198,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
             animate={phase !== 'enter' ? { scale: 1, opacity: 1 } : {}}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
-            <img src={getImagePath(fighterA)} alt={fighterA} className="fighter-portrait-img" />
+            <img src={imageUrlA || getImagePath(fighterA)} alt={fighterA} className="fighter-portrait-img" />
             <motion.div 
               className="portrait-glow red-glow"
               animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.1, 1] }}
@@ -290,7 +292,7 @@ export default function VersusScreen({ fighterA, fighterB, bookReady, onComplete
             animate={phase !== 'enter' ? { scale: 1, opacity: 1 } : {}}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
-            <img src={getImagePath(fighterB)} alt={fighterB} className="fighter-portrait-img" />
+            <img src={imageUrlB || getImagePath(fighterB)} alt={fighterB} className="fighter-portrait-img" />
             <motion.div 
               className="portrait-glow blue-glow"
               animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.1, 1] }}

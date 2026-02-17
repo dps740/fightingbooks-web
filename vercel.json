@@ -1,16 +1,22 @@
 {
   "functions": {
     "src/app/api/book/start/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 300
     },
     "src/app/api/book/gates/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 120
     },
     "src/app/api/book/choice/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 120
     },
     "src/app/api/generate-portraits/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 120
+    },
+    "src/app/api/admin/add-animal/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/animals/create/route.ts": {
+      "maxDuration": 300
     }
   }
 }
