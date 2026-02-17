@@ -633,10 +633,10 @@ export default function Home() {
                     <span className="font-bangers text-2xl text-white">$4.99</span>
                     <span className="text-white/50 text-sm">one-time, keep forever</span>
                   </div>
-                  <p className="text-white/60 text-sm mb-2">Unlock the full animal kingdom — 30 real animals, 435 unique matchups, tournaments, and printable PDFs</p>
+                  <p className="text-white/60 text-sm mb-2">32 real-world animals, 496 unique matchups, tournaments, and printable PDFs</p>
                 </div>
                 <button onClick={() => handleUpgrade('member')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
-                  Unlock All Animals
+                  Unlock Wildlife
                 </button>
               </div>
             </div>
@@ -649,7 +649,7 @@ export default function Home() {
                     <h3 className="font-bangers text-2xl text-purple-400">ULTIMATE</h3>
                     <span className="font-bangers text-2xl text-white">$4.99<span className="text-base text-white/50">/mo</span></span>
                   </div>
-                  <p className="text-white/60 text-sm mb-2">Add dinosaurs, fantasy creatures, and Choose Your Own Adventure mode — 1,081 matchups with 27 unique story paths each, creating over 29,000 possible books</p>
+                  <p className="text-white/60 text-sm mb-2">Add dinosaurs, fantasy creatures, and Choose Your Own Adventure mode — 1,176 matchups with 27 unique story paths each, creating over 31,000 possible books</p>
                   <p className="text-white/40 text-xs">Requires Member — adds on top of your membership. Cancel anytime.</p>
                 </div>
                 <button onClick={() => handleUpgrade('ultimate')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all whitespace-nowrap">
