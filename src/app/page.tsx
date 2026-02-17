@@ -453,6 +453,28 @@ export default function Home() {
 
   return (
     <main className="min-h-screen font-comic relative" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Who Would Win Books',
+        url: 'https://whowouldwinbooks.com',
+        description: 'Create epic who would win style animal battle books with real science, stats, and illustrated battles.',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://whowouldwinbooks.com/?search={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }
+      }) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'Who Would Win Books',
+        url: 'https://whowouldwinbooks.com',
+        logo: 'https://whowouldwinbooks.com/og-image.png',
+        sameAs: ['https://www.pinterest.com/whowouldwinbooks/']
+      }) }} />
+
       {/* Vignette overlay */}
       <div className="fixed inset-0 pointer-events-none z-[1]" style={{
         background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
@@ -505,7 +527,7 @@ export default function Home() {
         <div className="max-w-5xl mx-auto text-center relative z-10">
           {/* Inspired by tagline */}
           <motion.p
-            initial={{ y: -20, opacity: 0 }}
+            initial={{ y: -10 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="text-sm sm:text-base text-white/70 mb-2 px-4"
@@ -515,27 +537,27 @@ export default function Home() {
           </motion.p>
 
           {/* Headline */}
-          <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
+          <motion.div initial={{ y: -10 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
             <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
-              Turn Animal Debates Into<br />
-              <span className="text-[#FFD700]">Reading and Critical Thinking</span>
+              Who Would Win? Create Epic<br />
+              <span className="text-[#FFD700]">Animal Battle Books</span>
             </h1>
           </motion.div>
           
           {/* Subheadline */}
           <motion.p 
-            initial={{ y: 20, opacity: 0 }} 
+            initial={{ y: 10 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-5 px-4" 
             style={{ textShadow: '1px 1px 2px #000' }}
           >
-            Custom wildlife learning books in seconds — fully interactive and endless.
+            Pick any two animals, get an instant illustrated book with real science, stats, and a final verdict.
           </motion.p>
 
           {/* Primary + Secondary CTAs */}
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
+            initial={{ scale: 0.95 }} 
             animate={{ scale: 1, opacity: 1 }} 
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4"
@@ -551,7 +573,7 @@ export default function Home() {
 
           {/* 3 Benefit Pillars */}
           <motion.div 
-            initial={{ y: 30, opacity: 0 }} 
+            initial={{ y: 10 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 max-w-4xl mx-auto mb-2"
@@ -573,6 +595,14 @@ export default function Home() {
           {/* Age callout integrated into bullet line */}
         </div>
       </section>
+
+      {/* Noscript fallback for crawlers/no-JS */}
+      <noscript>
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'white' }}>
+          <h1>Who Would Win? Create Epic Animal Battle Books!</h1>
+          <p>Pick any two animals, get an instant illustrated book with real science, stats, and a final verdict.</p>
+        </div>
+      </noscript>
 
       {/* DEMO SECTION - How it works */}
       <section className="py-3 px-4">
