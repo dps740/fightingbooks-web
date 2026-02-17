@@ -905,22 +905,16 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   factsB.weapons_score = compStats.weaponsB;
   factsB.defense_score = compStats.defenseB;
 
-  // Generate battle
-  const battle = await generateBattle(factsA, factsB, environment);
-  const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
-
-  // Use pre-generated educational images + generate only battle-specific images
-  // Sort animal names for consistent image cache keys (same as book cache)
+  // Sort animal names for consistent image cache keys
   const sortedNames = [animalA.toLowerCase().replace(/\s+/g, '-'), animalB.toLowerCase().replace(/\s+/g, '-')].sort();
   const imgPrefix = `${sortedNames[0]}-vs-${sortedNames[1]}`;
   const nameA = animalA.toLowerCase().replace(/\s+/g, '-');
   const nameB = animalB.toLowerCase().replace(/\s+/g, '-');
   
   console.log(`Starting book generation for ${animalA} vs ${animalB}`);
-  
+
   // Load educational images — check DB for custom animals, fall back to static files
   const loadAnimalImages = async (slug: string) => {
-    // Check if this is a DB-backed custom animal with blob-stored images
     try {
       const { data: customAnimal } = await getSupabase()
         .from('custom_animals')
@@ -950,10 +944,23 @@ async function generateBook(animalA: string, animalB: string, environment: strin
     };
   };
 
-  const [eduImagesA, eduImagesB] = await Promise.all([
+  // OPTIMIZATION: Start cover image immediately (doesn't need battle text)
+  // Runs in parallel with battle text + educational image loading
+  const BATTLE_STYLE = 'photorealistic wildlife photography, dramatic natural lighting, shallow depth of field, cinematic composition';
+  const BATTLE_NEG = 'ABSOLUTELY NO TEXT NO WORDS NO LETTERS NO LOGOS NO WATERMARKS NO SYMBOLS NO WRITING, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
+
+  const coverPromise = generateImage(`${animalA} on the left facing ${animalB} on the right, intense staredown before battle, two separate distinct animals in natural poses ready to fight, tense atmosphere, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-cover`);
+
+  // Generate battle text + educational images in parallel with cover image
+  const [battle, eduImagesA, eduImagesB] = await Promise.all([
+    generateBattle(factsA, factsB, environment),
     loadAnimalImages(nameA),
     loadAnimalImages(nameB),
   ]);
+  const loser = battle.winner === factsA.name ? factsB.name : factsA.name;
+
+  // Start victory image now (needs winner from battle)
+  const victoryPromise = generateImage(`${battle.winner} standing proud after victory, natural dominant animal posture, surveying territory, single animal only, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-victory`);
   
   const imgA_portrait = eduImagesA.portrait;
   const imgA_habitat = eduImagesA.habitat;
@@ -967,29 +974,24 @@ async function generateBook(animalA: string, animalB: string, environment: strin
   
   console.log('Educational images loaded');
   
-  // Generate only battle-specific images (7 total)
-  // Prompts are derived from the actual battle text for unique, story-matched scenes
-  // Style suffix ensures photorealistic quality and prevents text/logos
-  const BATTLE_STYLE = 'photorealistic wildlife photography, dramatic natural lighting, shallow depth of field, cinematic composition';
-  const BATTLE_NEG = 'ABSOLUTELY NO TEXT NO WORDS NO LETTERS NO LOGOS NO WATERMARKS NO SYMBOLS NO WRITING, NO human features NO fists NO hands NO weapons NO standing upright like humans, ONLY these two animals no other creatures no duplicate animals no extra species, anatomically accurate natural animal bodies';
-  
   // Build image prompts from the actual battle scene text
   const sceneToPrompt = (sceneText: string, sceneHint: string) => {
-    // Strip any HTML and truncate to keep prompt focused
     const clean = sceneText.replace(/<[^>]*>/g, '').trim().slice(0, 200);
     return `${clean}, ${animalA} and ${animalB}, ${sceneHint}, ${BATTLE_STYLE}, ${BATTLE_NEG}`;
   };
 
-  const [coverImg, battleImg1, battleImg2, battleImg3, battleImg4, battleImg5, victoryImg] = await Promise.all([
-    generateImage(`${animalA} on the left facing ${animalB} on the right, intense staredown before battle, two separate distinct animals in natural poses ready to fight, tense atmosphere, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-cover`),
+  // Generate 5 scene-dependent battle images (cover + victory already started above)
+  const [battleImg1, battleImg2, battleImg3, battleImg4, battleImg5] = await Promise.all([
     generateImage(sceneToPrompt(battle.scenes[0], 'initial confrontation, sizing each other up'), `${imgPrefix}-battle1`),
     generateImage(sceneToPrompt(battle.scenes[1], 'first strike, explosive action shot'), `${imgPrefix}-battle2`),
     generateImage(sceneToPrompt(battle.scenes[2], 'fierce counterattack, intense combat'), `${imgPrefix}-battle3`),
     generateImage(sceneToPrompt(battle.scenes[3], 'momentum shift, dramatic turning point'), `${imgPrefix}-battle4`),
     generateImage(sceneToPrompt(battle.scenes[4], 'decisive finale, climactic battle moment'), `${imgPrefix}-battle5`),
-    generateImage(`${battle.winner} standing proud after victory, natural dominant animal posture, surveying territory, single animal only, ${BATTLE_STYLE}, ${BATTLE_NEG}`, `${imgPrefix}-victory`),
   ]);
-  console.log('Battle images generated');
+  
+  // Await the early-started cover + victory images
+  const [coverImg, victoryImg] = await Promise.all([coverPromise, victoryPromise]);
+  console.log('All battle images generated');
   
   // Secrets images (already loaded from DB or static)
   const imgA_secrets = eduImagesA.secrets;
