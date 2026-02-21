@@ -162,14 +162,36 @@ export async function generateMetadata({
   };
 }
 
-function markdownToHtml(markdown: string): string {
+interface FighterPortrait {
+  name: string;
+  src: string;
+}
+
+function markdownToHtml(
+  markdown: string,
+  portraitA?: FighterPortrait,
+  portraitB?: FighterPortrait,
+): string {
   let html = markdown;
 
   // Headers — process in reverse order (h3 before h2 before h1)
-  html = html.replace(
-    /^### (.+)$/gm,
-    '<h3 class="text-xl font-bold mt-6 mb-3 text-[var(--text-primary)]">$1</h3>'
-  );
+  html = html.replace(/^### (.+)$/gm, (_match, rawTitle: string) => {
+    // Strip leading emoji characters (🥊, etc.)
+    const cleanTitle = rawTitle.replace(/^\p{Emoji}+\s*/u, '').trim();
+
+    // Inject portrait image if this H3 is a fighter section
+    let portraitHtml = '';
+    const titleLower = cleanTitle.toLowerCase();
+    const candidates: FighterPortrait[] = [portraitA, portraitB].filter(Boolean) as FighterPortrait[];
+    for (const p of candidates) {
+      if (titleLower.includes(p.name.toLowerCase())) {
+        portraitHtml = `<div class="my-4 flex justify-center"><img src="${p.src}" alt="${p.name}" width="140" height="140" style="border-radius:50%;border:2px solid var(--accent-gold);object-fit:cover;width:140px;height:140px" loading="lazy" onerror="this.style.display='none'" /></div>`;
+        break;
+      }
+    }
+
+    return `<h3 class="text-xl font-bold mt-6 mb-3 text-[var(--text-primary)]">${cleanTitle}</h3>${portraitHtml}`;
+  });
   html = html.replace(
     /^## (.+)$/gm,
     '<h2 class="text-3xl font-bold mt-12 mb-6 text-[var(--accent-gold)]" style="font-family: var(--font-display)">$1</h2>'
@@ -345,7 +367,15 @@ export default async function BattlePage({
     notFound();
   }
 
-  const htmlContent = markdownToHtml(battle.content);
+  const portraitA: FighterPortrait = {
+    name: battle.animalA,
+    src: `/fighters/${animalToImageSlug(battle.animalA)}.jpg`,
+  };
+  const portraitB: FighterPortrait = {
+    name: battle.animalB,
+    src: `/fighters/${animalToImageSlug(battle.animalB)}.jpg`,
+  };
+  const htmlContent = markdownToHtml(battle.content, portraitA, portraitB);
   const relatedBattles = getRelatedBattles(slug, battle.animalA, battle.animalB);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';

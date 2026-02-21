@@ -151,33 +151,33 @@ animal_b: "{animal_b}"
 
 ## Meet the Fighters
 
-### 🥊 The {animal_a}
+### The {animal_a}
 
 [2-3 sentences describing the animal, its habitat and reputation.]
 
 **Physical Stats:**
-- **Weight:** [accurate range]
-- **Length / Height:** [accurate measurement]
-- **Top Speed:** [accurate stat]
-- **Bite Force / Strength:** [accurate stat if applicable]
+- **Weight:** [use ONLY the weight from the Known facts below — do not invent]
+- **Length / Height:** [use ONLY the size from the Known facts below]
+- **Top Speed:** [use ONLY the speed from the Known facts below]
+- **Bite Force / Strength:** [use ONLY bite force / strength from Known facts, or omit if not provided]
 
 **Weapons:**
-- [weapon 1]
+- [weapon 1 — from Known facts if available]
 - [weapon 2]
 - [weapon 3]
 
 **Fighting Style:**
 [2-3 sentences describing how this animal actually fights — specific tactics, solo vs pack, ambush vs direct, etc.]
 
-### 🥊 The {animal_b}
+### The {animal_b}
 
 [2-3 sentences describing the animal, its habitat and reputation.]
 
 **Physical Stats:**
-- **Weight:** [accurate range]
-- **Length / Height:** [accurate measurement]
-- **Top Speed:** [accurate stat]
-- **Bite Force / Strength:** [accurate stat if applicable]
+- **Weight:** [use ONLY the weight from the Known facts below — do not invent]
+- **Length / Height:** [use ONLY the size from the Known facts below]
+- **Top Speed:** [use ONLY the speed from the Known facts below]
+- **Bite Force / Strength:** [use ONLY bite force / strength from Known facts, or omit if not provided]
 
 **Weapons:**
 - [weapon 1]
@@ -234,8 +234,13 @@ animal_b: "{animal_b}"
 
 *Generate your own {animal_a} vs {animal_b} illustrated battle book at whowouldwinbooks.com*{facts_section}
 
-IMPORTANT:
-- Use accurate real-world statistics
+⚠️ STATS ACCURACY — CRITICAL:
+- Use ONLY the numerical values from "Known facts" above (weight, speed, bite force, weapons)
+- Do NOT round up, exaggerate, or invent statistics — even if you think you know them
+- If a stat isn't in the Known facts, use a conservative real-world estimate and flag it with "(approx.)"
+- Wrong stats erode the site's credibility with readers who know these animals
+
+OTHER RULES:
 - The article must be at least 1,300 words
 - Include the YAML frontmatter block exactly as shown above (between --- delimiters)
 - Do not add any text before the opening --- frontmatter delimiter
