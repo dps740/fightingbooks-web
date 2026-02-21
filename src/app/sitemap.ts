@@ -72,5 +72,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }))
 
-  return [...staticPages, ...blogPages, ...learnPages]
+  // Get all battle pages
+  const battlesDir = path.join(process.cwd(), 'content', 'battles')
+  let battleSlugs: string[] = []
+  
+  try {
+    const files = fs.readdirSync(battlesDir)
+    battleSlugs = files
+      .filter(file => file.endsWith('.md'))
+      .map(file => file.replace('.md', ''))
+  } catch (error) {
+    console.error('Could not read battles directory:', error)
+  }
+
+  const battlePages = battleSlugs.map(slug => ({
+    url: `${baseUrl}/battles/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }))
+
+  return [...staticPages, ...blogPages, ...learnPages, ...battlePages]
 }
