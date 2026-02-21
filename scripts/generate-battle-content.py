@@ -57,6 +57,31 @@ BATCH_LIST = [
     ("Komodo Dragon", "King Cobra"),
 ]
 
+# All 47 animals in the FightingBooks roster
+ALL_ANIMALS = [
+    # Real Animals (30)
+    "Lion", "Tiger", "Grizzly Bear", "Polar Bear", "Gorilla",
+    "Great White Shark", "Orca", "Crocodile", "Elephant", "Hippo",
+    "Rhino", "Hammerhead Shark", "King Cobra", "Anaconda", "Wolf",
+    "Jaguar", "Leopard", "Eagle", "Giant Panda", "Electric Eel",
+    "Moose", "Cape Buffalo", "Great Horned Owl", "Python", "Alligator",
+    "Mandrill", "Cheetah", "Hyena", "Walrus", "Octopus",
+    # Dinosaurs (8)
+    "T-Rex", "Velociraptor", "Triceratops", "Spinosaurus",
+    "Stegosaurus", "Ankylosaurus", "Pteranodon", "Brachiosaurus",
+    # Fantasy (9)
+    "Dragon", "Griffin", "Hydra", "Phoenix", "Cerberus",
+    "Chimera", "Manticore", "Basilisk", "Kraken",
+]
+
+def generate_all_pairs():
+    """Generate every unique (A, B) pair from ALL_ANIMALS. C(47,2) = 1,081 pairs."""
+    pairs = []
+    for i in range(len(ALL_ANIMALS)):
+        for j in range(i + 1, len(ALL_ANIMALS)):
+            pairs.append((ALL_ANIMALS[i], ALL_ANIMALS[j]))
+    return pairs
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -331,6 +356,7 @@ def main():
     parser.add_argument("--slug", help='Slug like "lion-vs-tiger"')
     parser.add_argument("--animals", help='JSON array of pairs: [["Lion","Tiger"],...]')
     parser.add_argument("--batch", action="store_true", help="Generate all battles in BATCH_LIST")
+    parser.add_argument("--all-matchups", action="store_true", help="Generate ALL 1,081 matchups (skips existing files)")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
     args = parser.parse_args()
 
@@ -368,6 +394,59 @@ def main():
             if i < total:
                 time.sleep(1)  # courtesy delay
         print(f"\n✅  Done: {successes}/{total} generated successfully")
+
+    elif args.all_matchups:
+        all_pairs = generate_all_pairs()
+        total = len(all_pairs)
+        # Count already-done so progress is accurate
+        existing = sum(
+            1 for a, b in all_pairs
+            if (BATTLES_DIR / f"{pair_to_slug(a, b)}.md").exists()
+        )
+        print(f"🚀  Generating all {total} matchups ({existing} already exist, will skip)")
+        successes = 0
+        skipped = 0
+        failed = 0
+        for i, (animal_a, animal_b) in enumerate(all_pairs, 1):
+            slug = pair_to_slug(animal_a, animal_b)
+            if (BATTLES_DIR / f"{slug}.md").exists() and not args.force:
+                skipped += 1
+                continue
+            print(f"\n[{i}/{total}]", end=" ")
+            ok = generate_pair(animal_a, animal_b, api_key, facts, force=args.force)
+            if ok:
+                successes += 1
+            else:
+                failed += 1
+            time.sleep(0.5)  # gentle rate-limit buffer
+
+        print(f"\n✅  All done!")
+        print(f"   Generated: {successes}  |  Skipped (existing): {skipped}  |  Failed: {failed}")
+
+        # Auto-commit and push if anything was generated
+        if successes > 0:
+            import subprocess
+            print("\n📦  Committing and pushing to GitHub...")
+            try:
+                subprocess.run(
+                    ["git", "add", "content/battles/"],
+                    cwd=str(BATTLES_DIR.parent.parent),
+                    check=True,
+                )
+                subprocess.run(
+                    ["git", "commit", "-m",
+                     f"content: add {successes} battle pages (bulk generation)"],
+                    cwd=str(BATTLES_DIR.parent.parent),
+                    check=True,
+                )
+                subprocess.run(
+                    ["git", "push", "origin", "main"],
+                    cwd=str(BATTLES_DIR.parent.parent),
+                    check=True,
+                )
+                print("🚀  Pushed to GitHub — Vercel will deploy automatically")
+            except subprocess.CalledProcessError as e:
+                print(f"⚠️  Git push failed: {e} — run manually: git add content/battles/ && git commit && git push")
 
     else:
         parser.print_help()
