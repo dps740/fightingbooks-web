@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { put, head, del, list, BlobNotFoundError } from '@vercel/blob';
 import { generatePDF } from '@/lib/pdfGenerator';
+import { notifyIndexNow } from '@/lib/indexnow';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
 import {
@@ -1800,6 +1801,9 @@ export async function POST(request: NextRequest) {
       // Save to cache (JSON + PDF)
       await saveCachedBook(cacheKey, result);
       await saveCachedPDF(cacheKey, animalA, animalB, result); // Generate PDF alongside
+      // Notify Bing IndexNow so this battle gets indexed quickly
+      const slug = [animalA, animalB].map(a => a.toLowerCase().replace(/\s+/g, '-')).sort().join('-vs-');
+      notifyIndexNow([`/battles/${slug}`]).catch(() => {}); // fire-and-forget
     } else {
       console.log(`[CACHE] ${cacheStatus} - returning cached book for ${animalA} vs ${animalB}`);
     }
