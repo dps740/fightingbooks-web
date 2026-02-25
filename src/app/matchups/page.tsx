@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: {
-    canonical: '/matchups',
+    canonical: '/battles',
   },
 };
 
@@ -27,6 +27,39 @@ interface Matchup {
   blogSlug: string | null;
   crossType: string;
 }
+
+const FEATURED_GUIDES = [
+  {
+    slug: 'lion-vs-tiger',
+    title: 'Lion vs Tiger',
+    description: 'The definitive big-cat breakdown: size, power, and fight dynamics.',
+  },
+  {
+    slug: 'gorilla-vs-bear',
+    title: 'Gorilla vs Grizzly Bear',
+    description: 'Primate strength vs bear durability — what actually decides it.',
+  },
+  {
+    slug: 'orca-vs-great-white-shark',
+    title: 'Orca vs Great White Shark',
+    description: 'Why this apex predator matchup is more one-sided than people think.',
+  },
+  {
+    slug: 'elephant-vs-rhino',
+    title: 'Elephant vs Rhino',
+    description: 'Heavyweight herbivores with very different weapon systems.',
+  },
+  {
+    slug: 'wolf-vs-lion',
+    title: 'Wolf vs Lion',
+    description: 'Pack tactics vs solo dominance, with realistic encounter context.',
+  },
+  {
+    slug: 'polar-bear-vs-grizzly-bear',
+    title: 'Polar Bear vs Grizzly Bear',
+    description: 'Two elite bears, compared by mass, reach, and aggression style.',
+  },
+];
 
 function generateAllMatchups(): Matchup[] {
   const matchups: Matchup[] = [];
@@ -123,9 +156,9 @@ export default function MatchupsPage() {
           <Link href="/" className="text-[var(--accent-gold)] hover:text-[var(--accent-gold-dark)] text-sm font-bold uppercase tracking-wide">
             ← Back to Home
           </Link>
-          <Link href="/blog" className="text-[var(--text-secondary)] hover:text-[var(--accent-gold)] text-sm font-bold uppercase tracking-wide">
-            Battle Guides →
-          </Link>
+          <a href="#featured-guides" className="text-[var(--text-secondary)] hover:text-[var(--accent-gold)] text-sm font-bold uppercase tracking-wide">
+            Featured Guides ↓
+          </a>
         </div>
       </header>
 
@@ -139,11 +172,11 @@ export default function MatchupsPage() {
               textShadow: '0 0 20px rgba(212, 175, 55, 0.3)',
             }}
           >
-            ANIMAL BATTLE LINKS
+            BATTLES HUB
           </h1>
           <p className="text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-4">
             Search {allMatchups.length.toLocaleString()} battle pages between {FIGHTERS.length} fighters.
-            Every matchup below links directly to its battle page.
+            Discover popular matchups and featured deep-dive guides in one place.
           </p>
           <div className="flex justify-center gap-6 text-sm text-[var(--text-muted)]">
             <span>
@@ -157,6 +190,31 @@ export default function MatchupsPage() {
       </section>
 
       <PopularBattles initialCards={seededPopularCards} />
+
+      <section id="featured-guides" className="py-12 px-4 border-b border-[var(--border-accent)]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
+              Featured Deep-Dive Guides
+            </h2>
+            <p className="text-[var(--text-secondary)] mt-2">Long-form breakdowns for the matchups people ask about most.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {FEATURED_GUIDES.map((guide) => (
+              <Link
+                key={guide.slug}
+                href={`/blog/${guide.slug}`}
+                className="p-4 rounded-lg border border-[var(--border-accent)] bg-[var(--bg-card)] hover:border-[var(--accent-gold)] hover:shadow-[0_0_15px_rgba(212,175,55,0.15)] transition-all"
+              >
+                <p className="font-bold text-[var(--text-primary)]">{guide.title}</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">{guide.description}</p>
+                <p className="text-xs text-[var(--accent-gold)] mt-2 font-semibold">Read full guide →</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <MatchupsClient groups={groupData} totalCount={allMatchups.length} />
 
