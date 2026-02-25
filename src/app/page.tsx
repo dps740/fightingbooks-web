@@ -490,6 +490,9 @@ export default function Home() {
             <a href="/blog" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
               📖 BATTLE GUIDES
             </a>
+            <a href="/battles" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
+              ⚔️ BATTLE LINKS
+            </a>
           </nav>
           <AccountMenu 
             isAuthenticated={tierData.isAuthenticated}
