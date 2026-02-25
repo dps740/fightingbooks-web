@@ -72,19 +72,26 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
 
         {/* Category quick filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {groups.map(g => (
-            <button
-              key={g.key}
-              onClick={() => toggleGroup(g.key)}
-              className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide border-2 transition-all ${
-                expandedGroups.has(g.key)
-                  ? 'border-[var(--accent-gold)] bg-[var(--accent-gold)] text-[var(--bg-primary)]'
-                  : 'border-[var(--border-accent)] text-[var(--text-secondary)] hover:border-[var(--accent-gold)] hover:text-[var(--accent-gold)]'
-              }`}
-            >
-              {g.label.split(' ').slice(0, 1).join('')} {g.matchups.length}
-            </button>
-          ))}
+          {groups.map(g => {
+            const shortLabel = g.label
+              .replace(' Animals', '')
+              .replace(' Dinosaurs', ' Dinos')
+              .replace('Fantasy', 'Mythic');
+
+            return (
+              <button
+                key={g.key}
+                onClick={() => toggleGroup(g.key)}
+                className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide border-2 transition-all ${
+                  expandedGroups.has(g.key)
+                    ? 'border-[var(--accent-gold)] bg-[var(--accent-gold)] text-[var(--bg-primary)]'
+                    : 'border-[var(--border-accent)] text-[var(--text-secondary)] hover:border-[var(--accent-gold)] hover:text-[var(--accent-gold)]'
+                }`}
+              >
+                {shortLabel} ({g.matchups.length})
+              </button>
+            );
+          })}
         </div>
 
         {/* Groups */}
