@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 interface MatchupData {
@@ -21,6 +21,17 @@ interface Props {
   totalCount: number;
 }
 
+function trackMatchupClick(animal1: string, animal2: string) {
+  fetch('/api/matchups/popular', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ animal1, animal2 }),
+    keepalive: true,
+  }).catch(() => {
+    // no-op
+  });
+}
+
 export default function MatchupsClient({ groups, totalCount }: Props) {
   const [search, setSearch] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['real']));
@@ -30,17 +41,15 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
     if (!search.trim()) return groups;
     const q = search.toLowerCase();
     return groups
-      .map(g => ({
+      .map((g) => ({
         ...g,
-        matchups: g.matchups.filter(
-          m => m.animal1.toLowerCase().includes(q) || m.animal2.toLowerCase().includes(q)
-        ),
+        matchups: g.matchups.filter((m) => m.animal1.toLowerCase().includes(q) || m.animal2.toLowerCase().includes(q)),
       }))
-      .filter(g => g.matchups.length > 0);
+      .filter((g) => g.matchups.length > 0);
   }, [groups, search]);
 
   const toggleGroup = (key: string) => {
-    setExpandedGroups(prev => {
+    setExpandedGroups((prev) => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -54,29 +63,21 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
   return (
     <section className="py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Search */}
         <div className="mb-8 max-w-md mx-auto">
           <input
             type="text"
             placeholder="Search animals... (e.g. Lion, T-Rex, Dragon)"
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full px-4 py-3 rounded-lg bg-[var(--bg-card)] border-2 border-[var(--border-accent)] text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-[var(--accent-gold)] focus:outline-none transition-colors"
           />
-          {search && (
-            <p className="text-sm text-[var(--text-muted)] mt-2 text-center">
-              {filteredCount} matchups found
-            </p>
-          )}
+          {search && <p className="text-sm text-[var(--text-muted)] mt-2 text-center">{filteredCount} matchups found</p>}
+          {!search && <p className="text-xs text-[var(--text-muted)] mt-2 text-center">Browse all {totalCount.toLocaleString()} battle pages</p>}
         </div>
 
-        {/* Category quick filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {groups.map(g => {
-            const shortLabel = g.label
-              .replace(' Animals', '')
-              .replace(' Dinosaurs', ' Dinos')
-              .replace('Fantasy', 'Mythic');
+          {groups.map((g) => {
+            const shortLabel = g.label.replace(' Animals', '').replace(' Dinosaurs', ' Dinos').replace('Fantasy', 'Mythic');
 
             return (
               <button
@@ -94,12 +95,9 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
           })}
         </div>
 
-        {/* Groups */}
-        {filteredGroups.map(group => {
+        {filteredGroups.map((group) => {
           const isExpanded = expandedGroups.has(group.key) || !!search;
-          const visibleMatchups = showAll[group.key] || search
-            ? group.matchups
-            : group.matchups.slice(0, INITIAL_SHOW);
+          const visibleMatchups = showAll[group.key] || search ? group.matchups : group.matchups.slice(0, INITIAL_SHOW);
 
           return (
             <div key={group.key} className="mb-8">
@@ -107,7 +105,10 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
                 onClick={() => toggleGroup(group.key)}
                 className="w-full flex items-center justify-between py-4 px-6 bg-[var(--bg-secondary)] border-2 border-[var(--border-accent)] rounded-lg hover:border-[var(--accent-gold)] transition-colors group"
               >
-                <h2 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-gold)] transition-colors" style={{ fontFamily: 'var(--font-display)' }}>
+                <h2
+                  className="text-xl md:text-2xl font-bold text-[var(--text-primary)] group-hover:text-[var(--accent-gold)] transition-colors"
+                  style={{ fontFamily: 'var(--font-display)' }}
+                >
                   {group.label}
                 </h2>
                 <div className="flex items-center gap-3">
@@ -118,10 +119,11 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
 
               {isExpanded && (
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {visibleMatchups.map(m => (
+                  {visibleMatchups.map((m) => (
                     <Link
                       key={`${m.animal1}-${m.animal2}`}
                       href={m.href}
+                      onClick={() => trackMatchupClick(m.animal1, m.animal2)}
                       className={`flex items-center gap-2 px-4 py-3 rounded-lg border transition-all hover:scale-[1.02] ${
                         m.blogSlug
                           ? 'bg-[var(--bg-card)] border-[var(--accent-gold)]/30 hover:border-[var(--accent-gold)] hover:shadow-[0_0_15px_rgba(212,175,55,0.15)]'
@@ -129,17 +131,17 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
                       }`}
                     >
                       <span className="font-bold text-[var(--text-primary)] text-sm flex-1 text-right truncate">{m.animal1}</span>
-                      <span className={`text-xs font-black px-2 py-0.5 rounded ${
-                        m.blogSlug
-                          ? 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]'
-                          : 'bg-[var(--accent-red)]/20 text-[var(--accent-red)]'
-                      }`}>
+                      <span
+                        className={`text-xs font-black px-2 py-0.5 rounded ${
+                          m.blogSlug
+                            ? 'bg-[var(--accent-gold)]/20 text-[var(--accent-gold)]'
+                            : 'bg-[var(--accent-red)]/20 text-[var(--accent-red)]'
+                        }`}
+                      >
                         VS
                       </span>
                       <span className="font-bold text-[var(--text-primary)] text-sm flex-1 truncate">{m.animal2}</span>
-                      {m.blogSlug && (
-                        <span className="text-xs text-[var(--accent-gold)]" title="Full article available">📖</span>
-                      )}
+                      {m.blogSlug && <span className="text-xs text-[var(--accent-gold)]" title="Full article available">📖</span>}
                     </Link>
                   ))}
                 </div>
@@ -147,7 +149,7 @@ export default function MatchupsClient({ groups, totalCount }: Props) {
 
               {isExpanded && !search && !showAll[group.key] && group.matchups.length > INITIAL_SHOW && (
                 <button
-                  onClick={() => setShowAll(prev => ({ ...prev, [group.key]: true }))}
+                  onClick={() => setShowAll((prev) => ({ ...prev, [group.key]: true }))}
                   className="mt-4 w-full py-3 text-center text-sm font-bold text-[var(--accent-gold)] border border-[var(--accent-gold)]/30 rounded-lg hover:bg-[var(--accent-gold)]/10 transition-colors"
                 >
                   Show all {group.matchups.length} matchups ↓
