@@ -487,11 +487,8 @@ export default function Home() {
             <a href="/learn" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
               📚 LEARNING CENTER
             </a>
-            <a href="/blog" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
-              📖 BATTLE GUIDES
-            </a>
             <a href="/battles" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
-              ⚔️ BATTLE LINKS
+              ⚔️ BATTLES
             </a>
           </nav>
           <AccountMenu 
@@ -1435,19 +1432,19 @@ export default function Home() {
               </a>
             </div>
             
-            {/* Battle Guides Card */}
+            {/* Battles Hub Card */}
             <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
               <h2 className="font-bangers text-2xl text-[#FFD700] mb-3" style={{ letterSpacing: '2px' }}>
-                📖 BATTLE GUIDES
+                ⚔️ BATTLES HUB
               </h2>
               <p className="text-white/90 text-base mb-5">
-                In-depth wildlife matchup guides with real facts, scientific analysis, and expert verdicts!
+                Search every matchup, see most popular battles, and jump into featured deep-dive guides.
               </p>
               <a
-                href="/blog"
+                href="/battles"
                 className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-lg px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-3 border-[#8B0000]"
               >
-                READ GUIDES
+                EXPLORE BATTLES
               </a>
             </div>
           </div>
