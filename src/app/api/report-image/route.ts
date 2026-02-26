@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, head, list } from '@vercel/blob';
 import { BlobNotFoundError } from '@vercel/blob';
+import { authorizeAdminRequest } from '@/lib/adminAuth';
 
 const REPORTS_BLOB_PATH = 'fightingbooks/admin/image-reports.json';
 
@@ -85,8 +86,8 @@ export async function POST(request: NextRequest) {
 
 // GET: List image reports (admin only)
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer fightingbooks-admin-2026`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -99,8 +100,8 @@ export async function GET(request: NextRequest) {
 
 // PATCH: Update report status (admin - mark as resolved/dismissed)
 export async function PATCH(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer fightingbooks-admin-2026`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

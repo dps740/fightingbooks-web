@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { del, list } from '@vercel/blob';
-
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'fightingbooks-admin-2026';
+import { authorizeAdminRequest } from '@/lib/adminAuth';
 
 function getCacheKey(animalA: string, animalB: string, environment: string = 'neutral'): string {
   const a = animalA.toLowerCase().replace(/\s+/g, '-');
@@ -11,9 +10,8 @@ function getCacheKey(animalA: string, animalB: string, environment: string = 'ne
 }
 
 export async function POST(request: NextRequest) {
-  // Auth check
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${ADMIN_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -75,8 +73,8 @@ export async function POST(request: NextRequest) {
 
 // GET - List cached books
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${ADMIN_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

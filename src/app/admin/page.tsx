@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const ADMIN_KEY = 'fightingbooks-admin-2024';
-const CACHE_SECRET = 'fightingbooks-admin-2026';
 const ADMIN_EMAILS = ['david.smith@epsilon-three.com', 'davidpatricksmith@hotmail.com'];
 
 const PAGE_OPTIONS = [
@@ -151,9 +149,7 @@ export default function AdminPage() {
     setCacheLoading(true);
     setCacheError('');
     try {
-      const response = await fetch('/api/admin/delete-book', {
-        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
-      });
+      const response = await fetch('/api/admin/delete-book');
       const data = await response.json();
       if (!response.ok) throw new Error(data.details || data.error || 'Failed to load cache');
       setCacheData(data);
@@ -168,9 +164,7 @@ export default function AdminPage() {
     setCyoaLoading(true);
     setCyoaError('');
     try {
-      const response = await fetch('/api/admin/cyoa-cache', {
-        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
-      });
+      const response = await fetch('/api/admin/cyoa-cache');
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to load CYOA cache');
       setCyoaData(data);
@@ -196,7 +190,6 @@ export default function AdminPage() {
       const response = await fetch('/api/admin/delete-book', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ animalA: a, animalB: b, deleteImages }),
@@ -220,7 +213,6 @@ export default function AdminPage() {
       const response = await fetch('/api/admin/cyoa-cache', {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ matchupKey, pathOnly, gatesOnly, specificPath }),
@@ -241,9 +233,7 @@ export default function AdminPage() {
     setFlaggedLoading(true);
     setFlaggedError('');
     try {
-      const response = await fetch(`/api/report?status=${flaggedFilter}`, {
-        headers: { 'Authorization': `Bearer ${CACHE_SECRET}` },
-      });
+      const response = await fetch(`/api/report?status=${flaggedFilter}`);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to load reports');
       setFlaggedReports(data.reports || []);
@@ -270,7 +260,6 @@ export default function AdminPage() {
           animalA: report.animal_a.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
           animalB: report.animal_b.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
           pageId: report.page_id,
-          adminKey: ADMIN_KEY,
         }),
       });
       const data = await response.json();
@@ -280,7 +269,6 @@ export default function AdminPage() {
         await fetch('/api/report', {
           method: 'PATCH',
           headers: {
-            'Authorization': `Bearer ${CACHE_SECRET}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -308,7 +296,6 @@ export default function AdminPage() {
       await fetch('/api/report', {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -334,7 +321,6 @@ export default function AdminPage() {
       const response = await fetch('/api/admin/cyoa-cache', {
         method: 'PATCH',
         headers: {
-          'Authorization': `Bearer ${CACHE_SECRET}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ matchupKey, path: pathKey, imageId }),
@@ -370,7 +356,6 @@ export default function AdminPage() {
           animalA: animals.animalA,
           animalB: animals.animalB,
           pageId,
-          adminKey: ADMIN_KEY,
         }),
       });
 

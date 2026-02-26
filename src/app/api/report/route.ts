@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-
-const CACHE_SECRET = 'fightingbooks-admin-2026';
+import { authorizeAdminRequest } from '@/lib/adminAuth';
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -77,8 +76,8 @@ export async function POST(request: NextRequest) {
 
 // GET: List reports (admin only)
 export async function GET(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${CACHE_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -106,8 +105,8 @@ export async function GET(request: NextRequest) {
 
 // PATCH: Update report status (admin only)
 export async function PATCH(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${CACHE_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

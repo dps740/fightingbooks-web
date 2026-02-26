@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put, head, del, BlobNotFoundError } from '@vercel/blob';
 import { FANTASY_ANIMALS, DINOSAUR_ANIMALS } from '@/lib/tierAccess';
-
-// Simple admin key check (you can make this more secure)
-const ADMIN_KEY = process.env.ADMIN_KEY || 'fightingbooks-admin-2024';
+import { authorizeAdminRequest } from '@/lib/adminAuth';
 
 // Animal-specific features for accurate depictions
 const ANIMAL_FEATURES: Record<string, { include: string, avoid: string }> = {
@@ -208,13 +206,13 @@ async function saveCachedBook(cacheKey: string, data: any): Promise<void> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { animalA, animalB, pageId, adminKey, environment = 'neutral' } = body;
+    const { animalA, animalB, pageId, environment = 'neutral' } = body;
 
     console.log(`[ADMIN] Regenerate request: ${animalA} vs ${animalB}, page: ${pageId}`);
 
-    // Simple auth check
-    if (adminKey !== ADMIN_KEY) {
-      console.log(`[ADMIN] Auth failed`);
+    const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+    if (!authorized) {
+      console.log('[ADMIN] Auth failed');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

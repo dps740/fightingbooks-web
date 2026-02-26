@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { list, del, put, head } from '@vercel/blob';
+import { authorizeAdminRequest } from '@/lib/adminAuth';
 
-const ADMIN_SECRET = 'fightingbooks-admin-2026';
 const CYOA_CACHE_VERSION = 'v1';
 
 // Generate image using fal.ai Flux
@@ -66,8 +66,8 @@ interface CyoaMatchup {
 
 // GET: List all CYOA cached data
 export async function GET(request: NextRequest) {
-  const auth = request.headers.get('Authorization');
-  if (auth !== `Bearer ${ADMIN_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -143,8 +143,8 @@ export async function GET(request: NextRequest) {
 // DELETE: Delete CYOA cache for a matchup
 // Options: { matchupKey, pathOnly?, gatesOnly?, specificPath? }
 export async function DELETE(request: NextRequest) {
-  const auth = request.headers.get('Authorization');
-  if (auth !== `Bearer ${ADMIN_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -216,8 +216,8 @@ export async function DELETE(request: NextRequest) {
 // PATCH: Regenerate a specific image in a path
 // Body: { matchupKey, path, imageId } where imageId is "outcome-1", "outcome-2", "outcome-3", or "victory"
 export async function PATCH(request: NextRequest) {
-  const auth = request.headers.get('Authorization');
-  if (auth !== `Bearer ${ADMIN_SECRET}`) {
+  const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+  if (!authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
