@@ -54,23 +54,19 @@ export default function AccountMenu({ isAuthenticated, email, tier, onUpgrade }:
     );
   }
 
-  // Logged-in view - Tier badge + dropdown
+  // Logged-in view - Compact avatar icon + dropdown
+  const tierIcon = tier === 'ultimate' ? '👑' : tier === 'member' ? '🥊' : '👤';
+
   return (
     <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
+      {/* Trigger Button — compact avatar, no verbose label */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 ${badge.border} ${badge.bg} hover:brightness-110 transition-all`}
+        title={badge.shortLabel}
+        className={`w-9 h-9 rounded-full border-2 ${badge.border} ${badge.bg} hover:brightness-110 transition-all flex items-center justify-center shadow-md`}
+        style={tier === 'ultimate' ? { boxShadow: '0 0 10px rgba(255,215,0,0.4)' } : undefined}
       >
-        <span className="font-bangers text-white text-sm tracking-wide">{badge.label}</span>
-        <svg
-          className={`w-4 h-4 text-white/70 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        <span className="text-base leading-none">{tierIcon}</span>
       </button>
 
       {/* Dropdown Menu */}

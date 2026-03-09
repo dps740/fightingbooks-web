@@ -525,22 +525,11 @@ export default function Home() {
           }} />
         ))}
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Inspired by tagline */}
-          <motion.p
-            initial={{ y: -10 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-sm sm:text-base text-white/70 mb-2 px-4"
-            style={{ textShadow: '1px 1px 2px #000' }}
-          >
-            Inspired by our kids&apos; love for the bestselling <span className="text-[#FFD700] font-bold">Who Would Win</span> books
-          </motion.p>
-
-          {/* Headline */}
+          {/* Headline — leads strong, no backstory eyebrow */}
           <motion.div initial={{ y: -10 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
             <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
-              Who Would Win? Create Epic<br />
-              <span className="text-[#FFD700]">Animal Battle Books</span>
+              Who Would Win?<br />
+              <span className="text-[#FFD700]">Epic Animal Battle Books</span>
             </h1>
           </motion.div>
           
@@ -549,50 +538,47 @@ export default function Home() {
             initial={{ y: 10 }} 
             animate={{ y: 0, opacity: 1 }} 
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-5 px-4" 
+            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-4 px-4" 
             style={{ textShadow: '1px 1px 2px #000' }}
           >
             Pick any two animals, get an instant illustrated book with real science, stats, and a final verdict.
           </motion.p>
 
-          {/* Primary + Secondary CTAs */}
+          {/* 3 Benefit Pillars — ABOVE the CTA so visitors know why to click */}
+          <motion.div 
+            initial={{ y: 10 }} 
+            animate={{ y: 0, opacity: 1 }} 
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 max-w-4xl mx-auto mb-5 px-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">Builds vocabulary with vivid comparisons</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">Real wildlife facts &amp; stat scoring</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+              <span className="text-white/90 text-sm sm:text-base font-medium">For kids ages 5–12 · Free to start</span>
+            </div>
+          </motion.div>
+
+          {/* Primary CTA — after benefits */}
           <motion.div 
             initial={{ scale: 0.95 }} 
             animate={{ scale: 1, opacity: 1 }} 
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4"
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-2"
           >
             <a
               href="#create"
               className="px-10 py-5 rounded-xl font-bangers text-2xl sm:text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all w-full sm:w-auto"
             >
-              Create a Free Book
+              ⚔️ Create a Free Book
             </a>
-{/* Secondary CTA removed — example books visible directly below */}
           </motion.div>
-
-          {/* 3 Benefit Pillars */}
-          <motion.div 
-            initial={{ y: 10 }} 
-            animate={{ y: 0, opacity: 1 }} 
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10 max-w-4xl mx-auto mb-2"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">Builds vocabulary with fun similes</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">Real wildlife traits and comparisons</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">Reasoning through structured scoring</span>
-            </div>
-          </motion.div>
-
-          {/* Age callout integrated into bullet line */}
         </div>
       </section>
 
@@ -604,13 +590,28 @@ export default function Home() {
         </div>
       </noscript>
 
-      {/* DEMO SECTION - How it works */}
+      {/* DEMO SECTION - How it works — 2×2 grid so step 1 never clips on mobile */}
       <section className="py-3 px-4">
         <div className="max-w-4xl mx-auto">
-          <h3 className="font-bangers text-xl sm:text-2xl text-center text-white mb-4" style={{ textShadow: '2px 2px 0 #000' }}>
+          <h3 className="font-bangers text-xl sm:text-2xl text-center text-white/60 mb-4 tracking-widest uppercase" style={{ textShadow: '1px 1px 0 #000' }}>
             How It Works
           </h3>
-          <div className="flex items-center justify-center gap-0">
+          {/* Mobile: 2×2 grid. Desktop: single row with arrows */}
+          <div className="grid grid-cols-2 sm:hidden gap-3 max-w-xs mx-auto">
+            {[
+              { num: '1', label: 'Pick Animals' },
+              { num: '2', label: 'Compare Traits' },
+              { num: '3', label: 'Read Story' },
+              { num: '4', label: 'Discover Winner' },
+            ].map((step) => (
+              <div key={step.num} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                <span className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-red-900 font-bold text-sm shrink-0">{step.num}</span>
+                <span className="text-white/85 text-sm font-medium">{step.label}</span>
+              </div>
+            ))}
+          </div>
+          {/* Desktop: single row */}
+          <div className="hidden sm:flex items-center justify-center gap-0">
             {[
               { num: '1', label: 'Pick Animals' },
               { num: '2', label: 'Compare Traits' },
