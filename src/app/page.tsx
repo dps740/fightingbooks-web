@@ -528,27 +528,73 @@ export default function Home() {
               Pick two animals and get an illustrated matchup with real science, stat comparisons, and a final verdict kids actually want to read.
             </p>
 
-            {/* MOBILE book fan — simple CSS, no hover state needed */}
-            <div className="relative mb-6 h-[210px] w-full max-w-[360px] sm:h-[260px] sm:max-w-[540px] lg:hidden">
-              {HERO_BOOKS.slice(0, 3).map((book, index) => {
-                const positions = [
-                  'left-1/2 top-[5px] h-[190px] w-[145px] -translate-x-1/2 sm:h-[230px] sm:w-[175px]',
-                  'left-[calc(50%-130px)] top-[18px] h-[160px] w-[115px] -rotate-[4deg] sm:left-[calc(50%-160px)] sm:h-[200px] sm:w-[145px]',
-                  'left-[calc(50%+20px)] top-[18px] h-[160px] w-[115px] rotate-[3.5deg] sm:left-[calc(50%+20px)] sm:h-[200px] sm:w-[145px]',
+            {/* MOBILE book fan — 4 books, staggered entrance, tap interaction */}
+            <div className="relative mb-6 h-[240px] w-full max-w-[380px] sm:h-[280px] sm:max-w-[540px] lg:hidden">
+              {HERO_BOOKS.map((book, index) => {
+                const mobilePositions = [
+                  // Center front — hero book
+                  { left: '50%', top: '0px', width: 150, height: 200, rotate: 0, z: 10, translateX: '-50%', smWidth: 180, smHeight: 240 },
+                  // Left
+                  { left: 'calc(50% - 120px)', top: '22px', width: 115, height: 165, rotate: -6, z: 4, translateX: '-15px', smLeft: 'calc(50% - 155px)', smWidth: 145, smHeight: 205 },
+                  // Right
+                  { left: 'calc(50% + 35px)', top: '22px', width: 115, height: 165, rotate: 5, z: 4, translateX: '0', smLeft: 'calc(50% + 30px)', smWidth: 145, smHeight: 205 },
+                  // Far left (peeking)
+                  { left: 'calc(50% - 175px)', top: '42px', width: 90, height: 135, rotate: -10, z: 2, translateX: '0', smLeft: 'calc(50% - 230px)', smWidth: 115, smHeight: 170 },
                 ];
-                const zIndexes = [5, 4, 4];
+                const pos = mobilePositions[index];
+                const isTapped = hoveredBook === index;
+                const otherTapped = hoveredBook !== null && hoveredBook !== index;
+                const scale = isTapped ? 1.08 : otherTapped ? 0.95 : 1;
+                const translateY = isTapped ? '-12px' : '0px';
+                const opacity = index === 3 ? (otherTapped ? 0.3 : 0.6) : (otherTapped ? 0.6 : 1);
+                const zIndex = isTapped ? 20 : pos.z;
+                const boxShadow = isTapped
+                  ? '0 24px 60px rgba(0,0,0,0.85), 0 0 0 1.5px rgba(232,182,60,0.6)'
+                  : index === 0
+                    ? '0 20px 50px rgba(0,0,0,0.8), 0 0 0 1.5px rgba(232,182,60,0.45)'
+                    : '0 12px 35px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,182,60,0.2)';
                 return (
-                  <a
+                  <button
                     key={book.title}
-                    href={book.href}
-                    className={`absolute overflow-hidden rounded-[3px] transition-transform duration-200 active:scale-95 ${positions[index]}`}
-                    style={{ 
-                      zIndex: zIndexes[index],
-                      boxShadow: '0 0 0 1.5px rgba(232,182,60,0.55), 0 16px 45px rgba(0,0,0,0.75)',
+                    onClick={() => {
+                      if (hoveredBook === index) {
+                        window.location.href = book.href;
+                      } else {
+                        setHoveredBook(index);
+                      }
                     }}
+                    style={{
+                      position: 'absolute',
+                      left: pos.left,
+                      top: pos.top,
+                      width: pos.width,
+                      height: pos.height,
+                      zIndex,
+                      transform: `translateX(${pos.translateX}) translateY(${translateY}) rotate(${pos.rotate}deg) scale(${scale})`,
+                      opacity,
+                      boxShadow,
+                      transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease, box-shadow 0.3s ease',
+                      borderRadius: '3px',
+                      overflow: 'hidden',
+                      border: isTapped ? '1px solid rgba(232,182,60,0.5)' : '1px solid rgba(201,152,42,0.15)',
+                      cursor: 'pointer',
+                      background: 'none',
+                      padding: 0,
+                      animationDelay: `${index * 0.1 + 0.15}s`,
+                    }}
+                    className="[animation:bookFanIn_0.5s_cubic-bezier(0.34,1.56,0.64,1)_both]"
                   >
-                    <img src={book.image} alt={book.title} className="h-full w-full object-cover" />
-                  </a>
+                    <img src={book.image} alt={book.title} className="h-full w-full object-cover"
+                      style={{ transform: isTapped ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.3s ease' }} />
+                    {isTapped && (
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent px-2 pb-2 pt-8 text-center"
+                        style={{ animation: 'bookFanIn 0.25s ease both' }}>
+                        <span className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                          {book.title}
+                        </span>
+                      </div>
+                    )}
+                  </button>
                 );
               })}
             </div>
