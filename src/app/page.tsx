@@ -276,8 +276,8 @@ export default function Home() {
   };
 
   const handleTournamentFighterSelect = (fighterName: string) => {
-    const isCustom = dbAnimals.some(a => a.name === fighterName);
-    if (!isCustom && isAnimalLocked(tierData.tier, fighterName)) {
+    const isUserCustom = dbAnimals.some(a => a.name === fighterName && a.isUserCustom);
+    if (!isUserCustom && isAnimalLocked(tierData.tier, fighterName)) {
       setLockedAnimalClicked(fighterName);
       setLockedFeature(undefined);
       setShowUpgradeModal(true);
@@ -335,8 +335,8 @@ export default function Home() {
   };
 
   const handleFighterSelect = (fighterName: string) => {
-    const isCustom = dbAnimals.some(a => a.name === fighterName);
-    if (!isCustom && isAnimalLocked(tierData.tier, fighterName)) {
+    const isUserCustom = dbAnimals.some(a => a.name === fighterName && a.isUserCustom);
+    if (!isUserCustom && isAnimalLocked(tierData.tier, fighterName)) {
       setLockedAnimalClicked(fighterName);
       setLockedFeature(undefined);
       setShowUpgradeModal(true);
@@ -817,7 +817,7 @@ export default function Home() {
               style={{ gridAutoFlow: 'dense' }}
             >
               {filteredFighters.map(fighter => {
-                const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
+                const locked = !fighter.isUserCustom && isAnimalLocked(tierData.tier, fighter.name);
                 const isGenerating = fighter.status === 'generating';
                 const isFailed = fighter.status === 'failed';
                 const isSelected = animalA === fighter.name || animalB === fighter.name;
@@ -1032,7 +1032,7 @@ export default function Home() {
 
             <div className="grid auto-rows-[85px] grid-cols-[repeat(auto-fill,minmax(85px,1fr))] gap-2 sm:auto-rows-[120px] sm:grid-cols-[repeat(auto-fill,minmax(120px,1fr))]" style={{ gridAutoFlow: 'dense' }}>
               {filteredFighters.map(fighter => {
-                const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
+                const locked = !fighter.isUserCustom && isAnimalLocked(tierData.tier, fighter.name);
                 const isSelected = tournamentFighters.includes(fighter.name);
                 const isGenerating = fighter.status === 'generating';
                 const isFeatured = animalCategory === 'real' && FEATURED_ANIMALS.includes(fighter.name);
