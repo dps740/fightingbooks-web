@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type CSSProperties } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { quickContentCheck, isKnownAnimal, checkRateLimit, incrementRateLimit } from '@/lib/content-moderation';
+import { Bangers, Barlow, Barlow_Condensed } from 'next/font/google';
 import { WHO_WOULD_WIN_BOOKS } from '@/data/who-would-win-books';
 import { useTier, isAnimalLocked, isCyoaLocked, isTournamentLocked } from '@/lib/useTier';
 import UpgradeModal from '@/components/UpgradeModal';
@@ -13,100 +12,127 @@ import SampleBookGallery from '@/components/SampleBookGallery';
 import EmailCaptureModal from '@/components/EmailCaptureModal';
 import { UserTier, REAL_ANIMALS, DINOSAUR_ANIMALS, FANTASY_ANIMALS } from '@/lib/tierAccess';
 
-// Static fighter list from tierAccess.ts (base animals)
+const bangers = Bangers({ subsets: ['latin'], weight: '400', variable: '--font-bangers' });
+const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-barlow' });
+const barlowCondensed = Barlow_Condensed({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-barlow-condensed' });
+
 const STATIC_FIGHTERS = [
   ...REAL_ANIMALS.map(name => ({ name, category: 'real' as const, isCustom: false, imageUrl: undefined as string | undefined })),
   ...DINOSAUR_ANIMALS.map(name => ({ name, category: 'dinosaur' as const, isCustom: false, imageUrl: undefined as string | undefined })),
   ...FANTASY_ANIMALS.map(name => ({ name, category: 'fantasy' as const, isCustom: false, imageUrl: undefined as string | undefined })),
 ];
 
-// DB animal type
-interface DbAnimal {
-  id: string;
-  name: string;
-  slug: string;
-  category: string;
-  scope: string;
-  status: string;
-  images: Record<string, string> | null;
-  facts: Record<string, unknown> | null;
-}
+const FIGHTERS = STATIC_FIGHTERS;
 
-type FighterEntry = {
+type AnimalCategory = 'real' | 'dinosaur' | 'fantasy';
+
+interface FighterEntry {
   name: string;
   category: 'real' | 'dinosaur' | 'fantasy';
   isCustom: boolean;
   imageUrl?: string;
   isUserCustom?: boolean;
   status?: string;
-};
+}
 
-// Keep FIGHTERS as a reference for backward compat
-const FIGHTERS = STATIC_FIGHTERS;
-
-type AnimalCategory = 'real' | 'dinosaur' | 'fantasy';
-
-// Base category tab config (counts updated dynamically)
-const BASE_CATEGORY_TABS: { key: AnimalCategory; label: string; icon: string; baseCount: number; locked: boolean }[] = [
-  { key: 'real', label: 'Real Animals', icon: '🦁', baseCount: 30, locked: false },
-  { key: 'dinosaur', label: 'Dinosaurs', icon: '🦕', baseCount: 8, locked: true },
-  { key: 'fantasy', label: 'Fantasy', icon: '🐉', baseCount: 9, locked: true },
+const BASE_CATEGORY_TABS: { key: AnimalCategory; label: string; baseCount: number; locked: boolean }[] = [
+  { key: 'real', label: 'Animals', baseCount: 30, locked: false },
+  { key: 'dinosaur', label: 'Dinosaurs', baseCount: 8, locked: true },
+  { key: 'fantasy', label: 'Fantasy', baseCount: 9, locked: true },
 ];
 
-// Category order for arrow navigation
 const CATEGORY_ORDER: AnimalCategory[] = ['real', 'dinosaur', 'fantasy'];
+const FEATURED_ANIMALS = ['Lion', 'Tiger', 'Gorilla'];
 
-// Section divider — dramatic crossed slashes
-const SectionDivider = () => (
-  <div className="relative py-6 overflow-hidden">
-    {/* Main gold line */}
-    <div className="absolute left-0 right-0 top-1/2" style={{
-      height: '2px',
-      background: 'linear-gradient(90deg, transparent 2%, rgba(255,215,0,0.6) 20%, rgba(255,215,0,0.9) 50%, rgba(255,215,0,0.6) 80%, transparent 98%)',
-      transform: 'rotate(-1deg)',
-      boxShadow: '0 0 8px rgba(255,215,0,0.3)',
-    }} />
-    {/* Red accent line */}
-    <div className="absolute left-0 right-0 top-1/2 mt-1" style={{
-      height: '1px',
-      background: 'linear-gradient(90deg, transparent 10%, rgba(139,0,0,0.5) 30%, rgba(196,30,58,0.7) 50%, rgba(139,0,0,0.5) 70%, transparent 90%)',
-      transform: 'rotate(0.7deg)',
-    }} />
-    {/* Center diamond accent */}
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rotate-45" style={{
-      background: '#FFD700',
-      boxShadow: '0 0 10px rgba(255,215,0,0.5)',
-    }} />
-  </div>
+const HERO_BOOKS = [
+  { title: 'Lion vs Tiger', image: '/fighters/battle-lion-vs-tiger-cover.jpg', href: '/read?a=Lion&b=Tiger&env=neutral&mode=standard' },
+  { title: 'Gorilla vs Grizzly Bear', image: '/fighters/battle-gorilla-vs-grizzly-bear-cover.jpg', href: '/read?a=Gorilla&b=Grizzly%20Bear&env=neutral&mode=standard' },
+  { title: 'Great White Shark vs Orca', image: '/fighters/battle-great-white-shark-vs-orca-cover.jpg', href: '/read?a=Great%20White%20Shark&b=Orca&env=neutral&mode=standard' },
+  { title: 'Polar Bear vs Crocodile', image: '/fighters/battle-polar-bear-vs-crocodile-cover.jpg', href: '/read?a=Polar%20Bear&b=Crocodile&env=neutral&mode=standard' },
+];
+
+const HOW_STEPS = [
+  {
+    title: 'Choose Your Fighters',
+    body: 'Pick any two animals from the roster, or build an eight-fighter bracket in tournament mode.',
+  },
+  {
+    title: 'Pick a Reading Mode',
+    body: 'Classic gives you the full illustrated showdown. Adventure mode adds branching choices for eligible tiers.',
+  },
+  {
+    title: 'We Build the Book',
+    body: 'The app assembles a battle book with images, facts, matchup analysis, and a final verdict.',
+  },
+  {
+    title: 'Read, Compare, Repeat',
+    body: 'Save favorites, explore more matchups, and keep discovering new animals and battle outcomes.',
+  },
+];
+
+const AMAZON_BOOK_ASINS = ['0545175747', '0545301718', '0545160758', '0545451914', '0545681189', '0545451906', '1338320262'];
+
+const LOCK_ICON = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+    <rect x="4" y="11" width="16" height="9" rx="2" />
+    <path d="M8 11V8a4 4 0 1 1 8 0v3" />
+  </svg>
 );
+
+const CHECK_ICON = (
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.3" className="h-3.5 w-3.5">
+    <path d="M4 10.5 8 14l8-8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const sectionTitleStyle = (fontClass: string): CSSProperties => ({
+  fontFamily: fontClass,
+  letterSpacing: '0.04em',
+  lineHeight: 0.95,
+});
+
+function slugifyAnimal(name: string) {
+  return name.toLowerCase().replace(/ /g, '-');
+}
+
+function getPhysicalBooks() {
+  return AMAZON_BOOK_ASINS.map(asin => {
+    const match = WHO_WOULD_WIN_BOOKS.find(book => book.asin === asin);
+    return {
+      asin,
+      href: match?.amazonUrl || `https://www.amazon.com/dp/${asin}?tag=whowouldwinbo-20`,
+      title: match?.title || 'Who Would Win?',
+      cover: `/covers/${asin}.jpg`,
+    };
+  });
+}
 
 export default function Home() {
   const router = useRouter();
+  const tierData = useTier();
+
   const [animalA, setAnimalA] = useState('');
   const [animalB, setAnimalB] = useState('');
   const [selectingFor, setSelectingFor] = useState<'A' | 'B'>('A');
+  const [hoveredBook, setHoveredBook] = useState<number | null>(null);
+  const [expandedBook, setExpandedBook] = useState<{ index: number; rect: DOMRect } | null>(null);
   const [gameMode, setGameMode] = useState<'classic' | 'adventure'>('classic');
   const [showPricing, setShowPricing] = useState(false);
   const [battleType, setBattleType] = useState<'single' | 'tournament'>('single');
   const [loading, setLoading] = useState(false);
   const [showFightOverlay, setShowFightOverlay] = useState(false);
   const [animalCategory, setAnimalCategory] = useState<AnimalCategory>('real');
-  
-  // Tournament state
+
   const [tournamentFighters, setTournamentFighters] = useState<string[]>([]);
   const [showTournamentOverlay, setShowTournamentOverlay] = useState(false);
-  
-  // Email capture state
+
   const [showEmailCapture, setShowEmailCapture] = useState(false);
   const [pendingGenerate, setPendingGenerate] = useState(false);
-  
-  // Tier & Upgrade state
-  const tierData = useTier();
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [lockedAnimalClicked, setLockedAnimalClicked] = useState<string | undefined>();
   const [lockedFeature, setLockedFeature] = useState<string | undefined>();
 
-  // DB-backed animals state
   const [dbAnimals, setDbAnimals] = useState<FighterEntry[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createName, setCreateName] = useState('');
@@ -114,7 +140,6 @@ export default function Home() {
   const [createError, setCreateError] = useState('');
   const [hasGenerating, setHasGenerating] = useState(false);
 
-  // Fetch DB-backed animals
   const fetchDbAnimals = useCallback(async () => {
     try {
       const response = await fetch('/api/animals/list');
@@ -123,13 +148,9 @@ export default function Home() {
       const entries: FighterEntry[] = [];
       let generating = false;
 
-      // Add global custom animals
       if (data.global) {
         for (const animal of data.global) {
-          // Skip if already in static list
-          const existsInStatic = STATIC_FIGHTERS.some(
-            f => f.name.toLowerCase() === animal.name.toLowerCase()
-          );
+          const existsInStatic = STATIC_FIGHTERS.some(f => f.name.toLowerCase() === animal.name.toLowerCase());
           if (!existsInStatic) {
             entries.push({
               name: animal.name,
@@ -142,7 +163,6 @@ export default function Home() {
         }
       }
 
-      // Add user's custom animals
       if (data.custom) {
         for (const animal of data.custom) {
           entries.push({
@@ -153,9 +173,7 @@ export default function Home() {
             imageUrl: animal.images?.portrait,
             status: animal.status,
           });
-          if (animal.status === 'generating') {
-            generating = true;
-          }
+          if (animal.status === 'generating') generating = true;
         }
       }
 
@@ -164,14 +182,12 @@ export default function Home() {
     } catch (e) {
       console.error('Failed to fetch DB animals:', e);
     }
-  }, [tierData.isAuthenticated]);
+  }, []);
 
-  // Fetch DB animals on mount and when tier changes
   useEffect(() => {
     fetchDbAnimals();
   }, [fetchDbAnimals]);
 
-  // Poll if any animals are generating
   useEffect(() => {
     if (!hasGenerating) return;
     const interval = setInterval(() => {
@@ -179,8 +195,7 @@ export default function Home() {
     }, 5000);
     return () => clearInterval(interval);
   }, [hasGenerating, fetchDbAnimals]);
-  
-  // Handle upgrade checkout
+
   const handleUpgrade = async (tier: UserTier) => {
     try {
       const response = await fetch('/api/checkout', {
@@ -200,7 +215,6 @@ export default function Home() {
     }
   };
 
-  // Handle creating a custom animal
   const handleCreateAnimal = async () => {
     if (!createName.trim() || createLoading) return;
 
@@ -222,7 +236,6 @@ export default function Home() {
         return;
       }
 
-      // Success! Close modal and refresh animals
       setShowCreateModal(false);
       setCreateName('');
       setCreateLoading(false);
@@ -232,8 +245,7 @@ export default function Home() {
       setCreateLoading(false);
     }
   };
-  
-  // Handle tournament mode toggle
+
   const handleTournamentToggle = () => {
     if (battleType === 'tournament') {
       setBattleType('single');
@@ -250,9 +262,9 @@ export default function Home() {
     setTournamentFighters([]);
     setAnimalA('');
     setAnimalB('');
+    setShowFightOverlay(false);
   };
-  
-  // Handle game mode selection with CYOA lock check
+
   const handleGameModeSelect = (mode: 'classic' | 'adventure') => {
     if (mode === 'adventure' && isCyoaLocked(tierData.tier)) {
       setLockedAnimalClicked(undefined);
@@ -262,8 +274,7 @@ export default function Home() {
     }
     setGameMode(mode);
   };
-  
-  // Handle tournament fighter selection
+
   const handleTournamentFighterSelect = (fighterName: string) => {
     const isCustom = dbAnimals.some(a => a.name === fighterName);
     if (!isCustom && isAnimalLocked(tierData.tier, fighterName)) {
@@ -272,31 +283,15 @@ export default function Home() {
       setShowUpgradeModal(true);
       return;
     }
-    
+
     if (tournamentFighters.includes(fighterName)) {
       setTournamentFighters(tournamentFighters.filter(f => f !== fighterName));
       setShowTournamentOverlay(false);
     } else if (tournamentFighters.length < 8) {
-      const newFighters = [...tournamentFighters, fighterName];
-      setTournamentFighters(newFighters);
-      if (newFighters.length === 8) {
-        setShowTournamentOverlay(true);
-      }
+      const next = [...tournamentFighters, fighterName];
+      setTournamentFighters(next);
+      if (next.length === 8) setShowTournamentOverlay(true);
     }
-  };
-  
-  const handleStartTournament = () => {
-    if (tournamentFighters.length !== 8) return;
-    
-    // Check email gate
-    const hasEmail = typeof window !== 'undefined' && localStorage.getItem('fb_email');
-    if (!tierData.isAuthenticated && !hasEmail) {
-      setPendingGenerate(true);
-      setShowEmailCapture(true);
-      return;
-    }
-    
-    proceedWithTournament();
   };
 
   const proceedWithTournament = () => {
@@ -315,19 +310,28 @@ export default function Home() {
       currentMatch: 0,
       mode: gameMode === 'adventure' ? 'cyoa' : 'standard',
     };
-    
+
     localStorage.setItem('tournament', JSON.stringify(bracket));
     router.push('/tournament/bracket');
   };
-  
-  const canGenerate = animalA && animalB && animalA !== animalB;
-  const canStartTournament = tournamentFighters.length === 8;
+
+  const handleStartTournament = () => {
+    if (tournamentFighters.length !== 8) return;
+
+    const hasEmail = typeof window !== 'undefined' && localStorage.getItem('fb_email');
+    if (!tierData.isAuthenticated && !hasEmail) {
+      setPendingGenerate(true);
+      setShowEmailCapture(true);
+      return;
+    }
+
+    proceedWithTournament();
+  };
 
   const getImagePath = (name: string) => {
-    // Check if this is a custom animal with a blob URL
     const dbAnimal = dbAnimals.find(a => a.name === name);
     if (dbAnimal?.imageUrl) return dbAnimal.imageUrl;
-    return `/fighters/${name.toLowerCase().replace(/ /g, '-')}.jpg`;
+    return `/fighters/${slugifyAnimal(name)}.jpg`;
   };
 
   const handleFighterSelect = (fighterName: string) => {
@@ -338,8 +342,7 @@ export default function Home() {
       setShowUpgradeModal(true);
       return;
     }
-    
-    // Deselect if clicking an already-selected fighter
+
     if (fighterName === animalA) {
       setAnimalA('');
       setSelectingFor('A');
@@ -375,7 +378,6 @@ export default function Home() {
       router.push(`/tournament?seed1=${encodeURIComponent(animalA)}&seed2=${encodeURIComponent(animalB)}&mode=${mode}`);
     } else {
       const mode = gameMode === 'adventure' ? 'cyoa' : 'standard';
-      // Pass custom animal portrait URLs so VersusScreen can display them
       const dbA = dbAnimals.find(a => a.name === animalA);
       const dbB = dbAnimals.find(a => a.name === animalB);
       let readUrl = `/read?a=${encodeURIComponent(animalA)}&b=${encodeURIComponent(animalB)}&env=neutral&mode=${mode}`;
@@ -386,45 +388,45 @@ export default function Home() {
   };
 
   const handleGenerate = async () => {
-    if (!canGenerate) return;
-    
-    // Check if email gate needed: skip if authenticated or already captured
+    if (!(animalA && animalB && animalA !== animalB)) return;
+
     const hasEmail = typeof window !== 'undefined' && localStorage.getItem('fb_email');
     if (!tierData.isAuthenticated && !hasEmail) {
       setPendingGenerate(true);
       setShowEmailCapture(true);
       return;
     }
-    
+
     proceedWithGenerate();
   };
 
-  // Merge static fighters with DB animals
-  const allFighters: FighterEntry[] = [
-    ...STATIC_FIGHTERS,
-    ...dbAnimals,
-  ];
-
+  const allFighters: FighterEntry[] = [...STATIC_FIGHTERS, ...dbAnimals];
   const selectedA = allFighters.find(f => f.name === animalA);
   const selectedB = allFighters.find(f => f.name === animalB);
 
-  // Dynamic category tabs with updated counts
   const CATEGORY_TABS = BASE_CATEGORY_TABS.map(tab => ({
     ...tab,
     count: allFighters.filter(f => f.category === tab.key).length,
   }));
 
-  // Filter fighters by selected category
-  const filteredFighters = allFighters.filter(f => f.category === animalCategory);
+  const filteredFighters = allFighters
+    .filter(f => f.category === animalCategory)
+    .sort((a, b) => {
+      const aFeatured = FEATURED_ANIMALS.includes(a.name) ? FEATURED_ANIMALS.indexOf(a.name) : 99;
+      const bFeatured = FEATURED_ANIMALS.includes(b.name) ? FEATURED_ANIMALS.indexOf(b.name) : 99;
+      if (aFeatured !== bFeatured) return aFeatured - bFeatured;
+      return a.name.localeCompare(b.name);
+    });
 
-  // Navigate between categories with arrows
   const navigateCategory = (direction: 'prev' | 'next') => {
     const currentIndex = CATEGORY_ORDER.indexOf(animalCategory);
     const newIndex = direction === 'next'
       ? (currentIndex + 1) % CATEGORY_ORDER.length
       : (currentIndex - 1 + CATEGORY_ORDER.length) % CATEGORY_ORDER.length;
+
     const newCategory = CATEGORY_ORDER[newIndex];
     const tab = CATEGORY_TABS.find(t => t.key === newCategory);
+
     if (tab?.locked) {
       if (newCategory === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
         setLockedAnimalClicked(undefined);
@@ -439,455 +441,340 @@ export default function Home() {
         return;
       }
     }
+
     setAnimalCategory(newCategory);
   };
-  
-  // Count locked animals for messaging
-  const lockedRealCount = FIGHTERS.filter(f => f.category === 'real' && isAnimalLocked(tierData.tier, f.name)).length;
-  const lockedTotalCount = FIGHTERS.filter(f => isAnimalLocked(tierData.tier, f.name)).length;
 
-  // Scroll to pricing
-  const scrollToPricing = () => {
-    setShowPricing(true);
-  };
+  const lockedTotalCount = FIGHTERS.filter(f => isAnimalLocked(tierData.tier, f.name)).length;
+  const canGenerate = animalA && animalB && animalA !== animalB;
+  const canStartTournament = tournamentFighters.length === 8;
+  const physicalBooks = getPhysicalBooks();
 
   return (
-    <main className="min-h-screen font-comic relative" style={{ background: 'linear-gradient(180deg, #1a472a 0%, #2d5a3d 30%, #1e3d2a 100%)' }}>
-      {/* JSON-LD Structured Data */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Who Would Win Books',
-        url: 'https://whowouldwinbooks.com',
-        description: 'Create epic who would win style animal battle books with real science, stats, and illustrated battles.',
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: 'https://whowouldwinbooks.com/?search={search_term_string}',
-          'query-input': 'required name=search_term_string'
-        }
-      }) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        name: 'Who Would Win Books',
-        url: 'https://whowouldwinbooks.com',
-        logo: 'https://whowouldwinbooks.com/og-image.png',
-        sameAs: ['https://www.pinterest.com/whowouldwinbooks/']
-      }) }} />
+    <main
+      className={`${bangers.variable} ${barlow.variable} ${barlowCondensed.variable} min-h-screen text-white`}
+      style={{
+        background: '#0d1c10',
+        fontFamily: 'var(--font-barlow)',
+      }}
+    >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Who Would Win Books',
+            url: 'https://whowouldwinbooks.com',
+            description: 'Create epic who would win style animal battle books with real science, stats, and illustrated battles.',
+          }),
+        }}
+      />
 
-      {/* Vignette overlay */}
-      <div className="fixed inset-0 pointer-events-none z-[1]" style={{
-        background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%)',
-      }} />
-      
-      {/* Header with Account Menu */}
-      <header className="px-4 py-3">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <nav className="flex gap-6 items-center">
-            <a href="/learn" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
-              📚 LEARNING CENTER
+      <div className="hidden" aria-hidden="true">
+        <SampleBookGallery />
+      </div>
+
+      <header className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-md" style={{ background: 'linear-gradient(to bottom, rgba(13,28,16,0.96), rgba(13,28,16,0.82))' }}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-6">
+            <a href="#top" className="text-[1.35rem] text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.08em' }}>
             </a>
-            <a href="/battles" className="text-[#FFD700] hover:text-yellow-300 font-bold text-sm transition-colors">
-              ⚔️ BATTLES
-            </a>
-          </nav>
-          <AccountMenu 
+            <nav className="hidden items-center gap-5 md:flex" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+              <a href="#create" className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9eb5a4] transition hover:text-white">Create</a>
+              <a href="#how" className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9eb5a4] transition hover:text-white">How It Works</a>
+              <a href="#membership" className="text-xs font-semibold uppercase tracking-[0.18em] text-[#9eb5a4] transition hover:text-white">Membership</a>
+
+            </nav>
+          </div>
+          <AccountMenu
             isAuthenticated={tierData.isAuthenticated}
             email={tierData.email}
             tier={tierData.tier}
-            onUpgrade={() => { setLockedFeature(undefined); setLockedAnimalClicked(undefined); setShowUpgradeModal(true); }}
+            onUpgrade={() => {
+              setLockedFeature(undefined);
+              setLockedAnimalClicked(undefined);
+              setShowUpgradeModal(true);
+            }}
           />
         </div>
       </header>
 
-      {/* 1. HERO — Lead with benefit */}
-      <section className="pt-4 pb-4 px-4 relative overflow-hidden">
-        {/* Arena spotlight glow — dual lights */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none" style={{
-          background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.08) 35%, transparent 65%)',
-        }} />
-        <div className="absolute top-20 left-1/4 w-[300px] h-[300px] pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(196,30,58,0.1) 0%, transparent 60%)',
-        }} />
-        <div className="absolute top-20 right-1/4 w-[300px] h-[300px] pointer-events-none" style={{
-          background: 'radial-gradient(circle, rgba(30,79,196,0.1) 0%, transparent 60%)',
-        }} />
-        {/* Animated speed lines */}
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="speed-line" style={{
-            top: `${15 + i * 14}%`,
-            left: 0,
-            right: 0,
-            width: `${30 + Math.random() * 40}%`,
-            marginLeft: i % 2 === 0 ? 'auto' : '0',
-            marginRight: i % 2 === 0 ? '0' : 'auto',
-            animation: `${i % 2 === 0 ? 'speed-line-left' : 'speed-line-right'} ${3 + i * 0.7}s ${i * 0.5}s ease-in-out infinite`,
-          }} />
-        ))}
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Headline — leads strong, no backstory eyebrow */}
-          <motion.div initial={{ y: -10 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }}>
-            <h1 className="font-bangers text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-3 px-4" style={{ textShadow: '3px 3px 0 #000, 0 0 20px rgba(255,215,0,0.3)', lineHeight: '1.2' }}>
-              Who Would Win?<br />
-              <span className="text-[#FFD700]">Epic Animal Battle Books</span>
+      <section id="top" className="relative overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `
+              radial-gradient(ellipse 70% 55% at 50% 18%, rgba(201,152,42,0.14) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 60% at 18% 88%, rgba(42,82,54,0.35) 0%, transparent 55%),
+              radial-gradient(ellipse 60% 60% at 82% 84%, rgba(42,82,54,0.24) 0%, transparent 55%),
+              linear-gradient(rgba(13,28,16,0.65), rgba(13,28,16,0.82)),
+              url('/fighters/battle-gorilla-vs-grizzly-bear-cover.jpg') center 28% / cover no-repeat
+            `,
+          }}
+        />
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '14px 14px' }} />
+
+        <div className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl flex-col px-4 pb-0 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+          <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center text-center">
+            <span className="mb-4 text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+              Kids' Battle Books — Built in Seconds
+            </span>
+            <h1 className="mb-4 text-[3.7rem] leading-none sm:text-[5.5rem] lg:text-[8rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+              Who Would
+              <span className="block text-[#e8b63c]">Win?</span>
             </h1>
-          </motion.div>
-          
-          {/* Subheadline */}
-          <motion.p 
-            initial={{ y: 10 }} 
-            animate={{ y: 0, opacity: 1 }} 
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-4 px-4" 
-            style={{ textShadow: '1px 1px 2px #000' }}
-          >
-            Pick any two animals, get an instant illustrated book with real science, stats, and a final verdict.
-          </motion.p>
-
-          {/* 3 Benefit Pillars — ABOVE the CTA so visitors know why to click */}
-          <motion.div 
-            initial={{ y: 10 }} 
-            animate={{ y: 0, opacity: 1 }} 
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 max-w-4xl mx-auto mb-5 px-4"
-          >
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">Builds vocabulary with vivid comparisons</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">Real wildlife facts &amp; stat scoring</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-              <span className="text-white/90 text-sm sm:text-base font-medium">For kids ages 5–12 · Free to start</span>
-            </div>
-          </motion.div>
-
-          {/* Primary CTA — after benefits */}
-          <motion.div 
-            initial={{ scale: 0.95 }} 
-            animate={{ scale: 1, opacity: 1 }} 
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-2"
-          >
-            <a
-              href="#create"
-              className="px-10 py-5 rounded-xl font-bangers text-2xl sm:text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all w-full sm:w-auto"
-            >
-              ⚔️ Create a Free Book
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Noscript fallback for crawlers/no-JS */}
-      <noscript>
-        <div style={{ padding: '2rem', textAlign: 'center', color: 'white' }}>
-          <h1>Who Would Win? Create Epic Animal Battle Books!</h1>
-          <p>Pick any two animals, get an instant illustrated book with real science, stats, and a final verdict.</p>
-        </div>
-      </noscript>
-
-      {/* DEMO SECTION - How it works — 2×2 grid so step 1 never clips on mobile */}
-      <section className="py-3 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h3 className="font-bangers text-xl sm:text-2xl text-center text-white/60 mb-4 tracking-widest uppercase" style={{ textShadow: '1px 1px 0 #000' }}>
-            How It Works
-          </h3>
-          {/* Mobile: 2×2 grid. Desktop: single row with arrows */}
-          <div className="grid grid-cols-2 sm:hidden gap-3 max-w-xs mx-auto">
-            {[
-              { num: '1', label: 'Pick Animals' },
-              { num: '2', label: 'Compare Traits' },
-              { num: '3', label: 'Read Story' },
-              { num: '4', label: 'Discover Winner' },
-            ].map((step) => (
-              <div key={step.num} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
-                <span className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-red-900 font-bold text-sm shrink-0">{step.num}</span>
-                <span className="text-white/85 text-sm font-medium">{step.label}</span>
-              </div>
-            ))}
-          </div>
-          {/* Desktop: single row */}
-          <div className="hidden sm:flex items-center justify-center gap-0">
-            {[
-              { num: '1', label: 'Pick Animals' },
-              { num: '2', label: 'Compare Traits' },
-              { num: '3', label: 'Read Story' },
-              { num: '4', label: 'Discover Winner' },
-            ].map((step, i) => (
-              <div key={i} className="flex items-center">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-red-900 font-bold text-sm shrink-0">{step.num}</span>
-                  <span className="text-white/90 text-sm font-medium whitespace-nowrap">{step.label}</span>
-                </div>
-                {i < 3 && <span className="text-white/30 mx-4">→</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 2. FREE EXAMPLE BOOKS SECTION */}
-      <div id="sample-books" className="py-3 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-3">
-            <h2 className="font-bangers text-2xl sm:text-3xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-              Example Books — Tap to Read
-            </h2>
-          </div>
-
-          <SampleBookGallery />
-
-          <div className="text-center mt-8">
-            <p className="text-white/80 text-lg sm:text-xl mb-2">
-              Or create unlimited custom matchups with membership
+            <p className="mb-10 max-w-xl text-[1rem] leading-7 text-[#9eb5a4] sm:text-[1.05rem]">
+              Pick two animals and get an illustrated matchup with real science, stat comparisons, and a final verdict kids actually want to read.
             </p>
+
+            {/* MOBILE book fan — simple CSS, no hover state needed */}
+            <div className="relative mb-6 h-[210px] w-full max-w-[360px] sm:h-[260px] sm:max-w-[540px] lg:hidden">
+              {HERO_BOOKS.slice(0, 3).map((book, index) => {
+                const positions = [
+                  'left-1/2 top-[5px] h-[190px] w-[145px] -translate-x-1/2 sm:h-[230px] sm:w-[175px]',
+                  'left-[calc(50%-130px)] top-[18px] h-[160px] w-[115px] -rotate-[4deg] sm:left-[calc(50%-160px)] sm:h-[200px] sm:w-[145px]',
+                  'left-[calc(50%+20px)] top-[18px] h-[160px] w-[115px] rotate-[3.5deg] sm:left-[calc(50%+20px)] sm:h-[200px] sm:w-[145px]',
+                ];
+                const zIndexes = [5, 4, 4];
+                return (
+                  <a
+                    key={book.title}
+                    href={book.href}
+                    className={`absolute overflow-hidden rounded-[3px] transition-transform duration-200 active:scale-95 ${positions[index]}`}
+                    style={{ 
+                      zIndex: zIndexes[index],
+                      boxShadow: '0 0 0 1.5px rgba(232,182,60,0.55), 0 16px 45px rgba(0,0,0,0.75)',
+                    }}
+                  >
+                    <img src={book.image} alt={book.title} className="h-full w-full object-cover" />
+                  </a>
+                );
+              })}
+            </div>
+
+            {/* DESKTOP book fan — dynamic hover states */}
+            <div className="relative mb-6 hidden h-[300px] w-full max-w-[820px] lg:block">
+              {HERO_BOOKS.map((book, index) => {
+                const baseRotations = [0, -3.5, 3, -7];
+                const hoverAwayRotations = [0, -9, 9, -14];
+                const desktopPositions = [
+                  { left: '50%', top: '5px', width: '220px', height: '290px', translateX: '-50%', zBase: 5 },
+                  { left: 'calc(50% - 215px)', top: '20px', width: '185px', height: '260px', translateX: '0', zBase: 4 },
+                  { left: 'calc(50% + 30px)', top: '20px', width: '185px', height: '260px', translateX: '0', zBase: 4 },
+                  { left: 'calc(50% - 330px)', top: '38px', width: '165px', height: '230px', translateX: '0', zBase: 3 },
+                ];
+                const pos = desktopPositions[index];
+                const isHovered = hoveredBook === index;
+                const otherHovered = hoveredBook !== null && hoveredBook !== index;
+                const rotation = otherHovered ? hoverAwayRotations[index] : baseRotations[index];
+                const translateY = isHovered ? '-28px' : '0px';
+                const scale = isHovered ? 1.08 : otherHovered ? 0.94 : 1;
+                const opacity = index === 3 ? (otherHovered ? 0.35 : 0.7) : (otherHovered ? 0.55 : 1);
+                const zIndex = isHovered ? 20 : pos.zBase;
+                const boxShadow = isHovered
+                  ? '0 32px 80px rgba(0,0,0,0.8), 0 0 0 1.5px rgba(232,182,60,0.5)'
+                  : '0 18px 55px rgba(0,0,0,0.65)';
+                return (
+                  <button
+                    key={book.title}
+                    onClick={(e) => {
+                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                      setExpandedBook({ index, rect });
+                      setTimeout(() => { window.location.href = book.href; }, 550);
+                    }}
+                    onMouseEnter={() => setHoveredBook(index)}
+                    onMouseLeave={() => setHoveredBook(null)}
+                    style={{
+                      position: 'absolute', left: pos.left, top: pos.top,
+                      width: pos.width, height: pos.height, zIndex,
+                      transform: `translateX(${pos.translateX}) translateY(${translateY}) rotate(${rotation}deg) scale(${scale})`,
+                      opacity, boxShadow,
+                      transition: 'transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease, box-shadow 0.35s ease',
+                      animationDelay: `${index * 0.12 + 0.2}s`,
+                      borderRadius: '3px', overflow: 'hidden',
+                      border: isHovered ? '1px solid rgba(232,182,60,0.4)' : '1px solid rgba(201,152,42,0.1)',
+                      cursor: 'pointer', background: 'none', padding: 0,
+                    }}
+                    className="[animation:bookFanIn_0.55s_cubic-bezier(0.34,1.56,0.64,1)_both]"
+                  >
+                    <img src={book.image} alt={book.title} className="h-full w-full object-cover"
+                      style={{ transform: isHovered ? 'scale(1.06)' : 'scale(1)', transition: 'transform 0.4s ease' }} />
+                    <div style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.25s ease' }}
+                      className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent px-3 pb-3 pt-10 text-center">
+                      <span className="text-[0.72rem] font-bold uppercase tracking-[0.1em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                        {book.title}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Click-to-expand: book scales up + screen darkens */}
+            {expandedBook && (
+              <>
+                {/* Dark overlay fades in */}
+                <div
+                  className="fixed inset-0 z-[998] pointer-events-none bg-[#0d1c10]"
+                  style={{ animation: 'screenDarken 0.55s ease forwards' }}
+                />
+                {/* Book scales from its position */}
+                <div
+                  style={{
+                    position: 'fixed',
+                    left: expandedBook.rect.left + expandedBook.rect.width / 2,
+                    top: expandedBook.rect.top + expandedBook.rect.height / 2,
+                    width: expandedBook.rect.width,
+                    height: expandedBook.rect.height,
+                    marginLeft: -expandedBook.rect.width / 2,
+                    marginTop: -expandedBook.rect.height / 2,
+                    animation: 'bookScaleUpNoShift 0.55s cubic-bezier(0.16,1,0.3,1) forwards',
+                    borderRadius: '3px',
+                    overflow: 'hidden',
+                    zIndex: 999,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <img src={HERO_BOOKS[expandedBook.index].image} alt="" className="h-full w-full object-cover" />
+                </div>
+              </>
+            )}
+
+            <p className="mb-8 hidden text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[#7a9280] lg:block" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+              Open a free sample above, or build your own battle below
+            </p>
+
+            <div className="mb-14 flex flex-col items-center gap-3">
+              <a
+                href="#create"
+                className="inline-flex items-center justify-center rounded-sm bg-[#e8b63c] px-10 py-4 text-[1rem] font-bold uppercase tracking-[0.14em] text-[#0d1c10] transition hover:-translate-y-0.5 hover:bg-[#f5d98a]"
+                style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+              >
+                Create Your Own Battle
+              </a>
+              <span className="text-[0.76rem] uppercase tracking-[0.1em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                Free to start · no signup needed · designed for ages 5–12
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 border-t border-white/6 sm:grid-cols-4">
+            {[
+              ['5,000+', 'Books Created'],
+              ['Real', 'Science & Stats'],
+              ['Ages 5–12', 'Ideal Reading Level'],
+              ['Builds', 'Reading Vocabulary'],
+            ].map(([value, label], index) => (
+              <div key={label} className={`px-4 py-6 text-center ${index % 2 === 0 ? 'border-r border-white/6 sm:border-r' : ''} ${index > 1 ? 'border-t border-white/6 sm:border-t-0' : ''} ${index < 3 ? 'sm:border-r sm:border-white/6' : ''}`}>
+                <span className="block text-[1.7rem] font-bold leading-none text-[#e8b63c] sm:text-[2rem]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>{value}</span>
+                <span className="mt-1 block text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
+
+      <section id="create" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        {/* Atmospheric background shift per category */}
+        {animalCategory === 'dinosaur' && <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-amber-950/20 to-transparent transition-all duration-500" />}
+        {animalCategory === 'fantasy' && <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-indigo-950/25 to-transparent transition-all duration-500" />}
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+            Build Your Book
+          </span>
+          <h2 className="text-[2.5rem] sm:text-[3.5rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+            Choose Your Fighters
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-[0.95rem] leading-7 text-[#9eb5a4]">
+            Select a matchup, choose a mode, and generate your next animal showdown.
+          </p>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="inline-flex rounded-full border border-[#2a5236] bg-[#1b2e1f] p-1">
             <button
-              onClick={scrollToPricing}
-              className="inline-block px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all"
+              onClick={() => handleGameModeSelect('classic')}
+              className={`rounded-full px-6 py-2 text-[0.78rem] font-bold uppercase tracking-[0.16em] transition ${gameMode === 'classic' ? 'bg-[#2a5236] text-white' : 'text-[#7a9280] hover:text-white'}`}
+              style={{ fontFamily: 'var(--font-barlow-condensed)' }}
             >
-              See Membership Options →
+              Classic
+            </button>
+            <button
+              onClick={() => handleGameModeSelect('adventure')}
+              className={`rounded-full px-6 py-2 text-[0.78rem] font-bold uppercase tracking-[0.16em] transition ${gameMode === 'adventure' ? 'bg-[#2a5236] text-white' : 'text-[#7a9280] hover:text-white'}`}
+              style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+            >
+              Adventure
             </button>
           </div>
+
+          <button
+            onClick={handleTournamentToggle}
+            className={`rounded-full border px-5 py-2 text-[0.78rem] font-bold uppercase tracking-[0.16em] transition ${battleType === 'tournament' ? 'border-[#e8b63c] bg-[#e8b63c] text-[#0d1c10]' : 'border-[#2a5236] bg-transparent text-[#9eb5a4] hover:text-white'}`}
+            style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+          >
+            Tournament Mode
+          </button>
         </div>
-      </div>
 
-      {/* Social Proof Bar */}
-      <section className="py-3 px-4">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-6 text-white/50 text-sm">
-          <span><strong className="text-white/70">2,500+</strong> wildlife learning books created</span>
-          <span>•</span>
-          <span>Educational</span>
-          <span>•</span>
-          <span>AI-Illustrated</span>
-          <span>•</span>
-          <span>Trusted by <strong className="text-white/70">500+</strong> families</span>
-        </div>
-      </section>
-
-      {/* Divider: Free books → Pricing */}
-      <SectionDivider />
-
-      {/* PRICING MODAL */}
-      {showPricing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowPricing(false)}>
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl bg-[#0d1f0d] border-2 border-[#FFD700]/30 p-6 sm:p-8" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowPricing(false)} className="absolute top-3 right-4 text-white/60 hover:text-white text-2xl font-bold z-10">✕</button>
-            <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700] text-center mb-2" style={{ textShadow: '3px 3px 0 #000' }}>
-              UNLOCK MORE ANIMALS
-            </h2>
-            <p className="text-white/60 text-center text-sm mb-6">The free version is great — but there&apos;s so much more to explore</p>
-
-            {/* Member */}
-            <div className="relative bg-[#1a1a2e] rounded-xl p-6 border-3 border-[#FFD700] mb-4 overflow-hidden" style={{ boxShadow: '0 0 30px rgba(255,215,0,0.2)' }}>
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.08) 45%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 55%, transparent 60%)', backgroundSize: '200% 100%', animation: 'shimmer 3s infinite' }} />
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bangers text-2xl text-[#FFD700]">MEMBER</h3>
-                    <span className="font-bangers text-2xl text-white">$4.99</span>
-                    <span className="text-white/50 text-sm">one-time, keep forever</span>
-                  </div>
-                  <p className="text-white/60 text-sm mb-2">32 real-world animals, 496 unique matchups, tournaments, and printable PDFs</p>
-                </div>
-                <button onClick={() => handleUpgrade('member')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-2 border-yellow-600 hover:scale-105 transition-all shadow-lg whitespace-nowrap">
-                  Unlock Wildlife
-                </button>
-              </div>
-            </div>
-
-            {/* Ultimate */}
-            <div className="bg-[#1a1a2e] rounded-xl p-6 border-2 border-purple-500/40">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bangers text-2xl text-purple-400">ULTIMATE</h3>
-                    <span className="font-bangers text-2xl text-white">$4.99<span className="text-base text-white/50">/mo</span></span>
-                  </div>
-                  <p className="text-white/60 text-sm mb-2">Add dinosaurs, fantasy creatures, and Choose Your Own Adventure mode — 1,176 matchups with 27 unique story paths each, creating over 31,000 possible books</p>
-                  <p className="text-white/40 text-xs">Requires Member — adds on top of your membership. Cancel anytime.</p>
-                </div>
-                <button onClick={() => handleUpgrade('ultimate')} className="shrink-0 px-6 py-3 rounded-lg font-bangers text-lg bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all whitespace-nowrap">
-                  Go Ultimate
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE YOUR WILDLIFE BOOK — Mode Selector + Fighter Grid */}
-      <div id="create">
-        {/* Section header */}
-        <section className="pt-6 pb-2 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-bangers text-4xl sm:text-5xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-              CREATE YOUR WILDLIFE BOOK
-            </h2>
-            <p className="text-white/70 text-lg mt-2">
-              Pick two animals and discover who would win!
-            </p>
-          </div>
-        </section>
-
-        {/* Mode Selector — Compact */}
-        <section className="px-4 pt-2 pb-3">
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700] shadow-2xl">
-              <h3 className="font-bangers text-xl text-[#FFD700] text-center mb-2" style={{ textShadow: '2px 2px 0 #000' }}>
-                CHOOSE YOUR MODE
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-3">
-                <button
-                  onClick={() => handleGameModeSelect('classic')}
-                  className={`relative overflow-hidden rounded-lg p-4 border-3 transition-all ${
-                    gameMode === 'classic' 
-                      ? 'border-yellow-400 ring-3 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.5)]' 
-                      : 'border-green-600 hover:border-green-400'
-                  }`}
-                  style={{ background: 'linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%)' }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="text-3xl">📖</div>
-                    <div className="text-left">
-                      <h4 className="font-bangers text-xl text-white">CLASSIC</h4>
-                      <p className="text-white/70 text-xs">Watch the story unfold</p>
-                    </div>
-                  </div>
-                  {gameMode === 'classic' && (
-                    <div className="absolute top-2 right-2 bg-yellow-400 w-6 h-6 rounded-full flex items-center justify-center">
-                      <span className="text-black font-bold text-sm">✓</span>
+        {battleType === 'single' ? (
+          <>
+            <div className="mt-10 grid gap-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start lg:gap-8">
+              {[
+                { key: 'A' as const, label: 'Red Corner', animal: selectedA, active: selectingFor === 'A', color: '#8f2020' },
+                { key: 'B' as const, label: 'Blue Corner', animal: selectedB, active: selectingFor === 'B', color: '#1d4f8c' },
+              ].map((slot, index) => (
+                <>
+                  {index === 1 && (
+                    <div key="vs" className="flex items-center justify-center py-2 lg:py-16">
+                      <span className="text-[2.8rem] leading-none text-[#c9982a] opacity-70 sm:text-[3.6rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.08em' }}>
+                        VS
+                      </span>
                     </div>
                   )}
-                </button>
-
-                <button
-                  onClick={() => handleGameModeSelect('adventure')}
-                  className={`relative overflow-hidden rounded-lg p-4 border-3 transition-all ${
-                    gameMode === 'adventure' 
-                      ? 'border-yellow-400 ring-3 ring-yellow-400/50 shadow-[0_0_20px_rgba(255,215,0,0.5)]' 
-                      : 'border-purple-600 hover:border-purple-400'
-                  }`}
-                  style={{ background: 'linear-gradient(135deg, #4a1a47 0%, #5a2d5a 100%)' }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="text-3xl">🎭</div>
-                    <div className="text-left">
-                      <h4 className="font-bangers text-xl text-white">ADVENTURE</h4>
-                      <p className="text-white/70 text-xs">YOU decide what happens!</p>
-                    </div>
-                    {isCyoaLocked(tierData.tier) && (
-                      <span className="text-xs bg-[#FFD700] text-black px-2 py-0.5 rounded-full font-bold ml-auto">👑 ULTIMATE</span>
+                  <button
+                    key={slot.key}
+                    onClick={() => setSelectingFor(slot.key)}
+                    className={`relative min-h-[160px] overflow-hidden rounded-md border text-left transition sm:min-h-[220px] ${slot.animal ? 'border-[#e8b63c]' : 'border-[#2a5236] hover:border-[#c9982a]'} ${slot.active ? 'ring-2 ring-[#e8b63c]' : ''}`}
+                    style={{ background: '#1b2e1f' }}
+                  >
+                    {slot.animal && (
+                      <div className="absolute inset-0 opacity-60" style={{ background: `linear-gradient(rgba(13,28,16,0.2), rgba(13,28,16,0.65)), url(${getImagePath(slot.animal.name)}) center / cover no-repeat` }} />
                     )}
-                  </div>
-                  {gameMode === 'adventure' && (
-                    <div className="absolute top-2 right-2 bg-yellow-400 w-6 h-6 rounded-full flex items-center justify-center">
-                      <span className="text-black font-bold text-sm">✓</span>
-                    </div>
-                  )}
-                </button>
-              </div>
-              
-              {/* Tournament toggle — inline */}
-              <div className="mt-3 flex items-center justify-center gap-3">
-                <button
-                  onClick={handleTournamentToggle}
-                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                    battleType === 'tournament'
-                      ? 'bg-amber-500 text-black'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
-                  }`}
-                >
-                  🏆 Tournament Mode
-                  {isTournamentLocked(tierData.tier) && (
-                    <span className="text-[10px] bg-[#FFD700] text-black px-1.5 py-0.5 rounded-full">🔒 MEMBER</span>
-                  )}
-                  {battleType === 'tournament' && <span>✓</span>}
-                </button>
-                <span className="text-white/50 text-xs">
-                  {battleType === 'tournament'
-                    ? '🏆 Pick 8 champions for a bracket!'
-                    : gameMode === 'classic' 
-                    ? '📖 Full story with facts & illustrations' 
-                    : '🎭 Your choices shape the story!'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Tournament Fighter Selection */}
-        {battleType === 'tournament' && (
-          <section className="px-4 pb-6">
-            <div className="max-w-6xl mx-auto">
-              <div className="text-center mb-4">
-                <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-                  SELECT 8 CHAMPIONS
-                </h2>
-                <p className="text-white/70 mt-2">
-                  {gameMode === 'classic' ? '📖 Classic' : '🎭 Adventure'} mode • {tournamentFighters.length}/8 selected
-                </p>
-                <div className="mt-2">
-                  <TierInfoPopover isAuthenticated={tierData.isAuthenticated} currentTier={tierData.tier} />
-                </div>
-              </div>
-
-              {/* 8 Fighter Slots */}
-              <div className="grid grid-cols-8 gap-2 mb-4">
-                {[...Array(8)].map((_, index) => {
-                  const fighter = tournamentFighters[index];
-                  const matchLabels = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B'];
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ scale: 0.9, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: index * 0.03 }}
-                      className={`relative aspect-square rounded-lg border-2 overflow-hidden transition-all ${
-                        fighter 
-                          ? 'border-[#FFD700] shadow-[0_0_15px_rgba(255,215,0,0.4)]' 
-                          : 'border-white/30 border-dashed'
-                      }`}
-                      style={{ 
-                        background: fighter 
-                          ? 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%)' 
-                          : 'rgba(0,0,0,0.3)' 
-                      }}
-                    >
-                      <div className="absolute top-0.5 left-0.5 bg-black/70 px-1 py-0.5 rounded text-[10px] font-bold text-[#FFD700] z-10">
-                        {matchLabels[index]}
-                      </div>
-                      {fighter ? (
-                        <button
-                          onClick={() => handleTournamentFighterSelect(fighter)}
-                          className="absolute inset-0 w-full h-full cursor-pointer hover:ring-2 hover:ring-red-500 transition-all"
-                        >
-                          <img src={getImagePath(fighter)} alt={fighter} className="absolute inset-0 w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                          <div className="absolute bottom-0 left-0 right-0 p-1">
-                            <p className="font-bangers text-white text-[10px] text-center truncate" style={{ textShadow: '1px 1px 0 #000' }}>
-                              {fighter.toUpperCase()}
-                            </p>
-                          </div>
-                        </button>
+                    <div className="relative flex h-full min-h-[160px] flex-col items-center justify-center px-6 py-8 text-center sm:min-h-[220px]">
+                      <span className="mb-3 text-[0.66rem] font-bold uppercase tracking-[0.2em] text-[#9eb5a4]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                        {slot.label}
+                      </span>
+                      {slot.animal ? (
+                        <span className="text-[2rem] text-white sm:text-[2.6rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                          {slot.animal.name}
+                        </span>
                       ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <span className="text-white/40 text-xl">?</span>
-                        </div>
+                        <span className="text-[1rem] font-semibold uppercase tracking-[0.12em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                          Tap to Select
+                        </span>
                       )}
-                    </motion.div>
-                  );
-                })}
-              </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1" style={{ background: slot.color }} />
+                  </button>
+                </>
+              ))}
+            </div>
 
-              {/* Category Tabs */}
-              <div className="flex gap-2 mb-3 justify-center flex-wrap">
-                {CATEGORY_TABS.map((tab) => {
+            <div className="mt-8 flex items-center justify-center gap-2 sm:gap-3">
+              <button
+                onClick={() => navigateCategory('prev')}
+                className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[#9eb5a4] transition hover:border-[#c9982a] hover:text-[#e8b63c]"
+                aria-label="Previous category"
+              >
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5"><path d="M12 4 6 10l6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+
+              <div className="flex flex-wrap justify-center gap-2">
+                {CATEGORY_TABS.map(tab => {
                   const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
                   return (
                     <button
@@ -907,612 +794,577 @@ export default function Home() {
                         }
                         setAnimalCategory(tab.key);
                       }}
-                      className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
-                        animalCategory === tab.key
-                          ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
-                          : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
-                      }`}
+                      className={`rounded-md border px-4 py-2 text-[0.78rem] font-bold uppercase tracking-[0.14em] transition ${animalCategory === tab.key ? 'border-[#c9982a] bg-[#c9982a] text-[#0d1c10]' : 'border-white/10 bg-white/5 text-[#9eb5a4] hover:text-white'}`}
+                      style={{ fontFamily: 'var(--font-barlow-condensed)' }}
                     >
-                      {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
+                      {tab.label} ({tab.count}){isLocked ? ' Locked' : ''}
                     </button>
                   );
                 })}
               </div>
 
-              {/* Grid with flanking arrows */}
-              <div className="flex items-center gap-2 sm:gap-4">
-                <button
-                  onClick={() => navigateCategory('prev')}
-                  className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
-                  aria-label="Previous category"
-                >
-                  <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-
-                {/* Character Grid */}
-                <div className="flex-1 bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                  {filteredFighters.map((fighter, i) => {
-                    const isSelected = tournamentFighters.includes(fighter.name);
-                    const locked = isAnimalLocked(tierData.tier, fighter.name);
-                    return (
-                      <button
-                        key={i}
-                        onClick={() => handleTournamentFighterSelect(fighter.name)}
-                        disabled={!isSelected && tournamentFighters.length >= 8 && !locked}
-                        className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all ${
-                          isSelected
-                            ? 'border-[#FFD700] ring-2 ring-[#FFD700] opacity-50 grayscale'
-                            : locked
-                            ? 'border-gray-600 opacity-70 hover:border-yellow-500 hover:opacity-100 cursor-pointer'
-                            : tournamentFighters.length >= 8
-                            ? 'border-gray-600 opacity-30 cursor-not-allowed'
-                            : 'border-gray-600 hover:border-white hover:scale-110 hover:z-10'
-                        }`}
-                      >
-                        <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
-                          <p className="font-bangers text-white text-xs text-center truncate">{fighter.name.toUpperCase()}</p>
-                        </div>
-                        {isSelected && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                            <span className="text-[#FFD700] text-2xl font-bold">✓</span>
-                          </div>
-                        )}
-                        {locked && !isSelected && (
-                          <div className="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
-                            <span className="text-yellow-400 text-sm">🔒</span>
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                
-                {/* Locked animals banner */}
-                {lockedTotalCount > 0 && (
-                  <button
-                    onClick={scrollToPricing}
-                    className="mt-4 w-full relative overflow-hidden rounded-lg py-3 px-4 transition-all hover:scale-[1.01] group"
-                    style={{ background: 'linear-gradient(90deg, #1a1a2e, #2d1f4e, #1a1a2e)' }}
-                  >
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)', animation: 'shimmer 2s infinite' }} />
-                    <p className="font-bangers text-[#FFD700] text-lg sm:text-xl relative z-10" style={{ textShadow: '1px 1px 2px #000' }}>
-                      🔒 {lockedTotalCount} More Animals with Member Access →
-                    </p>
-                    <p className="text-white/60 text-xs sm:text-sm relative z-10 mt-0.5">
-                      Including 🦕 Dinosaurs and 🐉 Fantasy creatures!
-                    </p>
-                  </button>
-                )}
-                </div>
-
-                <button
-                  onClick={() => navigateCategory('next')}
-                  className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
-                  aria-label="Next category"
-                >
-                  <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
-              </div>
-
-              {canStartTournament && !showTournamentOverlay && (
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => setShowTournamentOverlay(true)}
-                    className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
-                  >
-                    READY FOR BATTLE!
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Single Battle Fighter Selection */}
-        {battleType === 'single' && (
-        <section className="px-4 pb-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-4">
-              <h2 className="font-bangers text-3xl sm:text-4xl text-[#FFD700]" style={{ textShadow: '3px 3px 0 #000' }}>
-                PLAYER SELECT
-              </h2>
-              <div className="mt-2">
-                <TierInfoPopover isAuthenticated={tierData.isAuthenticated} currentTier={tierData.tier} />
-              </div>
-            </div>
-
-            {/* Red vs Blue corners */}
-            <div className="flex flex-col md:grid md:gap-4 gap-2 mb-6" style={{ gridTemplateColumns: '1fr auto 1fr' }}>
               <button
-                onClick={() => setSelectingFor('A')}
-                className={`relative overflow-hidden rounded-xl border-4 transition-all ${
-                  selectingFor === 'A' ? 'border-yellow-400 shadow-2xl ring-4 ring-yellow-400/50' : 'border-red-600'
-                }`}
-                style={{ background: 'linear-gradient(135deg, #8B0000 0%, #CC0000 100%)', minHeight: '250px' }}
+                onClick={() => navigateCategory('next')}
+                className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[#9eb5a4] transition hover:border-[#c9982a] hover:text-[#e8b63c]"
+                aria-label="Next category"
               >
-                <div className="absolute top-2 left-2 bg-black/60 px-3 py-1 rounded-full z-10">
-                  <span className="font-bangers text-white text-sm">RED CORNER</span>
-                </div>
-                {selectedA ? (
-                  <>
-                    <img src={getImagePath(selectedA.name)} alt={selectedA.name} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div className="font-bangers text-3xl text-white" style={{ textShadow: '3px 3px 0 #000' }}>
-                        {selectedA.name.toUpperCase()}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/fighters/lion.jpg), url(/fighters/tiger.jpg), url(/fighters/gorilla.jpg), url(/fighters/crocodile.jpg)', backgroundSize: '50% 50%', backgroundPosition: '0 0, 100% 0, 0 100%, 100% 100%', filter: 'grayscale(1) blur(2px)' }} />
-                    <motion.div
-                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                      className="text-5xl mb-2"
-                      style={{ filter: 'drop-shadow(0 0 12px rgba(255,50,50,0.6))' }}
-                    >
-                      ❓
-                    </motion.div>
-                    <span className="font-bangers text-lg text-white/70 relative z-10">TAP TO SELECT</span>
-                  </div>
-                )}
-                {selectingFor === 'A' && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-yellow-400 py-1 text-center z-10">
-                    <span className="font-bangers text-black">◀ SELECTING</span>
-                  </div>
-                )}
-              </button>
-
-              <div className="flex items-center justify-center px-1 sm:px-2">
-                <div className="relative">
-                  {/* Impact burst lines */}
-                  <div className="vs-impact-lines" />
-                  <motion.div 
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="relative z-10 bg-[#FFD700] w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center border-4 border-[#8B0000]"
-                    style={{ boxShadow: '0 0 25px rgba(255,215,0,0.6), 0 0 50px rgba(255,215,0,0.25), 0 0 80px rgba(255,215,0,0.1)' }}
-                  >
-                    <span className="font-bangers text-xl sm:text-2xl md:text-3xl text-[#8B0000]">VS</span>
-                  </motion.div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setSelectingFor('B')}
-                className={`relative overflow-hidden rounded-xl border-4 transition-all ${
-                  selectingFor === 'B' ? 'border-yellow-400 shadow-2xl ring-4 ring-yellow-400/50' : 'border-blue-600'
-                }`}
-                style={{ background: 'linear-gradient(135deg, #0047AB 0%, #0066CC 100%)', minHeight: '250px' }}
-              >
-                <div className="absolute top-2 right-2 bg-black/60 px-3 py-1 rounded-full z-10">
-                  <span className="font-bangers text-white text-sm">BLUE CORNER</span>
-                </div>
-                {selectedB ? (
-                  <>
-                    <img src={getImagePath(selectedB.name)} alt={selectedB.name} className="absolute inset-0 w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div className="font-bangers text-3xl text-white" style={{ textShadow: '3px 3px 0 #000' }}>
-                        {selectedB.name.toUpperCase()}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full relative overflow-hidden">
-                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/fighters/eagle.jpg), url(/fighters/wolf.jpg), url(/fighters/orca.jpg), url(/fighters/elephant.jpg)', backgroundSize: '50% 50%', backgroundPosition: '0 0, 100% 0, 0 100%, 100% 100%', filter: 'grayscale(1) blur(2px)' }} />
-                    <motion.div
-                      animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.9, 0.5] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut', delay: 0.5 }}
-                      className="text-5xl mb-2"
-                      style={{ filter: 'drop-shadow(0 0 12px rgba(50,100,255,0.6))' }}
-                    >
-                      ❓
-                    </motion.div>
-                    <span className="font-bangers text-lg text-white/70 relative z-10">TAP TO SELECT</span>
-                  </div>
-                )}
-                {selectingFor === 'B' && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-yellow-400 py-1 text-center z-10">
-                    <span className="font-bangers text-black">SELECTING ▶</span>
-                  </div>
-                )}
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5"><path d="m8 4 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
             </div>
 
-            {/* Category Tabs */}
-            <div className="flex gap-2 mb-3 justify-center flex-wrap">
-              {CATEGORY_TABS.map((tab) => {
-                const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
+            <div
+              className="mt-6 grid auto-rows-[85px] grid-cols-[repeat(auto-fill,minmax(85px,1fr))] gap-2 sm:auto-rows-[120px] sm:grid-cols-[repeat(auto-fill,minmax(120px,1fr))]"
+              style={{ gridAutoFlow: 'dense' }}
+            >
+              {filteredFighters.map(fighter => {
+                const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
+                const isGenerating = fighter.status === 'generating';
+                const isFailed = fighter.status === 'failed';
+                const isSelected = animalA === fighter.name || animalB === fighter.name;
+                const isFeatured = animalCategory === 'real' && FEATURED_ANIMALS.includes(fighter.name);
+
                 return (
                   <button
-                    key={tab.key}
+                    key={`${fighter.name}-${fighter.isUserCustom ? 'custom' : 'base'}`}
                     onClick={() => {
-                      if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-                        setLockedAnimalClicked(undefined);
-                        setLockedFeature(tab.key);
-                        setShowUpgradeModal(true);
-                        return;
-                      }
-                      if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
-                        setLockedAnimalClicked(undefined);
-                        setLockedFeature(tab.key);
-                        setShowUpgradeModal(true);
-                        return;
-                      }
-                      setAnimalCategory(tab.key);
+                      if (!isGenerating && !isFailed) handleFighterSelect(fighter.name);
                     }}
-                    className={`px-5 py-2.5 sm:px-6 sm:py-3 rounded-lg font-bangers text-base sm:text-lg tracking-wide transition-all ${
-                      animalCategory === tab.key
-                        ? 'bg-[#FFD700] text-black shadow-[0_0_20px_rgba(255,215,0,0.4)] scale-105'
-                        : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white border border-white/10 hover:border-white/30'
-                    }`}
+                    disabled={isGenerating || isFailed}
+                    className={`group relative overflow-hidden rounded-[3px] border transition ${isFeatured ? 'col-span-2 row-span-2' : ''} ${isSelected ? 'border-[#e8b63c] shadow-[0_0_0_3px_rgba(232,182,60,0.18)]' : 'border-white/8'} ${locked ? 'opacity-90' : 'hover:z-10 hover:scale-[1.03] hover:border-[#c9982a]'}`}
+                    style={{ background: '#131e16' }}
                   >
-                    {tab.label} <span className="text-sm opacity-70">({tab.count})</span>{isLocked ? <span className="ml-1.5 text-yellow-400 text-sm">🔒</span> : ''}
+                    {isGenerating ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#2a5236]">
+                        <span className="text-center text-[0.65rem] font-bold uppercase tracking-[0.14em] text-white/80" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                          Creating
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <img src={getImagePath(fighter.name)} alt={fighter.name} className={`h-full w-full object-cover transition duration-300 ${locked ? 'brightness-50 saturate-50' : 'group-hover:scale-[1.06]'}`} />
+                        {!locked && animalCategory === 'dinosaur' && <div className="pointer-events-none absolute inset-0 bg-amber-900/20 mix-blend-multiply" />}
+                        {!locked && animalCategory === 'fantasy' && <div className="pointer-events-none absolute inset-0 bg-indigo-900/25 mix-blend-multiply" />}
+                      </>
+                    )}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+
+                    {isSelected && (
+                      <div className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#e8b63c] text-[#0d1c10]">
+                        {CHECK_ICON}
+                      </div>
+                    )}
+
+                    {locked && (
+                      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d1c10]/28">
+                        <div className="flex items-center gap-1 rounded-sm border border-[#c9982a]/40 bg-[#0d1c10]/75 px-2 py-1 text-[#e8b63c]">
+                          {LOCK_ICON}
+                          <span className="text-[0.58rem] font-bold uppercase tracking-[0.14em]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                            Member
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {fighter.isUserCustom && !locked && !isGenerating && (
+                      <div className="absolute left-2 top-2 z-10 rounded-sm border border-white/15 bg-black/55 px-1.5 py-1 text-[0.56rem] font-bold uppercase tracking-[0.12em] text-white/80" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                        Custom
+                      </div>
+                    )}
+
+                    <div className={`absolute inset-x-0 bottom-0 z-10 translate-y-1 px-2 pb-2 pt-8 opacity-0 transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 ${isSelected ? 'opacity-100 translate-y-0' : ''}`}>
+                      <span className={`block text-center font-bold uppercase tracking-[0.1em] text-white ${isFeatured ? 'text-[0.9rem]' : 'text-[0.68rem] sm:text-[0.72rem]'}`} style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                        {fighter.name}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+
+              {animalCategory === 'fantasy' && (
+                <button
+                  onClick={() => {
+                    if (tierData.tier !== 'ultimate') {
+                      setLockedAnimalClicked(undefined);
+                      setLockedFeature('create-own');
+                      setShowUpgradeModal(true);
+                      return;
+                    }
+                    setShowCreateModal(true);
+                  }}
+                  className="group relative overflow-hidden rounded-[3px] border border-dashed border-[#c9982a]/45 bg-[#1b2e1f] transition hover:border-[#e8b63c]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#2a5236]/40 to-[#131e16]" />
+                  <div className="relative flex h-full flex-col items-center justify-center px-3 text-center">
+                    <span className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-white/90" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                      Create Your Own
+                    </span>
+                    <span className="mt-1 text-[0.62rem] uppercase tracking-[0.12em] text-[#9eb5a4]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                      Ultimate feature
+                    </span>
+                  </div>
+                </button>
+              )}
+            </div>
+
+            {lockedTotalCount > 0 && (
+              <button
+                onClick={() => setShowPricing(true)}
+                className="mt-5 w-full rounded-sm border border-[#c9982a]/30 bg-[linear-gradient(90deg,#131e16,#1b2e1f,#131e16)] px-5 py-4 text-left transition hover:border-[#c9982a]"
+              >
+                <span className="block text-[1rem] text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.03em' }}>
+                  Unlock {lockedTotalCount} More Animals
+                </span>
+                <span className="mt-1 block text-sm text-[#9eb5a4]">
+                  Get access to more matchups, tournament mode, and higher-tier categories.
+                </span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowFightOverlay(true)}
+              disabled={!canGenerate}
+              className="mt-8 w-full rounded-sm px-6 py-4 text-[1.05rem] font-bold uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:bg-[#2a5236] disabled:text-[#7a9280] disabled:hover:translate-y-0 sm:text-[1.1rem]"
+              style={{ fontFamily: 'var(--font-barlow-condensed)', background: canGenerate ? '#e8b63c' : '#2a5236', color: canGenerate ? '#0d1c10' : '#7a9280' }}
+            >
+              Generate Battle Book
+            </button>
+          </>
+        ) : (
+          <div className="mt-10 space-y-6">
+            <div className="rounded-md border border-[#2a5236] bg-[#131e16] p-5 sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h3 className="text-[2rem] text-white sm:text-[2.3rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                    Tournament Bracket
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#9eb5a4]">
+                    Select eight fighters to seed your bracket. Click a selected fighter again to remove it.
+                  </p>
+                </div>
+                <div className="rounded-sm border border-[#2a5236] bg-[#0d1c10] px-4 py-3 text-center">
+                  <span className="block text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                    Selected
+                  </span>
+                  <span className="block text-[1.8rem] leading-none text-[#e8b63c]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                    {tournamentFighters.length}/8
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+                {[...Array(8)].map((_, index) => {
+                  const fighter = tournamentFighters[index];
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => fighter && handleTournamentFighterSelect(fighter)}
+                      className={`relative aspect-square overflow-hidden rounded-[3px] border ${fighter ? 'border-[#e8b63c]' : 'border-dashed border-white/15'} bg-[#0d1c10] text-left`}
+                    >
+                      {fighter ? (
+                        <>
+                          <img src={getImagePath(fighter)} alt={fighter} className="h-full w-full object-cover" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                          <div className="absolute inset-x-0 bottom-0 px-2 pb-2 pt-8 text-center">
+                            <span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>{fighter}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-center">
+                          <span className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                            Slot {index + 1}
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-center gap-2 sm:gap-3">
+              <button
+                onClick={() => navigateCategory('prev')}
+                className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[#9eb5a4] transition hover:border-[#c9982a] hover:text-[#e8b63c]"
+                aria-label="Previous category"
+              >
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5"><path d="M12 4 6 10l6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+
+              <div className="flex flex-wrap justify-center gap-2">
+                {CATEGORY_TABS.map(tab => {
+                  const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => {
+                        if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
+                          setLockedAnimalClicked(undefined);
+                          setLockedFeature(tab.key);
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
+                          setLockedAnimalClicked(undefined);
+                          setLockedFeature(tab.key);
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        setAnimalCategory(tab.key);
+                      }}
+                      className={`rounded-md border px-4 py-2 text-[0.78rem] font-bold uppercase tracking-[0.14em] transition ${animalCategory === tab.key ? 'border-[#c9982a] bg-[#c9982a] text-[#0d1c10]' : 'border-white/10 bg-white/5 text-[#9eb5a4] hover:text-white'}`}
+                      style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+                    >
+                      {tab.label} ({tab.count}){isLocked ? ' Locked' : ''}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => navigateCategory('next')}
+                className="flex h-11 w-11 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[#9eb5a4] transition hover:border-[#c9982a] hover:text-[#e8b63c]"
+                aria-label="Next category"
+              >
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" className="h-5 w-5"><path d="m8 4 6 6-6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+            </div>
+
+            <div className="grid auto-rows-[85px] grid-cols-[repeat(auto-fill,minmax(85px,1fr))] gap-2 sm:auto-rows-[120px] sm:grid-cols-[repeat(auto-fill,minmax(120px,1fr))]" style={{ gridAutoFlow: 'dense' }}>
+              {filteredFighters.map(fighter => {
+                const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
+                const isSelected = tournamentFighters.includes(fighter.name);
+                const isGenerating = fighter.status === 'generating';
+                const isFeatured = animalCategory === 'real' && FEATURED_ANIMALS.includes(fighter.name);
+                return (
+                  <button
+                    key={`tournament-${fighter.name}`}
+                    onClick={() => !isGenerating && handleTournamentFighterSelect(fighter.name)}
+                    disabled={isGenerating}
+                    className={`group relative overflow-hidden rounded-[3px] border transition ${isFeatured ? 'col-span-2 row-span-2' : ''} ${isSelected ? 'border-[#e8b63c] shadow-[0_0_0_3px_rgba(232,182,60,0.18)]' : 'border-white/8'} ${locked ? 'opacity-90' : 'hover:z-10 hover:scale-[1.03] hover:border-[#c9982a]'}`}
+                    style={{ background: '#131e16' }}
+                  >
+                    {isGenerating ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#2a5236]">
+                        <span className="text-center text-[0.65rem] font-bold uppercase tracking-[0.14em] text-white/80" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                          Creating
+                        </span>
+                      </div>
+                    ) : (
+                      <img src={getImagePath(fighter.name)} alt={fighter.name} className={`h-full w-full object-cover transition duration-300 ${locked ? 'brightness-50 saturate-50' : 'group-hover:scale-[1.06]'}`} />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+                    {isSelected && (
+                      <div className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-[#e8b63c] text-[#0d1c10]">
+                        {CHECK_ICON}
+                      </div>
+                    )}
+                    {locked && (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0d1c10]/28">
+                        <div className="flex items-center gap-1 rounded-sm border border-[#c9982a]/40 bg-[#0d1c10]/75 px-2 py-1 text-[#e8b63c]">
+                          {LOCK_ICON}
+                          <span className="text-[0.58rem] font-bold uppercase tracking-[0.14em]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                            Member
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    <div className={`absolute inset-x-0 bottom-0 z-10 translate-y-1 px-2 pb-2 pt-8 opacity-0 transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 ${isSelected ? 'opacity-100 translate-y-0' : ''}`}>
+                      <span className={`block text-center font-bold uppercase tracking-[0.1em] text-white ${isFeatured ? 'text-[0.9rem]' : 'text-[0.68rem] sm:text-[0.72rem]'}`} style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                        {fighter.name}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
             </div>
 
-            {/* Grid with flanking arrows */}
-            <div className="flex items-center gap-2 sm:gap-4">
-              <button
-                onClick={() => navigateCategory('prev')}
-                className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
-                aria-label="Previous category"
-              >
-                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M12 4L6 10L12 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-
-              {/* Character Grid */}
-              <div className="flex-1 bg-[#1a1a2e] rounded-xl p-4 border-4 border-[#FFD700]">
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                {filteredFighters.map((fighter, i) => {
-                  const locked = !fighter.isCustom && isAnimalLocked(tierData.tier, fighter.name);
-                  const isSelected = animalA === fighter.name || animalB === fighter.name;
-                  const isGenerating = fighter.status === 'generating';
-                  const isFailed = fighter.status === 'failed';
-                  return (
-                    <motion.button
-                      key={`${fighter.name}-${fighter.isUserCustom ? 'custom' : 'static'}`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.5) }}
-                      onClick={() => !isGenerating && !isFailed && handleFighterSelect(fighter.name)}
-                      disabled={isGenerating || isFailed}
-                      className={`relative aspect-square rounded-lg overflow-hidden border-3 transition-all hover:scale-110 hover:z-10 ${
-                        isGenerating
-                          ? 'border-purple-500 opacity-70 cursor-wait'
-                          : isFailed
-                          ? 'border-red-500 opacity-50 cursor-not-allowed'
-                          : isSelected
-                          ? 'border-yellow-400 ring-2 ring-yellow-400'
-                          : locked
-                          ? 'border-gray-600 opacity-70 hover:border-yellow-500 hover:opacity-100'
-                          : fighter.isUserCustom
-                          ? 'border-purple-500 hover:border-purple-300'
-                          : 'border-gray-600 hover:border-white'
-                      }`}
-                    >
-                      {isGenerating ? (
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-purple-700 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="text-2xl animate-spin mb-1">✨</div>
-                            <p className="text-purple-300 text-[10px] font-bold">CREATING...</p>
-                          </div>
-                        </div>
-                      ) : (
-                        <img src={getImagePath(fighter.name)} alt={fighter.name} className="absolute inset-0 w-full h-full object-cover" />
-                      )}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/80 py-1 px-1">
-                        <p className="font-bangers text-white text-xs text-center truncate">{fighter.name.toUpperCase()}</p>
-                      </div>
-                      {fighter.isUserCustom && !isGenerating && (
-                        <div className="absolute top-1 left-1 bg-purple-600/80 px-1 py-0.5 rounded text-[9px] text-white font-bold">
-                          ✨
-                        </div>
-                      )}
-                      {isSelected && (
-                        <div className="absolute top-1 right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                          <span className="text-black font-bold text-sm">✓</span>
-                        </div>
-                      )}
-                      {locked && !isSelected && (
-                        <div className="absolute top-1 right-1 w-6 h-6 bg-black/70 rounded-full flex items-center justify-center">
-                          <span className="text-yellow-400 text-sm">🔒</span>
-                        </div>
-                      )}
-                    </motion.button>
-                  );
-                })}
-                
-                {/* "Your Imagination" placeholder slots - fantasy only, fill remaining grid row */}
-                {animalCategory === 'fantasy' && (() => {
-                  const GRID_COLS = 8; // md:grid-cols-8
-                  const animalCount = filteredFighters.length;
-                  const remainder = animalCount % GRID_COLS;
-                  const placeholderCount = remainder === 0 ? GRID_COLS : (GRID_COLS - remainder);
-                  return Array.from({ length: placeholderCount }).map((_, i) => (
-                    <button
-                      key={`imagination-${i}`}
-                      onClick={() => {
-                        if (tierData.tier !== 'ultimate') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature('create-own');
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        setShowCreateModal(true);
-                      }}
-                      className={`relative aspect-square rounded-lg overflow-hidden border-3 border-dashed transition-all hover:scale-110 hover:z-10 ${
-                        tierData.tier === 'ultimate'
-                          ? 'border-purple-400 hover:border-purple-300 bg-gradient-to-br from-purple-900/80 to-purple-700/80 cursor-pointer'
-                          : 'border-gray-500/50 bg-gradient-to-br from-gray-700/50 to-gray-800/50 opacity-60 cursor-pointer hover:border-yellow-500 hover:opacity-90'
-                      }`}
-                      title={tierData.tier === 'ultimate' ? 'Create your own creature!' : 'Ultimate tier required'}
-                    >
-                      <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
-                        <div className="text-2xl mb-0.5">✨</div>
-                        <p className="font-bangers text-white/80 text-[9px] text-center leading-tight">YOUR IMAGINATION</p>
-                        {tierData.tier === 'ultimate' ? (
-                          <p className="text-purple-300 text-[8px] font-bold mt-0.5">TAP TO CREATE</p>
-                        ) : (
-                          <p className="text-yellow-400/70 text-[8px] font-bold mt-0.5">👑 ULTIMATE</p>
-                        )}
-                      </div>
-                    </button>
-                  ));
-                })()}
-              </div>
-
-              {/* Locked animals banner */}
-              {lockedTotalCount > 0 && (
-                <button
-                  onClick={scrollToPricing}
-                  className="mt-4 w-full relative overflow-hidden rounded-lg py-3 px-4 transition-all hover:scale-[1.01] group"
-                  style={{ background: 'linear-gradient(90deg, #1a1a2e, #2d1f4e, #1a1a2e)' }}
-                >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent)', animation: 'shimmer 2s infinite' }} />
-                  <p className="font-bangers text-[#FFD700] text-lg sm:text-xl relative z-10" style={{ textShadow: '1px 1px 2px #000' }}>
-                    🔒 {lockedTotalCount} More Animals with Member Access →
-                  </p>
-                  <p className="text-white/60 text-xs sm:text-sm relative z-10 mt-0.5">
-                    Including 🦕 Dinosaurs and 🐉 Fantasy creatures!
-                  </p>
-                </button>
-              )}
-              </div>
-
-              <button
-                onClick={() => navigateCategory('next')}
-                className="shrink-0 w-10 h-20 sm:w-14 sm:h-28 flex items-center justify-center rounded-xl bg-white/5 hover:bg-[#FFD700]/20 border-2 border-white/15 hover:border-[#FFD700]/50 text-white/40 hover:text-[#FFD700] transition-all hover:scale-110"
-                aria-label="Next category"
-              >
-                <svg width="28" height="28" viewBox="0 0 20 20" fill="none" className="sm:w-9 sm:h-9"><path d="M8 4L14 10L8 16" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-            </div>
-
-            {canGenerate && !showFightOverlay && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => setShowFightOverlay(true)}
-                  className="px-10 py-4 rounded-xl font-bangers text-3xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_30px_rgba(255,215,0,0.5)] hover:scale-105 hover:shadow-[0_0_40px_rgba(255,215,0,0.7)] transition-all duration-300"
-                >
-                  READY TO FIGHT!
-                </button>
-              </div>
-            )}
-          </div>
-        </section>
-        )}
-      </div>
-
-      {/* FIGHT! Overlay */}
-      {battleType === 'single' && canGenerate && showFightOverlay && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => { if (!loading) { setShowFightOverlay(false); setAnimalA(''); setAnimalB(''); setSelectingFor('A'); } }}
-        >
-          <div className="text-center transition-transform duration-300">
-            <div className="flex items-center justify-center gap-6 mb-8">
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full border-4 border-red-500 overflow-hidden bg-gray-800 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
-                  <img src={`/fighters/${animalA?.toLowerCase().replace(/ /g, '-')}.jpg`} alt={animalA || ''} className="w-full h-full object-cover" />
-                </div>
-                <p className="font-bangers text-red-400 text-xl mt-2">{animalA}</p>
-              </div>
-              <div className="font-bangers text-6xl text-yellow-400" style={{ textShadow: '0 0 20px rgba(255,215,0,0.8)' }}>VS</div>
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full border-4 border-blue-500 overflow-hidden bg-gray-800 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
-                  <img src={`/fighters/${animalB?.toLowerCase().replace(/ /g, '-')}.jpg`} alt={animalB || ''} className="w-full h-full object-cover" />
-                </div>
-                <p className="font-bangers text-blue-400 text-xl mt-2">{animalB}</p>
-              </div>
-            </div>
-            
-            <button 
-              onClick={(e) => { e.stopPropagation(); handleGenerate(); }} 
-              disabled={loading}
-              className="px-16 py-6 rounded-2xl font-bangers text-5xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.6)] hover:scale-110 hover:shadow-[0_0_60px_rgba(255,215,0,0.8)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
-            >
-              {loading ? '⏳ CREATING...' : '⚔️ FIGHT!'}
-            </button>
-            
-            <p className="mt-6 text-white/80 text-lg">
-              {gameMode === 'classic' 
-                ? 'Click to create your wildlife book!' 
-                : '✨ Interactive adventure mode'}
-            </p>
-            {!loading && (
-              <p className="mt-4 text-white/50 text-sm">Click FIGHT to proceed or anywhere else to re-select</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* TOURNAMENT Overlay */}
-      {battleType === 'tournament' && canStartTournament && showTournamentOverlay && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => { if (!loading) { setShowTournamentOverlay(false); } }}
-        >
-          <div className="text-center max-w-4xl mx-auto px-4" onClick={(e) => e.stopPropagation()}>
-            <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', stiffness: 200 }}
-              className="text-8xl mb-6"
-            >
-              🏆
-            </motion.div>
-            
-            <h2 className="font-bangers text-5xl text-[#FFD700] mb-6" style={{ textShadow: '3px 3px 0 #000' }}>
-              TOURNAMENT READY!
-            </h2>
-            
-            <div className="bg-black/50 rounded-xl p-6 mb-6 border-2 border-[#FFD700]/30">
-              <p className="text-white/60 text-sm mb-4">FIRST ROUND MATCHUPS</p>
-              <div className="grid grid-cols-2 gap-4">
-                {[0, 2, 4, 6].map((i) => (
-                  <div key={i} className="flex items-center justify-center gap-3 bg-white/5 rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <img src={getImagePath(tournamentFighters[i])} alt={tournamentFighters[i]} className="w-10 h-10 rounded-full object-cover border-2 border-red-500" />
-                      <span className="text-white text-sm font-bold truncate max-w-[80px]">{tournamentFighters[i]}</span>
-                    </div>
-                    <span className="text-[#FFD700] font-bangers">VS</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-white text-sm font-bold truncate max-w-[80px]">{tournamentFighters[i + 1]}</span>
-                      <img src={getImagePath(tournamentFighters[i + 1])} alt={tournamentFighters[i + 1]} className="w-10 h-10 rounded-full object-cover border-2 border-blue-500" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <button 
+            <button
               onClick={handleStartTournament}
-              disabled={loading}
-              className="px-16 py-6 rounded-2xl font-bangers text-4xl bg-gradient-to-b from-yellow-400 to-orange-500 text-red-900 border-4 border-yellow-600 shadow-[0_0_40px_rgba(255,215,0,0.6)] hover:scale-110 hover:shadow-[0_0_60px_rgba(255,215,0,0.8)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+              disabled={!canStartTournament}
+              className="w-full rounded-sm px-6 py-4 text-[1.05rem] font-bold uppercase tracking-[0.14em] transition disabled:cursor-not-allowed disabled:bg-[#2a5236] disabled:text-[#7a9280]"
+              style={{ fontFamily: 'var(--font-barlow-condensed)', background: canStartTournament ? '#e8b63c' : '#2a5236', color: canStartTournament ? '#0d1c10' : '#7a9280' }}
             >
-              {loading ? '⏳ PREPARING...' : '🏆 START TOURNAMENT'}
+              Start Tournament
             </button>
-            
-            <p className="mt-6 text-white/60 text-sm">
-              {gameMode === 'classic' ? '📖 Classic mode' : '🎭 Adventure mode'} • 7 matchups to the championship
-            </p>
-            {!loading && (
-              <p className="mt-4 text-white/50 text-sm">Click START to begin or outside to re-select fighters</p>
-            )}
           </div>
-        </div>
-      )}
+        )}
+      </section>
 
-      {/* Divider: Creation → Blog CTA */}
-      <SectionDivider />
-
-      {/* Blog CTA */}
-      <section className="py-6 px-4 bg-black/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Learning Center Card */}
-            <div className="bg-gradient-to-br from-[#1e5a3d] via-[#2d5a3d] to-[#1e3d2a] rounded-xl p-8 border-4 border-[#FFD700]">
-              <h2 className="font-bangers text-2xl text-[#FFD700] mb-3" style={{ letterSpacing: '2px' }}>
-                📚 LEARNING CENTER
-              </h2>
-              <p className="text-white/90 text-base mb-5">
-                Educational activities, printable books, and teaching resources for kids ages 5-12!
-              </p>
-              <a
-                href="/learn"
-                className="inline-block bg-[#FFD700] text-[#1e3d2a] font-bangers text-lg px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-3 border-[#1e3d2a]"
-              >
-                EXPLORE RESOURCES
-              </a>
-            </div>
-            
-            {/* Battles Hub Card */}
-            <div className="bg-gradient-to-r from-[#8B0000] via-[#CC0000] to-[#8B0000] rounded-xl p-8 border-4 border-[#FFD700]">
-              <h2 className="font-bangers text-2xl text-[#FFD700] mb-3" style={{ letterSpacing: '2px' }}>
-                ⚔️ BATTLES HUB
-              </h2>
-              <p className="text-white/90 text-base mb-5">
-                Search every matchup, see most popular battles, and jump into featured deep-dive guides.
-              </p>
-              <a
-                href="/battles"
-                className="inline-block bg-[#FFD700] text-[#8B0000] font-bangers text-lg px-6 py-3 rounded-xl hover:bg-yellow-300 transition-all shadow-xl border-3 border-[#8B0000]"
-              >
-                EXPLORE BATTLES
-              </a>
-            </div>
+      <section id="membership" className="relative overflow-hidden py-24">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(rgba(10,22,12,0.82), rgba(10,22,12,0.82)), url('/fighters/battle-lion-vs-tiger-cover.jpg') center / cover no-repeat`,
+          }}
+        />
+        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+          <span className="mb-4 inline-block rounded-sm border border-[#c9982a]/25 bg-[#c9982a]/8 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+            Membership
+          </span>
+          <h2 className="text-[2.3rem] sm:text-[3rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+            Unlock the Full Roster
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-[0.96rem] leading-7 text-[#9eb5a4]">
+            The free tier gets you started. Membership opens up more animals, tournament play, printable books, and advanced story modes.
+          </p>
+          <ul className="mx-auto mt-8 flex max-w-xl flex-col items-center gap-3 text-center">
+            {[
+              'More animals across higher tiers including dinosaurs and fantasy creatures',
+              'Unlimited book creation and deeper matchup variety',
+              'Tournament mode and classroom-friendly printable formats',
+              'Early access to new roster additions and premium features',
+            ].map(item => (
+              <li key={item} className="flex items-center gap-3 text-[0.84rem] font-semibold tracking-[0.03em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                <span className="inline-block h-px w-4 bg-[#c9982a]" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-10 flex flex-col items-center gap-3">
+            <button
+              onClick={() => setShowPricing(true)}
+              className="inline-flex items-center justify-center rounded-sm border border-[#c9982a] px-8 py-4 text-[0.95rem] font-bold uppercase tracking-[0.14em] text-[#e8b63c] transition hover:bg-[#c9982a] hover:text-[#0d1c10]"
+              style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+            >
+              View Membership Options
+            </button>
+            <span className="text-[0.74rem] uppercase tracking-[0.08em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+              Member access starts at $4.99
+            </span>
           </div>
         </div>
       </section>
 
-      {/* Official Books - Amazon Affiliate */}
-      <section className="py-16 px-4 bg-gradient-to-b from-[#232f3e] to-[#131921]">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <div className="inline-block bg-[#FF9900] px-6 py-2 rounded-full mb-4">
-              <span className="text-black font-bold text-sm">📚 LOVE ANIMAL BATTLES?</span>
-            </div>
-            <h2 className="font-bangers text-4xl sm:text-5xl text-white mb-4" style={{ textShadow: '3px 3px 0 #000' }}>
-              CHECK OUT THE BOOKS!
-            </h2>
-            <p className="text-white/80 text-lg max-w-2xl mx-auto">
-              The <strong className="text-[#FF9900]">Who Would Win?</strong> book series by Jerry Pallotta — 26+ titles with amazing illustrations by Rob Bolster!
-            </p>
+      <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
+
+      <section id="how" className="border-y border-white/5 bg-[#131e16] py-20">
+        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+          <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+            The Process
+          </span>
+          <h2 className="text-[2.4rem] sm:text-[3.2rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+            How It Works
+          </h2>
+          <div className="relative mt-12 grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
+            <div className="absolute left-[12%] right-[12%] top-5 hidden h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent md:block" />
+            {HOW_STEPS.map((step, index) => (
+              <div key={step.title} className="relative px-2">
+                <div className="mb-5 flex justify-center">
+                  <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#2a5236] bg-[#1b2e1f] text-[0.9rem] font-bold text-[#e8b63c]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                    {index + 1}
+                  </div>
+                </div>
+                <h3 className="text-[1.1rem] font-bold text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-[0.88rem] leading-7 text-[#9eb5a4]">
+                  {step.body}
+                </p>
+              </div>
+            ))}
           </div>
-          
-          <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-[#FF9900] scrollbar-track-white/10">
-            <div className="flex gap-5 px-4 min-w-max">
-              {WHO_WOULD_WIN_BOOKS.map((book) => (
+        </div>
+      </section>
+
+      <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
+
+      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+            The Original Series
+          </span>
+          <h2 className="text-[2.4rem] sm:text-[3.2rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+            The Books That Started It All
+          </h2>
+        </div>
+
+        <div className="mt-12 overflow-x-auto pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="relative flex min-h-[225px] min-w-max gap-3 px-1 sm:block sm:min-h-[280px] sm:min-w-0">
+            {physicalBooks.map((book, index) => {
+              const desktopStyles = [
+                'sm:left-[0%] sm:top-[45px] sm:h-[190px] sm:w-[140px] sm:-rotate-[2deg] sm:z-[5]',
+                'sm:left-[9%] sm:top-[30px] sm:h-[205px] sm:w-[150px] sm:rotate-[1deg] sm:z-[6]',
+                'sm:left-[19%] sm:top-[20px] sm:h-[215px] sm:w-[155px] sm:-rotate-[1.5deg] sm:z-[7]',
+                'sm:left-[29%] sm:top-[28px] sm:h-[205px] sm:w-[150px] sm:rotate-[2.5deg] sm:z-[6]',
+                'sm:left-[39%] sm:top-[38px] sm:h-[198px] sm:w-[145px] sm:-rotate-[2deg] sm:z-[5]',
+                'sm:left-[49%] sm:top-[25px] sm:h-[205px] sm:w-[150px] sm:rotate-[1.5deg] sm:z-[6]',
+                'sm:left-[59%] sm:top-[15px] sm:h-[215px] sm:w-[155px] sm:-rotate-[1deg] sm:z-[7]',
+              ];
+              return (
                 <a
                   key={book.asin}
-                  href={book.amazonUrl}
+                  href={book.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-shrink-0 group"
+                  className={`relative block h-[138px] w-[100px] flex-shrink-0 overflow-hidden rounded-[3px] shadow-[0_16px_50px_rgba(0,0,0,0.6)] transition hover:-translate-y-2 hover:shadow-[0_26px_65px_rgba(0,0,0,0.7)] sm:absolute sm:h-auto sm:w-auto ${desktopStyles[index]}`}
                 >
-                  <div className="w-36 h-52 rounded-lg overflow-hidden shadow-2xl border-3 border-white/10 group-hover:border-[#FF9900] transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_30px_rgba(255,153,0,0.4)]">
-                    <img 
-                      src={book.coverImage}
-                      alt={book.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `https://placehold.co/200x300/232f3e/FFD700?text=${encodeURIComponent(book.title.split(' ')[0])}`;
-                      }}
-                    />
-                  </div>
-                  <p className="text-white/60 text-xs mt-2 max-w-36 text-center group-hover:text-[#FF9900] transition-colors line-clamp-2">{book.title}</p>
+                  <img src={book.cover} alt={book.title} className="h-full w-full object-cover" />
                 </a>
-              ))}
-            </div>
+              );
+            })}
           </div>
-          
-          <div className="text-center mt-8">
-            <p className="text-white/50 text-sm mb-4">👆 Scroll to see all books!</p>
-            <a
-              href="https://www.amazon.com/s?k=who+would+win+jerry+pallotta&tag=whowouldwinbo-20"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-[#FF9900] text-black font-bold text-xl px-10 py-4 rounded-xl hover:bg-[#FFB84D] transition-all shadow-xl hover:scale-105"
-            >
-              🛒 Shop Full Collection on Amazon
-            </a>
+        </div>
+
+        <div className="mt-8 flex flex-col items-center justify-between gap-6 text-center lg:flex-row lg:text-left">
+          <div className="max-w-3xl text-[0.94rem] leading-7 text-[#9eb5a4]">
+            The <strong className="font-medium text-[#cfd8d1]">Who Would Win?</strong> series by Jerry Pallotta helped define the animal battle format for a generation of readers. FightingBooks is a fan project inspired by that same matchup-first curiosity.
           </div>
-          <p className="mt-8 text-white/40 text-sm text-center">
-            FightingBooks is a fan project — not affiliated with Jerry Pallotta or Scholastic. As an Amazon Associate we earn from qualifying purchases.
-          </p>
+          <a
+            href="https://www.amazon.com/s?k=who+would+win+jerry+pallotta&tag=whowouldwinbo-20"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-sm border border-[#c9982a] px-6 py-3 text-[0.82rem] font-bold uppercase tracking-[0.14em] text-[#c9982a] transition hover:bg-[#c9982a] hover:text-[#0d1c10]"
+            style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+          >
+            Shop Full Collection on Amazon
+          </a>
         </div>
       </section>
 
-      {/* Email Capture Modal */}
+      <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
+
+      <footer className="px-4 py-10 text-center sm:px-6 lg:px-8">
+        <p className="text-[0.78rem] uppercase tracking-[0.08em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+          Based on the bestselling Who Would Win? series by Jerry Pallotta. FightingBooks is a fan project and is not affiliated with Jerry Pallotta or Scholastic.
+        </p>
+      </footer>
+
+      {showPricing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => setShowPricing(false)}>
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-xl border border-[#c9982a]/25 bg-[#0d1c10] p-6 sm:p-8" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowPricing(false)} className="absolute right-4 top-3 text-2xl text-white/50 transition hover:text-white">×</button>
+            <div className="text-center">
+              <h2 className="text-[2.4rem] text-[#e8b63c] sm:text-[3rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                Unlock More Matchups
+              </h2>
+              <p className="mt-3 text-sm text-[#9eb5a4]">The free version is real, but the full roster goes much deeper.</p>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:grid-cols-2">
+              <div className="rounded-lg border border-[#c9982a] bg-[#131e16] p-6 shadow-[0_0_30px_rgba(201,152,42,0.08)]">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 className="text-[2rem] text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                      Member
+                    </h3>
+                    <p className="mt-2 text-sm text-[#9eb5a4]">More real animals, tournament mode, and printable books.</p>
+                  </div>
+                  <div className="text-left sm:text-right">
+                    <div className="text-3xl text-white" style={{ fontFamily: 'var(--font-bangers)' }}>$4.99</div>
+                    <div className="text-xs uppercase tracking-[0.12em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>one-time</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleUpgrade('member')}
+                  className="mt-6 w-full rounded-sm bg-[#e8b63c] px-5 py-3 text-[0.95rem] font-bold uppercase tracking-[0.14em] text-[#0d1c10] transition hover:bg-[#f5d98a]"
+                  style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+                >
+                  Unlock Member
+                </button>
+              </div>
+
+              <div className="rounded-lg border border-[#6f5ab5]/40 bg-[#13161f] p-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 className="text-[2rem] text-[#d7c9ff]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                      Ultimate
+                    </h3>
+                    <p className="mt-2 text-sm text-[#a8a4b5]">Adds fantasy, advanced story modes, and custom creature creation.</p>
+                  </div>
+                  <div className="text-left sm:text-right">
+                    <div className="text-3xl text-white" style={{ fontFamily: 'var(--font-bangers)' }}>$4.99</div>
+                    <div className="text-xs uppercase tracking-[0.12em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>per month</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleUpgrade('ultimate')}
+                  className="mt-6 w-full rounded-sm border border-[#8e78d9] bg-[#5c4698] px-5 py-3 text-[0.95rem] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#6c56ad]"
+                  style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+                >
+                  Go Ultimate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {battleType === 'single' && canGenerate && showFightOverlay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => { if (!loading) { setShowFightOverlay(false); setAnimalA(''); setAnimalB(''); setSelectingFor('A'); } }}>
+          <div className="w-full max-w-3xl rounded-xl border border-[#c9982a]/25 bg-[#0d1c10] p-6 sm:p-8" onClick={e => e.stopPropagation()}>
+            <div className="grid items-center gap-6 sm:grid-cols-[1fr_auto_1fr]">
+              {[animalA, animalB].map((animal, index) => (
+                <div key={animal} className="text-center">
+                  <div className={`mx-auto h-24 w-24 overflow-hidden rounded-full border-4 ${index === 0 ? 'border-[#8f2020]' : 'border-[#1d4f8c]'} sm:h-28 sm:w-28`}>
+                    <img src={getImagePath(animal)} alt={animal} className="h-full w-full object-cover" />
+                  </div>
+                  <p className="mt-3 text-[1.45rem] text-white sm:text-[1.8rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.03em' }}>{animal}</p>
+                </div>
+              ))}
+              <div className="text-center text-[3rem] text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)' }}>VS</div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={handleGenerate}
+                disabled={loading}
+                className="rounded-sm bg-[#e8b63c] px-10 py-4 text-[1.2rem] font-bold uppercase tracking-[0.14em] text-[#0d1c10] transition hover:-translate-y-0.5 hover:bg-[#f5d98a] disabled:cursor-not-allowed disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+              >
+                {loading ? 'Creating Book' : 'Fight'}
+              </button>
+              <p className="mt-4 text-sm text-[#9eb5a4]">
+                {gameMode === 'classic' ? 'Classic mode will generate the standard battle book.' : 'Adventure mode will generate the branching story version.'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {battleType === 'tournament' && canStartTournament && showTournamentOverlay && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm" onClick={() => { if (!loading) setShowTournamentOverlay(false); }}>
+          <div className="w-full max-w-4xl rounded-xl border border-[#c9982a]/25 bg-[#0d1c10] p-6 sm:p-8" onClick={e => e.stopPropagation()}>
+            <div className="text-center">
+              <h2 className="text-[2.6rem] text-[#e8b63c] sm:text-[3.2rem]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                Tournament Ready
+              </h2>
+              <p className="mt-3 text-sm text-[#9eb5a4]">Here are your first-round matchups.</p>
+            </div>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              {[0, 2, 4, 6].map(i => (
+                <div key={i} className="rounded-md border border-white/8 bg-[#131e16] p-4">
+                  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                    <div className="flex items-center gap-3">
+                      <img src={getImagePath(tournamentFighters[i])} alt={tournamentFighters[i]} className="h-12 w-12 rounded-full object-cover" />
+                      <span className="text-sm font-semibold text-white">{tournamentFighters[i]}</span>
+                    </div>
+                    <span className="text-[1.6rem] text-[#c9982a]" style={{ fontFamily: 'var(--font-bangers)' }}>VS</span>
+                    <div className="flex items-center justify-end gap-3 text-right">
+                      <span className="text-sm font-semibold text-white">{tournamentFighters[i + 1]}</span>
+                      <img src={getImagePath(tournamentFighters[i + 1])} alt={tournamentFighters[i + 1]} className="h-12 w-12 rounded-full object-cover" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={handleStartTournament}
+                disabled={loading}
+                className="rounded-sm bg-[#e8b63c] px-10 py-4 text-[1.15rem] font-bold uppercase tracking-[0.14em] text-[#0d1c10] transition hover:-translate-y-0.5 hover:bg-[#f5d98a] disabled:cursor-not-allowed disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+              >
+                {loading ? 'Preparing Bracket' : 'Start Tournament'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <EmailCaptureModal
         isOpen={showEmailCapture}
         onClose={() => { setShowEmailCapture(false); setPendingGenerate(false); }}
@@ -1529,7 +1381,6 @@ export default function Home() {
         }}
       />
 
-      {/* Upgrade Modal */}
       <UpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
@@ -1541,88 +1392,59 @@ export default function Home() {
         isAuthenticated={tierData.isAuthenticated}
       />
 
-      {/* Create Custom Animal Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={() => { if (!createLoading) { setShowCreateModal(false); setCreateError(''); setCreateName(''); } }}>
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative max-w-md w-full rounded-2xl bg-[#0d1f0d] border-2 border-purple-500/50 p-6 sm:p-8" onClick={e => e.stopPropagation()}>
+          <div className="relative w-full max-w-md rounded-xl border border-[#8e78d9]/40 bg-[#0d1c10] p-6 sm:p-8" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => { if (!createLoading) { setShowCreateModal(false); setCreateError(''); setCreateName(''); } }}
-              className="absolute top-3 right-4 text-white/60 hover:text-white text-2xl font-bold z-10"
+              className="absolute right-4 top-3 text-2xl text-white/50 transition hover:text-white"
             >
-              ✕
+              ×
             </button>
 
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-3">✨</div>
-              <h2 className="font-bangers text-3xl text-purple-300" style={{ textShadow: '2px 2px 0 #000' }}>
-                CREATE YOUR CREATURE
+            <div className="text-center">
+              <h2 className="text-[2.2rem] text-[#d7c9ff]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                Create Your Creature
               </h2>
-              <p className="text-white/60 text-sm mt-2">
-                Imagine any mythical creature and we&apos;ll bring it to life!
-              </p>
+              <p className="mt-3 text-sm text-[#a8a4b5]">Name a creature and we’ll generate its profile and images.</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="mt-6 space-y-4">
               <div>
-                <label className="block text-white/80 text-sm font-bold mb-2">Creature Name</label>
+                <label className="mb-2 block text-sm font-semibold text-white/80">Creature Name</label>
                 <input
                   type="text"
                   value={createName}
-                  onChange={(e) => { setCreateName(e.target.value); setCreateError(''); }}
-                  placeholder="e.g., Shadow Phoenix, Crystal Serpent..."
-                  className="w-full px-4 py-3 bg-black/30 border-2 border-purple-500/30 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-purple-400 text-lg"
+                  onChange={e => { setCreateName(e.target.value); setCreateError(''); }}
+                  placeholder="Shadow Phoenix, Crystal Serpent..."
+                  className="w-full rounded-md border border-white/10 bg-black/25 px-4 py-3 text-white outline-none transition placeholder:text-white/25 focus:border-[#8e78d9]"
                   disabled={createLoading}
                   maxLength={50}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && createName.trim() && !createLoading) {
-                      handleCreateAnimal();
-                    }
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && createName.trim() && !createLoading) handleCreateAnimal();
                   }}
                 />
               </div>
 
               {createError && (
-                <div className="p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
-                  <p className="text-red-300 text-sm">{createError}</p>
+                <div className="rounded-md border border-red-500/40 bg-red-950/30 p-3 text-sm text-red-200">
+                  {createError}
                 </div>
               )}
 
               <button
                 onClick={handleCreateAnimal}
                 disabled={createLoading || !createName.trim()}
-                className="w-full px-6 py-4 rounded-xl font-bangers text-xl bg-gradient-to-b from-purple-500 to-purple-700 text-white border-2 border-purple-400 hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
+                className="w-full rounded-sm border border-[#8e78d9] bg-[#5c4698] px-5 py-3 text-[0.95rem] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#6c56ad] disabled:cursor-not-allowed disabled:opacity-60"
+                style={{ fontFamily: 'var(--font-barlow-condensed)' }}
               >
-                {createLoading ? '⏳ Creating your creature...' : '✨ Bring It to Life!'}
+                {createLoading ? 'Creating Creature' : 'Bring It to Life'}
               </button>
-
-              {createLoading && (
-                <p className="text-white/50 text-xs text-center animate-pulse">
-                  Generating facts and 5 unique illustrations... this takes about 30-60 seconds
-                </p>
-              )}
             </div>
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <footer className="py-6 bg-[#0d1f0d] text-center">
-        <p className="text-white/50 text-sm">Made with ❤️ for animal fans • AI-powered educational content</p>
-        <p className="text-white/30 text-xs mt-2">
-          Content creator? <a href="mailto:scout@openclaw.ai" className="underline hover:text-white/50">Get free access</a>
-        </p>
-      </footer>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap');
-        .font-bangers { font-family: 'Bangers', cursive; }
-        .font-comic { font-family: 'Comic Neue', cursive; }
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
     </main>
   );
 }
