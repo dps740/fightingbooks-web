@@ -31,7 +31,7 @@ export const REAL_ANIMALS = [
   'Moose', 'Cape Buffalo', 'Great Horned Owl',
   'Alligator', 'Mandrill', 'Cheetah', 'Hyena',
   'Walrus', 'Octopus', 'Hammerhead Shark',
-  'King Cobra', 'Python', 'Anaconda'
+  'King Cobra', 'Python', 'Anaconda', 'Komodo Dragon'
 ];
 
 // Dinosaurs (8 total) - Paid only
