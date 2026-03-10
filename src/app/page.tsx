@@ -587,10 +587,13 @@ export default function Home() {
                     <img src={book.image} alt={book.title} className="h-full w-full object-cover"
                       style={{ transform: isTapped ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.3s ease' }} />
                     {isTapped && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent px-2 pb-2 pt-8 text-center"
-                        style={{ animation: 'bookFanIn 0.25s ease both' }}>
-                        <span className="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                      <div className="absolute inset-0 flex flex-col items-center justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent px-2 pb-3"
+                        style={{ animation: 'bookFanIn 0.2s ease both' }}>
+                        <span className="mb-1 text-[0.58rem] font-bold uppercase tracking-[0.1em] text-white/80" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
                           {book.title}
+                        </span>
+                        <span className="rounded-full bg-[#e8b63c] px-4 py-1 text-[0.65rem] font-bold uppercase tracking-[0.12em] text-[#0d1c10]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                          Read
                         </span>
                       </div>
                     )}
