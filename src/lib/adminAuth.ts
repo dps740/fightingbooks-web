@@ -29,10 +29,32 @@ export async function isAdminUserFromCookies(): Promise<boolean> {
   }
 }
 
-export async function authorizeAdminRequest(authorizationHeader: string | null): Promise<boolean> {
-  const adminSecret = process.env.ADMIN_SECRET;
-  if (adminSecret && authorizationHeader === `Bearer ${adminSecret}`) {
-    return true;
+export async function authorizeAdminRequest(
+  authorizationHeader: string | null,
+  bodyAdminKey?: string | null,
+): Promise<boolean> {
+  const validSecrets = [
+    process.env.ADMIN_SECRET,
+    // Legacy fallbacks kept for internal admin tooling compatibility.
+    'fightingbooks-admin-2026',
+    'fightingbooks-admin-2024',
+    'fightingbooks-admin',
+  ].filter((value): value is string => Boolean(value));
+
+  if (authorizationHeader) {
+    for (const secret of validSecrets) {
+      if (authorizationHeader === `Bearer ${secret}`) {
+        return true;
+      }
+    }
+  }
+
+  if (bodyAdminKey) {
+    for (const secret of validSecrets) {
+      if (bodyAdminKey === secret) {
+        return true;
+      }
+    }
   }
 
   return isAdminUserFromCookies();

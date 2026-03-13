@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[ADMIN] Regenerate request: ${animalA} vs ${animalB}, page: ${pageId}`);
 
-    const authorized = await authorizeAdminRequest(request.headers.get('authorization'));
+    const authorized = await authorizeAdminRequest(request.headers.get('authorization'), body.adminKey);
     if (!authorized) {
       console.log('[ADMIN] Auth failed');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
