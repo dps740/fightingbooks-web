@@ -5,6 +5,30 @@ export const metadata: Metadata = {
   title: 'Wildlife Learning Center | Educational Animal Activities & Books',
   description: 'Free educational resources for teaching kids about wildlife through animal comparisons. Activities, printable books, and science lessons for ages 5-12.',
   keywords: ['animal education', 'wildlife learning', 'science activities', 'educational resources', 'printable books'],
+  openGraph: {
+    title: 'Wildlife Learning Center | Educational Animal Activities & Books',
+    description: 'Free educational resources, printable books, and wildlife learning activities for kids, parents, teachers, and homeschoolers.',
+    type: 'website',
+    url: 'https://whowouldwinbooks.com/learn',
+    siteName: 'FightingBooks',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'FightingBooks Wildlife Learning Center',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Wildlife Learning Center | Educational Animal Activities & Books',
+    description: 'Educational animal activities, printable books, and wildlife learning resources for kids.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: '/learn',
+  },
 };
 
 const articles = [
@@ -48,6 +72,46 @@ const articles = [
 export default function LearnPage() {
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'Wildlife Learning Center',
+            url: 'https://whowouldwinbooks.com/learn',
+            description: 'Educational animal activities, printable books, and wildlife learning resources for kids, parents, teachers, and homeschoolers.',
+            isPartOf: {
+              '@type': 'WebSite',
+              name: 'FightingBooks',
+              url: 'https://whowouldwinbooks.com',
+            },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://whowouldwinbooks.com',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Learning Center',
+                item: 'https://whowouldwinbooks.com/learn',
+              },
+            ],
+          }),
+        }}
+      />
       {/* Header */}
       <header className="border-b border-[var(--border-accent)] bg-[var(--bg-secondary)]">
         <div className="max-w-6xl mx-auto px-4 py-8">
@@ -125,31 +189,31 @@ export default function LearnPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6">
               <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">For Teachers</h3>
-              <ul className="space-y-2 text-[var(--text-secondary)]">
-                <li>• Classroom activities and lesson plans</li>
-                <li>• Free printable books for students</li>
-                <li>• Curriculum-aligned resources</li>
-                <li>• Assessment ideas</li>
+              <ul className="space-y-3 text-[var(--text-secondary)]">
+                <li><Link href="/teachers" className="hover:text-[var(--accent-gold)]">Teacher resource hub</Link></li>
+                <li><Link href="/blog/classroom-resources" className="hover:text-[var(--accent-gold)]">Classroom activities and lesson plans</Link></li>
+                <li><Link href="/learn/printable-animal-battle-books" className="hover:text-[var(--accent-gold)]">Free printable books for students</Link></li>
+                <li><Link href="/learn/animal-comparison-activities-for-kids" className="hover:text-[var(--accent-gold)]">Animal comparison activities</Link></li>
               </ul>
             </div>
             
             <div className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6">
               <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">For Parents</h3>
-              <ul className="space-y-2 text-[var(--text-secondary)]">
-                <li>• Fun at-home science activities</li>
-                <li>• Bedtime reading resources</li>
-                <li>• Educational wildlife comparisons</li>
-                <li>• Printable learning materials</li>
+              <ul className="space-y-3 text-[var(--text-secondary)]">
+                <li><Link href="/parents" className="hover:text-[var(--accent-gold)]">Parent overview page</Link></li>
+                <li><Link href="/learn/fun-science-activities-kids-animals" className="hover:text-[var(--accent-gold)]">Fun at-home science activities</Link></li>
+                <li><Link href="/learn/who-would-win-animal-books-for-kids" className="hover:text-[var(--accent-gold)]">Book comparison guide</Link></li>
+                <li><Link href="/learn/printable-animal-battle-books" className="hover:text-[var(--accent-gold)]">Printable learning materials</Link></li>
               </ul>
             </div>
             
             <div className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6">
               <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">For Homeschool</h3>
-              <ul className="space-y-2 text-[var(--text-secondary)]">
-                <li>• Cross-curricular unit studies</li>
-                <li>• Custom book creation for any topic</li>
-                <li>• Hands-on science projects</li>
-                <li>• Flexible learning resources</li>
+              <ul className="space-y-3 text-[var(--text-secondary)]">
+                <li><Link href="/learn/animal-comparison-activities-for-kids" className="hover:text-[var(--accent-gold)]">Cross-curricular unit ideas</Link></li>
+                <li><Link href="/" className="hover:text-[var(--accent-gold)]">Custom book creation</Link></li>
+                <li><Link href="/learn/fun-science-activities-kids-animals" className="hover:text-[var(--accent-gold)]">Hands-on science projects</Link></li>
+                <li><Link href="/blog/classroom-resources" className="hover:text-[var(--accent-gold)]">Flexible lesson prompts</Link></li>
               </ul>
             </div>
           </div>
@@ -186,10 +250,51 @@ export default function LearnPage() {
           
           <div className="text-center mt-8">
             <Link
-              href="/blog"
+              href="/battles"
               className="text-[var(--accent-gold)] hover:text-[var(--accent-gold-dark)] font-bold"
             >
-              View All Battle Guides →
+              Browse All Battles →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Cross-site hub links */}
+      <section className="py-16 px-4 bg-[var(--bg-secondary)]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl font-bold mb-8 text-[var(--text-primary)]">Where to Go Next</h2>
+
+          <div className="grid md:grid-cols-4 gap-6">
+            <Link
+              href="/battles"
+              className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6 hover:border-[var(--accent-gold)] transition-colors"
+            >
+              <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">Browse Battle Pages</h3>
+              <p className="text-[var(--text-secondary)]">Explore the main matchup hub with the strongest canonical battle destinations.</p>
+            </Link>
+
+            <Link
+              href="/battles/lion-vs-tiger"
+              className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6 hover:border-[var(--accent-gold)] transition-colors"
+            >
+              <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">Lion vs Tiger Battle</h3>
+              <p className="text-[var(--text-secondary)]">Jump straight into one of the strongest matchup pages on the site.</p>
+            </Link>
+
+            <Link
+              href="/parents"
+              className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6 hover:border-[var(--accent-gold)] transition-colors"
+            >
+              <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">For Parents</h3>
+              <p className="text-[var(--text-secondary)]">See the parent-facing overview of how these books help with reading and critical thinking.</p>
+            </Link>
+
+            <Link
+              href="/teachers"
+              className="bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg p-6 hover:border-[var(--accent-gold)] transition-colors"
+            >
+              <h3 className="text-xl font-bold mb-3 text-[var(--accent-gold)]">For Teachers</h3>
+              <p className="text-[var(--text-secondary)]">Open the teacher-specific landing page for classroom resources and printable paths.</p>
             </Link>
           </div>
         </div>

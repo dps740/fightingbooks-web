@@ -13,6 +13,22 @@ export const metadata: Metadata = {
     title: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
     description: 'Browse 1,081 animal vs animal matchups including real animals, dinosaurs, and fantasy creatures.',
     type: 'website',
+    url: 'https://whowouldwinbooks.com/battles',
+    siteName: 'FightingBooks',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'FightingBooks Animal Matchups Hub',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
+    description: 'Browse 1,081 animal vs animal matchups and explore the strongest battle pages on the site.',
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: '/battles',
@@ -127,6 +143,38 @@ export default function MatchupsPage() {
     })),
   };
 
+  const webPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
+    url: 'https://whowouldwinbooks.com/battles',
+    description: 'Browse 1,081 animal vs animal matchups. Search every battle page and explore the most popular matchups.',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'FightingBooks',
+      url: 'https://whowouldwinbooks.com',
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://whowouldwinbooks.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Battles',
+        item: 'https://whowouldwinbooks.com/battles',
+      },
+    ],
+  };
+
   const groupData = GROUP_ORDER.filter((k) => grouped[k]).map((key) => ({
     key,
     label: GROUP_LABELS[key],
@@ -150,6 +198,8 @@ export default function MatchupsPage() {
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
 
       <header className="border-b border-[var(--border-accent)] bg-[var(--bg-secondary)]">
         <div className="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between">
@@ -217,6 +267,48 @@ export default function MatchupsPage() {
       </section>
 
       <MatchupsClient groups={groupData} totalCount={allMatchups.length} />
+
+      <section className="py-12 px-4 border-t border-[var(--border-accent)] bg-[var(--bg-secondary)]/40">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-[var(--text-primary)]" style={{ fontFamily: 'var(--font-display)' }}>
+              More Ways to Explore FightingBooks
+            </h2>
+            <p className="text-[var(--text-secondary)] mt-2">
+              Use the battle hub for matchup discovery, then branch into guides, learning resources, and parent-focused pages.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link
+              href="/learn"
+              className="rounded-xl border border-[var(--border-accent)] bg-[var(--bg-card)] p-5 hover:border-[var(--accent-gold)] transition-all"
+            >
+              <p className="text-sm font-bold uppercase tracking-wide text-[var(--accent-gold)]">Learning Center</p>
+              <h3 className="mt-2 text-xl font-bold text-[var(--text-primary)]">Educational animal activities and printable resources</h3>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">Support the search and classroom side of the site with wildlife learning content.</p>
+            </Link>
+
+            <Link
+              href="/parents"
+              className="rounded-xl border border-[var(--border-accent)] bg-[var(--bg-card)] p-5 hover:border-[var(--accent-gold)] transition-all"
+            >
+              <p className="text-sm font-bold uppercase tracking-wide text-[var(--accent-gold)]">For Parents</p>
+              <h3 className="mt-2 text-xl font-bold text-[var(--text-primary)]">See how parents use the books for reading and critical thinking</h3>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">A parent-facing entry point that now connects back into battles, guides, and learning pages.</p>
+            </Link>
+
+            <Link
+              href="/learn/animal-comparison-activities-for-kids"
+              className="rounded-xl border border-[var(--border-accent)] bg-[var(--bg-card)] p-5 hover:border-[var(--accent-gold)] transition-all"
+            >
+              <p className="text-sm font-bold uppercase tracking-wide text-[var(--accent-gold)]">Popular Resource</p>
+              <h3 className="mt-2 text-xl font-bold text-[var(--text-primary)]">Animal Comparison Activities for Kids</h3>
+              <p className="mt-2 text-sm text-[var(--text-muted)]">A strong internal destination for parents, teachers, and homeschool traffic.</p>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <section className="py-16 px-4 bg-[var(--bg-secondary)]">
         <div className="max-w-3xl mx-auto text-center">

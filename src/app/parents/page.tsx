@@ -85,10 +85,10 @@ const BOOK_PAGES = [
 ];
 
 const SAMPLE_BOOKS = [
-  { a: 'Lion', b: 'Tiger', label: 'Fan Favorite', color: '#8B0000' },
-  { a: 'Gorilla', b: 'Grizzly Bear', label: 'Heavyweight Clash', color: '#1a4d1a' },
-  { a: 'Polar Bear', b: 'Crocodile', label: 'Apex Predators', color: '#2d2d3d' },
-  { a: 'Orca', b: 'Great White Shark', label: 'Ocean Showdown', color: '#0a3d6b' },
+  { a: 'Lion', b: 'Tiger', label: 'Fan Favorite', color: '#8B0000', href: '/read?a=Lion&b=Tiger&env=neutral&mode=standard' },
+  { a: 'Gorilla', b: 'Grizzly Bear', label: 'Heavyweight Clash', color: '#1a4d1a', href: '/read?a=Gorilla&b=Grizzly%20Bear&env=neutral&mode=standard' },
+  { a: 'Polar Bear', b: 'Crocodile', label: 'Apex Predators', color: '#2d2d3d', href: '/read?a=Polar%20Bear&b=Crocodile&env=neutral&mode=standard' },
+  { a: 'Orca', b: 'Great White Shark', label: 'Ocean Showdown', color: '#0a3d6b', href: '/read?a=Orca&b=Great%20White%20Shark&env=neutral&mode=standard' },
 ];
 
 const TESTIMONIALS = [
@@ -112,6 +112,46 @@ const TESTIMONIALS = [
 export default function ParentsPage() {
   return (
     <div className="min-h-screen relative" style={{ background: 'var(--bg-primary)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'For Parents | FightingBooks',
+            url: 'https://whowouldwinbooks.com/parents',
+            description: 'A parent-facing overview of how FightingBooks helps with reading, science, and critical thinking.',
+            isPartOf: {
+              '@type': 'WebSite',
+              name: 'FightingBooks',
+              url: 'https://whowouldwinbooks.com',
+            },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://whowouldwinbooks.com',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'For Parents',
+                item: 'https://whowouldwinbooks.com/parents',
+              },
+            ],
+          }),
+        }}
+      />
 
       {/* ════════════════════════════════════════════
           SECTION 1: HERO
@@ -535,7 +575,7 @@ export default function ParentsPage() {
             {SAMPLE_BOOKS.map((book, i) => (
               <motion.div key={book.label} variants={fadeUp} custom={i + 1}>
                 <Link
-                  href={`/book/${encodeURIComponent(book.a.toLowerCase())}-vs-${encodeURIComponent(book.b.toLowerCase().replace(/ /g, '-'))}`}
+                  href={book.href}
                   style={{ textDecoration: 'none' }}
                 >
                   <div style={{
@@ -669,7 +709,117 @@ export default function ParentsPage() {
       <Divider />
 
       {/* ════════════════════════════════════════════
-          SECTION 6: FINAL CTA
+          SECTION 6: PUBLIC SITE PATHS
+          ════════════════════════════════════════════ */}
+      <section className="relative py-16 px-5">
+        <motion.div
+          className="max-w-5xl mx-auto"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={stagger}
+        >
+          <motion.h2 variants={fadeUp} custom={0} style={{
+            fontFamily: "'Anton', 'Impact', sans-serif",
+            fontSize: 'clamp(1.5rem, 5vw, 2.2rem)',
+            textAlign: 'center',
+            textTransform: 'uppercase',
+            letterSpacing: '0.02em',
+            marginBottom: '0.75rem',
+            color: '#fff',
+          }}>
+            Best Pages to Explore Next
+          </motion.h2>
+          <motion.p variants={fadeUp} custom={1} style={{
+            textAlign: 'center',
+            color: 'var(--text-secondary)',
+            maxWidth: '760px',
+            margin: '0 auto 2rem auto',
+            fontSize: '0.98rem',
+            lineHeight: 1.7,
+          }}>
+            If you want the strongest reading and learning paths on the site, start with these battle pages, guides, and educational resources.
+          </motion.p>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              {
+                title: 'Popular Battle Pages',
+                links: [
+                  { label: 'Lion vs Tiger', href: '/battles/lion-vs-tiger' },
+                  { label: 'Gorilla vs Grizzly Bear', href: '/battles/gorilla-vs-grizzly-bear' },
+                  { label: 'Orca vs Great White Shark', href: '/battles/orca-vs-great-white-shark' },
+                  { label: 'Browse all battles', href: '/battles' },
+                ],
+              },
+              {
+                title: 'Guide Articles',
+                links: [
+                  { label: 'Lion vs Tiger Guide', href: '/blog/lion-vs-tiger' },
+                  { label: 'Elephant vs Rhino Guide', href: '/blog/elephant-vs-rhino' },
+                  { label: 'Hippo vs Rhino Guide', href: '/blog/hippo-vs-rhino' },
+                  { label: 'Orca vs Great White Shark Guide', href: '/blog/orca-vs-great-white-shark' },
+                ],
+              },
+              {
+                title: 'Learning Resources',
+                links: [
+                  { label: 'Wildlife Learning Center', href: '/learn' },
+                  { label: 'For Teachers', href: '/teachers' },
+                  { label: 'Classroom Resources Guide', href: '/blog/classroom-resources' },
+                  { label: 'Animal Comparison Activities', href: '/learn/animal-comparison-activities-for-kids' },
+                  { label: 'Printable Animal Battle Books', href: '/learn/printable-animal-battle-books' },
+                ],
+              },
+            ].map((group, i) => (
+              <motion.div
+                key={group.title}
+                variants={fadeUp}
+                custom={i + 2}
+                style={{
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+                  border: '1px solid var(--border-accent)',
+                  borderRadius: '14px',
+                  padding: '1.25rem',
+                }}
+              >
+                <h3 style={{
+                  fontFamily: "'Anton', 'Impact', sans-serif",
+                  fontSize: '1.1rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.02em',
+                  color: '#d4af37',
+                  marginBottom: '0.85rem',
+                }}>
+                  {group.title}
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+                  {group.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      style={{
+                        color: '#fff',
+                        textDecoration: 'none',
+                        fontSize: '0.95rem',
+                        lineHeight: 1.5,
+                      }}
+                      className="hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      <Divider />
+
+      {/* ════════════════════════════════════════════
+          SECTION 7: FINAL CTA
           ════════════════════════════════════════════ */}
       <section className="relative py-24 px-5">
         <Spotlight color="rgba(196,30,58,0.08)" top="50%" />

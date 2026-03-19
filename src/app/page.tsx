@@ -51,6 +51,61 @@ const HERO_BOOKS = [
   { title: 'Polar Bear vs Crocodile', image: '/fighters/battle-polar-bear-vs-crocodile-cover.jpg', href: '/read?a=Polar%20Bear&b=Crocodile&env=neutral&mode=standard' },
 ];
 
+const SEO_FEATURED_GUIDES = [
+  {
+    title: 'Lion vs Tiger Guide',
+    href: '/blog/lion-vs-tiger',
+    blurb: 'Size, speed, bite force, and the most searched big-cat matchup on the site.',
+  },
+  {
+    title: 'Gorilla vs Grizzly Bear Guide',
+    href: '/blog/gorilla-vs-bear',
+    blurb: 'A high-intent wildlife matchup page that supports both search and classroom-style reading.',
+  },
+  {
+    title: 'Orca vs Great White Shark Guide',
+    href: '/blog/orca-vs-great-white-shark',
+    blurb: 'One of the clearest apex-predator comparisons and a strong long-tail search target.',
+  },
+  {
+    title: 'Battles Hub',
+    href: '/battles',
+    blurb: 'Browse the canonical matchup index instead of falling into utility-only reader URLs.',
+  },
+];
+
+const SEO_POPULAR_BATTLES = [
+  { title: 'Lion vs Tiger Battle Page', href: '/battles/lion-vs-tiger' },
+  { title: 'Gorilla vs Grizzly Bear Battle Page', href: '/battles/gorilla-vs-grizzly-bear' },
+  { title: 'Orca vs Great White Shark Battle Page', href: '/battles/orca-vs-great-white-shark' },
+  { title: 'Polar Bear vs Crocodile Battle Page', href: '/battles/polar-bear-vs-crocodile' },
+  { title: 'Elephant vs Rhino Guide', href: '/blog/elephant-vs-rhino' },
+  { title: 'Hippo vs Rhino Guide', href: '/blog/hippo-vs-rhino' },
+];
+
+const SEO_INTENT_PATHS = [
+  {
+    title: 'For Parents',
+    href: '/parents',
+    blurb: 'A direct parent-facing page for reading, critical thinking, and home use.',
+  },
+  {
+    title: 'For Teachers',
+    href: '/teachers',
+    blurb: 'A cleaner classroom landing page for lesson ideas, printable resources, and discussion prompts.',
+  },
+  {
+    title: 'Classroom Resources',
+    href: '/blog/classroom-resources',
+    blurb: 'High-intent teacher content for lesson-plan and worksheet style searches.',
+  },
+  {
+    title: 'Printable Animal Battle Books',
+    href: '/learn/printable-animal-battle-books',
+    blurb: 'A better destination for printable-book and at-home learning search intent.',
+  },
+];
+
 const HOW_STEPS = [
   {
     title: 'Choose Your Fighters',
@@ -470,6 +525,29 @@ export default function Home() {
           }),
         }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: 'Who Would Win? - Create Epic Animal Battle Books',
+            url: 'https://whowouldwinbooks.com',
+            description: 'Pick any two animals and generate an illustrated battle book with real science, stat comparisons, and a final verdict.',
+            isPartOf: {
+              '@type': 'WebSite',
+              name: 'Who Would Win Books',
+              url: 'https://whowouldwinbooks.com',
+            },
+            about: [
+              'animal comparisons',
+              'wildlife learning',
+              'kids battle books',
+              'critical thinking for kids',
+            ],
+          }),
+        }}
+      />
 
       <div className="hidden" aria-hidden="true">
         <SampleBookGallery />
@@ -725,6 +803,107 @@ export default function Home() {
       </section>
 
       <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
+
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+        <div className="rounded-[28px] border border-[#2a5236] bg-[#101a12] px-5 py-8 sm:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+              Search-Friendly Paths
+            </span>
+            <h2 className="text-[2.1rem] sm:text-[2.8rem]" style={sectionTitleStyle('var(--font-bangers)')}>
+              Read the Guides. Browse the Battles.
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-[0.95rem] leading-7 text-[#9eb5a4]">
+              If you want the fastest route into the most useful pages on the site, start with these featured guides and battle pages. They also give search engines clearer paths into the content we actually want ranked.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
+                  Featured Guides
+                </h3>
+                <a
+                  href="/battles"
+                  className="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-[#c9982a] hover:text-[#e8b63c]"
+                  style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+                >
+                  Browse All Battles
+                </a>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {SEO_FEATURED_GUIDES.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-2xl border border-white/8 bg-[#16241a] px-4 py-4 transition hover:border-[#c9982a] hover:bg-[#1a2b1f]"
+                  >
+                    <span className="block text-[0.95rem] font-bold uppercase tracking-[0.08em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                      {item.title}
+                    </span>
+                    <span className="mt-2 block text-sm leading-6 text-[#9eb5a4]">
+                      {item.blurb}
+                    </span>
+                    <span className="mt-3 block text-[0.72rem] font-bold uppercase tracking-[0.16em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                      Open guide →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+              <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
+                Popular Battle Pages
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[#9eb5a4]">
+                These are the canonical matchup pages we want search to understand as real destinations, not just side effects of the book reader flow.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {SEO_POPULAR_BATTLES.map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full border border-[#2a5236] bg-[#16241a] px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-[#d5ddd6] transition hover:border-[#c9982a] hover:text-white"
+                    style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+                  >
+                    {item.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+            <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
+              Parents, Teachers, and Printable-Book Paths
+            </h3>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#9eb5a4]">
+              These are the more intent-specific pages we want to strengthen for teacher, homeschool, printable, and parent-facing search demand — not just raw battle terms.
+            </p>
+            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {SEO_INTENT_PATHS.map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-2xl border border-white/8 bg-[#16241a] px-4 py-4 transition hover:border-[#c9982a] hover:bg-[#1a2b1f]"
+                >
+                  <span className="block text-[0.95rem] font-bold uppercase tracking-[0.08em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                    {item.title}
+                  </span>
+                  <span className="mt-2 block text-sm leading-6 text-[#9eb5a4]">
+                    {item.blurb}
+                  </span>
+                  <span className="mt-3 block text-[0.72rem] font-bold uppercase tracking-[0.16em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
+                    Open path →
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section id="create" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Atmospheric background shift per category */}

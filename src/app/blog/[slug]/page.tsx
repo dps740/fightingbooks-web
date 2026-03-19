@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import BookAffiliateSection from '@/components/BookAffiliateSection';
+import { toBattleSlug } from '@/data/popularMatchups';
 
 interface ArticleMetadata {
   title: string;
@@ -109,6 +110,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+
   return {
     title: `${article.metadata.title} | Who Would Win Books`,
     description: article.metadata.description,
@@ -120,6 +123,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: article.metadata.title,
       description: article.metadata.description,
       type: 'article',
+      url: `${baseUrl}/blog/${slug}`,
+      siteName: 'FightingBooks',
+      images: [
+        {
+          url: '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: article.metadata.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.metadata.title,
+      description: article.metadata.description,
+      images: ['/og-image.png'],
     },
   };
 }
@@ -208,6 +227,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   const htmlContent = markdownToHtml(article.content);
   const relatedSlugs = getRelatedSlugs(slug);
+  const battleHref = article.metadata.animals
+    ? `/battles/${toBattleSlug(article.metadata.animals[0], article.metadata.animals[1])}`
+    : null;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
 
@@ -226,6 +248,31 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     },
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Battles',
+        item: `${baseUrl}/battles`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.metadata.title,
+        item: `${baseUrl}/blog/${slug}`,
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       {/* JSON-LD Structured Data */}
@@ -233,12 +280,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       {/* Header */}
       <header className="border-b border-[var(--border-accent)] bg-[var(--bg-secondary)]">
         <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link href="/blog" className="text-[var(--accent-gold)] hover:text-[var(--accent-gold-dark)] text-sm font-bold uppercase tracking-wide">
-            ← Back to All Guides
+          <Link href="/battles" className="text-[var(--accent-gold)] hover:text-[var(--accent-gold-dark)] text-sm font-bold uppercase tracking-wide">
+            ← Back to All Battles
           </Link>
         </div>
       </header>
@@ -251,6 +302,23 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             className="prose prose-invert max-w-none"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
+
+          {battleHref ? (
+            <div className="mt-12 p-6 bg-[var(--bg-card)] border border-[var(--border-accent)] rounded-lg text-center">
+              <h3 className="text-2xl font-bold mb-3 text-[var(--accent-gold)]" style={{ fontFamily: 'var(--font-display)' }}>
+                Want the matchup page too?
+              </h3>
+              <p className="text-[var(--text-secondary)] mb-4">
+                Open the canonical {article.metadata.animals?.[0]} vs {article.metadata.animals?.[1]} battle page for the direct matchup destination and full battle-book path.
+              </p>
+              <Link
+                href={battleHref}
+                className="inline-block text-sm font-bold uppercase tracking-[0.14em] text-[var(--accent-gold)] hover:underline"
+              >
+                Open the {article.metadata.animals?.[0]} vs {article.metadata.animals?.[1]} battle page →
+              </Link>
+            </div>
+          ) : null}
 
           {/* CTA Box */}
           <div className="mt-16 p-8 bg-[var(--bg-card)] border-2 border-[var(--accent-gold)] rounded-lg text-center">

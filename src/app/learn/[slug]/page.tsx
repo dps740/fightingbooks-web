@@ -88,20 +88,36 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const baseUrl = 'https://whowouldwinbooks.com';
+
   return {
     title: article.title,
     description: article.description,
     keywords: article.keywords,
+    alternates: {
+      canonical: `/learn/${slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.description,
       type: 'article',
       publishedTime: article.datePublished,
+      url: `${baseUrl}/learn/${slug}`,
+      siteName: 'FightingBooks',
+      images: [
+        {
+          url: '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: article.title,
       description: article.description,
+      images: ['/og-image.png'],
     },
   };
 }
@@ -159,6 +175,48 @@ function generateStructuredData(article: LearnArticle) {
   };
 }
 
+function generateWebPageStructuredData(article: LearnArticle) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: article.title,
+    url: `https://whowouldwinbooks.com/learn/${article.slug}`,
+    description: article.description,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'FightingBooks',
+      url: 'https://whowouldwinbooks.com',
+    },
+  };
+}
+
+function generateBreadcrumbStructuredData(article: LearnArticle) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://whowouldwinbooks.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Learning Center',
+        item: 'https://whowouldwinbooks.com/learn',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: article.title,
+        item: `https://whowouldwinbooks.com/learn/${article.slug}`,
+      },
+    ],
+  };
+}
+
 export default async function LearnArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = getArticleData(slug);
@@ -169,6 +227,8 @@ export default async function LearnArticlePage({ params }: { params: Promise<{ s
 
   const htmlContent = markdownToHtml(article.content);
   const structuredData = generateStructuredData(article);
+  const webPageStructuredData = generateWebPageStructuredData(article);
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData(article);
 
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
@@ -176,6 +236,14 @@ export default async function LearnArticlePage({ params }: { params: Promise<{ s
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
 
       {/* Header */}

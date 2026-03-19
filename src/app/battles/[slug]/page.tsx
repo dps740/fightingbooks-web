@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { Suspense } from 'react';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import BattleAnimalPortrait from '@/components/BattleAnimalPortrait';
+import PinterestLeadCaptureCard from '@/components/PinterestLeadCaptureCard';
+import { getMatchupSlug } from '@/data/fighters';
 
 // Map animal display names → their actual image slug in /public/fighters/
 // Only needed for names that don't match the simple lowercase-hyphen pattern
@@ -44,6 +47,22 @@ interface BattleData {
 }
 
 const BATTLES_DIR = path.join(process.cwd(), 'content', 'battles');
+const CURATED_BATTLE_SLUGS = new Set([
+  'lion-vs-tiger',
+  'gorilla-vs-grizzly-bear',
+  'orca-vs-great-white-shark',
+  'polar-bear-vs-crocodile',
+  'elephant-vs-rhino',
+  'hippo-vs-rhino',
+  'tiger-vs-grizzly-bear',
+  'anaconda-vs-crocodile',
+  'komodo-dragon-vs-king-cobra',
+  'gorilla-vs-lion',
+  'crocodile-vs-great-white-shark',
+  'wolf-vs-lion',
+  'jaguar-vs-leopard',
+  'hammerhead-shark-vs-electric-eel',
+]);
 
 function slugToTitle(slug: string): string {
   return slug
@@ -140,6 +159,7 @@ export async function generateMetadata({
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
+  const isCuratedBattle = CURATED_BATTLE_SLUGS.has(slug);
 
   return {
     title: `${battle.metadata.title} | Who Would Win Books`,
@@ -147,6 +167,10 @@ export async function generateMetadata({
     keywords: battle.metadata.keywords,
     alternates: {
       canonical: `${baseUrl}/battles/${slug}`,
+    },
+    robots: {
+      index: isCuratedBattle,
+      follow: true,
     },
     openGraph: {
       title: battle.metadata.title,
@@ -382,6 +406,8 @@ export default async function BattlePage({
 
   // Build book generator URL using /read route
   const genUrl = `/read?a=${encodeURIComponent(battle.animalA)}&b=${encodeURIComponent(battle.animalB)}&env=neutral&mode=standard`;
+  const relatedGuideSlug = getMatchupSlug(battle.animalA, battle.animalB);
+  const relatedGuideHref = relatedGuideSlug ? `/blog/${relatedGuideSlug}` : null;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -406,12 +432,58 @@ export default async function BattlePage({
     },
   };
 
+  const webPageJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: battle.metadata.title,
+    url: `${baseUrl}/battles/${slug}`,
+    description: battle.metadata.description,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'FightingBooks',
+      url: baseUrl,
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: baseUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Battles',
+        item: `${baseUrl}/battles`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: `${battle.animalA} vs ${battle.animalB}`,
+        item: `${baseUrl}/battles/${slug}`,
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* Header */}
@@ -477,11 +549,99 @@ export default async function BattlePage({
             />
           </div>
 
+          {/* Pinterest / cold-traffic conversion block */}
+          <div
+            className="mt-8 mb-10 rounded-2xl border p-6 md:p-8"
+            style={{
+              background: 'linear-gradient(135deg, rgba(212,175,55,0.08) 0%, rgba(20,20,20,1) 55%, rgba(196,30,58,0.08) 100%)',
+              borderColor: 'rgba(212,175,55,0.45)',
+            }}
+          >
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-[var(--accent-gold)] mb-3">
+                Start Here
+              </p>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                Want the full {battle.animalA} vs {battle.animalB} answer?
+              </h2>
+              <p className="text-[var(--text-secondary)] text-lg max-w-2xl mx-auto mb-6">
+                Open the full illustrated battle book to see the stat breakdown, the fight sequence, and the final verdict for this exact matchup.
+              </p>
+
+              <div className="grid gap-3 md:grid-cols-3 text-left mb-8">
+                {[
+                  `Full ${battle.animalA} vs ${battle.animalB} verdict`,
+                  'Side-by-side stats and real animal advantages',
+                  'Illustrated page-by-page battle book experience',
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-xl border px-4 py-4 text-sm font-semibold text-[var(--text-primary)]"
+                    style={{
+                      background: 'rgba(255,255,255,0.04)',
+                      borderColor: 'rgba(212,175,55,0.18)',
+                    }}
+                  >
+                    <span className="text-[var(--accent-gold)] mr-2">✓</span>
+                    {item}
+                  </div>
+                ))}
+              </div>
+
+              <Link
+                href={genUrl}
+                className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                🥊 Open the Full Battle Book →
+              </Link>
+              <p className="text-[var(--text-muted)] text-sm mt-3">
+                Best next step if you came from Pinterest or search
+              </p>
+            </div>
+          </div>
+
           {/* Article body */}
           <div
             className="prose prose-invert max-w-none"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
+
+          <Suspense fallback={null}>
+            <PinterestLeadCaptureCard
+              nextHref={genUrl}
+              matchupLabel={`${battle.animalA} vs ${battle.animalB}`}
+            />
+          </Suspense>
+
+          {relatedGuideHref ? (
+            <div
+              className="mt-10 rounded-2xl border p-6"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderColor: 'rgba(212,175,55,0.22)',
+              }}
+            >
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--accent-gold)] mb-2">
+                Related Guide
+              </p>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                Want the long-form {battle.animalA} vs {battle.animalB} breakdown?
+              </h3>
+              <p className="text-[var(--text-secondary)] mb-4">
+                Read the matching guide page for the detailed comparison, reasoning, and search-friendly version of this matchup.
+              </p>
+              <Link
+                href={relatedGuideHref}
+                className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-[var(--accent-gold)] hover:underline"
+              >
+                Read the {battle.animalA} vs {battle.animalB} guide →
+              </Link>
+            </div>
+          ) : null}
 
           {/* Primary CTA */}
           <div
@@ -496,18 +656,17 @@ export default async function BattlePage({
               className="text-3xl font-bold mb-3 text-[var(--accent-gold)]"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              See the Full Illustrated Battle Book
+              Turn This Matchup Into the Full Illustrated Book
             </h3>
             <p className="text-[var(--text-secondary)] mb-6 text-lg max-w-lg mx-auto">
-              Get a full illustrated book for this exact matchup — AI-generated artwork, full
-              stats, and a page-by-page battle narrative.
+              Don’t stop at the summary page. Open the full book version for the complete fight, stat pages, and final outcome.
             </p>
             <Link
               href={genUrl}
               className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              🥊 Generate {battle.animalA} vs {battle.animalB} Book →
+              🥊 Open {battle.animalA} vs {battle.animalB} Book →
             </Link>
             <p className="text-[var(--text-muted)] text-sm mt-3">
               Free for popular matchups • whowouldwinbooks.com
@@ -567,12 +726,12 @@ export default async function BattlePage({
         <div className="max-w-4xl mx-auto px-4 text-center text-[var(--text-muted)] text-sm">
           <p>
             © {new Date().getFullYear()} Who Would Win Books •{' '}
-            <Link href="/blog" className="hover:text-[var(--accent-gold)]">
-              Battle Guides
-            </Link>{' '}
-            •{' '}
             <Link href="/battles" className="hover:text-[var(--accent-gold)]">
               All Battles
+            </Link>{' '}
+            •{' '}
+            <Link href="/learn" className="hover:text-[var(--accent-gold)]">
+              Learning Center
             </Link>
           </p>
         </div>
