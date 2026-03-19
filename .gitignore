@@ -44,3 +44,7 @@ next-env.d.ts
 
 .env.prod
 .env.supabase
+
+# Local admin/scratch scripts
+tmp-fb-*.mjs
+SECURITY_AUDIT_*.md
