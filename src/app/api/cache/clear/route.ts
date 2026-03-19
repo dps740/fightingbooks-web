@@ -5,8 +5,11 @@ import fs from 'fs';
 export async function POST(request: NextRequest) {
   // Simple auth check - require a secret
   const authHeader = request.headers.get('authorization');
-  const expectedSecret = process.env.CACHE_CLEAR_SECRET || 'fightingbooks-clear-2026';
-  
+  const expectedSecret = process.env.CACHE_CLEAR_SECRET;
+  if (!expectedSecret) {
+    return NextResponse.json({ error: 'Not configured' }, { status: 500 });
+  }
+
   if (authHeader !== `Bearer ${expectedSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

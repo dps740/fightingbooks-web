@@ -35,10 +35,6 @@ export async function authorizeAdminRequest(
 ): Promise<boolean> {
   const validSecrets = [
     process.env.ADMIN_SECRET,
-    // Legacy fallbacks kept for internal admin tooling compatibility.
-    'fightingbooks-admin-2026',
-    'fightingbooks-admin-2024',
-    'fightingbooks-admin',
   ].filter((value): value is string => Boolean(value));
 
   if (authorizationHeader) {

@@ -1692,7 +1692,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Admin bypass for automated regeneration (e.g., cache warming)
-    const isAdminBypass = adminSecret === process.env.BLOB_READ_WRITE_TOKEN;
+    const isAdminBypass = !!(process.env.ADMIN_BYPASS_SECRET && adminSecret === process.env.ADMIN_BYPASS_SECRET);
     
     // Image model override disabled — GROK ONLY per David directive 2026-02-16
     // All image generation uses Grok Imagine (xai/grok-imagine-image)
