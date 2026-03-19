@@ -50,17 +50,17 @@ export const FANTASY_ANIMALS = [
 export const ALL_ANIMALS = [...REAL_ANIMALS, ...DINOSAUR_ANIMALS, ...FANTASY_ANIMALS];
 
 // Get accessible animals for a tier
-// Unregistered can browse and pick all real animals (gate is at generate time, not selection)
+// Unregistered can browse and pick all animals (gate is at generate time, not selection)
 export function getAccessibleAnimals(tier: UserTier): string[] {
   switch (tier) {
     case 'unregistered':
-      return REAL_ANIMALS;
+      return ALL_ANIMALS;
     case 'member':
       return REAL_ANIMALS;
     case 'ultimate':
       return ALL_ANIMALS;
     default:
-      return REAL_ANIMALS;
+      return ALL_ANIMALS;
   }
 }
 

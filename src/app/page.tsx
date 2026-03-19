@@ -482,21 +482,7 @@ export default function Home() {
     const newCategory = CATEGORY_ORDER[newIndex];
     const tab = CATEGORY_TABS.find(t => t.key === newCategory);
 
-    if (tab?.locked) {
-      if (newCategory === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-        setLockedAnimalClicked(undefined);
-        setLockedFeature(newCategory);
-        setShowUpgradeModal(true);
-        return;
-      }
-      if (newCategory === 'fantasy' && tierData.tier !== 'ultimate') {
-        setLockedAnimalClicked(undefined);
-        setLockedFeature(newCategory);
-        setShowUpgradeModal(true);
-        return;
-      }
-    }
-
+    // All categories are browseable — gate fires at generation time, not selection
     setAnimalCategory(newCategory);
   };
 
@@ -900,29 +886,14 @@ export default function Home() {
 
               <div className="flex flex-wrap justify-center gap-2">
                 {CATEGORY_TABS.map(tab => {
-                  const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
                   return (
                     <button
                       key={tab.key}
-                      onClick={() => {
-                        if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        setAnimalCategory(tab.key);
-                      }}
+                      onClick={() => setAnimalCategory(tab.key)}
                       className={`rounded-md border px-4 py-2 text-[0.78rem] font-bold uppercase tracking-[0.14em] transition ${animalCategory === tab.key ? 'border-[#c9982a] bg-[#c9982a] text-[#0d1c10]' : 'border-white/10 bg-white/5 text-[#9eb5a4] hover:text-white'}`}
                       style={{ fontFamily: 'var(--font-barlow-condensed)' }}
                     >
-                      {tab.label} ({tab.count}){isLocked ? ' Locked' : ''}
+                      {tab.label} ({tab.count})
                     </button>
                   );
                 })}
@@ -1118,29 +1089,14 @@ export default function Home() {
 
               <div className="flex flex-wrap justify-center gap-2">
                 {CATEGORY_TABS.map(tab => {
-                  const isLocked = tab.locked && (tierData.tier === 'unregistered' || (tab.key === 'fantasy' && tierData.tier === 'member'));
                   return (
                     <button
                       key={tab.key}
-                      onClick={() => {
-                        if (tab.locked && tab.key === 'dinosaur' && tierData.tier !== 'ultimate' && tierData.tier !== 'member') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        if (tab.locked && tab.key === 'fantasy' && tierData.tier !== 'ultimate') {
-                          setLockedAnimalClicked(undefined);
-                          setLockedFeature(tab.key);
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        setAnimalCategory(tab.key);
-                      }}
+                      onClick={() => setAnimalCategory(tab.key)}
                       className={`rounded-md border px-4 py-2 text-[0.78rem] font-bold uppercase tracking-[0.14em] transition ${animalCategory === tab.key ? 'border-[#c9982a] bg-[#c9982a] text-[#0d1c10]' : 'border-white/10 bg-white/5 text-[#9eb5a4] hover:text-white'}`}
                       style={{ fontFamily: 'var(--font-barlow-condensed)' }}
                     >
-                      {tab.label} ({tab.count}){isLocked ? ' Locked' : ''}
+                      {tab.label} ({tab.count})
                     </button>
                   );
                 })}
