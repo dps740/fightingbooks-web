@@ -802,109 +802,6 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
-
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
-        <div className="rounded-[28px] border border-[#2a5236] bg-[#101a12] px-5 py-8 sm:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-              Explore
-            </span>
-            <h2 className="text-[2.1rem] sm:text-[2.8rem]" style={sectionTitleStyle('var(--font-bangers)')}>
-              Read the Guides. Browse the Battles.
-            </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-[0.95rem] leading-7 text-[#9eb5a4]">
-              Not sure where to start? These are the most popular matchups and guides on the site — pick one and go.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
-                  Featured Guides
-                </h3>
-                <a
-                  href="/battles"
-                  className="text-[0.72rem] font-bold uppercase tracking-[0.18em] text-[#c9982a] hover:text-[#e8b63c]"
-                  style={{ fontFamily: 'var(--font-barlow-condensed)' }}
-                >
-                  Browse All Battles
-                </a>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {SEO_FEATURED_GUIDES.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-2xl border border-white/8 bg-[#16241a] px-4 py-4 transition hover:border-[#c9982a] hover:bg-[#1a2b1f]"
-                  >
-                    <span className="block text-[0.95rem] font-bold uppercase tracking-[0.08em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                      {item.title}
-                    </span>
-                    <span className="mt-2 block text-sm leading-6 text-[#9eb5a4]">
-                      {item.blurb}
-                    </span>
-                    <span className="mt-3 block text-[0.72rem] font-bold uppercase tracking-[0.16em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                      Open guide →
-                    </span>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-              <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
-                Popular Battle Pages
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[#9eb5a4]">
-                Jump straight to a battle breakdown.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {SEO_POPULAR_BATTLES.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="rounded-full border border-[#2a5236] bg-[#16241a] px-4 py-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-[#d5ddd6] transition hover:border-[#c9982a] hover:text-white"
-                    style={{ fontFamily: 'var(--font-barlow-condensed)' }}
-                  >
-                    {item.title}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
-            <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
-              For Parents, Teachers & Classrooms
-            </h3>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#9eb5a4]">
-              Resources built for learning — whether at home, in class, or somewhere in between.
-            </p>
-            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-              {SEO_INTENT_PATHS.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-2xl border border-white/8 bg-[#16241a] px-4 py-4 transition hover:border-[#c9982a] hover:bg-[#1a2b1f]"
-                >
-                  <span className="block text-[0.95rem] font-bold uppercase tracking-[0.08em] text-white" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                    {item.title}
-                  </span>
-                  <span className="mt-2 block text-sm leading-6 text-[#9eb5a4]">
-                    {item.blurb}
-                  </span>
-                  <span className="mt-3 block text-[0.72rem] font-bold uppercase tracking-[0.16em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                    Learn more →
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="create" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Atmospheric background shift per category */}
         {animalCategory === 'dinosaur' && <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-amber-950/20 to-transparent transition-all duration-500" />}
@@ -1452,7 +1349,28 @@ export default function Home() {
 
       <div className="h-px bg-gradient-to-r from-transparent via-[#2a5236] to-transparent" />
 
-      <footer className="px-4 py-10 text-center sm:px-6 lg:px-8">
+      <footer className="px-4 pb-10 pt-6 text-center sm:px-6 lg:px-8">
+        <div className="mb-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          {[
+            { label: 'All Battles', href: '/battles' },
+            { label: 'Lion vs Tiger', href: '/battles/lion-vs-tiger' },
+            { label: 'Gorilla vs Grizzly Bear', href: '/battles/gorilla-vs-grizzly-bear' },
+            { label: 'Orca vs Great White Shark', href: '/battles/orca-vs-great-white-shark' },
+            { label: 'Lion vs Tiger Guide', href: '/blog/lion-vs-tiger' },
+            { label: 'Learning Center', href: '/learn' },
+            { label: 'For Parents', href: '/parents' },
+            { label: 'For Teachers', href: '/teachers' },
+          ].map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="text-[0.72rem] uppercase tracking-[0.08em] text-[#4a6455] hover:text-[#7a9280] transition-colors"
+              style={{ fontFamily: 'var(--font-barlow-condensed)' }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
         <p className="text-[0.78rem] uppercase tracking-[0.08em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
           Based on the bestselling Who Would Win? series by Jerry Pallotta. FightingBooks is a fan project and is not affiliated with Jerry Pallotta or Scholastic.
         </p>
