@@ -53,56 +53,56 @@ const HERO_BOOKS = [
 
 const SEO_FEATURED_GUIDES = [
   {
-    title: 'Lion vs Tiger Guide',
+    title: 'Lion vs Tiger',
     href: '/blog/lion-vs-tiger',
-    blurb: 'Size, speed, bite force, and the most searched big-cat matchup on the site.',
+    blurb: 'Size, speed, bite force — broken down for the most debated big-cat matchup ever.',
   },
   {
-    title: 'Gorilla vs Grizzly Bear Guide',
+    title: 'Gorilla vs Grizzly Bear',
     href: '/blog/gorilla-vs-bear',
-    blurb: 'A high-intent wildlife matchup page that supports both search and classroom-style reading.',
+    blurb: 'Strength vs strength. Which heavyweight wins when there\'s nowhere to run?',
   },
   {
-    title: 'Orca vs Great White Shark Guide',
+    title: 'Orca vs Great White Shark',
     href: '/blog/orca-vs-great-white-shark',
-    blurb: 'One of the clearest apex-predator comparisons and a strong long-tail search target.',
+    blurb: 'The ocean\'s two most feared predators — only one leaves the water in charge.',
   },
   {
-    title: 'Battles Hub',
+    title: 'Browse All Battles',
     href: '/battles',
-    blurb: 'Browse the canonical matchup index instead of falling into utility-only reader URLs.',
+    blurb: 'Over 1,000 matchups across real animals, dinosaurs, and fantasy creatures.',
   },
 ];
 
 const SEO_POPULAR_BATTLES = [
-  { title: 'Lion vs Tiger Battle Page', href: '/battles/lion-vs-tiger' },
-  { title: 'Gorilla vs Grizzly Bear Battle Page', href: '/battles/gorilla-vs-grizzly-bear' },
-  { title: 'Orca vs Great White Shark Battle Page', href: '/battles/orca-vs-great-white-shark' },
-  { title: 'Polar Bear vs Crocodile Battle Page', href: '/battles/polar-bear-vs-crocodile' },
-  { title: 'Elephant vs Rhino Guide', href: '/blog/elephant-vs-rhino' },
-  { title: 'Hippo vs Rhino Guide', href: '/blog/hippo-vs-rhino' },
+  { title: 'Lion vs Tiger', href: '/battles/lion-vs-tiger' },
+  { title: 'Gorilla vs Grizzly Bear', href: '/battles/gorilla-vs-grizzly-bear' },
+  { title: 'Orca vs Great White Shark', href: '/battles/orca-vs-great-white-shark' },
+  { title: 'Polar Bear vs Crocodile', href: '/battles/polar-bear-vs-crocodile' },
+  { title: 'Elephant vs Rhino', href: '/battles/elephant-vs-rhino' },
+  { title: 'Hippo vs Rhino', href: '/battles/hippo-vs-rhino' },
 ];
 
 const SEO_INTENT_PATHS = [
   {
     title: 'For Parents',
     href: '/parents',
-    blurb: 'A direct parent-facing page for reading, critical thinking, and home use.',
+    blurb: 'How battle books build reading habits and critical thinking at home.',
   },
   {
     title: 'For Teachers',
     href: '/teachers',
-    blurb: 'A cleaner classroom landing page for lesson ideas, printable resources, and discussion prompts.',
+    blurb: 'Lesson ideas, discussion prompts, and printable resources for your classroom.',
   },
   {
     title: 'Classroom Resources',
     href: '/blog/classroom-resources',
-    blurb: 'High-intent teacher content for lesson-plan and worksheet style searches.',
+    blurb: 'Free activities and guides built around animal comparison and science reasoning.',
   },
   {
-    title: 'Printable Animal Battle Books',
+    title: 'Printable Battle Books',
     href: '/learn/printable-animal-battle-books',
-    blurb: 'A better destination for printable-book and at-home learning search intent.',
+    blurb: 'Print-ready animal battle books for reading at home or in class.',
   },
 ];
 
@@ -808,13 +808,13 @@ export default function Home() {
         <div className="rounded-[28px] border border-[#2a5236] bg-[#101a12] px-5 py-8 sm:px-8">
           <div className="mx-auto max-w-3xl text-center">
             <span className="mb-3 block text-[0.72rem] font-bold uppercase tracking-[0.24em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-              Search-Friendly Paths
+              Explore
             </span>
             <h2 className="text-[2.1rem] sm:text-[2.8rem]" style={sectionTitleStyle('var(--font-bangers)')}>
               Read the Guides. Browse the Battles.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-[0.95rem] leading-7 text-[#9eb5a4]">
-              If you want the fastest route into the most useful pages on the site, start with these featured guides and battle pages. They also give search engines clearer paths into the content we actually want ranked.
+              Not sure where to start? These are the most popular matchups and guides on the site — pick one and go.
             </p>
           </div>
 
@@ -858,7 +858,7 @@ export default function Home() {
                 Popular Battle Pages
               </h3>
               <p className="mt-2 text-sm leading-6 text-[#9eb5a4]">
-                These are the canonical matchup pages we want search to understand as real destinations, not just side effects of the book reader flow.
+                Jump straight to a battle breakdown.
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {SEO_POPULAR_BATTLES.map((item) => (
@@ -877,10 +877,10 @@ export default function Home() {
 
           <div className="mt-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
             <h3 className="text-[1.3rem] text-white" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>
-              Parents, Teachers, and Printable-Book Paths
+              For Parents, Teachers & Classrooms
             </h3>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-[#9eb5a4]">
-              These are the more intent-specific pages we want to strengthen for teacher, homeschool, printable, and parent-facing search demand — not just raw battle terms.
+              Resources built for learning — whether at home, in class, or somewhere in between.
             </p>
             <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               {SEO_INTENT_PATHS.map((item) => (
@@ -896,7 +896,7 @@ export default function Home() {
                     {item.blurb}
                   </span>
                   <span className="mt-3 block text-[0.72rem] font-bold uppercase tracking-[0.16em] text-[#c9982a]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                    Open path →
+                    Learn more →
                   </span>
                 </a>
               ))}
