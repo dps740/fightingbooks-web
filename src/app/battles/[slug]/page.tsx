@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import TrackedLink from '@/components/TrackedLink';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import fs from 'fs';
@@ -591,13 +592,15 @@ export default async function BattlePage({
                 ))}
               </div>
 
-              <Link
+              <TrackedLink
                 href={genUrl}
+                eventName="battle_cta_click"
+                eventParams={{ position: 'top_block', matchup: `${battle.animalA} vs ${battle.animalB}` }}
                 className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform"
                 style={{ fontFamily: 'var(--font-display)' }}
               >
                 🥊 Open the Full Battle Book →
-              </Link>
+              </TrackedLink>
               <p className="text-[var(--text-muted)] text-sm mt-3">
                 Best next step if you came from Pinterest or search
               </p>
@@ -661,13 +664,15 @@ export default async function BattlePage({
             <p className="text-[var(--text-secondary)] mb-6 text-lg max-w-lg mx-auto">
               Don’t stop at the summary page. Open the full book version for the complete fight, stat pages, and final outcome.
             </p>
-            <Link
+            <TrackedLink
               href={genUrl}
+              eventName="battle_cta_click"
+              eventParams={{ position: 'primary_cta', matchup: `${battle.animalA} vs ${battle.animalB}` }}
               className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform"
               style={{ fontFamily: 'var(--font-display)' }}
             >
               🥊 Open {battle.animalA} vs {battle.animalB} Book →
-            </Link>
+            </TrackedLink>
             <p className="text-[var(--text-muted)] text-sm mt-3">
               Free for popular matchups • whowouldwinbooks.com
             </p>

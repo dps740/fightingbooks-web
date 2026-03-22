@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { trackEvent } from '@/lib/analytics';
 
 interface PinterestLeadCaptureCardProps {
   nextHref: string;
@@ -53,6 +54,10 @@ export default function PinterestLeadCaptureCard({ nextHref, matchupLabel }: Pin
       }
 
       localStorage.setItem('fb_email', email);
+      trackEvent('email_captured', {
+        source: captureSource,
+        matchup: matchupLabel,
+      });
       setSubmitted(true);
     } catch {
       setError('Could not save your email. Try again.');
@@ -122,6 +127,7 @@ export default function PinterestLeadCaptureCard({ nextHref, matchupLabel }: Pin
             </p>
             <a
               href={nextHref}
+              onClick={() => trackEvent('email_cta_click', { matchup: matchupLabel, source: captureSource })}
               className="btn-primary inline-block rounded-xl px-8 py-4 text-xl font-bold transition-transform hover:scale-105"
               style={{ fontFamily: 'var(--font-display)' }}
             >
