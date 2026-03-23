@@ -1,7 +1,7 @@
 ---
-title: "Lion vs Tiger: Who Would Win in a Fight? (2026)"
-description: "Lions weigh up to 420 lbs, while tigers can reach 660 lbs. Who will take the crown in this epic showdown?"
-keywords: ["lion vs tiger", "who would win", "lion vs tiger fight", "animal battle", "lion fight", "tiger fight"]
+title: "Lion vs Tiger: The Real Winner, Explained"
+description: "The tiger outweighs the lion by 200+ lbs and fights alone — but the lion has one critical edge. Full stats, fight analysis, and a clear verdict."
+keywords: ["lion vs tiger", "lion vs tiger who would win", "who would win lion or tiger", "lion vs tiger fight", "who would win", "animal battle", "lion fight", "tiger fight"]
 date: "2026-02-20"
 animal_a: "Lion"
 animal_b: "Tiger"

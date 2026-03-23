@@ -1,7 +1,7 @@
 ---
-title: "Grizzly Bear vs Elephant: Who Would Win in a Fight? (2026)"
-description: "Grizzly bears weigh up to 1,500 lbs, while elephants can reach 6 tons. Who will prevail in this epic showdown?"
-keywords: ["grizzly bear vs elephant", "who would win", "grizzly bear vs elephant fight", "animal battle", "grizzly bear fight", "elephant fight"]
+title: "Grizzly Bear vs Elephant: Who Actually Wins?"
+description: "A 1,500 lb grizzly vs a 13,000 lb elephant — massive size gap. We break down the weapons, tactics, and the one factor that decides this fight. Verdict inside."
+keywords: ["grizzly bear vs elephant", "grizzly bear vs elephant who would win", "who would win", "grizzly bear vs elephant fight", "animal battle", "grizzly bear fight", "elephant fight"]
 date: "2026-02-20"
 animal_a: "Grizzly Bear"
 animal_b: "Elephant"
