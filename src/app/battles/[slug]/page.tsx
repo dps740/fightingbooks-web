@@ -572,7 +572,20 @@ export default async function BattlePage({
                 Open the full illustrated battle book to see the stat breakdown, the fight sequence, and the final verdict for this exact matchup.
               </p>
 
-              <div className="grid gap-3 md:grid-cols-3 text-left mb-8">
+              <TrackedLink
+                href={genUrl}
+                eventName="battle_cta_click"
+                eventParams={{ position: 'top_block', matchup: `${battle.animalA} vs ${battle.animalB}` }}
+                className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform mb-3"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                🥊 Open the Full Battle Book →
+              </TrackedLink>
+              <p className="text-[var(--text-muted)] text-sm mb-8">
+                Best next step if you came from Pinterest or search
+              </p>
+
+              <div className="grid gap-3 md:grid-cols-3 text-left">
                 {[
                   `Full ${battle.animalA} vs ${battle.animalB} verdict`,
                   'Side-by-side stats and real animal advantages',
@@ -591,19 +604,6 @@ export default async function BattlePage({
                   </div>
                 ))}
               </div>
-
-              <TrackedLink
-                href={genUrl}
-                eventName="battle_cta_click"
-                eventParams={{ position: 'top_block', matchup: `${battle.animalA} vs ${battle.animalB}` }}
-                className="btn-primary inline-block px-10 py-4 rounded-lg text-xl font-bold hover:scale-105 transition-transform"
-                style={{ fontFamily: 'var(--font-display)' }}
-              >
-                🥊 Open the Full Battle Book →
-              </TrackedLink>
-              <p className="text-[var(--text-muted)] text-sm mt-3">
-                Best next step if you came from Pinterest or search
-              </p>
             </div>
           </div>
 
