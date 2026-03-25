@@ -7,6 +7,49 @@ import { generatePDF } from '@/lib/pdfGenerator';
 import { notifyIndexNow } from '@/lib/indexnow';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
+
+// === RATE LIMITING (in-memory, per-instance) ===
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const FREE_TIER_MAX_GENERATIONS = 3; // max new book generations per hour for free/unregistered
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+
+function getRateLimitKey(request: NextRequest, userId: string | null): string {
+  // Use userId if logged in, otherwise fall back to IP
+  if (userId) return `user:${userId}`;
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0].trim() : 'unknown';
+  return `ip:${ip}`;
+}
+
+function checkRateLimit(key: string): { allowed: boolean; remaining: number; resetIn: number } {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  
+  if (!entry || (now - entry.windowStart) > RATE_LIMIT_WINDOW_MS) {
+    // New window
+    rateLimitMap.set(key, { count: 1, windowStart: now });
+    return { allowed: true, remaining: FREE_TIER_MAX_GENERATIONS - 1, resetIn: RATE_LIMIT_WINDOW_MS };
+  }
+  
+  if (entry.count >= FREE_TIER_MAX_GENERATIONS) {
+    const resetIn = RATE_LIMIT_WINDOW_MS - (now - entry.windowStart);
+    return { allowed: false, remaining: 0, resetIn };
+  }
+  
+  entry.count++;
+  return { allowed: true, remaining: FREE_TIER_MAX_GENERATIONS - entry.count, resetIn: RATE_LIMIT_WINDOW_MS - (now - entry.windowStart) };
+}
+
+// Cleanup stale entries every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, entry] of rateLimitMap) {
+    if ((now - entry.windowStart) > RATE_LIMIT_WINDOW_MS * 2) {
+      rateLimitMap.delete(key);
+    }
+  }
+}, 10 * 60 * 1000);
+// === END RATE LIMITING ===
 import {
   UserTier,
   canAccessMatchup,
@@ -1795,6 +1838,31 @@ export async function POST(request: NextRequest) {
     
     if (!result) {
       cacheStatus = 'MISS';
+      
+      // === RATE LIMIT CHECK (only on cache miss = actual generation) ===
+      // Skip for admin bypass and paid tiers (member/ultimate)
+      if (!isAdminBypass && tier !== 'member' && tier !== 'ultimate') {
+        const rateLimitKey = getRateLimitKey(request, userId);
+        const rateCheck = checkRateLimit(rateLimitKey);
+        console.log(`[RATE_LIMIT] ${rateLimitKey}: allowed=${rateCheck.allowed}, remaining=${rateCheck.remaining}`);
+        
+        if (!rateCheck.allowed) {
+          const resetMinutes = Math.ceil(rateCheck.resetIn / 60000);
+          console.log(`[RATE_LIMIT] BLOCKED: ${rateLimitKey} — limit reached, reset in ${resetMinutes}m`);
+          return NextResponse.json(
+            {
+              error: 'Rate limit exceeded',
+              code: 'RATE_LIMITED',
+              message: `You've reached the limit of ${FREE_TIER_MAX_GENERATIONS} new battles per hour. Try again in ${resetMinutes} minutes, or upgrade to Full Access for unlimited battles!`,
+              resetInMinutes: resetMinutes,
+              upgradeOptions: getUpgradeOptions(tier),
+            },
+            { status: 429 }
+          );
+        }
+      }
+      // === END RATE LIMIT CHECK ===
+
       console.log(`[CACHE] ${cacheStatus} - generating new book for ${animalA} vs ${animalB}`);
       // Generate new book
       result = await generateBook(animalA, animalB, environment);
