@@ -34,21 +34,31 @@ export default function TierInfoPopover({ isAuthenticated, currentTier }: TierIn
           <div className="text-center">
             <p className="text-white/80 text-sm mb-3">
               {isAuthenticated 
-                ? 'Unlock all 47 animals, Adventure mode, and Tournaments!'
+                ? 'Unlock all 48 animals, Adventure mode, and Tournaments!'
                 : 'Sign up free for 8 animals, or unlock everything!'}
             </p>
 
-            <div className="bg-white/5 rounded-lg p-3 border border-[#FFD700]/30">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-white font-bold">👑 Full Access</span>
-                <span className="font-bangers text-[#FFD700] text-xl">$4.99</span>
+            <div className="space-y-2">
+              <div className="bg-white/5 rounded-lg p-3 border border-[#FFD700]/30">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-white font-bold">🥊 Member</span>
+                  <span className="font-bangers text-[#FFD700] text-xl">$4.99</span>
+                </div>
+                <p className="text-white/60 text-xs">31 real animals • Tournaments • PDFs • One-time</p>
               </div>
-              <p className="text-white/60 text-xs">47 animals • Adventure • Tournaments • One-time</p>
+
+              <div className="bg-white/5 rounded-lg p-3 border border-purple-500/30">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-white font-bold">👑 Ultimate</span>
+                  <span className="font-bangers text-purple-300 text-xl">$9.99/mo</span>
+                </div>
+                <p className="text-white/60 text-xs">48 animals • Adventure • Dinos & Fantasy • Create Your Own</p>
+              </div>
             </div>
 
             {!isAuthenticated && (
               <div className="mt-3 bg-blue-900/30 rounded-lg p-2 border border-blue-500/20">
-                <p className="text-white/70 text-xs">🎁 Free account = 8 animals + Classic mode</p>
+                <p className="text-white/70 text-xs">🎁 Free account = 8 animals + cached battles</p>
               </div>
             )}
           </div>

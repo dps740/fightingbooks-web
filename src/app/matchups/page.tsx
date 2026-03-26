@@ -7,11 +7,11 @@ import PopularBattles from './PopularBattles';
 
 export const metadata: Metadata = {
   title: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
-  description: 'Browse 1,081 animal vs animal matchups. Search every battle page and explore the most popular matchups.',
+  description: 'Browse 1,128 animal vs animal matchups. Search every battle page and explore the most popular matchups.',
   keywords: ['animal vs animal', 'who would win matchups', 'animal battle matchups', 'animal fights', 'who would win in a fight', 'animal comparisons'],
   openGraph: {
     title: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
-    description: 'Browse 1,081 animal vs animal matchups including real animals, dinosaurs, and fantasy creatures.',
+    description: 'Browse 1,128 animal vs animal matchups including real animals, dinosaurs, and fantasy creatures.',
     type: 'website',
     url: 'https://whowouldwinbooks.com/battles',
     siteName: 'FightingBooks',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
-    description: 'Browse 1,081 animal vs animal matchups and explore the strongest battle pages on the site.',
+    description: 'Browse 1,128 animal vs animal matchups and explore the strongest battle pages on the site.',
     images: ['/og-image.png'],
   },
   alternates: {
@@ -148,7 +148,7 @@ export default function MatchupsPage() {
     '@type': 'WebPage',
     name: 'Animal Matchups — Who Would Win? | 1,000+ Battle Combinations',
     url: 'https://whowouldwinbooks.com/battles',
-    description: 'Browse 1,081 animal vs animal matchups. Search every battle page and explore the most popular matchups.',
+    description: 'Browse 1,128 animal vs animal matchups. Search every battle page and explore the most popular matchups.',
     isPartOf: {
       '@type': 'WebSite',
       name: 'FightingBooks',

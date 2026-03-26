@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true,
-      message: 'Full Access unlocked! Enjoy all 47 animals 🎉',
+      message: 'Full Access unlocked! Enjoy all 48 animals 🎉',
     });
 
   } catch (error) {

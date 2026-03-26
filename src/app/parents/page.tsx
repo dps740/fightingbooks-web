@@ -642,7 +642,7 @@ export default function ParentsPage() {
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>one-time</span>
               </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0' }}>
-                {['30 real animals', 'Unlimited books', 'PDF downloads', 'All book formats'].map((f) => (
+                {['31 real animals', 'Unlimited generation', 'PDF downloads', 'All book formats'].map((f) => (
                   <li key={f} style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', padding: '6px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#d4af37', fontWeight: 700 }}>✓</span> {f}
                   </li>
@@ -679,7 +679,7 @@ export default function ParentsPage() {
                 Plus
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '1.25rem' }}>
-                <span style={{ fontFamily: "'Anton', sans-serif", fontSize: '2.5rem', color: '#fff' }}>$4.99</span>
+                <span style={{ fontFamily: "'Anton', sans-serif", fontSize: '2.5rem', color: '#fff' }}>$9.99</span>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>/month</span>
               </div>
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem 0' }}>

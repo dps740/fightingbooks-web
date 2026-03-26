@@ -527,7 +527,7 @@ function BookReader() {
                   <div className="download-section" style={{ borderColor: '#FFD700', background: 'linear-gradient(135deg, #1a1a2e, #2d1a4e)' }}>
                     <h3 className="download-title" style={{ color: '#FFD700' }}>❤️ Loved it?</h3>
                     <p style={{ color: 'white', textAlign: 'center', marginBottom: '15px', fontSize: '1.1em' }}>
-                      Unlock <strong style={{ color: '#FFD700' }}>435+ matchups</strong> for just <strong style={{ color: '#FFD700' }}>$4.99</strong> — one time, forever!
+                      Unlock <strong style={{ color: '#FFD700' }}>465 matchups</strong> for just <strong style={{ color: '#FFD700' }}>$4.99</strong> — one time, forever!
                     </p>
                     <div style={{ textAlign: 'center' }}>
                       <a
@@ -739,13 +739,13 @@ function BookReader() {
       {tierData.tier !== 'member' && tierData.tier !== 'ultimate' && !tierData.loading && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-[#1a1a2e] via-[#2d1a4e] to-[#1a1a2e] border-t-2 border-[#FFD700] py-3 px-4 flex items-center justify-between">
           <p className="text-white text-sm">
-            🔥 <span className="font-bold text-[#FFD700]">Want more?</span> Unlock all 47 animals, Adventure mode & Tournaments!
+            🔥 <span className="font-bold text-[#FFD700]">Want more?</span> Unlock all 48 animals, Adventure mode & Tournaments!
           </p>
           <a
             href="/#create"
             className="flex-shrink-0 ml-4 px-4 py-2 bg-[#FFD700] text-black font-bangers rounded-lg hover:bg-yellow-300 transition-all text-sm"
           >
-            👑 Full Access — $4.99
+            🥊 Member — $4.99 | 👑 Ultimate — $9.99/mo
           </a>
         </div>
       )}

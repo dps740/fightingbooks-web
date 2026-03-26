@@ -55,11 +55,13 @@ import {
   canAccessMatchup,
   canAccessAnimal,
   canAccessCyoa,
+  canGenerate,
   isFreeSampleMatchup,
   getRequiredTier,
   getTierInfo,
   getUpgradeOptions,
   normalizeTier,
+  PRICING,
   FANTASY_ANIMALS,
   DINOSAUR_ANIMALS,
 } from '@/lib/tierAccess';
@@ -1763,7 +1765,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Tier access required',
           code: 'TIER_REQUIRED',
-          message: 'This matchup requires Full Access ($4.99).',
+          message: `This matchup requires Member access (${PRICING.member.display}).`,
           lockedAnimals: [
             !canAccessA ? animalA : null,
             !canAccessB ? animalB : null,
@@ -1785,7 +1787,7 @@ export async function POST(request: NextRequest) {
           {
             error: 'Sign up required',
             code: 'SIGNUP_REQUIRED',
-            message: 'Create a free account, then unlock Adventure mode with Full Access ($4.99)!',
+            message: `Create a free account, then unlock Adventure mode with Ultimate (${PRICING.ultimate.display}/mo)!`,
             currentTier: tier,
           },
           { status: 403 }
@@ -1796,7 +1798,7 @@ export async function POST(request: NextRequest) {
         {
           error: 'Adventure mode requires Full Access',
           code: 'CYOA_TIER_REQUIRED',
-          message: 'Adventure mode requires Full Access ($4.99). Unlock all 47 animals, tournaments, and Adventure mode!',
+          message: `Adventure mode requires Ultimate (${PRICING.ultimate.display}/mo). Unlock all 48 animals, tournaments, and Adventure mode!`,
           currentTier: tier,
           upgradeOptions,
         },
@@ -1839,29 +1841,22 @@ export async function POST(request: NextRequest) {
     if (!result) {
       cacheStatus = 'MISS';
       
-      // === RATE LIMIT CHECK (only on cache miss = actual generation) ===
-      // Skip for admin bypass and paid tiers (member/ultimate)
-      if (!isAdminBypass && tier !== 'member' && tier !== 'ultimate') {
-        const rateLimitKey = getRateLimitKey(request, userId);
-        const rateCheck = checkRateLimit(rateLimitKey);
-        console.log(`[RATE_LIMIT] ${rateLimitKey}: allowed=${rateCheck.allowed}, remaining=${rateCheck.remaining}`);
-        
-        if (!rateCheck.allowed) {
-          const resetMinutes = Math.ceil(rateCheck.resetIn / 60000);
-          console.log(`[RATE_LIMIT] BLOCKED: ${rateLimitKey} — limit reached, reset in ${resetMinutes}m`);
-          return NextResponse.json(
-            {
-              error: 'Rate limit exceeded',
-              code: 'RATE_LIMITED',
-              message: `You've reached the limit of ${FREE_TIER_MAX_GENERATIONS} new battles per hour. Try again in ${resetMinutes} minutes, or upgrade to Full Access for unlimited battles!`,
-              resetInMinutes: resetMinutes,
-              upgradeOptions: getUpgradeOptions(tier),
-            },
-            { status: 429 }
-          );
-        }
+      // === GENERATION GATE: paid tiers only ===
+      // Free/unregistered users can only read cached books — no new FAL/OpenAI generation
+      if (!isAdminBypass && !canGenerate(tier)) {
+        console.log(`[GENERATION_GATE] BLOCKED: tier=${tier}, matchup=${animalA} vs ${animalB} — cache miss, generation requires paid tier`);
+        return NextResponse.json(
+          {
+            error: 'Upgrade required for new battles',
+            code: 'GENERATION_REQUIRES_UPGRADE',
+            message: `This matchup hasn't been created yet. Upgrade to Member (${PRICING.member.display}) to generate any battle!`,
+            currentTier: tier,
+            upgradeOptions: getUpgradeOptions(tier),
+          },
+          { status: 403 }
+        );
       }
-      // === END RATE LIMIT CHECK ===
+      // === END GENERATION GATE ===
 
       console.log(`[CACHE] ${cacheStatus} - generating new book for ${animalA} vs ${animalB}`);
       // Generate new book

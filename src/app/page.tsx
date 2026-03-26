@@ -1192,7 +1192,7 @@ export default function Home() {
           <ul className="mx-auto mt-8 flex max-w-xl flex-col items-center gap-3 text-center">
             {[
               'More animals across higher tiers including dinosaurs and fantasy creatures',
-              'Unlimited book creation and deeper matchup variety',
+              'Full book generation for any matchup you can imagine',
               'Tournament mode and classroom-friendly printable formats',
               'Early access to new roster additions and premium features',
             ].map(item => (
@@ -1211,7 +1211,7 @@ export default function Home() {
               View Membership Options
             </button>
             <span className="text-[0.74rem] uppercase tracking-[0.08em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-              Member access starts at $4.99
+              Member access — $4.99 one-time
             </span>
           </div>
         </div>
@@ -1376,7 +1376,7 @@ export default function Home() {
                     <p className="mt-2 text-sm text-[#a8a4b5]">Adds fantasy, advanced story modes, and custom creature creation.</p>
                   </div>
                   <div className="text-left sm:text-right">
-                    <div className="text-3xl text-white" style={{ fontFamily: 'var(--font-bangers)' }}>$4.99</div>
+                    <div className="text-3xl text-white" style={{ fontFamily: 'var(--font-bangers)' }}>$9.99</div>
                     <div className="text-xs uppercase tracking-[0.12em] text-[#7a9280]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>per month</div>
                   </div>
                 </div>

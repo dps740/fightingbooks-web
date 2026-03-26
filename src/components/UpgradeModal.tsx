@@ -81,14 +81,14 @@ export default function UpgradeModal({
     : 'Unlock more animals & features!';
 
   const memberBenefits = [
-    '🥊 30 Real Animals (435 matchups!)',
+    '🥊 31 Real Animals (465 matchups!)',
     '⚔️ Tournament bracket mode',
     '📥 PDF downloads',
     '🆕 Future real animal additions',
   ];
 
   const ultimateBenefits = [
-    '👑 ALL 47+ Animals (real, dinos, fantasy)',
+    '👑 ALL 48 Animals (real, dinos, fantasy)',
     '🎭 Choose Your Own Adventure mode',
     '⚔️ Tournament bracket mode',
     '✨ Create Your Own animal matchups',
@@ -178,7 +178,7 @@ export default function UpgradeModal({
                   <p className="text-white/60 text-sm">Everything, updated monthly</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bangers text-3xl text-purple-300">$4.99</p>
+                  <p className="font-bangers text-3xl text-purple-300">$9.99</p>
                   <p className="text-white/50 text-xs">per month</p>
                 </div>
               </div>
@@ -197,14 +197,14 @@ export default function UpgradeModal({
                   href="/signup?redirect=upgrade"
                   className="block w-full py-3 rounded-lg font-bangers text-xl text-center bg-gradient-to-r from-purple-400 to-pink-500 text-white hover:scale-105 transition-all"
                 >
-                  SIGN UP & GO ULTIMATE — $4.99/mo
+                  SIGN UP & GO ULTIMATE — $9.99/mo
                 </a>
               ) : (
                 <button
                   onClick={() => onUpgrade('ultimate' as UserTier)}
                   className="w-full py-3 rounded-lg font-bangers text-xl bg-gradient-to-r from-purple-400 to-pink-500 text-white hover:scale-105 transition-all"
                 >
-                  GO ULTIMATE — $4.99/mo
+                  GO ULTIMATE — $9.99/mo
                 </button>
               )}
             </div>

@@ -1,8 +1,9 @@
 // User tier definitions and access control
-// v4 Tier Structure:
-// - unregistered: 4 free sample books only (pre-made, read-only, no login needed)
-// - member ($4.99 one-time): All 26 real animals, standard + tournament mode
-// - ultimate ($4.99/month): Everything — all 43+ animals, all modes, CYOA, create-your-own, +2 animals/month
+// v5 Tier Structure (2026-03-25):
+// - unregistered (no account): 4 free sample books only (pre-generated, read-only)
+// - unregistered (free signup): 8 popular animals, 28 matchups, cached books only (no new generation)
+// - member ($4.99 one-time): All 31 real animals, 465 matchups, full generation, PDFs, tournaments
+// - ultimate ($9.99/month): All 48 animals (real + dino + fantasy), CYOA, tournaments, create your own
 
 export type UserTier = 'unregistered' | 'member' | 'ultimate';
 
@@ -10,9 +11,15 @@ export type UserTier = 'unregistered' | 'member' | 'ultimate';
 export function normalizeTier(tier: string): UserTier {
   if (tier === 'ultimate') return 'ultimate';
   if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member') return 'member';
-  // 'free' accounts get same access as unregistered (4 sample books only)
+  // 'free' accounts map to unregistered tier (free signup = 8 animals, cached only)
   return 'unregistered';
 }
+
+// The 8 free animals (from the 4 sample matchup pairs)
+export const FREE_ANIMALS = [
+  'Lion', 'Tiger', 'Gorilla', 'Grizzly Bear',
+  'Great White Shark', 'Orca', 'Polar Bear', 'Crocodile',
+];
 
 // The 4 free sample matchups (pre-generated, available without login)
 export const FREE_SAMPLE_MATCHUPS = [
@@ -22,7 +29,7 @@ export const FREE_SAMPLE_MATCHUPS = [
   { animalA: 'Polar Bear', animalB: 'Crocodile' },
 ];
 
-// All real animals (26 total)
+// All real animals (31 total)
 export const REAL_ANIMALS = [
   'Lion', 'Tiger', 'Grizzly Bear', 'Polar Bear',
   'Gorilla', 'Great White Shark', 'Orca', 'Crocodile',
@@ -34,37 +41,42 @@ export const REAL_ANIMALS = [
   'King Cobra', 'Python', 'Anaconda', 'Komodo Dragon'
 ];
 
-// Dinosaurs (8 total) - Paid only
+// Dinosaurs (8 total) - Ultimate only
 export const DINOSAUR_ANIMALS = [
   'Tyrannosaurus Rex', 'Velociraptor', 'Triceratops', 'Spinosaurus',
   'Stegosaurus', 'Brachiosaurus', 'Ankylosaurus', 'Pteranodon'
 ];
 
-// Fantasy (9 total) - Paid only
+// Fantasy (9 total) - Ultimate only
 export const FANTASY_ANIMALS = [
   'Dragon', 'Griffin', 'Hydra', 'Phoenix', 'Cerberus',
   'Chimera', 'Manticore', 'Basilisk', 'Kraken'
 ];
 
-// All animals (43 total)
+// All animals (48 total)
 export const ALL_ANIMALS = [...REAL_ANIMALS, ...DINOSAUR_ANIMALS, ...FANTASY_ANIMALS];
 
+// Pricing constants (single source of truth)
+export const PRICING = {
+  member: { amount: 499, display: '$4.99', label: 'one-time' },
+  ultimate: { amount: 999, display: '$9.99', label: 'per month' },
+};
+
 // Get accessible animals for a tier
-// Unregistered can browse and pick all animals (gate is at generate time, not selection)
 export function getAccessibleAnimals(tier: UserTier): string[] {
   switch (tier) {
     case 'unregistered':
-      return ALL_ANIMALS;
+      return FREE_ANIMALS; // 8 popular animals only
     case 'member':
-      return REAL_ANIMALS;
+      return REAL_ANIMALS; // All 31 real animals
     case 'ultimate':
-      return ALL_ANIMALS;
+      return ALL_ANIMALS; // All 48 animals
     default:
-      return ALL_ANIMALS;
+      return FREE_ANIMALS;
   }
 }
 
-// Check if a matchup is a free sample (available to everyone)
+// Check if a matchup is a free sample (available to everyone including no-account)
 export function isFreeSampleMatchup(animalA: string, animalB: string): boolean {
   return FREE_SAMPLE_MATCHUPS.some(m =>
     (m.animalA === animalA && m.animalB === animalB) ||
@@ -81,6 +93,12 @@ export function canAccessAnimal(tier: UserTier, animal: string): boolean {
 // Check if a matchup (both animals) is accessible
 export function canAccessMatchup(tier: UserTier, animalA: string, animalB: string): boolean {
   return canAccessAnimal(tier, animalA) && canAccessAnimal(tier, animalB);
+}
+
+// Check if a tier can trigger new book generation (FAL + OpenAI calls)
+// Free/unregistered users can only read cached books — no new generation
+export function canGenerate(tier: UserTier): boolean {
+  return tier === 'member' || tier === 'ultimate';
 }
 
 // Check if CYOA mode is accessible (ultimate only)
@@ -111,6 +129,7 @@ export function getAnimalCategory(animal: string): 'real' | 'dinosaur' | 'fantas
 
 // Get required tier to access an animal
 export function getRequiredTier(animal: string): UserTier {
+  if (FREE_ANIMALS.includes(animal)) return 'unregistered';
   if (REAL_ANIMALS.includes(animal)) return 'member';
   return 'ultimate'; // dinos + fantasy
 }
@@ -120,12 +139,12 @@ export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier
   switch (currentTier) {
     case 'unregistered':
       return [
-        { tier: 'member', name: 'Member', price: '$4.99', animals: 26 },
-        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 43, recurring: true },
+        { tier: 'member', name: 'Member', price: PRICING.member.display, animals: REAL_ANIMALS.length },
+        { tier: 'ultimate', name: 'Ultimate', price: `${PRICING.ultimate.display}/mo`, animals: ALL_ANIMALS.length, recurring: true },
       ];
     case 'member':
       return [
-        { tier: 'ultimate', name: 'Ultimate', price: '$4.99/mo', animals: 43, recurring: true },
+        { tier: 'ultimate', name: 'Ultimate', price: `${PRICING.ultimate.display}/mo`, animals: ALL_ANIMALS.length, recurring: true },
       ];
     case 'ultimate':
       return [];
@@ -138,12 +157,12 @@ export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier
 export function getTierInfo(tier: UserTier): { name: string; animals: number; badge: string; description: string } {
   switch (tier) {
     case 'unregistered':
-      return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
+      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, cached books` };
     case 'member':
-      return { name: 'Member', animals: 26, badge: '🥊', description: '26 real animals + tournaments' };
+      return { name: 'Member', animals: REAL_ANIMALS.length, badge: '🥊', description: `${REAL_ANIMALS.length} real animals + tournaments` };
     case 'ultimate':
-      return { name: 'Ultimate', animals: 43, badge: '👑', description: 'Everything + CYOA + create your own' };
+      return { name: 'Ultimate', animals: ALL_ANIMALS.length, badge: '👑', description: 'Everything + CYOA + create your own' };
     default:
-      return { name: 'Guest', animals: 0, badge: '🎫', description: '4 free sample books' };
+      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, cached books` };
   }
 }

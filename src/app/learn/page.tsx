@@ -307,7 +307,7 @@ export default function LearnPage() {
             Ready to Start Learning?
           </h2>
           <p className="text-xl text-[var(--text-secondary)] mb-8">
-            Create your first custom wildlife book in 30 seconds. Choose any two animals and get a beautifully illustrated educational book—free for popular matchups!
+            Create your first custom wildlife book in 30 seconds. Choose any two animals and get a beautifully illustrated educational book—free for popular matchups, upgrade for full access!
           </p>
           <Link
             href="/"

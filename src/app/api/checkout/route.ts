@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
               currency: 'usd',
               product_data: {
                 name: 'FightingBooks Member',
-                description: '30 real animals, 435 matchups, tournament mode — forever!',
+                description: '31 real animals, 465 matchups, tournament mode — yours forever!',
               },
               unit_amount: 499, // $4.99
             },
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ url: session.url });
     } else {
-      // Ultimate: $4.99/month subscription
+      // Ultimate: $9.99/month subscription
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -105,9 +105,9 @@ export async function POST(request: NextRequest) {
               currency: 'usd',
               product_data: {
                 name: 'FightingBooks Ultimate',
-                description: 'All 47+ animals, CYOA, tournaments, create your own, +2 new animals/month!',
+                description: 'All 48 animals, Adventure mode, tournaments, create your own, +2 new animals/month!',
               },
-              unit_amount: 499, // $4.99/month
+              unit_amount: 999, // $9.99/month
               recurring: {
                 interval: 'month',
               },

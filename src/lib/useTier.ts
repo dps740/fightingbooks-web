@@ -75,7 +75,7 @@ export function isAnimalLocked(tier: UserTier, animalName: string): boolean {
 export function getLockReason(tier: UserTier, animalName: string): string | null {
   if (!isAnimalLocked(tier, animalName)) return null;
   const required = getRequiredTier(animalName);
-  if (required === 'ultimate') return 'Requires Ultimate ($4.99/mo)';
+  if (required === 'ultimate') return 'Requires Ultimate ($9.99/mo)';
   return 'Requires Member ($4.99)';
 }
 

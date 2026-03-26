@@ -103,7 +103,7 @@ function SignupForm() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />
-                  Unlimited book generation
+                  Read hundreds of cached battles
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />
@@ -111,7 +111,7 @@ function SignupForm() {
                 </li>
               </ul>
               <p className="text-[#FFD700]/80 text-xs mt-2">
-                Upgrade anytime: Real Animals $9.99 • Ultimate $19.99
+                Upgrade anytime: Member $4.99 • Ultimate $9.99/mo
               </p>
             </div>
           )}
