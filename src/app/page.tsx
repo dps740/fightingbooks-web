@@ -10,7 +10,7 @@ import TierInfoPopover from '@/components/TierInfoPopover';
 import AccountMenu from '@/components/AccountMenu';
 import SampleBookGallery from '@/components/SampleBookGallery';
 import EmailCaptureModal from '@/components/EmailCaptureModal';
-import { UserTier, REAL_ANIMALS, DINOSAUR_ANIMALS, FANTASY_ANIMALS } from '@/lib/tierAccess';
+import { UserTier, REAL_ANIMALS, DINOSAUR_ANIMALS, FANTASY_ANIMALS, getRequiredTier } from '@/lib/tierAccess';
 
 const bangers = Bangers({ subsets: ['latin'], weight: '400', variable: '--font-bangers' });
 const barlow = Barlow({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-barlow' });
@@ -165,6 +165,17 @@ function getPhysicalBooks() {
 export default function Home() {
   const router = useRouter();
   const tierData = useTier();
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    // Check for welcome flag in URL (set by signup redirect)
+    if (typeof window !== 'undefined' && window.location.search.includes('welcome=1')) {
+      setShowWelcome(true);
+      window.history.replaceState({}, '', '/');
+      const timer = setTimeout(() => setShowWelcome(false), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const [animalA, setAnimalA] = useState('');
   const [animalB, setAnimalB] = useState('');
@@ -538,6 +549,20 @@ export default function Home() {
       <div className="hidden" aria-hidden="true">
         <SampleBookGallery />
       </div>
+
+      {/* Welcome toast for new signups */}
+      {showWelcome && (
+        <div className="fixed top-4 left-1/2 z-[60] -translate-x-1/2 animate-[slideDown_0.3s_ease-out]">
+          <div className="flex items-center gap-3 rounded-lg border border-[#c9982a]/40 bg-[#1a2a1d] px-5 py-3 shadow-2xl">
+            <span className="text-2xl">🎉</span>
+            <div>
+              <p className="font-bold text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>Welcome to FightingBooks!</p>
+              <p className="text-sm text-white/70">You&apos;ve got 8 animals and hundreds of battles to explore. Pick two and fight!</p>
+            </div>
+            <button onClick={() => setShowWelcome(false)} className="ml-2 text-white/40 hover:text-white">✕</button>
+          </div>
+        </div>
+      )}
 
       <header className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-md" style={{ background: 'linear-gradient(to bottom, rgba(13,28,16,0.96), rgba(13,28,16,0.82))' }}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -953,10 +978,10 @@ export default function Home() {
 
                     {locked && (
                       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#0d1c10]/28">
-                        <div className="flex items-center gap-1 rounded-sm border border-[#c9982a]/40 bg-[#0d1c10]/75 px-2 py-1 text-[#e8b63c]">
+                        <div className={`flex items-center gap-1 rounded-sm border bg-[#0d1c10]/75 px-2 py-1 ${getRequiredTier(fighter.name) === 'ultimate' ? 'border-purple-500/40 text-purple-300' : 'border-[#c9982a]/40 text-[#e8b63c]'}`}>
                           {LOCK_ICON}
                           <span className="text-[0.58rem] font-bold uppercase tracking-[0.14em]" style={{ fontFamily: 'var(--font-barlow-condensed)' }}>
-                            Member
+                            {getRequiredTier(fighter.name) === 'ultimate' ? 'Ultimate' : 'Member'}
                           </span>
                         </div>
                       </div>

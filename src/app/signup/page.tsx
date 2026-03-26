@@ -37,11 +37,11 @@ function SignupForm() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // Redirect to original page if provided, otherwise homepage
+      // Redirect to original page if provided, otherwise homepage with welcome flag
       if (redirectUrl) {
         router.push(redirectUrl);
       } else {
-        router.push('/');
+        router.push('/?welcome=1');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
