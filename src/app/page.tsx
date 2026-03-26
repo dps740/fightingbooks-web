@@ -557,7 +557,7 @@ export default function Home() {
             <span className="text-2xl">🎉</span>
             <div>
               <p className="font-bold text-[#e8b63c]" style={{ fontFamily: 'var(--font-bangers)', letterSpacing: '0.04em' }}>Welcome to FightingBooks!</p>
-              <p className="text-sm text-white/70">You&apos;ve got 8 animals and hundreds of battles to explore. Pick two and fight!</p>
+              <p className="text-sm text-white/70">You&apos;ve got 4 animals and 6 battles to explore. Pick two and fight!</p>
             </div>
             <button onClick={() => setShowWelcome(false)} className="ml-2 text-white/40 hover:text-white">✕</button>
           </div>

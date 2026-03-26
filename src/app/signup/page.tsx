@@ -99,11 +99,11 @@ function SignupForm() {
               <ul className="text-white/80 text-sm space-y-1">
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />
-                  8 popular animals (28 matchups)
+                  4 popular animals (6 matchups)
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />
-                  Read hundreds of cached battles
+                  Full illustrated battle books
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-400" />

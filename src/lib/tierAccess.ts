@@ -1,7 +1,7 @@
 // User tier definitions and access control
 // v5 Tier Structure (2026-03-25):
 // - unregistered (no account): 4 free sample books only (pre-generated, read-only)
-// - unregistered (free signup): 8 popular animals, 28 matchups, cached books only (no new generation)
+// - unregistered (free signup): 4 popular animals, 6 matchups, cached books only (no new generation)
 // - member ($4.99 one-time): All 31 real animals, 465 matchups, full generation, PDFs, tournaments
 // - ultimate ($9.99/month): All 48 animals (real + dino + fantasy), CYOA, tournaments, create your own
 
@@ -11,22 +11,23 @@ export type UserTier = 'unregistered' | 'member' | 'ultimate';
 export function normalizeTier(tier: string): UserTier {
   if (tier === 'ultimate') return 'ultimate';
   if (tier === 'tier2' || tier === 'tier3' || tier === 'paid' || tier === 'member') return 'member';
-  // 'free' accounts map to unregistered tier (free signup = 8 animals, cached only)
+  // 'free' accounts map to unregistered tier (free signup = 4 animals, cached only)
   return 'unregistered';
 }
 
-// The 8 free animals (from the 4 sample matchup pairs)
+// The 4 free animals (most recognizable land matchups)
 export const FREE_ANIMALS = [
   'Lion', 'Tiger', 'Gorilla', 'Grizzly Bear',
-  'Great White Shark', 'Orca', 'Polar Bear', 'Crocodile',
 ];
 
-// The 4 free sample matchups (pre-generated, available without login)
+// All 6 free matchups (every combo of the 4 free animals — all pre-cached)
 export const FREE_SAMPLE_MATCHUPS = [
   { animalA: 'Lion', animalB: 'Tiger' },
+  { animalA: 'Lion', animalB: 'Gorilla' },
+  { animalA: 'Lion', animalB: 'Grizzly Bear' },
+  { animalA: 'Tiger', animalB: 'Gorilla' },
+  { animalA: 'Tiger', animalB: 'Grizzly Bear' },
   { animalA: 'Gorilla', animalB: 'Grizzly Bear' },
-  { animalA: 'Great White Shark', animalB: 'Orca' },
-  { animalA: 'Polar Bear', animalB: 'Crocodile' },
 ];
 
 // All real animals (31 total)
@@ -66,7 +67,7 @@ export const PRICING = {
 export function getAccessibleAnimals(tier: UserTier): string[] {
   switch (tier) {
     case 'unregistered':
-      return FREE_ANIMALS; // 8 popular animals only
+      return FREE_ANIMALS; // 4 popular animals only
     case 'member':
       return REAL_ANIMALS; // All 31 real animals
     case 'ultimate':

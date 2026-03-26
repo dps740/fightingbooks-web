@@ -35,7 +35,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier }: TierIn
             <p className="text-white/80 text-sm mb-3">
               {isAuthenticated 
                 ? 'Unlock all 48 animals, Adventure mode, and Tournaments!'
-                : 'Sign up free for 8 animals, or unlock everything!'}
+                : 'Sign up free for 4 animals, or unlock everything!'}
             </p>
 
             <div className="space-y-2">
@@ -58,7 +58,7 @@ export default function TierInfoPopover({ isAuthenticated, currentTier }: TierIn
 
             {!isAuthenticated && (
               <div className="mt-3 bg-blue-900/30 rounded-lg p-2 border border-blue-500/20">
-                <p className="text-white/70 text-xs">🎁 Free account = 8 animals + cached battles</p>
+                <p className="text-white/70 text-xs">🎁 Free account = 4 animals + 6 battles</p>
               </div>
             )}
           </div>
