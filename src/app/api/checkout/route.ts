@@ -67,23 +67,35 @@ export async function POST(request: NextRequest) {
     const stripe = getStripe();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://whowouldwinbooks.com';
 
+    // Stripe product price IDs (created in Stripe dashboard)
+    const MEMBER_PRICE_ID = process.env.STRIPE_MEMBER_PRICE_ID || 'price_1TF4pmJoZTmyptDMt36dswoy';
+    const ULTIMATE_PRICE_ID = process.env.STRIPE_ULTIMATE_PRICE_ID || 'price_1TF4pmJoZTmyptDMVLfBHDVy';
+
+    // Find or create Stripe customer
+    let customerId: string | undefined;
+    const existingCustomers = await stripe.customers.list({ email: user.email!, limit: 1 });
+    if (existingCustomers.data.length > 0) {
+      customerId = existingCustomers.data[0].id;
+    } else {
+      const customer = await stripe.customers.create({
+        email: user.email!,
+        metadata: { userId: user.id },
+      });
+      customerId = customer.id;
+    }
+
+    // Save customer ID to our DB
+    await supabase
+      .from('users')
+      .update({ stripe_customer_id: customerId })
+      .eq('id', user.id);
+
     if (tier === 'member') {
       // Member: $4.99 one-time payment
       const session = await stripe.checkout.sessions.create({
+        customer: customerId,
         payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'FightingBooks Member',
-                description: '31 real animals, 465 matchups, tournament mode — yours forever!',
-              },
-              unit_amount: 499, // $4.99
-            },
-            quantity: 1,
-          },
-        ],
+        line_items: [{ price: MEMBER_PRICE_ID, quantity: 1 }],
         mode: 'payment',
         success_url: `${siteUrl}/dashboard?success=true&tier=member&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${siteUrl}/dashboard?canceled=true`,
@@ -98,23 +110,9 @@ export async function POST(request: NextRequest) {
     } else {
       // Ultimate: $9.99/month subscription
       const session = await stripe.checkout.sessions.create({
+        customer: customerId,
         payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'FightingBooks Ultimate',
-                description: 'All 48 animals, Adventure mode, tournaments, create your own, +2 new animals/month!',
-              },
-              unit_amount: 999, // $9.99/month
-              recurring: {
-                interval: 'month',
-              },
-            },
-            quantity: 1,
-          },
-        ],
+        line_items: [{ price: ULTIMATE_PRICE_ID, quantity: 1 }],
         mode: 'subscription',
         success_url: `${siteUrl}/dashboard?success=true&tier=ultimate&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${siteUrl}/dashboard?canceled=true`,
