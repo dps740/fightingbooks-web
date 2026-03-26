@@ -158,12 +158,12 @@ export function getUpgradeOptions(currentTier: UserTier): Array<{ tier: UserTier
 export function getTierInfo(tier: UserTier): { name: string; animals: number; badge: string; description: string } {
   switch (tier) {
     case 'unregistered':
-      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, cached books` };
+      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, 6 battle books` };
     case 'member':
       return { name: 'Member', animals: REAL_ANIMALS.length, badge: '🥊', description: `${REAL_ANIMALS.length} real animals + tournaments` };
     case 'ultimate':
       return { name: 'Ultimate', animals: ALL_ANIMALS.length, badge: '👑', description: 'Everything + CYOA + create your own' };
     default:
-      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, cached books` };
+      return { name: 'Free', animals: FREE_ANIMALS.length, badge: '🎫', description: `${FREE_ANIMALS.length} popular animals, 6 battle books` };
   }
 }
